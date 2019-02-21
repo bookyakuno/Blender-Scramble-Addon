@@ -1,0 +1,85 @@
+<html>
+<head>
+<title>Blenderショートカット一覧</title>
+<link rel="shortcut icon" href="http://www.blender.org/wp-content/themes/bthree/assets/images/favicon.ico?af8ba9">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+function simple_tooltip(target_items, name){
+$(target_items).each(function(i){
+		$("body").append("<div class='"+name+"' id='"+name+i+"'><p>"+$(this).attr('title')+"</p></div>");
+		var my_tooltip = $("#"+name+i);
+		  
+		if($(this).attr("title") != "" && $(this).attr("title") != "undefined" ){
+		  
+		$(this).removeAttr("title").mouseover(function(){
+					my_tooltip.css({opacity:1.0, display:"none"}).fadeIn(100);
+		}).mousemove(function(kmouse){
+				var border_top = $(window).scrollTop();
+				var border_right = $(window).width();
+				var left_pos;
+				var top_pos;
+				var offset = 20;
+				if(border_right - (offset *2) >= my_tooltip.width() + kmouse.pageX){
+					left_pos = kmouse.pageX+offset;
+					} else{
+					left_pos = border_right-my_tooltip.width()-offset;
+					}
+					  
+				if(border_top + (offset *2)>= kmouse.pageY - my_tooltip.height()){
+					top_pos = border_top +offset;
+					} else{
+					top_pos = kmouse.pageY-my_tooltip.height()-offset;
+					}
+				my_tooltip.css({left:left_pos, top:top_pos});
+		}).mouseout(function(){
+				my_tooltip.css({left:"-9999px"});
+		});
+		}
+	});
+}
+$(document).ready(function(){
+	 simple_tooltip("area","tooltip");
+});
+</script>
+<style type="text/css">
+<!--
+div.tooltip {
+	position: absolute;
+	left: -9999px;
+	background: #FFF;
+	padding: 5px;
+	border: 1px solid #000;
+}
+  
+div.tooltip p{
+	color: #000;
+	background: #FFF;
+	padding: 5px 10px;
+}
+.table{
+	width: 100%;
+	height: 100%;
+	display:table;
+	text-align: center;
+}
+.table > *{
+	display:table-cell;
+	vertical-align: middle;
+}
+-->
+</style>
+</head>
+<body>
+<div class="table">
+<div>
+<img src="http://www.blender.org/wp-content/themes/bthree/assets/images/logo.png"><br>
+<img src="ShortcutHtmlKeysImage.png" usemap="#keys_map">
+<map name="keys_map">
+<!-- [AREAS] -->
+</map>
+</div>
+</div>
+<br>
+</body>
+</html>
