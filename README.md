@@ -17,7 +17,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
 
 > Download the ZIP file first in the "Download ZIP" of right and unzip.
 > Place a "Scramble Addon" folder in the addons folder of Blender.
-> (If Windows7: C:\Users\\(UserName)\AppData\Roaming\Blender Foundation\Blender\\(Version)\scripts\addons\Scramble Addon)
+> (If on Windows 7: C:\Users\\(UserName)\AppData\Roaming\Blender Foundation\Blender\\(Version)\scripts\addons\Scramble Addon)
 > Regardless of Japanese or English for the use of the international font by all means a check.
 > Search Start the Blender add-on tab of the user settings in the "Scramble", etc., select the add-on click "save user settings".
 > The installation is successful if it is added to item "whole process" in the "File" menu in the upper-left corner.
@@ -35,7 +35,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
 
 ## 機能一覧 (List of functions)
 * **「プロパティ」エリア > 「ボーンコンストレイント」タブ**
-* **―("Propaties" Area > "Bone Constraints" Tab)**
+* **―("Properties" Area > "Bone Constraints" Tab)**
     * **クイック・チャイルド**
     * **―(Quick child)**
         * 素早くチャイルドコンストレイントを追加します
@@ -54,7 +54,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Set auto-choice bone IK Paul angles)
 
 * **「プロパティ」エリア > 「ボーン」タブ**
-* **―("Propaties" Area > "Bone" Tab)**
+* **―("Properties" Area > "Bone" Tab)**
     * **ボーン名をクリップボードにコピー**
     * **―(Bone name to Clipboard)**
         * ボーン名をクリップボードにコピーします
@@ -69,7 +69,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Adds string to active bone name)
 
 * **「プロパティ」エリア > 「ボーン」タブ > 「インバースキネマティクス (IK)」パネル**
-* **―("Propaties" Area > "Bone" Tab > "Inverse Kinematics" Panel)**
+* **―("Properties" Area > "Bone" Tab > "Inverse Kinematics" Panel)**
     * **このIK設定をコピー**
     * **―(Copy IK Setting)**
         * アクティブなボーンのIK設定を、他の選択ボーンにコピーします
@@ -88,28 +88,28 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Reset this bone IK settings)
 
 * **「プロパティ」エリア > 「ボーン」タブ > 「関係」パネル**
-* **―("Propaties" Area > "Bone" Tab > "Relations" Panel)**
+* **―("Properties" Area > "Bone" Tab > "Relations" Panel)**
     * **関係設定をコピー**
     * **―(Copy Relations Settings)**
         * アクティブなボーンの関係設定を、他の選択ボーンにコピーします
         * ―(Copies of other selected bone affinity of active bone)
 
 * **「プロパティ」エリア > 「ボーン」タブ > 「トランスフォーム」パネル**
-* **―("Propaties" Area > "Bone" Tab > "Transform" Panel)**
+* **―("Properties" Area > "Bone" Tab > "Transform" Panel)**
     * **ボーンの変形をコピー**
     * **―(Copy Bone Transform)**
         * アクティブなボーンの変形情報を、他の選択ボーンにコピーします
         * ―(Copy selected bones of other active bone deformation information)
 
 * **「プロパティ」エリア > 「ボーン」タブ > 「トランスフォームのロック」パネル**
-* **―("Propaties" Area > "Bone" Tab > "Transform Locks" Panel)**
+* **―("Properties" Area > "Bone" Tab > "Transform Locks" Panel)**
     * **トランスフォームのロック設定をコピー**
     * **―(Copy Transform Locks Settings)**
         * アクティブなボーンのトランスフォームのロック設定を、他の選択ボーンにコピーします
         * ―(Copies of other selected bone lock setting active bone transform)
 
 * **「プロパティ」エリア > 「アーマチュアデータ」タブ > 「ボーングループ」パネル**
-* **―("Propaties" Area > "Armature" Tab > "Bone Groups" Panel)**
+* **―("Properties" Area > "Armature" Tab > "Bone Groups" Panel)**
     * **このボーングループのボーンのみ表示**
     * **―(Show only bone in this bones group)**
         * アクティブなボーングループのみを表示し、その他のボーンを隠します
@@ -120,7 +120,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Active bone group show or hide)
 
 * **「プロパティ」エリア > 「カーブデータ」タブ > 「ジオメトリ」パネル**
-* **―("Propaties" Area > "Curve" Tab > "Geometry" Panel)**
+* **―("Properties" Area > "Curve" Tab > "Geometry" Panel)**
     * **ジオメトリ設定をコピー**
     * **―(Copy Geometry Settings)**
         * アクティブなカーブオブジェクトのジオメトリパネルの設定を、他の選択カーブにコピーします
@@ -143,7 +143,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Activates curve as beveled objects using this curve)
 
 * **「プロパティ」エリア > 「モディファイア」タブ**
-* **―("Propaties" Area > "Modifiers" Tab)**
+* **―("Properties" Area > "Modifiers" Tab)**
     * **全モディファイア適用**
     * **―(Apply All Modifiers)**
         * 選択オブジェクトの全てのモディファイアを適用します
@@ -214,7 +214,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Quickly apply curve modifier with modifiers array replication)
 
 * **「プロパティ」エリア > 「アーマチュアデータ」タブ > 「ポーズライブラリ」パネル**
-* **―("Propaties" Area > "Armature" Tab > "Pose Library" Panel)**
+* **―("Properties" Area > "Armature" Tab > "Pose Library" Panel)**
     * **ポーズライブラリを並び替え**
     * **―(Pose Library Sort)**
         * アクティブなポーズライブラリのポーズを並び替えます
@@ -225,28 +225,28 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Active pose of pose library moves to top/bottom)
 
 * **「プロパティ」エリア > 「カーブデータ」タブ > 「シェイプ」パネル**
-* **―("Propaties" Area > "Armature" Tab > "Shape" Panel)**
+* **―("Properties" Area > "Armature" Tab > "Shape" Panel)**
     * **シェイプ設定をコピー**
     * **―(Copy Shape Settings)**
         * アクティブなカーブのシェイプ設定を、他の選択カーブにコピーします
         * ―(Copy selected curve other active curve shape settings)
 
 * **「プロパティ」エリア > 「オブジェクト」タブ > 「トランスフォーム」パネル**
-* **―("Propaties" Area > "Object" Tab > "Transform" Panel)**
+* **―("Properties" Area > "Object" Tab > "Transform" Panel)**
     * **シェイプキー名をオブジェクト名に**
     * **―(Shape key name from object name)**
         * シェイプキーの名前をオブジェクト名と同じにします
         * ―(Same as object name name of shape key)
 
 * **「プロパティ」エリア > 「アーマチュアデータ」タブ > 「スケルトン」パネル**
-* **―("Propaties" Area > "Armature" Tab > "Skeleton" Panel)**
+* **―("Properties" Area > "Armature" Tab > "Skeleton" Panel)**
     * **全ボーンレイヤーを表示**
     * **―(View all bone layer)**
         * 全てのボーンレイヤーをオンにして表示します
         * ―(All bone layer and then displays the)
 
 * **「プロパティ」エリア > 「メッシュデータ」タブ > 「UVマップ」パネル**
-* **―("Propaties" Area > "Mesh" Tab > "UV Maps" Panel)**
+* **―("Properties" Area > "Mesh" Tab > "UV Maps" Panel)**
     * **まとめてUVをリネーム**
     * **―(Altogether Rename UV)**
         * 選択オブジェクト内の指定UVをまとめて改名します
@@ -269,7 +269,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Sorts, by moving active object's UV)
 
 * **「プロパティ」エリア > 「メッシュデータ」タブ > 「頂点色」パネル**
-* **―("Propaties" Area > "Mesh" Tab > "Vertex Colors" Panel)**
+* **―("Properties" Area > "Mesh" Tab > "Vertex Colors" Panel)**
     * **頂点色を移動**
     * **―(Move Vertex Color)**
         * アクティブなオブジェクトの頂点色を移動して並び替えます
@@ -303,7 +303,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
     * **全ての画像名を使用するファイル名に**
     * **―(Change all image names to used file name)**
         * 全ての画像の名前を、使用している外部画像のファイル名にします
-        * ―(names of all images using external image file name)
+        * ―(Names of all images using external image file name)
     * **全ての画像を再読み込み**
     * **―(Reload All Images)**
         * 外部ファイルを参照している画像データを全て読み込み直します
@@ -570,7 +570,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Switch interface English, Japan,)
 
 * **「プロパティ」エリア > 「マテリアル」タブ > リスト右の▼**
-* **―("Propaties" Area > "Material" Tab > List Right ▼)**
+* **―("Properties" Area > "Material" Tab > List Right ▼)**
     * **割り当てのないマテリアルを削除**
     * **―(Delete Non-assignment Material)**
         * 面に一つも割り当てられてないマテリアルを全て削除します
@@ -597,7 +597,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Move active material slot at bottom)
 
 * **「プロパティ」エリア > 「オブジェクトデータ」タブ > シェイプキーリスト右の▼**
-* **―("Propaties" Area > "Object" Tab > ShapeKeys List Right ▼)**
+* **―("Properties" Area > "Object" Tab > ShapeKeys List Right ▼)**
     * **シェイプキーを複製**
     * **―(Duplicate Shape Key)**
         * アクティブなシェイプキーを複製します
@@ -628,7 +628,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(All shape key to disable or enable the)
 
 * **「プロパティ」エリア > 「オブジェクトデータ」タブ > 頂点グループリスト右の▼**
-* **―("Propaties" Area > "Object" Tab > VertexGroups List Right ▼)**
+* **―("Properties" Area > "Object" Tab > VertexGroups List Right ▼)**
     * **空の頂点グループを削除**
     * **―(Delete empty vertex groups)**
         * メッシュにウェイトが割り当てられていない頂点グループを削除します
@@ -681,7 +681,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―("Panel both hide" => "show only tool shelf => show only properties. toggle)
 
 * **「プロパティ」エリア > 「オブジェクト」タブ**
-* **―("Propaties" Area > "Object" Tab)**
+* **―("Properties" Area > "Object" Tab)**
     * **オブジェクト名をデータ名に**
     * **―(Object name to data name)**
         * オブジェクト名をリンクしているデータ名に設定します
@@ -700,42 +700,42 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Copies data to Clipboard)
 
 * **「プロパティ」エリア > 「オブジェクト」タブ > 「表示」パネル**
-* **―("Propaties" Area > "Object" Tab > "Display" Panel)**
+* **―("Properties" Area > "Object" Tab > "Display" Panel)**
     * **表示設定をコピー**
     * **―(Copy Display Setting)**
         * この表示設定を他の選択オブジェクトにコピーします
         * ―(Copy selected objects of other display settings)
 
 * **「プロパティ」エリア > 「物理演算」タブ > 「クロス」パネル**
-* **―("Propaties" Area > "Physics" Tab > "Cloth" Panel)**
+* **―("Properties" Area > "Physics" Tab > "Cloth" Panel)**
     * **クロスの設定をリンク**
     * **―(Link Cloth Setting)**
         * アクティブオブジェクトのクロスシミュレーション設定を、他の選択オブジェクトにコピーします
         * ―(Cloth simulation for active object copies to other selected objects)
 
 * **「プロパティ」エリア > 「物理演算」タブ > 「ダイナミックペイント」パネル**
-* **―("Propaties" Area > "Physics" Tab > "Dinamic Paint" Panel)**
+* **―("Properties" Area > "Physics" Tab > "Dinamic Paint" Panel)**
     * **ダイナミックペイント設定をコピー**
     * **―(Copy Dynamic Paint Settings)**
         * アクティブなオブジェクトのダイナミックペイント設定を、他の選択オブジェクトにコピーします
         * ―(Dynamic paint on an active object copies to other selected objects)
 
 * **「プロパティ」エリア > 「物理演算」タブ > 「フォースフィールド」パネル**
-* **―("Propaties" Area > "Physics" Tab > "Force Fields" Panel)**
+* **―("Properties" Area > "Physics" Tab > "Force Fields" Panel)**
     * **フォースフィールド設定をコピー**
     * **―(Copy ForceField Settings)**
         * アクティブなオブジェクトのフォースフィールド設定を、他の選択オブジェクトにコピーします
         * ―(Copy selection of other force field for active object)
 
 * **「プロパティ」エリア > 「物理演算」タブ > 「剛体」パネル**
-* **―("Propaties" Area > "Physics" Tab > "Rigid Body" Panel)**
+* **―("Properties" Area > "Physics" Tab > "Rigid Body" Panel)**
     * **剛体設定をコピー**
     * **―(Copy rigid body setting)**
         * アクティブなオブジェクトの剛体設定を、他の選択オブジェクトにコピーします
         * ―(Copy selected objects of other rigid set of active objects)
 
 * **「プロパティ」エリア > 「物理演算」タブ > 「剛体コンストレイント」パネル**
-* **―("Propaties" Area > "Physics" Tab > "Rigid Body Constraint" Panel)**
+* **―("Properties" Area > "Physics" Tab > "Rigid Body Constraint" Panel)**
     * **剛体コンストレイント設定をコピー**
     * **―(Copy rigidbody constraints settings)**
         * アクティブなオブジェクトの剛体コンストレイント設定を、他の選択オブジェクトにコピーします
@@ -750,35 +750,35 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Minimum limit settings of rigid constraints of active object and reverses maximum)
 
 * **「プロパティ」エリア > 「物理演算」タブ > 「ソフトボディ」パネル**
-* **―("Propaties" Area > "Physics" Tab > "Soft Body" Panel)**
+* **―("Properties" Area > "Physics" Tab > "Soft Body" Panel)**
     * **ソフトボディ設定をコピー**
     * **―(Copy Soft Body Settings)**
         * アクティブオブジェクトのソフトボディの設定を、他の選択オブジェクトにコピーします
         * ―(Sets active object soft copies to other selected objects)
 
 * **「プロパティ」エリア > ヘッダー**
-* **―("Propaties" Area > Header)**
+* **―("Properties" Area > Header)**
     * **プロパティタブを切り替え**
     * **―(Switch Properties Tab)**
         * プロパティのタブを順番に切り替えます
         * ―(Switch properties tab in turn)
 
 * **「プロパティ」エリア > 「レンダー」タブ > 「ベイク」パネル**
-* **―("Propaties" Area > "Render" Tab > "Bake" Panel)**
+* **―("Properties" Area > "Render" Tab > "Bake" Panel)**
     * **ベイク用の画像を作成**
     * **―(New image for bake)**
         * ベイクに使う新規画像を素早く用意可能です
         * ―(New images used to bake quickly, is available)
 
 * **「プロパティ」エリア > 「レンダー」タブ > 「レンダー」パネル**
-* **―("Propaties" Area > "Render" Tab > "Render" Panel)**
+* **―("Properties" Area > "Render" Tab > "Render" Panel)**
     * **バックグラウンドでレンダリング**
     * **―(Background Rendering)**
         * コマンドラインから現在のblendファイルをレンダリングします
         * ―(Renders current blend file from command line)
 
 * **「プロパティ」エリア > 「シーン」タブ > 「剛体ワールド」パネル**
-* **―("Propaties" Area > "Scene" Tab > "Rigid Body World" Panel)**
+* **―("Properties" Area > "Scene" Tab > "Rigid Body World" Panel)**
     * **剛体ワールドを作り直す**
     * **―(Recreate RigidBody World)**
         * 設定は維持して剛体ワールドを作り直します
@@ -789,7 +789,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Start / end frame rigid world of sets to start / end frame rendering)
 
 * **「プロパティ」エリア > 「テクスチャ」タブ > リスト右の▼**
-* **―("Propaties" Area > "Texture" Tab > List Right ▼)**
+* **―("Properties" Area > "Texture" Tab > List Right ▼)**
     * **テクスチャ名を使用する画像ファイル名に**
     * **―(Image File name to Texture Name)**
         * アクティブなテクスチャの名前を使用している外部画像のファイル名にします
@@ -820,7 +820,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Remove all active texture slot below)
 
 * **「プロパティ」エリア > 「テクスチャ」タブ > 「画像」パネル**
-* **―("Propaties" Area > "Texture" Tab > "Image" Panel)**
+* **―("Properties" Area > "Texture" Tab > "Image" Panel)**
     * **テクスチャ画像をUV/画像エディターに表示**
     * **―(Texture images show in UV / image editor)**
         * アクティブなテクスチャに使われている画像を「UV/画像エディター」に表示します
@@ -831,7 +831,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Active texture provides texture paint)
 
 * **「プロパティ」エリア > 「テクスチャ」タブ > 「マッピング」パネル**
-* **―("Propaties" Area > "Texture" Tab > "Mapping" Panel)**
+* **―("Properties" Area > "Texture" Tab > "Mapping" Panel)**
     * **アクティブなUVを使う**
     * **―(Use Active UV)**
         * メッシュのアクティブなUVを、このスロットで使います
@@ -1505,7 +1505,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(watch face from selected surface normal direction)
 
 * **「3Dビュー」エリア > プロパティ > レイヤーボタンがあるパネル**
-* **―("3D View" Area > Propaties > Layer Buttons Panel)**
+* **―("3D View" Area > Properties > Layer Buttons Panel)**
     * **グループで表示/非表示を切り替え**
     * **―(Toggle Show/Hide Groups)**
         * 所属しているグループで表示/非表示を切り替えます
@@ -1526,7 +1526,7 @@ Blenderを起動しユーザー設定のアドオンタブで「Scramble」等�
         * ―(Do quick editing in an external editor of additional files page of custom)
 
 * **「3Dビュー」エリア > プロパティ > 「ビュー」パネル**
-* **―("3D View" Area > Propaties > "View" Panel)**
+* **―("3D View" Area > Properties > "View" Panel)**
     * **視点のセーブ**
     * **―(Save View)**
         * 現在の3Dビューの視点をセーブします
