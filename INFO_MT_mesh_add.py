@@ -45,7 +45,7 @@ class AddSphereOnlySquare(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode="OBJECT")
 		if (isEdited and False):
 			activeObj.select = True
-			context.scene.objects.active = activeObj
+			bpy.context.view_layer.objects.active = activeObj
 			bpy.ops.object.join()
 			bpy.ops.object.mode_set(mode="EDIT")
 		return {'FINISHED'}
@@ -64,10 +64,10 @@ class AddVertexOnlyObject(bpy.types.Operator):
 		me.update()
 		obj = bpy.data.objects.new("Vertex", me)
 		obj.data = me
-		bpy.context.scene.objects.link(obj)
+		bpy.context.collection.objects.link(obj)
 		bpy.ops.object.select_all(action='DESELECT')
 		obj.select = True
-		bpy.context.scene.objects.active = obj
+		bpy.bpy.context.view_layer.objects.active = obj
 		obj.location = context.space_data.cursor_location[:]
 		bpy.ops.object.mode_set(mode="EDIT")
 		context.tool_settings.mesh_select_mode = (True, False, False)
@@ -128,7 +128,7 @@ class CreateVertexGroupSplits(bpy.types.Operator):
 					new_obj = bpy.data.objects.new(obj.name +":"+ vertex_group.name, new_me)
 					context.scene.objects.link(new_obj)
 					new_obj.select = True
-					context.scene.objects.active = new_obj
+					bpy.context.view_layer.objects.active = new_obj
 					new_obj.location = obj.location[:]
 					new_obj.rotation_mode = obj.rotation_mode
 					if (obj.rotation_mode == 'QUATERNION'):

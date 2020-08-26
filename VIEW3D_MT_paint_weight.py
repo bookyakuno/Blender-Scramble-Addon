@@ -134,13 +134,13 @@ class ApplyDynamicPaint(bpy.types.Operator):
 				brushObjs.append(obj)
 		bpy.ops.object.mode_set(mode="OBJECT")
 		for obj in brushObjs:
-			context.scene.objects.active = obj
+			bpy.context.view_layer.objects.active = obj
 			bpy.ops.object.modifier_add(type='DYNAMIC_PAINT')
 			obj.modifiers[-1].ui_type = 'BRUSH'
 			bpy.ops.dpaint.type_toggle(type='BRUSH')
 			obj.modifiers[-1].brush_settings.paint_source = 'VOLUME_DISTANCE'
 			obj.modifiers[-1].brush_settings.paint_distance = self.distance
-		context.scene.objects.active = activeObj
+		bpy.context.view_layer.objects.active = activeObj
 		bpy.ops.object.modifier_add(type='DYNAMIC_PAINT')
 		bpy.ops.dpaint.type_toggle(type='CANVAS')
 		activeObj.modifiers[-1].canvas_settings.canvas_surfaces[-1].surface_type = 'WEIGHT'

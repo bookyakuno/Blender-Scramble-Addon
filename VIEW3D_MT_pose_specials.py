@@ -51,7 +51,7 @@ class CreateCustomShape(bpy.types.Operator):
 				meObj.data = me
 				context.scene.objects.link(meObj)
 				meObj.select = True
-				context.scene.objects.active = meObj
+				bpy.context.view_layer.objects.active = meObj
 				meObj.draw_type = 'WIRE'
 				meObj.show_x_ray = True
 				meObj.constraints.new('COPY_TRANSFORMS')
@@ -65,7 +65,7 @@ class CreateCustomShape(bpy.types.Operator):
 				meObjs.append(meObj)
 		bpy.ops.object.select_all(action='DESELECT')
 		obj.select = True
-		context.scene.objects.active = obj
+		bpy.context.view_layer.objects.active = obj
 		bpy.ops.object.mode_set(mode='POSE')
 		if self.isObjectMode or self.isHide:
 			bpy.ops.object.mode_set(mode='OBJECT')
@@ -73,7 +73,7 @@ class CreateCustomShape(bpy.types.Operator):
 			obj.hide = True
 		for obj in meObjs:
 			obj.select = True
-			context.scene.objects.active = obj
+			bpy.context.view_layer.objects.active = obj
 		self.report(type={'INFO'}, message="Temporarily became hidden armature")
 		return {'FINISHED'}
 
@@ -128,7 +128,7 @@ class CreateWeightCopyMesh(bpy.types.Operator):
 		context.scene.objects.link(meObj)
 		bpy.ops.object.select_all(action='DESELECT')
 		meObj.select = True
-		context.scene.objects.active = meObj
+		bpy.context.view_layer.objects.active = meObj
 		i = 0
 		for bone in bones:
 			meObj.vertex_groups.new(bone.name)
@@ -297,7 +297,7 @@ class SetSlowParentBone(bpy.types.Operator):
 			empty_obj = context.active_object
 			empty_obj.name = bone.name+" slow parent"
 			obj.select = True
-			context.scene.objects.active = obj
+			bpy.context.view_layer.objects.active = obj
 			bpy.ops.object.mode_set(mode='POSE')
 			pre_parent_select = arm.bones[bone.parent.name].select
 			arm.bones.active = arm.bones[bone.parent.name]
@@ -596,7 +596,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 		bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 		obj.draw_type = 'WIRE'
 		arm_obj.select = True
-		context.scene.objects.active = arm_obj
+		bpy.context.view_layer.objects.active = arm_obj
 		if base_bone:
 			arm.bones.active = arm.bones[bone.name]
 			bpy.ops.object.mode_set(mode='POSE')
@@ -674,7 +674,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 			bpy.ops.object.select_all(action='DESELECT')
 			const.select = True
 			arm_obj.select = True
-			context.scene.objects.active = arm_obj
+			bpy.context.view_layer.objects.active = arm_obj
 			if bone.parent:
 				if bone.parent.name in bone_names:
 					for a, b, c in pairs:
@@ -693,7 +693,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode='OBJECT')
 		bpy.ops.object.select_all(action='DESELECT')
 		pre_active_obj.select = True
-		context.scene.objects.active = pre_active_obj
+		bpy.context.view_layer.objects.active = pre_active_obj
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 

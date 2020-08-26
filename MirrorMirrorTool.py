@@ -72,7 +72,7 @@ def Operation(context,_operation):
                 #selection at the end -add back the deselected mirror modifier object
             mirror_ob.select= 1
             modifier_ob.select=1
-            bpy.context.scene.objects.active = modifier_ob
+            bpy.bpy.context.view_layer.objects.active = modifier_ob
             print("Selected" + str(modifier_ob)) # modifier ob is the active ob
                 #mirror_ob.select = 0
             #one = bpy.context.selected_objects[0]

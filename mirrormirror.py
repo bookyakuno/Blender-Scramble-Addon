@@ -50,7 +50,7 @@ def Operation(context,_operation):
             
             mirror_ob.select= 1
             modifier_ob.select=1
-            bpy.context.scene.objects.active = modifier_ob
+            bpy.bpy.context.view_layer.objects.active = modifier_ob
         except: 
             pass
            

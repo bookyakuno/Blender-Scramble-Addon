@@ -224,7 +224,7 @@ class CreateVertexToMetaball(bpy.types.Operator):
 				bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 				metas[-1].parent_type = metas[-1].parent_type
 				base_obj = metas[0] #context.scene.objects[re.sub(r'\.\d+$', '', metas[0].name)]
-				context.scene.objects.active = base_obj
+				bpy.context.view_layer.objects.active = base_obj
 				base_obj.data.update_method = 'UPDATE_ALWAYS'
 				#context.scene.update()
 		return {'FINISHED'}
@@ -258,10 +258,10 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 				break
 		bpy.ops.object.select_all(action='DESELECT')
 		curveObj.select = True
-		context.scene.objects.active = curveObj
+		bpy.context.view_layer.objects.active = curveObj
 		curveObj.data.resolution_u = 1
 		bpy.ops.object.convert(target='MESH', keep_original=False)
-		pathObj = context.scene.objects.active
+		pathObj = bpy.context.view_layer.objects.active
 		for vert in pathObj.data.vertices:
 			if (vert.index % self.dissolve_verts_count == 0):
 				vert.select = False
@@ -273,7 +273,7 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 		metas = []
 		for vert in pathObj.data.vertices:
 			bpy.ops.object.metaball_add(type='BALL', radius=self.radius, view_align=False, enter_editmode=False, location=vert.co)
-			metas.append(context.scene.objects.active)
+			metas.append(bpy.context.view_layer.objects.active)
 			metas[-1].data.resolution = self.resolution
 		for obj in metas:
 			obj.select = True
@@ -307,7 +307,7 @@ class CreateMeshImitateArmature(bpy.types.Operator):
 			arm = bpy.data.armatures.new(obj.name+" Armature Imitate")
 			arm_obj = bpy.data.objects.new(obj.name+" Armature Imitate", arm)
 			context.scene.objects.link(arm_obj)
-			context.scene.objects.active = arm_obj
+			bpy.context.view_layer.objects.active = arm_obj
 			bpy.ops.object.mode_set(mode='EDIT')
 			bone_names = []
 			for vert in obj.data.vertices:
@@ -326,10 +326,10 @@ class CreateMeshImitateArmature(bpy.types.Operator):
 					const_rot = arm_obj.pose.bones[name].constraints.new('COPY_ROTATION')
 					const_rot.target = obj
 					const_rot.subtarget = vg.name
-			context.scene.objects.active = obj
+			bpy.context.view_layer.objects.active = obj
 			bpy.ops.object.mode_set(mode='EDIT')
 			bpy.ops.object.mode_set(mode='OBJECT')
-			context.scene.objects.active = arm_obj
+			bpy.context.view_layer.objects.active = arm_obj
 			if (self.use_normal):
 				bpy.ops.object.mode_set(mode='POSE')
 				bpy.ops.pose.armature_apply()
@@ -352,7 +352,7 @@ class CreateMeshImitateArmature(bpy.types.Operator):
 					const = arm_obj.pose.bones[name].constraints.new('STRETCH_TO')
 					const.target = arm_obj
 					const.subtarget = self.vert_bone_name + str(edge.vertices[1])
-		context.scene.objects.active = pre_active_obj
+		bpy.context.view_layer.objects.active = pre_active_obj
 		bpy.ops.object.mode_set(mode='EDIT')
 		bpy.ops.object.mode_set(mode='OBJECT')
 		return {'FINISHED'}
@@ -389,9 +389,9 @@ class CreateVertexGroupsArmature(bpy.types.Operator):
 				continue
 			arm = bpy.data.armatures.new(self.armature_name)
 			arm_obj = bpy.data.objects.new(self.armature_name, arm)
-			bpy.context.scene.objects.link(arm_obj)
+			bpy.context.collection.objects.link(arm_obj)
 			arm_obj.select = True
-			bpy.context.scene.objects.active = arm_obj
+			bpy.bpy.context.view_layer.objects.active = arm_obj
 			me = obj.data
 			bpy.ops.object.mode_set(mode='EDIT')
 			for vert in me.vertices:
@@ -407,7 +407,7 @@ class CreateVertexGroupsArmature(bpy.types.Operator):
 						bone.head = vert_co
 						bone.tail = vert_co + vert_no
 			bpy.ops.object.mode_set(mode='OBJECT')
-		bpy.context.scene.objects.active = pre_active_obj
+		bpy.bpy.context.view_layer.objects.active = pre_active_obj
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
@@ -453,7 +453,7 @@ class CreateSolidifyEdge(bpy.types.Operator):
 				continue
 				"""
 				pass
-			context.scene.objects.active = obj
+			bpy.context.view_layer.objects.active = obj
 
 			mtl = bpy.data.materials.new(obj.name+"Lines")
 			mtl.use_shadeless = True
@@ -486,7 +486,7 @@ class CreateSolidifyEdge(bpy.types.Operator):
 			mod.thickness = self.thickness
 			if (not self.use_render):
 				mod.show_render = False
-		context.scene.objects.active = pre_active_obj
+		bpy.context.view_layer.objects.active = pre_active_obj
 		context.space_data.show_backface_culling = self.show_backface_culling
 		return {'FINISHED'}
 	def invoke(self, context, event):
@@ -801,7 +801,7 @@ class CreateRopeMesh(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selected_objects:
 			activeObj = obj
-			context.scene.objects.active = obj
+			bpy.context.view_layer.objects.active = obj
 			pre_use_stretch = activeObj.data.use_stretch
 			pre_use_deform_bounds = activeObj.data.use_deform_bounds
 			bpy.ops.object.transform_apply_all()

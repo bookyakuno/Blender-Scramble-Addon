@@ -36,7 +36,7 @@ class CopyConstraintSetting(bpy.types.Operator):
 			if ob.name == active_ob.name:
 				continue
 			if not ob.rigid_body_constraint:
-				context.scene.objects.active = ob
+				bpy.context.view_layer.objects.active = ob
 				bpy.ops.rigidbody.constraint_add()
 			for val_name in dir(ob.rigid_body_constraint):
 				if not self.copy_target_objects:
@@ -53,7 +53,7 @@ class CopyConstraintSetting(bpy.types.Operator):
 							pass
 					except AttributeError:
 						pass
-		context.scene.objects.active = active_ob
+		bpy.context.view_layer.objects.active = active_ob
 		return {'FINISHED'}
 
 class ClearConstraintLimits(bpy.types.Operator):

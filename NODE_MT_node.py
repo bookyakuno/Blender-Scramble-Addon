@@ -69,7 +69,7 @@ class CopyAllMaterialNode(bpy.types.Operator):
 				except AttributeError: pass
 		bpy.ops.object.delete()
 		activeObj.select = True
-		context.scene.objects.active = activeObj
+		bpy.context.view_layer.objects.active = activeObj
 		return {'FINISHED'}
 
 	def invoke(self, context, event):

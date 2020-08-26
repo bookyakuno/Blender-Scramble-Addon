@@ -108,7 +108,7 @@ class ConvertMesh(bpy.types.Operator):
 		new_bm.free()
 
 		new_obj.select = True
-		context.scene.objects.active = new_obj
+		bpy.context.view_layer.objects.active = new_obj
 		return {'FINISHED'}
 
 class scale_uv_parts(bpy.types.Operator):

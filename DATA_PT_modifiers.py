@@ -159,7 +159,7 @@ class ApplyModifiersAndJoin(bpy.types.Operator):
 	def execute(self, context):
 		pre_active_object = context.active_object
 		for obj in context.selected_objects:
-			context.scene.objects.active = obj
+			bpy.context.view_layer.objects.active = obj
 			for mod in obj.modifiers[:]:
 				if self.unapply_subsurf and mod.type == 'SUBSURF':
 					continue
@@ -168,7 +168,7 @@ class ApplyModifiersAndJoin(bpy.types.Operator):
 				if self.unapply_mirror and mod.type == 'MIRROR':
 					continue
 				bpy.ops.object.modifier_apply(apply_as='DATA', modifier=mod.name)
-		context.scene.objects.active = pre_active_object
+		bpy.context.view_layer.objects.active = pre_active_object
 		bpy.ops.object.join()
 		return {'FINISHED'}
 

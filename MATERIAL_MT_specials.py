@@ -23,7 +23,7 @@ class RemoveNoAssignMaterial(bpy.types.Operator):
 		preActiveObj = context.active_object
 		for obj in context.selected_objects:
 			if (obj.type == "MESH"):
-				context.scene.objects.active = obj
+				bpy.context.view_layer.objects.active = obj
 				preActiveMaterial = obj.active_material
 				slots = []
 				for slot in obj.material_slots:
@@ -40,7 +40,7 @@ class RemoveNoAssignMaterial(bpy.types.Operator):
 							i += 1
 						obj.active_material_index = i
 						bpy.ops.object.material_slot_remove()
-		context.scene.objects.active = preActiveObj
+		bpy.context.view_layer.objects.active = preActiveObj
 		return {'FINISHED'}
 
 class RemoveAllMaterialSlot(bpy.types.Operator):

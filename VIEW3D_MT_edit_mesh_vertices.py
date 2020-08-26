@@ -34,7 +34,7 @@ class SeparateSelectedEX(bpy.types.Operator):
 		for obj in context.selectable_objects:
 			if (not obj.name in objs):
 				obj.select = True
-				context.scene.objects.active = obj
+				bpy.context.view_layer.objects.active = obj
 				break
 		bpy.ops.object.mode_set(mode='EDIT')
 		bpy.ops.mesh.select_all(action='SELECT')
@@ -57,7 +57,7 @@ class DuplicateNewParts(bpy.types.Operator):
 		for obj in context.selectable_objects:
 			if (not obj.name in objs):
 				obj.select = True
-				context.scene.objects.active = obj
+				bpy.context.view_layer.objects.active = obj
 				break
 		bpy.ops.object.mode_set(mode='EDIT')
 		bpy.ops.mesh.select_all(action='SELECT')
