@@ -53,12 +53,30 @@ class RegisterBlendBackupFiles(bpy.types.Operator):
 		return {'FINISHED'}
 
 ################
+# クラスの登録 #
+################
+
+classes = [
+	RegisterBlendFile,
+	RegisterBlendBackupFiles
+]
+
+def register():
+	for cls in classes:
+		bpy.utils.register_class(cls)
+
+def unregister():
+	for cls in classes:
+		bpy.utils.unregister_class(cls)
+
+
+################
 # メニュー追加 #
 ################
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.user_preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -67,22 +85,22 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		self.layout.label(text="Scramble Addon:", icon='PLUGIN')
+		self.layout.label(text="Blender-Scramble-Addon-master:", icon='PLUGIN')
 		split = self.layout.split(percentage=0.7)
 		split_sub = split.split(percentage=0.95)
 		col = split_sub.column()
 		col.label(text="Image Editor: Advance")
-		col.prop(context.user_preferences.addons["Scramble Addon"].preferences, 'image_editor_path_1', text="")
-		col.prop(context.user_preferences.addons["Scramble Addon"].preferences, 'image_editor_path_2', text="")
-		col.prop(context.user_preferences.addons["Scramble Addon"].preferences, 'image_editor_path_3', text="")
+		col.prop(context.preferences.addons["Blender-Scramble-Addon-master"].preferences, 'image_editor_path_1', text="")
+		col.prop(context.preferences.addons["Blender-Scramble-Addon-master"].preferences, 'image_editor_path_2', text="")
+		col.prop(context.preferences.addons["Blender-Scramble-Addon-master"].preferences, 'image_editor_path_3', text="")
 		col.label(text="Text Editor")
-		col.prop(context.user_preferences.addons["Scramble Addon"].preferences, 'text_editor_path_1', text="")
-		col.prop(context.user_preferences.addons["Scramble Addon"].preferences, 'text_editor_path_2', text="")
-		col.prop(context.user_preferences.addons["Scramble Addon"].preferences, 'text_editor_path_3', text="")
+		col.prop(context.preferences.addons["Blender-Scramble-Addon-master"].preferences, 'text_editor_path_1', text="")
+		col.prop(context.preferences.addons["Blender-Scramble-Addon-master"].preferences, 'text_editor_path_2', text="")
+		col.prop(context.preferences.addons["Blender-Scramble-Addon-master"].preferences, 'text_editor_path_3', text="")
 		
 		col = split.column()
 		col.label(text="File Associations (Windows Only)")
 		col.operator(RegisterBlendFile.bl_idname, icon='PLUGIN')
 		col.operator(RegisterBlendBackupFiles.bl_idname, icon='PLUGIN')
-	if (context.user_preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
