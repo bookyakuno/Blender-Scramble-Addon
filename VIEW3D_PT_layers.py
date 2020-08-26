@@ -81,6 +81,24 @@ class ObjectSelectPanel(bpy.types.Panel):
 			col.operator(GroupLayers.bl_idname, text=group.name, icon='PLUGIN').group = group.name
 
 ################
+# クラスの登録 #
+################
+
+classes = [
+	GroupLayers,
+	ObjectSelectPanel
+]
+
+def register():
+	for cls in classes:
+		bpy.utils.register_class(cls)
+
+def unregister():
+	for cls in classes:
+		bpy.utils.unregister_class(cls)
+
+
+################
 # メニュー追加 #
 ################
 

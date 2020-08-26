@@ -666,12 +666,50 @@ class CurveMenu(bpy.types.Menu):
 		self.layout.operator(QuickArrayAndCurveDeform.bl_idname, icon='PLUGIN')
 
 ################
+# クラスの登録 #
+################
+
+classes = [
+	ApplyAllModifiers,
+	DeleteAllModifiers,
+	ToggleApplyModifiersView,
+	SyncShowModifiers,
+	ToggleAllShowExpanded,
+	ApplyModifiersAndJoin,
+	AutoRenameModifiers,
+	AddBoolean,
+	ApplyBoolean,
+	SetRenderSubsurfLevel,
+	EqualizeSubsurfLevel,
+	SetSubsurfOptimalDisplay,
+	DeleteSubsurf,
+	AddSubsurf,
+	SetArmatureDeformPreserveVolume,
+	QuickCurveDeform,
+	QuickArrayAndCurveDeform,
+	ModifierMenu,
+	SubsurfMenu,
+	BooleanMenu,
+	ArmatureMenu,
+	CurveMenu
+]
+
+def register():
+	for cls in classes:
+		bpy.utils.register_class(cls)
+
+def unregister():
+	for cls in classes:
+		bpy.utils.unregister_class(cls)
+
+
+################
 # メニュー追加 #
 ################
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.user_preferences.addons['Scramble Addon'].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons['Scramble Addon'].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -692,5 +730,5 @@ def menu(self, context):
 				row.operator(ToggleAllShowExpanded.bl_idname, icon='FULLSCREEN_ENTER', text="Expand/Close")
 				row.operator(SyncShowModifiers.bl_idname, icon='LINKED', text="Use Sync")
 		self.layout.menu(ModifierMenu.bl_idname, icon='PLUGIN')
-	if (context.user_preferences.addons['Scramble Addon'].preferences.use_disabled_menu):
+	if (context.preferences.addons['Scramble Addon'].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

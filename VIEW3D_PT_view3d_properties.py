@@ -17,13 +17,13 @@ class SaveView(bpy.types.Operator):
 	
 	def execute(self, context):
 		data = ""
-		for line in context.user_preferences.addons["Scramble Addon"].preferences.view_savedata.split('|'):
+		for line in context.preferences.addons["Scramble Addon"].preferences.view_savedata.split('|'):
 			if (line == ""):
 				continue
 			try:
 				save_name = line.split(':')[0]
 			except ValueError:
-				context.user_preferences.addons["Scramble Addon"].preferences.view_savedata = ""
+				context.preferences.addons["Scramble Addon"].preferences.view_savedata = ""
 				self.report(type={'ERROR'}, message="Failed load view, reseted save data")
 				return {'CANCELLED'}
 			if (str(self.save_name) == save_name):
@@ -36,7 +36,7 @@ class SaveView(bpy.types.Operator):
 		text = text + str(ro[0]) + ',' + str(ro[1]) + ',' + str(ro[2]) + ',' + str(ro[3]) + ':'
 		text = text + str(context.region_data.view_distance) + ':'
 		text = text + context.region_data.view_perspective
-		context.user_preferences.addons["Scramble Addon"].preferences.view_savedata = text
+		context.preferences.addons["Scramble Addon"].preferences.view_savedata = text
 		for area in context.screen.areas:
 			area.tag_redraw()
 		return {'FINISHED'}
@@ -52,13 +52,13 @@ class LoadView(bpy.types.Operator):
 	index = bpy.props.StringProperty(name="View save data name", default="View Save Data")
 	
 	def execute(self, context):
-		for line in context.user_preferences.addons["Scramble Addon"].preferences.view_savedata.split('|'):
+		for line in context.preferences.addons["Scramble Addon"].preferences.view_savedata.split('|'):
 			if (line == ""):
 				continue
 			try:
 				index, loc, rot, distance, view_perspective = line.split(':')
 			except ValueError:
-				context.user_preferences.addons["Scramble Addon"].preferences.view_savedata = ""
+				context.preferences.addons["Scramble Addon"].preferences.view_savedata = ""
 				self.report(type={'ERROR'}, message="Failed load view, reseted save data")
 				return {'CANCELLED'}
 			if (str(self.index) == index):
@@ -82,12 +82,31 @@ class DeleteViewSavedata(bpy.types.Operator):
 	
 	@classmethod
 	def poll(cls, context):
-		if (context.user_preferences.addons["Scramble Addon"].preferences.view_savedata == ""):
+		if (context.preferences.addons["Scramble Addon"].preferences.view_savedata == ""):
 			return False
 		return True
 	def execute(self, context):
-		context.user_preferences.addons["Scramble Addon"].preferences.view_savedata = ""
+		context.preferences.addons["Scramble Addon"].preferences.view_savedata = ""
 		return {'FINISHED'}
+
+################
+# クラスの登録 #
+################
+
+classes = [
+	SaveView,
+	LoadView,
+	DeleteViewSavedata
+]
+
+def register():
+	for cls in classes:
+		bpy.utils.register_class(cls)
+
+def unregister():
+	for cls in classes:
+		bpy.utils.unregister_class(cls)
+
 
 ################
 # メニュー追加 #
@@ -95,7 +114,7 @@ class DeleteViewSavedata(bpy.types.Operator):
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.user_preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -104,18 +123,18 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		self.layout.prop(context.user_preferences.view, 'use_zoom_to_mouse')
-		self.layout.prop(context.user_preferences.view, 'use_rotate_around_active')
+		self.layout.prop(context.preferences.view, 'use_zoom_to_mouse')
+		self.layout.prop(context.preferences.view, 'use_rotate_around_active')
 		self.layout.prop(context.scene, 'sync_mode')
 		box = self.layout.box()
 		col = box.column(align=True)
 		col.operator(SaveView.bl_idname, icon="PLUGIN")
-		if (context.user_preferences.addons["Scramble Addon"].preferences.view_savedata != ""):
+		if (context.preferences.addons["Scramble Addon"].preferences.view_savedata != ""):
 			col.operator(DeleteViewSavedata.bl_idname, icon="PLUGIN")
-		if (context.user_preferences.addons["Scramble Addon"].preferences.view_savedata):
+		if (context.preferences.addons["Scramble Addon"].preferences.view_savedata):
 			col = box.column(align=True)
 			col.label(text="Load view save data", icon='PLUGIN')
-			for line in context.user_preferences.addons["Scramble Addon"].preferences.view_savedata.split('|'):
+			for line in context.preferences.addons["Scramble Addon"].preferences.view_savedata.split('|'):
 				if (line == ""):
 					continue
 				try:
@@ -123,5 +142,5 @@ def menu(self, context):
 				except ValueError:
 					pass
 				col.operator(LoadView.bl_idname, text=index, icon="PLUGIN").index = index
-	if (context.user_preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
