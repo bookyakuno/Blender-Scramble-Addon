@@ -77,12 +77,30 @@ class MoveActivePoseMost(bpy.types.Operator):
 		return {'FINISHED'}
 
 ################
+# クラスの登録 #
+################
+
+classes = [
+	MoveActivePose,
+	MoveActivePoseMost
+]
+
+def register():
+	for cls in classes:
+		bpy.utils.register_class(cls)
+
+def unregister():
+	for cls in classes:
+		bpy.utils.unregister_class(cls)
+
+
+################
 # メニュー追加 #
 ################
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.user_preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -99,5 +117,5 @@ def menu(self, context):
 					row.operator(MoveActivePose.bl_idname, icon='TRIA_DOWN', text="").is_up = False
 					row.operator(MoveActivePoseMost.bl_idname, icon='TRIA_UP_BAR', text="To Top").is_top = True
 					row.operator(MoveActivePoseMost.bl_idname, icon='TRIA_DOWN_BAR', text="To Bottom").is_top = False
-	if (context.user_preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
