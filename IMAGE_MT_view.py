@@ -29,28 +29,37 @@ class Reset2DCursor(bpy.types.Operator):
 
 	def execute(self, context):
 		if (bpy.context.edit_image):
-			x, y = bpy.context.edit_image.size
+			x, y = (1,1)
 		else:
-			x = 256
-			y = 256
+			x = 1
+			y = 1
+
+		area = None
+		for area in bpy.context.screen.areas:
+			if area.type == 'IMAGE_EDITOR':
+				area
+		if not area:
+			self.report({'INFO'}, "Not found Image Editor !!")
+			return{'FINISHED'}
+			
 		if (self.mode == "C"):
-			bpy.context.space_data.cursor_location = [x/2, y/2]
+			area.spaces[0].cursor_location = [x/2, y/2]
 		elif (self.mode == "U"):
-			bpy.context.space_data.cursor_location = [x/2, y]
+			area.spaces[0].cursor_location = [x/2, y]
 		elif (self.mode == "RU"):
-			bpy.context.space_data.cursor_location = [x, y]
+			area.spaces[0].cursor_location = [x, y]
 		elif (self.mode == "R"):
-			bpy.context.space_data.cursor_location = [x, y/2]
+			area.spaces[0].cursor_location = [x, y/2]
 		elif (self.mode == "RD"):
-			bpy.context.space_data.cursor_location = [x, 0]
+			area.spaces[0].cursor_location = [x, 0]
 		elif (self.mode == "D"):
-			bpy.context.space_data.cursor_location = [x/2, 0]
+			area.spaces[0].cursor_location = [x/2, 0]
 		elif (self.mode == "LD"):
-			bpy.context.space_data.cursor_location = [0, 0]
+			area.spaces[0].cursor_location = [0, 0]
 		elif (self.mode == "L"):
-			bpy.context.space_data.cursor_location = [0, y/2]
+			area.spaces[0].cursor_location = [0, y/2]
 		elif (self.mode == "LU"):
-			bpy.context.space_data.cursor_location = [0, y]
+			area.spaces[0].cursor_location = [0, y]
 		return {'FINISHED'}
 
 class TogglePanelsA(bpy.types.Operator):

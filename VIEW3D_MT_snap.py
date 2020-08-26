@@ -31,7 +31,7 @@ class SnapMesh3DCursor(bpy.types.Operator):
 		tempLayer = tempGp.layers.new("temp", set_active=True)
 		tempGp.draw_mode = 'SURFACE'
 		bpy.ops.gpencil.draw(mode='DRAW_POLY', stroke=[{"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":self.mouse_co, "pressure":1, "time":0, "size":0}, {"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":(0, 0), "pressure":1, "time":0, "size":0}])
-		bpy.context.space_data.cursor_location = tempLayer.frames[-1].strokes[-1].points[0].co
+		bpy.context.scene.cursor.location = tempLayer.frames[-1].strokes[-1].points[0].co
 		tempGp.layers.remove(tempLayer)
 		context.scene.grease_pencil = preGp
 		context.scene.tool_settings.grease_pencil_source = preGpSource
@@ -48,7 +48,7 @@ class Move3DCursorToViewLocation(bpy.types.Operator):
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
-		bpy.context.space_data.cursor_location = context.region_data.view_location[:]
+		bpy.context.scene.cursor.location = context.region_data.view_location[:]
 		return {'FINISHED'}
 
 class Move3DCursorFar(bpy.types.Operator):
@@ -58,7 +58,7 @@ class Move3DCursorFar(bpy.types.Operator):
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
-		bpy.context.space_data.cursor_location = (24210, 102260, 38750)
+		bpy.context.scene.cursor.location = (24210, 102260, 38750)
 		return {'FINISHED'}
 
 ################

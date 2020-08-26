@@ -25,10 +25,10 @@ class ViewSelectedEX(bpy.types.Operator):
 		context.region_data.update()
 		new_view_location = context.region_data.view_location[:]
 		context.region_data.view_location = pre_view_location[:]
-		pre_cursor_location = bpy.context.space_data.cursor_location[:]
-		bpy.context.space_data.cursor_location = new_view_location[:]
+		pre_cursor_location = bpy.context.scene.cursor.location[:]
+		bpy.context.scene.cursor.location = new_view_location[:]
 		bpy.ops.view3d.view_center_cursor()
-		bpy.context.space_data.cursor_location = pre_cursor_location[:]
+		bpy.context.scene.cursor.location = pre_cursor_location[:]
 		return {'FINISHED'}
 
 class ResetView(bpy.types.Operator):
@@ -82,7 +82,7 @@ class SnapMeshView(bpy.types.Operator):
 	def execute(self, context):
 		preGp = context.scene.grease_pencil
 		preGpSource = context.scene.tool_settings.grease_pencil_source
-		preCursorCo = bpy.context.space_data.cursor_location[:]
+		preCursorCo = bpy.context.scene.cursor.location[:]
 		context.space_data.cursor_location = context.region_data.view_location[:]
 		context.scene.tool_settings.grease_pencil_source = 'SCENE'
 		if (preGp):
@@ -96,9 +96,9 @@ class SnapMeshView(bpy.types.Operator):
 		tempLayer = tempGp.layers.new("temp", set_active=True)
 		tempGp.draw_mode = 'SURFACE'
 		bpy.ops.gpencil.draw(mode='DRAW_POLY', stroke=[{"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":self.mouse_co, "pressure":1, "time":0, "size":0}, {"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":(0, 0), "pressure":1, "time":0, "size":0}])
-		bpy.context.space_data.cursor_location = tempLayer.frames[-1].strokes[-1].points[0].co
+		bpy.context.scene.cursor.location = tempLayer.frames[-1].strokes[-1].points[0].co
 		bpy.ops.view3d.view_center_cursor()
-		bpy.context.space_data.cursor_location = preCursorCo
+		bpy.context.scene.cursor.location = preCursorCo
 		tempGp.layers.remove(tempLayer)
 		tempGp.user_clear()
 		bpy.data.grease_pencil.remove(tempGp)
@@ -129,7 +129,7 @@ class ResetViewAndCursor(bpy.types.Operator):
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
-		bpy.context.space_data.cursor_location = (0, 0, 0)
+		bpy.context.scene.cursor.location = (0, 0, 0)
 		bpy.ops.view3d.view_center_cursor()
 		return {'FINISHED'}
 
@@ -156,7 +156,7 @@ class SnapMeshViewAndCursor(bpy.types.Operator):
 		tempLayer = tempGp.layers.new("temp", set_active=True)
 		tempGp.draw_mode = 'SURFACE'
 		bpy.ops.gpencil.draw(mode='DRAW_POLY', stroke=[{"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":self.mouse_co, "pressure":1, "time":0, "size":0}, {"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":(0, 0), "pressure":1, "time":0, "size":0}])
-		bpy.context.space_data.cursor_location = tempLayer.frames[-1].strokes[-1].points[0].co
+		bpy.context.scene.cursor.location = tempLayer.frames[-1].strokes[-1].points[0].co
 		bpy.ops.view3d.view_center_cursor()
 		tempGp.layers.remove(tempLayer)
 		context.scene.grease_pencil = preGp
