@@ -144,7 +144,7 @@ class set_ik_pole_angle(bpy.types.Operator):
 			pre_angle = ik.pole_angle
 			for i in range(9999):
 				ik.pole_angle += 0.001
-				context.scene.update()
+				context.view_layer.update()
 				co = ( pose_bone.matrix.to_translation() - bone.head_local ).length
 				rot = pose_bone.matrix.to_quaternion().rotation_difference(bone.matrix_local.to_quaternion()).angle
 				score = co * rot
@@ -154,7 +154,7 @@ class set_ik_pole_angle(bpy.types.Operator):
 					break
 				pre_angle = ik.pole_angle
 			ik.pole_angle = min_score[0]
-			context.scene.update()
+			context.view_layer.update()
 		return {'FINISHED'}
 
 ################
