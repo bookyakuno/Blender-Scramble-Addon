@@ -154,7 +154,7 @@ class ActivateTaperObject(bpy.types.Operator):
 
 	def execute(self, context):
 		ob = context.active_object.data.taper_object
-		ob.select = True
+		ob.select_set(True)
 		ob.hide = False
 		bpy.context.view_layer.objects.active = ob
 		for i, b in enumerate(ob.layers):
@@ -178,7 +178,7 @@ class ActivateBevelObject(bpy.types.Operator):
 
 	def execute(self, context):
 		ob = context.active_object.data.bevel_object
-		ob.select = True
+		ob.select_set(True)
 		ob.hide = False
 		bpy.context.view_layer.objects.active = ob
 		for i, b in enumerate(ob.layers):
@@ -209,7 +209,7 @@ class activate_taper_parent_object(bpy.types.Operator):
 				curve = ob.data
 				target_name = curve.taper_object.name if curve.taper_object else ""
 				if active_ob.name == target_name:
-					ob.select = True
+					ob.select_set(True)
 					ob.hide = False
 					bpy.context.view_layer.objects.active = ob
 					for i, b in enumerate(ob.layers):
@@ -243,7 +243,7 @@ class activate_bevel_parent_object(bpy.types.Operator):
 				curve = ob.data
 				target_name = curve.bevel_object.name if curve.bevel_object else ""
 				if active_ob.name == target_name:
-					ob.select = True
+					ob.select_set(True)
 					ob.hide = False
 					bpy.context.view_layer.objects.active = ob
 					for i, b in enumerate(ob.layers):

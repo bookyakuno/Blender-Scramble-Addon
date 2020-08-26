@@ -30,12 +30,12 @@ def Operation(context,_operation):
           
             #   if modifier_ob.type !='MESH' and modifier_ob.type !="CURVE":
           #      mirror_ob = modifier_ob # set to mirror_ob , hope the other one is a mesh
-           #     mirror_ob.select = False
+           #     mirror_ob.select_set(False)
             #    modifier_ob = bpy.context.selected_objects[0]
             else:
                 #mirror_ob
                 mirror_ob = bpy.context.active_object         # last ob selected
-                mirror_ob.select = False # pop modifier_ob from sel_stack
+                mirror_ob.select_set(False) # pop modifier_ob from sel_stack
                 print("popped")
                 
                 #modifier_ob

@@ -68,12 +68,12 @@ class SelectBoundBoxSize(bpy.types.Operator):
 		for obj, volume in objs:
 			if (self.mode == 'LARGE'):
 				if (threshold_volume <= volume):
-					obj.select = True
+					obj.select_set(True)
 			elif (self.mode == 'SMALL'):
 				if (volume <= threshold_volume):
-					obj.select = True
+					obj.select_set(True)
 		if (min_obj and self.mode == 'SMALL'):
-			min_obj.select = True
+			min_obj.select_set(True)
 		return {'FINISHED'}
 
 class UnselectUnactiveObjects(bpy.types.Operator):
@@ -89,9 +89,9 @@ class UnselectUnactiveObjects(bpy.types.Operator):
 		return False
 
 	def execute(self, context):
-		for ob in bpy.data.objects:
-			ob.select = False
-		context.active_object.select = True
+		for ob in bpy.context.selected_objects:
+			ob.select_set(False)
+		context.active_object.select_set(True)
 		return {'FINISHED'}
 
 ############################
@@ -116,7 +116,7 @@ class SelectGroupedName(bpy.types.Operator):
 			name_base = re.search(r'^(.*)\.\d+$', name_base).groups()[0]
 		for obj in context.selectable_objects:
 			if (re.search('^'+name_base+r'\.\d+$', obj.name) or name_base == obj.name):
-				obj.select = True
+				obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectGroupedMaterial(bpy.types.Operator):
@@ -142,7 +142,7 @@ class SelectGroupedMaterial(bpy.types.Operator):
 		if (0 < len(activeMats)):
 			for obj in context.selectable_objects:
 				if (activeMats == GetMaterialList(obj.material_slots)):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectGroupedModifiers(bpy.types.Operator):
@@ -287,13 +287,13 @@ class SelectGroupedSizeThan(bpy.types.Operator):
 			size = GetSize(obj)
 			if (self.mode == 'LARGER'):
 				if (active_obj_size < size):
-					obj.select = True
+					obj.select_set(True)
 			elif (self.mode == 'SMALLER'):
 				if (size < active_obj_size):
-					obj.select = True
+					obj.select_set(True)
 			if (self.select_same_size):
 				if (active_obj_size == size):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 ##########################
@@ -318,7 +318,7 @@ class SelectMeshFaceOnly(bpy.types.Operator):
 			if (obj.type == 'MESH'):
 				me = obj.data
 				if (0 < len(me.polygons)):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectMeshEdgeOnly(bpy.types.Operator):
@@ -339,7 +339,7 @@ class SelectMeshEdgeOnly(bpy.types.Operator):
 			if (obj.type == 'MESH'):
 				me = obj.data
 				if (len(me.polygons) == 0 and 0 < len(me.edges)):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectMeshVertexOnly(bpy.types.Operator):
@@ -360,7 +360,7 @@ class SelectMeshVertexOnly(bpy.types.Operator):
 			if (obj.type == 'MESH'):
 				me = obj.data
 				if (len(me.polygons) == 0 and len(me.edges) == 0 and 0 < len(me.vertices)):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectMeshNone(bpy.types.Operator):
@@ -381,7 +381,7 @@ class SelectMeshNone(bpy.types.Operator):
 			if (obj.type == 'MESH'):
 				me = obj.data
 				if (len(me.polygons) == 0 and len(me.edges) == 0 and len(me.vertices) == 0):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 ################

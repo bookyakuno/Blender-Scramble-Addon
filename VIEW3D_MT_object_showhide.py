@@ -21,7 +21,7 @@ class hide_view_clear_unselect(bpy.types.Operator):
 		bpy.ops.object.hide_view_clear()
 		for ob in context.selectable_objects:
 			if ob.name not in pre_selectable_objects:
-				ob.select = False
+				ob.select_set(False)
 		return {'FINISHED'}
 
 class InvertHide(bpy.types.Operator):

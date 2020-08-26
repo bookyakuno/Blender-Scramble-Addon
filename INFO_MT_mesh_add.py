@@ -44,7 +44,7 @@ class AddSphereOnlySquare(bpy.types.Operator):
 		bpy.ops.transform.tosphere(value=1)
 		bpy.ops.object.mode_set(mode="OBJECT")
 		if (isEdited and False):
-			activeObj.select = True
+			activeObj.select_set(True)
 			bpy.context.view_layer.objects.active = activeObj
 			bpy.ops.object.join()
 			bpy.ops.object.mode_set(mode="EDIT")
@@ -66,7 +66,7 @@ class AddVertexOnlyObject(bpy.types.Operator):
 		obj.data = me
 		bpy.context.collection.objects.link(obj)
 		bpy.ops.object.select_all(action='DESELECT')
-		obj.select = True
+		obj.select_set(True)
 		bpy.bpy.context.view_layer.objects.active = obj
 		obj.location = context.space_data.cursor_location[:]
 		bpy.ops.object.mode_set(mode="EDIT")
@@ -96,7 +96,7 @@ class CreateVertexGroupSplits(bpy.types.Operator):
 
 	def execute(self, context):
 		for obj in context.selected_objects:
-			obj.select = False
+			obj.select_set(False)
 			if (obj.type != 'MESH'):
 				continue
 			me = obj.data
@@ -127,7 +127,7 @@ class CreateVertexGroupSplits(bpy.types.Operator):
 					new_me.from_pydata(new_verts, [], new_faces)
 					new_obj = bpy.data.objects.new(obj.name +":"+ vertex_group.name, new_me)
 					context.scene.objects.link(new_obj)
-					new_obj.select = True
+					new_obj.select_set(True)
 					bpy.context.view_layer.objects.active = new_obj
 					new_obj.location = obj.location[:]
 					new_obj.rotation_mode = obj.rotation_mode

@@ -271,9 +271,9 @@ class ApplyBoolean(bpy.types.Operator):
 				modi.operation = self.mode
 				bpy.ops.object.modifier_apply (modifier=modi.name)
 				bpy.ops.object.select_all(action='DESELECT')
-				obj.select = True
+				obj.select_set(True)
 				bpy.ops.object.delete()
-				activeObj.select = True
+				activeObj.select_set(True)
 		return {'FINISHED'}
 
 ############################

@@ -33,7 +33,7 @@ class SeparateSelectedEX(bpy.types.Operator):
 		bpy.ops.object.select_all(action='DESELECT')
 		for obj in context.selectable_objects:
 			if (not obj.name in objs):
-				obj.select = True
+				obj.select_set(True)
 				bpy.context.view_layer.objects.active = obj
 				break
 		bpy.ops.object.mode_set(mode='EDIT')
@@ -56,7 +56,7 @@ class DuplicateNewParts(bpy.types.Operator):
 		bpy.ops.object.select_all(action='DESELECT')
 		for obj in context.selectable_objects:
 			if (not obj.name in objs):
-				obj.select = True
+				obj.select_set(True)
 				bpy.context.view_layer.objects.active = obj
 				break
 		bpy.ops.object.mode_set(mode='EDIT')

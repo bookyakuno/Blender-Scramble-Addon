@@ -29,7 +29,7 @@ def Operation(context,_operation):
 
             else:
                 mirror_ob = bpy.context.active_object         # last ob selected
-                mirror_ob.select = False # pop modifier_ob from sel_stack
+                mirror_ob.select_set(False) # pop modifier_ob from sel_stack
                 modifier_ob = bpy.context.selected_objects[0]
 
                 mirror_mod = modifier_ob.modifiers.new("mirror_mirror","MIRROR")

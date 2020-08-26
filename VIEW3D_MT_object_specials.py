@@ -257,7 +257,7 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 				curveObj = obj
 				break
 		bpy.ops.object.select_all(action='DESELECT')
-		curveObj.select = True
+		curveObj.select_set(True)
 		bpy.context.view_layer.objects.active = curveObj
 		curveObj.data.resolution_u = 1
 		bpy.ops.object.convert(target='MESH', keep_original=False)
@@ -276,7 +276,7 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 			metas.append(bpy.context.view_layer.objects.active)
 			metas[-1].data.resolution = self.resolution
 		for obj in metas:
-			obj.select = True
+			obj.select_set(True)
 		context.scene.objects.unlink(pathObj)
 		return {'FINISHED'}
 
@@ -390,7 +390,7 @@ class CreateVertexGroupsArmature(bpy.types.Operator):
 			arm = bpy.data.armatures.new(self.armature_name)
 			arm_obj = bpy.data.objects.new(self.armature_name, arm)
 			bpy.context.collection.objects.link(arm_obj)
-			arm_obj.select = True
+			arm_obj.select_set(True)
 			bpy.bpy.context.view_layer.objects.active = arm_obj
 			me = obj.data
 			bpy.ops.object.mode_set(mode='EDIT')
@@ -747,13 +747,13 @@ class ParentSetApplyModifiers(bpy.types.Operator):
 		if (active_obj.type != 'MESH'):
 			self.report(type={'ERROR'}, message="Active is not mesh object")
 			return {'CANCELLED'}
-		active_obj.select = False
+		active_obj.select_set(False)
 		enable_modifiers = []
 		for mod in active_obj.modifiers:
 			if (mod.show_viewport):
 				enable_modifiers.append(mod.name)
 		bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-		active_obj.select = True
+		active_obj.select_set(True)
 		old_me = active_obj.data
 		new_me = active_obj.to_mesh(context.scene, True, 'PREVIEW')
 		if (len(old_me.vertices) != len(new_me.vertices)):
@@ -766,11 +766,11 @@ class ParentSetApplyModifiers(bpy.types.Operator):
 		active_obj.data = old_me
 		for name in enable_modifiers:
 			active_obj.modifiers[name].show_viewport = True
-		active_obj.select = False
+		active_obj.select_set(False)
 		return {'FINISHED'}
 		"""
 		bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
-		active_obj.select = True
+		active_obj.select_set(True)
 		bpy.ops.object.parent_set(type=self.type)
 		for name in enable_modifiers:
 			active_obj.modifiers[name].show_viewport = True
@@ -883,7 +883,7 @@ class MoveBevelObject(bpy.types.Operator):
 				bevel_object.layers = obj.layers[:]
 				bevel_object.hide = False
 				bpy.ops.object.select_all(action='DESELECT')
-				bevel_object.select = True
+				bevel_object.select_set(True)
 				bpy.ops.object.duplicate()
 				bevel_object.layers = pre_layers[:]
 				bevel_object = context.selected_objects[0]
@@ -951,7 +951,7 @@ class MoveBevelObject(bpy.types.Operator):
 					pass
 		bpy.ops.object.select_all(action='DESELECT')
 		for obj in selected_objects:
-			obj.select = True
+			obj.select_set(True)
 		return {'FINISHED'}
 
 ################

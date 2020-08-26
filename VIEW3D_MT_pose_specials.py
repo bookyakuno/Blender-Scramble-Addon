@@ -50,7 +50,7 @@ class CreateCustomShape(bpy.types.Operator):
 				meObj = bpy.data.objects.new(me.name, me)
 				meObj.data = me
 				context.scene.objects.link(meObj)
-				meObj.select = True
+				meObj.select_set(True)
 				bpy.context.view_layer.objects.active = meObj
 				meObj.draw_type = 'WIRE'
 				meObj.show_x_ray = True
@@ -64,7 +64,7 @@ class CreateCustomShape(bpy.types.Operator):
 				bpy.ops.transform.resize(value=(len, len, len))
 				meObjs.append(meObj)
 		bpy.ops.object.select_all(action='DESELECT')
-		obj.select = True
+		obj.select_set(True)
 		bpy.context.view_layer.objects.active = obj
 		bpy.ops.object.mode_set(mode='POSE')
 		if self.isObjectMode or self.isHide:
@@ -72,7 +72,7 @@ class CreateCustomShape(bpy.types.Operator):
 		if self.isHide:
 			obj.hide = True
 		for obj in meObjs:
-			obj.select = True
+			obj.select_set(True)
 			bpy.context.view_layer.objects.active = obj
 		self.report(type={'INFO'}, message="Temporarily became hidden armature")
 		return {'FINISHED'}
@@ -127,7 +127,7 @@ class CreateWeightCopyMesh(bpy.types.Operator):
 		meObj.data = me
 		context.scene.objects.link(meObj)
 		bpy.ops.object.select_all(action='DESELECT')
-		meObj.select = True
+		meObj.select_set(True)
 		bpy.context.view_layer.objects.active = meObj
 		i = 0
 		for bone in bones:
@@ -296,7 +296,7 @@ class SetSlowParentBone(bpy.types.Operator):
 			bpy.ops.object.empty_add(type='PLAIN_AXES', radius=self.radius)
 			empty_obj = context.active_object
 			empty_obj.name = bone.name+" slow parent"
-			obj.select = True
+			obj.select_set(True)
 			bpy.context.view_layer.objects.active = obj
 			bpy.ops.object.mode_set(mode='POSE')
 			pre_parent_select = arm.bones[bone.parent.name].select
@@ -310,7 +310,7 @@ class SetSlowParentBone(bpy.types.Operator):
 			const.target = empty_obj
 			if self.constraint == 'IK':
 				const.chain_count = 1
-			empty_obj.select = False
+			empty_obj.select_set(False)
 			if self.is_use_driver:
 				bone["SlowParentOffset"] = self.slow_parent_offset
 				fcurve = empty_obj.driver_add('slow_parent_offset')
@@ -584,7 +584,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 			const.subtarget = base_bone.name
 		const.head_tail = 0.5
 		bpy.ops.object.select_all(action='DESELECT')
-		obj.select = True
+		obj.select_set(True)
 		bpy.ops.object.visual_transform_apply()
 		obj.constraints.remove(const)
 		if base_bone:
@@ -595,7 +595,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 			obj.scale.x, obj.scale.y, obj.scale.z = self.shape_size, self.shape_size, self.shape_size
 		bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 		obj.draw_type = 'WIRE'
-		arm_obj.select = True
+		arm_obj.select_set(True)
 		bpy.context.view_layer.objects.active = arm_obj
 		if base_bone:
 			arm.bones.active = arm.bones[bone.name]
@@ -615,7 +615,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 			const.subtarget = bone.name
 			const.head_tail = 0.5
 			bpy.ops.object.select_all(action='DESELECT')
-			obj.select = True
+			obj.select_set(True)
 			bpy.ops.object.visual_transform_apply()
 			obj.constraints.remove(const)
 			bone = arm.bones[bone.name]
@@ -638,7 +638,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 			const.target = arm_obj
 			const.subtarget = bone.name
 			bpy.ops.object.select_all(action='DESELECT')
-			obj.select = True
+			obj.select_set(True)
 			bpy.ops.object.visual_transform_apply()
 			obj.constraints.remove(const)
 			obj.scale = (self.constraints_size, self.constraints_size, self.constraints_size)
@@ -673,7 +673,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 
 			bpy.ops.object.select_all(action='DESELECT')
 			const.select = True
-			arm_obj.select = True
+			arm_obj.select_set(True)
 			bpy.context.view_layer.objects.active = arm_obj
 			if bone.parent:
 				if bone.parent.name in bone_names:
@@ -692,7 +692,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 				bpy.ops.object.mode_set(mode='OBJECT')
 		bpy.ops.object.mode_set(mode='OBJECT')
 		bpy.ops.object.select_all(action='DESELECT')
-		pre_active_obj.select = True
+		pre_active_obj.select_set(True)
 		bpy.context.view_layer.objects.active = pre_active_obj
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}

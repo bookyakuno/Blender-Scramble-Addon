@@ -107,7 +107,7 @@ class ConvertMesh(bpy.types.Operator):
 		new_bm.to_mesh(new_me)
 		new_bm.free()
 
-		new_obj.select = True
+		new_obj.select_set(True)
 		bpy.context.view_layer.objects.active = new_obj
 		return {'FINISHED'}
 

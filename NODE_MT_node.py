@@ -68,7 +68,7 @@ class CopyAllMaterialNode(bpy.types.Operator):
 						node.material = mat
 				except AttributeError: pass
 		bpy.ops.object.delete()
-		activeObj.select = True
+		activeObj.select_set(True)
 		bpy.context.view_layer.objects.active = activeObj
 		return {'FINISHED'}
 
