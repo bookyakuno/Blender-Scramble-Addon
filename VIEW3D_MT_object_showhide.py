@@ -41,7 +41,7 @@ class InvertHide(bpy.types.Operator):
 					else:
 						objs.append(obj)
 		for obj in objs:
-			obj.hide = not obj.hide
+			obj.hide_set(not obj.hide_get)
 		return {'FINISHED'}
 
 class HideOnlyType(bpy.types.Operator):
@@ -68,7 +68,7 @@ class HideOnlyType(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selectable_objects:
 			if (obj.type == self.type):
-				obj.hide = True
+				obj.hide_set(True)
 		return {'FINISHED'}
 
 class HideExceptType(bpy.types.Operator):
@@ -95,7 +95,7 @@ class HideExceptType(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selectable_objects:
 			if (obj.type != self.type):
-				obj.hide = True
+				obj.hide_set(True)
 		return {'FINISHED'}
 
 ################
