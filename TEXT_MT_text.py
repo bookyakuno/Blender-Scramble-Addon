@@ -26,11 +26,11 @@ class ExternalEdit(bpy.types.Operator):
 	def execute(self, context):
 		path = bpy.path.abspath(context.edit_text.filepath)
 		if (self.index == 1):
-			editor_path = context.preferences.addons["Scramble Addon"].preferences.text_editor_path_1
+			editor_path = context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_1
 		elif (self.index == 2):
-			editor_path = context.preferences.addons["Scramble Addon"].preferences.text_editor_path_2
+			editor_path = context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_2
 		elif (self.index == 3):
-			editor_path = context.preferences.addons["Scramble Addon"].preferences.text_editor_path_3
+			editor_path = context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_3
 		subprocess.Popen([editor_path, path])
 		return {'FINISHED'}
 
@@ -57,7 +57,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -67,18 +67,18 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		if (context.preferences.addons["Scramble Addon"].preferences.text_editor_path_1):
-			path = os.path.basename(context.preferences.addons["Scramble Addon"].preferences.text_editor_path_1)
+		if (context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_1):
+			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_1)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEdit.bl_idname, icon="PLUGIN", text=name+"  Open").index = 1
-		if (context.preferences.addons["Scramble Addon"].preferences.text_editor_path_2):
-			path = os.path.basename(context.preferences.addons["Scramble Addon"].preferences.text_editor_path_2)
+		if (context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_2):
+			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_2)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEdit.bl_idname, icon="PLUGIN", text=name+"  Open").index = 2
-		if (context.preferences.addons["Scramble Addon"].preferences.text_editor_path_3):
-			path = os.path.basename(context.preferences.addons["Scramble Addon"].preferences.text_editor_path_3)
+		if (context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_3):
+			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_3)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEdit.bl_idname, icon="PLUGIN", text=name+"  Open").index = 3
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

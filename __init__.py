@@ -6,8 +6,8 @@ import os, csv, codecs
 bl_info = {
 	"name" : "Scramble Addon",
 	"author" : "Saidenka",
-	"version" : (0,1),
-	"blender" : (2, 80, 0),
+	"version" : (1,0,1),
+	"blender" : (2, 83, 0),
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",
 	"warning" : "",
@@ -247,7 +247,7 @@ class ToggleMenuEnable(bpy.types.Operator):
 	def execute(self, context):
 		recovery = ""
 		is_on = False
-		for id in context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+		for id in context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 			if (id == ""):
 				continue
 			if (id == self.id):
@@ -259,7 +259,7 @@ class ToggleMenuEnable(bpy.types.Operator):
 		if (recovery != ""):
 			if (recovery[-1] == ","):
 				recovery = recovery[:-1]
-		context.preferences.addons["Scramble Addon"].preferences.disabled_menu = recovery
+		context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu = recovery
 		for area in context.screen.areas:
 			area.tag_redraw()
 		return {'FINISHED'}
@@ -301,7 +301,7 @@ def register():
 	bpy.app.translations.register(__name__, translation_dict)
 
 	#　register_module(__name__)の廃止に伴い、サブモジュールのクラスも
-	#　bpy.utils.register_class(cls)を使って登録することが必要	
+	#　bpy.utils.register_class(cls)を使って登録することが必要
 	BONE_PT_context_bone.register()
 	bpy.types.BONE_PT_context_bone.append(BONE_PT_context_bone.menu)
 	#BONE_PT_display.register()#クラスなしのためregister()は未定義

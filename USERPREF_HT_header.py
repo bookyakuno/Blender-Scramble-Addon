@@ -600,7 +600,7 @@ class ImportKeyConfigXml(bpy.types.Operator):
 	mode = bpy.props.EnumProperty(items=items, name="Mode", default='ADD')
 
 	def execute(self, context):
-		context.preferences.addons["Scramble Addon"].preferences.key_config_xml_path = self.filepath
+		context.preferences.addons[__name__.partition('.')[0]].preferences.key_config_xml_path = self.filepath
 		try:
 			tree = ElementTree.parse(self.filepath)
 		except:
@@ -685,7 +685,7 @@ class ImportKeyConfigXml(bpy.types.Operator):
 							continue
 		return {'FINISHED'}
 	def invoke(self, context, event):
-		self.filepath = context.preferences.addons["Scramble Addon"].preferences.key_config_xml_path
+		self.filepath = context.preferences.addons[__name__.partition('.')[0]].preferences.key_config_xml_path
 		context.window_manager.fileselect_add(self)
 		return {'RUNNING_MODAL'}
 
@@ -698,7 +698,7 @@ class ExportKeyConfigXml(bpy.types.Operator):
 	filepath = bpy.props.StringProperty(subtype='FILE_PATH')
 
 	def execute(self, context):
-		context.preferences.addons["Scramble Addon"].preferences.key_config_xml_path = self.filepath
+		context.preferences.addons[__name__.partition('.')[0]].preferences.key_config_xml_path = self.filepath
 		data = ElementTree.Element('BlenderKeyConfig', {'Version':'1.2'})
 		for keyconfig in [context.window_manager.keyconfigs.user]:
 			keyconfig_elem = ElementTree.SubElement(data, 'KeyConfig', {'name':keyconfig.name})
@@ -753,7 +753,7 @@ class ExportKeyConfigXml(bpy.types.Operator):
 		f.close()
 		return {'FINISHED'}
 	def invoke(self, context, event):
-		self.filepath = context.preferences.addons["Scramble Addon"].preferences.key_config_xml_path
+		self.filepath = context.preferences.addons[__name__.partition('.')[0]].preferences.key_config_xml_path
 		context.window_manager.fileselect_add(self)
 		return {'RUNNING_MODAL'}
 
@@ -941,7 +941,7 @@ class ToggleDisabledMenu(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
-		context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu = not context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu
+		context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu = not context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu
 		for area in context.screen.areas:
 			area.tag_redraw()
 		return {'FINISHED'}
@@ -1010,7 +1010,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -1052,5 +1052,5 @@ def menu(self, context):
 		row = self.layout.row(align=True)
 		row.operator(ChangeUserPreferencesTab.bl_idname, icon='TRIA_LEFT', text="").is_left = True
 		row.operator(ChangeUserPreferencesTab.bl_idname, icon='TRIA_RIGHT', text="").is_left = False
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
