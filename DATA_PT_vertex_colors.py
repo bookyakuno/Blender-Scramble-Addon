@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「メッシュデータ」タブ > 「頂点色」パネル
-# "Propaties" Area > "Mesh" Tab > "Vertex Colors" Panel
+# 「プロパティ」エリア > 「オブジェクトデータ」タブ > 「頂点カラー」パネル
+# "Propaties" Area > "Object Data" Tab > "Vertex Colors" Panel
 
 import bpy
 from bpy.props import *
@@ -108,7 +108,7 @@ class VertexColorSet(bpy.types.Operator):
 		me = obj.data
 		active_col = me.vertex_colors.active
 		for data in active_col.data:
-			data.color = self.color[:]
+			data.color = (self.color[0] ,self.color[1], self.color[2], 1.0)
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
@@ -140,7 +140,7 @@ class AddVertexColorSelectedObject(bpy.types.Operator):
 				except KeyError:
 					col = me.vertex_colors.new(self.name)
 				for data in col.data:
-					data.color = self.color
+					data.color = (self.color[0] ,self.color[1], self.color[2], 1.0)
 		return {'FINISHED'}
 
 ################
