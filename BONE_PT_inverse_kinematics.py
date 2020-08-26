@@ -270,7 +270,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -285,5 +285,5 @@ def menu(self, context):
 		row.operator(reset_ik_settings.bl_idname, icon='X', text="")
 		if 2 <= len(context.selected_pose_bones):
 			self.layout.operator(copy_ik_settings.bl_idname, icon='COPY_ID', text="Copy IK Setting")
-	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

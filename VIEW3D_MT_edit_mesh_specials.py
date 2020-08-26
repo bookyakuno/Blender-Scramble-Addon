@@ -203,7 +203,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -220,6 +220,6 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.operator(SelectedVertexGroupAverage.bl_idname, icon="PLUGIN")
 		self.layout.operator(PaintSelectedVertexColor.bl_idname, icon="PLUGIN")
-	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

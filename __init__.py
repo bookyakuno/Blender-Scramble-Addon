@@ -247,7 +247,7 @@ class ToggleMenuEnable(bpy.types.Operator):
 	def execute(self, context):
 		recovery = ""
 		is_on = False
-		for id in context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
+		for id in context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
 			if (id == ""):
 				continue
 			if (id == self.id):
@@ -259,7 +259,7 @@ class ToggleMenuEnable(bpy.types.Operator):
 		if (recovery != ""):
 			if (recovery[-1] == ","):
 				recovery = recovery[:-1]
-		context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu = recovery
+		context.preferences.addons["Scramble Addon"].preferences.disabled_menu = recovery
 		for area in context.screen.areas:
 			area.tag_redraw()
 		return {'FINISHED'}

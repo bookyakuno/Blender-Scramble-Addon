@@ -48,7 +48,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -64,5 +64,5 @@ def menu_prepend(self, context):
 					row.template_ID(context.active_object.data, 'shape_keys')
 					row.operator(SyncShapeKeysName.bl_idname, icon='OBJECT_DATA', text="")
 					row.operator('object.select_shape_top', icon='TRIA_UP_BAR', text="")
-	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

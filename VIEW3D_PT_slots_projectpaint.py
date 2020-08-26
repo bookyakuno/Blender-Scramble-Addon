@@ -49,7 +49,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -64,5 +64,5 @@ def menu(self, context):
 					self.layout.prop(context.object.active_material, 'use_nodes', icon='PLUGIN', text="Impossible, Because nodes used")
 				else:
 					self.layout.operator(ActiveTextureSlotToActivePaintSlot.bl_idname, icon='PLUGIN', text="Active Texture Slot")
-	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
