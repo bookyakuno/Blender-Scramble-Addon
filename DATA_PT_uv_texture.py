@@ -14,8 +14,8 @@ class RenameSpecificNameUV(bpy.types.Operator):
 	bl_description = "Renames selected objects within designated UV together"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	source_name =  bpy.props.StringProperty(name="Rename UV Name", default="Past UV")
-	replace_name =  bpy.props.StringProperty(name="New UV Name", default="New UV")
+	source_name : StringProperty(name="Rename UV Name", default="Past UV")
+	replace_name : StringProperty(name="New UV Name", default="New UV")
 
 	@classmethod
 	def poll(cls, context):
@@ -41,7 +41,7 @@ class DeleteSpecificNameUV(bpy.types.Operator):
 	bl_description = "Removes selection from UV same name as specified"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	name =  bpy.props.StringProperty(name="Remove UV Name", default="UV")
+	name : StringProperty(name="Remove UV Name", default="UV")
 
 	@classmethod
 	def poll(cls, context):
@@ -67,7 +67,7 @@ class RenameUV(bpy.types.Operator):
 	bl_description = "Renames active UV (UV texture also changes accordingly)"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	name =  bpy.props.StringProperty(name="New UV Name", default="UV")
+	name : StringProperty(name="New UV Name", default="UV")
 
 	@classmethod
 	def poll(cls, context):
@@ -126,7 +126,7 @@ class DeleteEmptyUV(bpy.types.Operator):
 	bl_description = "Active object material (UV is used in other parts disappear) delete unused UV coordinates to all"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isAllSelected =  bpy.props.BoolProperty(name="All Selected Mesh", default=False)
+	isAllSelected : BoolProperty(name="All Selected Mesh", default=False)
 
 	def execute(self, context):
 		objs = [context.active_object]

@@ -12,7 +12,7 @@ class quick_child_constraint(bpy.types.Operator):
 	bl_label = "Quick child"
 	bl_description = "Quickly add child constraint"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if 'selected_pose_bones' in dir(context):
@@ -20,7 +20,7 @@ class quick_child_constraint(bpy.types.Operator):
 				if 2 == len(context.selected_pose_bones):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		active_ob = context.active_object
 		active_bone = context.active_pose_bone
@@ -45,7 +45,7 @@ class set_ik_chain_length(bpy.types.Operator):
 	bl_label = "Set length of IK chain"
 	bl_description = "Chose second length of active bone IK chain to length to bones and set the"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if len(context.selected_pose_bones) == 2:
@@ -53,7 +53,7 @@ class set_ik_chain_length(bpy.types.Operator):
 				if const.type == 'IK':
 					return True
 		return False
-	
+
 	def execute(self, context):
 		activeBone = context.active_pose_bone
 		targetBone = None
@@ -87,7 +87,7 @@ class set_ik_pole_target(bpy.types.Operator):
 	bl_label = "Set pole target of IK"
 	bl_description = "Chose second Paul target of active bone IK bones sets"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if len(context.selected_pose_bones) == 2:
@@ -95,7 +95,7 @@ class set_ik_pole_target(bpy.types.Operator):
 				if const.type == 'IK':
 					return True
 		return False
-	
+
 	def execute(self, context):
 		activeObj = context.active_object
 		activeBone = context.active_pose_bone
@@ -113,7 +113,7 @@ class set_ik_pole_angle(bpy.types.Operator):
 	bl_label = "Setting IK Paul angles"
 	bl_description = "Set auto-choice bone IK Paul angles"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -126,7 +126,7 @@ class set_ik_pole_angle(bpy.types.Operator):
 								if const.pole_target:
 									return True
 		return False
-	
+
 	def execute(self, context):
 		ob = context.active_object
 		arm = ob.data
@@ -162,16 +162,16 @@ class set_ik_pole_angle(bpy.types.Operator):
 ################
 
 class SubMenu(bpy.types.Menu):
-	bl_idname = "BONE_PT_constraints_sub"
+	bl_idname = "BONE_MT_constraints_sub"
 	bl_label = "Individual processing"
-	
+
 	def draw(self, context):
 		self.layout.menu(IKMenu.bl_idname, icon='PLUGIN')
 
 class IKMenu(bpy.types.Menu):
-	bl_idname = "BONE_PT_constraints_ik"
+	bl_idname = "BONE_MT_constraints_ik"
 	bl_label = "IK"
-	
+
 	def draw(self, context):
 		self.layout.operator(set_ik_chain_length.bl_idname, icon='PLUGIN')
 		self.layout.operator(set_ik_pole_target.bl_idname, icon='PLUGIN')

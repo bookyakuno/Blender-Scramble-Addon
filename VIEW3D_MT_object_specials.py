@@ -1010,7 +1010,7 @@ class ParentMenu(bpy.types.Menu):
 		self.layout.operator(ParentSetApplyModifiers.bl_idname, icon="PLUGIN", text="Modifiers apply => + vertex (triangle)").type = 'VERTEX_TRI'
 
 class CurveMenu(bpy.types.Menu):
-	bl_idname = "view3d_mt_object_specials_curve"
+	bl_idname = "VIEW3D_MT_object_specials_curve"
 	bl_label = "Curve"
 	bl_description = "Curve Operators"
 

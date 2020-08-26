@@ -148,7 +148,7 @@ class AddVertexColorSelectedObject(bpy.types.Operator):
 ################
 
 class SubMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_vertex_colors_sub_menu"
+	bl_idname = "DATA_MT_vertex_colors_sub_menu"
 	bl_label = "Vertex Color Operation"
 	bl_description = "Vertex color operators menu"
 

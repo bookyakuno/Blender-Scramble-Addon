@@ -15,13 +15,13 @@ class CreateCustomShape(bpy.types.Operator):
 	bl_description = "Creates choice bone shape"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	name =  bpy.props.StringProperty(name="Name", default="CustomShape")
+	name : StringProperty(name="Name", default="CustomShape")
 	items = [
 		('1', "Line", "", 1),
 		('2', "Rhombus", "", 2),
 		]
 	shape : EnumProperty(items=items, name="Shape")
-	isObjectMode =  bpy.props.BoolProperty(name="Enter Object Mode", default=True)
+	isObjectMode : BoolProperty(name="Enter Object Mode", default=True)
 	isHide : BoolProperty(name="Hide Armature", default=True)
 
 	@classmethod
@@ -83,7 +83,7 @@ class CreateWeightCopyMesh(bpy.types.Operator):
 	bl_description = "Creates mesh to use with copy of selected bone weight"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	name =  bpy.props.StringProperty(name="Name of create object", default="Object for weight copy")
+	name : StringProperty(name="Name of create object", default="Object for weight copy")
 	items = [
 		('TAIL', "End", "", 1),
 		('HEAD', "Root", "", 2),

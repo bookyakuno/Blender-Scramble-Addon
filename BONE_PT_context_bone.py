@@ -150,7 +150,7 @@ class AppendActiveBoneName(bpy.types.Operator):
 ################
 
 class AppendNameMenu(bpy.types.Menu):
-	bl_idname = "BONE_PT_context_bone_append_name"
+	bl_idname = "BONE_MT_context_bone_append_name"
 	bl_label = "New Text"
 
 	def draw(self, context):

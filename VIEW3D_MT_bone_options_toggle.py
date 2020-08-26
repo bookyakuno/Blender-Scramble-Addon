@@ -18,7 +18,7 @@ class SetBoneNames(bpy.types.Operator):
 	bl_description = "name of selected bone sets together"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	name =  bpy.props.StringProperty(name="Bone Name", default="Bone")
+	name : StringProperty(name="Bone Name", default="Bone")
 
 	def execute(self, context):
 		context.active_bone.name = "temp"

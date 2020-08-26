@@ -952,7 +952,7 @@ class ToggleDisabledMenu(bpy.types.Operator):
 ################
 
 class InputMenu(bpy.types.Menu):
-	bl_idname = "USERPREF_HT_header_input"
+	bl_idname = "USERPREF_MT_header_input"
 	bl_label = "  ShortcutKeys"
 	bl_description = "Operations related to shortcut menu"
 
@@ -967,7 +967,7 @@ class InputMenu(bpy.types.Menu):
 		self.layout.operator(ExportKeyConfigXml.bl_idname, icon="PLUGIN")
 
 class AddonsMenu(bpy.types.Menu):
-	bl_idname = "USERPREF_HT_header_scramble_addon"
+	bl_idname = "USERPREF_MT_header_scramble_addon"
 	bl_label = "  Scramble Addon"
 	bl_description = "Operations involving scramble Addon menu"
 

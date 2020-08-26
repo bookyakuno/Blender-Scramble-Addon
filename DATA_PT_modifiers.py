@@ -341,7 +341,7 @@ class SetSubsurfOptimalDisplay(bpy.types.Operator):
 	bl_description = "Sets optimization of subsurfmodifaia of selected object"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	mode =  bpy.props.BoolProperty(name="Optimized View")
+	mode : BoolProperty(name="Optimized View")
 
 	# @classmethod
 	# def poll(cls, context):
@@ -405,8 +405,8 @@ class AddSubsurf(bpy.types.Operator):
 	subdivision_type : EnumProperty(items=[("CATMULL_CLARK", "Catmulclark", "", 1), ("SIMPLE", "Simple", "", 2)], name="Subdivision Method")
 	levels : IntProperty(name="Number of View", default=2, min=0, max=6)
 	render_levels : IntProperty(name="Number of Render", default=2, min=0, max=6)
-	use_subsurf_uv =  bpy.props.BoolProperty(name="Subdivide UV", default=True)
-	show_only_control_edges =  bpy.props.BoolProperty(name="Optimized View")
+	use_subsurf_uv : BoolProperty(name="Subdivide UV", default=True)
+	show_only_control_edges : BoolProperty(name="Optimized View")
 
 	@classmethod
 	def poll(cls, context):
@@ -435,7 +435,7 @@ class SetArmatureDeformPreserveVolume(bpy.types.Operator):
 	bl_description = "Armtuamodifaia selected objects keep volume together off and on the"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	use_deform_preserve_volume =  bpy.props.BoolProperty(name="Use Preserve Volume", default=True)
+	use_deform_preserve_volume : BoolProperty(name="Use Preserve Volume", default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -610,7 +610,7 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 ################
 
 class ModifierMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_modifiers_specials"
+	bl_idname = "DATA_MT_modifiers_specials"
 	bl_label = "Modifier Actions"
 	bl_description = "Modifiers"
 
@@ -623,7 +623,7 @@ class ModifierMenu(bpy.types.Menu):
 		self.layout.operator(ApplyModifiersAndJoin.bl_idname, icon='PLUGIN')
 
 class SubsurfMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_modifiers_subsurf"
+	bl_idname = "DATA_MT_modifiers_subsurf"
 	bl_label = "Subsurf"
 	bl_description = "Subsurface Operations"
 
@@ -636,7 +636,7 @@ class SubsurfMenu(bpy.types.Menu):
 		self.layout.operator(SetSubsurfOptimalDisplay.bl_idname, icon='PLUGIN')
 
 class BooleanMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_modifiers_boolean"
+	bl_idname = "DATA_MT_modifiers_boolean"
 	bl_label = "Boolean"
 	bl_description = "Boolean Operations"
 
@@ -650,7 +650,7 @@ class BooleanMenu(bpy.types.Menu):
 		self.layout.operator(ApplyBoolean.bl_idname, icon='PLUGIN', text="Boolean Apply (Difference)").mode = "DIFFERENCE"
 
 class ArmatureMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_modifiers_armature"
+	bl_idname = "DATA_MT_modifiers_armature"
 	bl_label = "Armature"
 	bl_description = "Armatures"
 
@@ -658,7 +658,7 @@ class ArmatureMenu(bpy.types.Menu):
 		self.layout.operator(SetArmatureDeformPreserveVolume.bl_idname, icon='PLUGIN')
 
 class CurveMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_modifiers_curve"
+	bl_idname = "DATA_MT_modifiers_curve"
 	bl_label = "Curve"
 	bl_description = "Curve Operators"
 
