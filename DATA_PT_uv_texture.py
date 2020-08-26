@@ -2,6 +2,7 @@
 # "Propaties" Area > "Mesh" Tab > "UV Maps" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,25 +13,27 @@ class RenameSpecificNameUV(bpy.types.Operator):
 	bl_label = "Altogether Rename UV"
 	bl_description = "Renames selected objects within designated UV together"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	source_name =  bpy.props.StringProperty(name="Rename UV Name", default="Past UV")
-	replace_name =  bpy.props.StringProperty(name="New UV Name", default="New UV")
-	
+
+	source_name : StringProperty(name="Rename UV Name", default="Past UV")
+	replace_name : StringProperty(name="New UV Name", default="New UV")
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) <= 1):
 			return False
 		return True
+
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type != 'MESH'):
 				self.report(type={'WARNING'}, message=obj.name+" mesh object, ignore")
 				continue
 			me = obj.data
-			for uv in me.uv_textures[:]:
+			for uv in me.uv_layers[:]:
 				if (uv.name == self.source_name):
 					uv.name = self.replace_name
 		return {'FINISHED'}
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 
@@ -39,9 +42,9 @@ class DeleteSpecificNameUV(bpy.types.Operator):
 	bl_label = "Delete UVs specify name"
 	bl_description = "Removes selection from UV same name as specified"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	name =  bpy.props.StringProperty(name="Remove UV Name", default="UV")
-	
+
+	name : StringProperty(name="Remove UV Name", default="UV")
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) <= 1):
@@ -53,9 +56,9 @@ class DeleteSpecificNameUV(bpy.types.Operator):
 				self.report(type={'WARNING'}, message=obj.name+" mesh object, ignore")
 				continue
 			me = obj.data
-			for uv in me.uv_textures:
+			for uv in me.uv_layers:
 				if (uv.name == self.name):
-					me.uv_textures.remove(uv)
+					me.uv_layers.remove(uv)
 		return {'FINISHED'}
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
@@ -65,9 +68,9 @@ class RenameUV(bpy.types.Operator):
 	bl_label = "Rename UV"
 	bl_description = "Renames active UV (UV texture also changes accordingly)"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	name =  bpy.props.StringProperty(name="New UV Name", default="UV")
-	
+
+	name : StringProperty(name="New UV Name", default="UV")
+
 	@classmethod
 	def poll(cls, context):
 		obj = context.active_object
@@ -124,9 +127,9 @@ class DeleteEmptyUV(bpy.types.Operator):
 	bl_label = "Remove Unused UV"
 	bl_description = "Active object material (UV is used in other parts disappear) delete unused UV coordinates to all"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isAllSelected =  bpy.props.BoolProperty(name="All Selected Mesh", default=False)
-	
+
+	isAllSelected : BoolProperty(name="All Selected Mesh", default=False)
+
 	def execute(self, context):
 		objs = [context.active_object]
 		if (self.isAllSelected):
@@ -158,13 +161,13 @@ class MoveActiveUV(bpy.types.Operator):
 	bl_label = "Move UV"
 	bl_description = "Sorts, by moving active object\'s UV"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('UP', "To Up", "", 1),
 		('DOWN', "To Down", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Direction", default="UP")
-	
+	mode : EnumProperty(items=items, name="Direction", default="UP")
+
 	@classmethod
 	def poll(cls, context):
 		obj = context.active_object
@@ -191,8 +194,8 @@ class MoveActiveUV(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode='OBJECT')
 		uv_layer = me.uv_layers.active
 		target_uv_layer = me.uv_layers[target_index]
-		uv_tex = me.uv_textures.active
-		target_uv_tex = me.uv_textures[target_index]
+		uv_tex = me.uv_layers.active
+		target_uv_tex = me.uv_layers[target_index]
 		for data_name in dir(uv_tex):
 			if (data_name[0] != '_' and data_name != 'bl_rna' and data_name != 'rna_type' and data_name != 'data'):
 				temp = uv_tex.__getattribute__(data_name)
@@ -214,7 +217,7 @@ class MoveActiveUV(bpy.types.Operator):
 			temp = uv_tex.data[i].image
 			uv_tex.data[i].image = target_uv_tex.data[i].image
 			target_uv_tex.data[i].image = temp
-		me.uv_textures.active_index = target_index
+		me.uv_layers.active_index = target_index
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
@@ -226,7 +229,7 @@ class UVMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_uv"
 	bl_label = "UV Operations"
 	bl_description = "UV Operations"
-	
+
 	def draw(self, context):
 		self.layout.operator(DeleteEmptyUV.bl_idname, icon="PLUGIN")
 		self.layout.separator()
@@ -261,7 +264,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -278,5 +281,5 @@ def menu(self, context):
 				sub.operator(MoveActiveUV.bl_idname, icon='TRIA_DOWN', text="").mode = 'DOWN'
 				row.operator(RenameUV.bl_idname, icon="PLUGIN")
 				row.menu(UVMenu.bl_idname, icon="PLUGIN")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

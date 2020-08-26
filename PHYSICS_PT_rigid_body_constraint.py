@@ -2,6 +2,7 @@
 # "Propaties" Area > "Physics" Tab > "Rigid Body Constraint" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class CopyConstraintSetting(bpy.types.Operator):
 	bl_label = "Copy rigidbody constraints settings"
 	bl_description = "Copies selected objects for other rigid constraints on active object"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	copy_target_objects = bpy.props.BoolProperty(name="Copy Object Targeted", default=False)
-	
+
+	copy_target_objects : BoolProperty(name="Copy Object Targeted", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if 2 <= len(context.selected_objects):
@@ -22,20 +23,20 @@ class CopyConstraintSetting(bpy.types.Operator):
 				if context.active_object.rigid_body_constraint:
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def draw(self, context):
 		self.layout.prop(self, 'copy_target_objects')
-	
+
 	def execute(self, context):
 		active_ob = context.active_object
 		for ob in context.selected_objects:
 			if ob.name == active_ob.name:
 				continue
 			if not ob.rigid_body_constraint:
-				context.scene.objects.active = ob
+				bpy.context.view_layer.objects.active = ob
 				bpy.ops.rigidbody.constraint_add()
 			for val_name in dir(ob.rigid_body_constraint):
 				if not self.copy_target_objects:
@@ -52,7 +53,7 @@ class CopyConstraintSetting(bpy.types.Operator):
 							pass
 					except AttributeError:
 						pass
-		context.scene.objects.active = active_ob
+		bpy.context.view_layer.objects.active = active_ob
 		return {'FINISHED'}
 
 class ClearConstraintLimits(bpy.types.Operator):
@@ -60,27 +61,27 @@ class ClearConstraintLimits(bpy.types.Operator):
 	bl_label = "Reset rigid body constraint limits"
 	bl_description = "Initializes rigid constraints of active object limit settings group"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	mode = bpy.props.StringProperty(name="Mode", default='', options={'SKIP_SAVE', 'HIDDEN'})
-	
-	is_lin_x = bpy.props.BoolProperty(name="X Move", default=True, options={'SKIP_SAVE'})
-	is_lin_y = bpy.props.BoolProperty(name="Y Move", default=True, options={'SKIP_SAVE'})
-	is_lin_z = bpy.props.BoolProperty(name="Z Move", default=True, options={'SKIP_SAVE'})
-	
-	is_ang_x = bpy.props.BoolProperty(name="X Rot", default=True, options={'SKIP_SAVE'})
-	is_ang_y = bpy.props.BoolProperty(name="Y Rot", default=True, options={'SKIP_SAVE'})
-	is_ang_z = bpy.props.BoolProperty(name="Z Rot", default=True, options={'SKIP_SAVE'})
-	
+
+	mode : StringProperty(name="Mode", default='', options={'SKIP_SAVE', 'HIDDEN'})
+
+	is_lin_x : BoolProperty(name="X Move", default=True, options={'SKIP_SAVE'})
+	is_lin_y : BoolProperty(name="Y Move", default=True, options={'SKIP_SAVE'})
+	is_lin_z : BoolProperty(name="Z Move", default=True, options={'SKIP_SAVE'})
+
+	is_ang_x : BoolProperty(name="X Rot", default=True, options={'SKIP_SAVE'})
+	is_ang_y : BoolProperty(name="Y Rot", default=True, options={'SKIP_SAVE'})
+	is_ang_z : BoolProperty(name="Z Rot", default=True, options={'SKIP_SAVE'})
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
 			if context.active_object.rigid_body_constraint:
 				return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def draw(self, context):
 		self.layout.label("Clear Move Limit")
 		row = self.layout.row()
@@ -92,7 +93,7 @@ class ClearConstraintLimits(bpy.types.Operator):
 		row.prop(self, 'is_ang_x', text="X")
 		row.prop(self, 'is_ang_y', text="Y")
 		row.prop(self, 'is_ang_z', text="Z")
-	
+
 	def execute(self, context):
 		rigid_const = context.active_object.rigid_body_constraint
 		if (self.mode != ''):
@@ -113,25 +114,25 @@ class ReverseConstraintLimits(bpy.types.Operator):
 	bl_label = "Invert rigidbody constraints limits"
 	bl_description = "Minimum limit settings of rigid constraints of active object and reverses maximum"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	is_lin_x = bpy.props.BoolProperty(name="X Move", default=False, options={'SKIP_SAVE'})
-	is_lin_y = bpy.props.BoolProperty(name="Y Move", default=False, options={'SKIP_SAVE'})
-	is_lin_z = bpy.props.BoolProperty(name="Z Move", default=False, options={'SKIP_SAVE'})
-	
-	is_ang_x = bpy.props.BoolProperty(name="X Rot", default=False, options={'SKIP_SAVE'})
-	is_ang_y = bpy.props.BoolProperty(name="Y Rot", default=False, options={'SKIP_SAVE'})
-	is_ang_z = bpy.props.BoolProperty(name="Z Rot", default=False, options={'SKIP_SAVE'})
-	
+
+	is_lin_x : BoolProperty(name="X Move", default=False, options={'SKIP_SAVE'})
+	is_lin_y : BoolProperty(name="Y Move", default=False, options={'SKIP_SAVE'})
+	is_lin_z : BoolProperty(name="Z Move", default=False, options={'SKIP_SAVE'})
+
+	is_ang_x : BoolProperty(name="X Rot", default=False, options={'SKIP_SAVE'})
+	is_ang_y : BoolProperty(name="Y Rot", default=False, options={'SKIP_SAVE'})
+	is_ang_z : BoolProperty(name="Z Rot", default=False, options={'SKIP_SAVE'})
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
 			if context.active_object.rigid_body_constraint:
 				return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def draw(self, context):
 		self.layout.label("Invert Move Limit")
 		row = self.layout.row()
@@ -143,7 +144,7 @@ class ReverseConstraintLimits(bpy.types.Operator):
 		row.prop(self, 'is_ang_x', text="X")
 		row.prop(self, 'is_ang_y', text="Y")
 		row.prop(self, 'is_ang_z', text="Z")
-	
+
 	def execute(self, context):
 		rigid_const = context.active_object.rigid_body_constraint
 		for axis in ['x', 'y', 'z']:
@@ -184,7 +185,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -214,5 +215,5 @@ def menu(self, context):
 				row.prop(context.scene.rigidbody_world.point_cache, 'frame_start')
 				row.prop(context.scene.rigidbody_world.point_cache, 'frame_end')
 				row.operator('rigidbody.sync_frames', icon='LINKED', text="")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

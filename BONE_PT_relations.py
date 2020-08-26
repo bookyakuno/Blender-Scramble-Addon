@@ -2,6 +2,7 @@
 # "Propaties" Area > "Bone" Tab > "Relations" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,18 +13,18 @@ class copy_bone_relations_settings(bpy.types.Operator):
 	bl_label = "Copy Relations Settings"
 	bl_description = "Copies of other selected bone affinity of active bone"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	layers = bpy.props.BoolProperty(name="Layer", default=True)
-	
-	parent = bpy.props.BoolProperty(name="Parent", default=True)
-	use_connect = bpy.props.BoolProperty(name="Connection", default=True)
-	use_inherit_rotation = bpy.props.BoolProperty(name="Inherit Rotation", default=True)
-	use_inherit_scale = bpy.props.BoolProperty(name="Inherit Scale", default=True)
-	use_local_location = bpy.props.BoolProperty(name="Local Location", default=True)
-	
-	bone_group = bpy.props.BoolProperty(name="Bone Group", default=True)
-	use_relative_parent = bpy.props.BoolProperty(name="Relative Parenting", default=True)
-	
+
+	layers : BoolProperty(name="Layer", default=True)
+
+	parent : BoolProperty(name="Parent", default=True)
+	use_connect : BoolProperty(name="Connection", default=True)
+	use_inherit_rotation : BoolProperty(name="Inherit Rotation", default=True)
+	use_inherit_scale : BoolProperty(name="Inherit Scale", default=True)
+	use_local_location : BoolProperty(name="Local Location", default=True)
+
+	bone_group : BoolProperty(name="Bone Group", default=True)
+	use_relative_parent : BoolProperty(name="Relative Parenting", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -38,10 +39,10 @@ class copy_bone_relations_settings(bpy.types.Operator):
 						if 2 <= len(context.selected_bones):
 							return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def draw(self, context):
 		row = self.layout.row()
 		col = row.column()
@@ -54,7 +55,7 @@ class copy_bone_relations_settings(bpy.types.Operator):
 		col.prop(self, 'use_inherit_rotation')
 		col.prop(self, 'use_inherit_scale')
 		col.prop(self, 'use_local_location')
-	
+
 	def execute(self, context):
 		bone_names = []
 		if 'selected_pose_bones' in dir(context):
@@ -119,7 +120,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -139,5 +140,5 @@ def menu(self, context):
 					flag = True
 		if flag:
 			self.layout.operator(copy_bone_relations_settings.bl_idname, icon='COPY_ID')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

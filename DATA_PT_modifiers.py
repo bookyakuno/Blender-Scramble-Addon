@@ -2,6 +2,7 @@
 # "Propaties" Area > "Modifiers" Tab
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -84,7 +85,7 @@ class SyncShowModifiers(bpy.types.Operator):
 		("1", "Rendering => View", "", 1),
 		("0", "View => Rendering", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Calculate", default="0")
+	mode : EnumProperty(items=items, name="Calculate", default="0")
 
 	@classmethod
 	def poll(cls, context):
@@ -145,9 +146,9 @@ class ApplyModifiersAndJoin(bpy.types.Operator):
 	bl_description = "integration from object\'s modifiers to apply all"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	unapply_subsurf = bpy.props.BoolProperty(name="Except Subsurf", default=True)
-	unapply_armature = bpy.props.BoolProperty(name="Except Armature", default=True)
-	unapply_mirror = bpy.props.BoolProperty(name="Except Mirror", default=False)
+	unapply_subsurf : BoolProperty(name="Except Subsurf", default=True)
+	unapply_armature : BoolProperty(name="Except Armature", default=True)
+	unapply_mirror : BoolProperty(name="Except Mirror", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -158,7 +159,7 @@ class ApplyModifiersAndJoin(bpy.types.Operator):
 	def execute(self, context):
 		pre_active_object = context.active_object
 		for obj in context.selected_objects:
-			context.scene.objects.active = obj
+			bpy.context.view_layer.objects.active = obj
 			for mod in obj.modifiers[:]:
 				if self.unapply_subsurf and mod.type == 'SUBSURF':
 					continue
@@ -167,7 +168,7 @@ class ApplyModifiersAndJoin(bpy.types.Operator):
 				if self.unapply_mirror and mod.type == 'MIRROR':
 					continue
 				bpy.ops.object.modifier_apply(apply_as='DATA', modifier=mod.name)
-		context.scene.objects.active = pre_active_object
+		bpy.context.view_layer.objects.active = pre_active_object
 		bpy.ops.object.join()
 		return {'FINISHED'}
 
@@ -224,7 +225,7 @@ class AddBoolean(bpy.types.Operator):
 		('UNION', "Union", "", 2),
 		('DIFFERENCE', "Difference", "", 3),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Calculate")
+	mode : EnumProperty(items=items, name="Calculate")
 
 	@classmethod
 	def poll(cls, context):
@@ -239,7 +240,7 @@ class AddBoolean(bpy.types.Operator):
 				modi = activeObj.modifiers.new("Boolean", 'BOOLEAN')
 				modi.object = obj
 				modi.operation = self.mode
-				obj.draw_type = 'BOUNDS'
+				obj.display_type = 'BOUNDS'
 		return {'FINISHED'}
 
 class ApplyBoolean(bpy.types.Operator):
@@ -253,7 +254,7 @@ class ApplyBoolean(bpy.types.Operator):
 		('UNION', "Union", "", 2),
 		('DIFFERENCE', "Difference", "", 3),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Calculate")
+	mode : EnumProperty(items=items, name="Calculate")
 
 	@classmethod
 	def poll(cls, context):
@@ -270,9 +271,9 @@ class ApplyBoolean(bpy.types.Operator):
 				modi.operation = self.mode
 				bpy.ops.object.modifier_apply (modifier=modi.name)
 				bpy.ops.object.select_all(action='DESELECT')
-				obj.select = True
+				obj.select_set(True)
 				bpy.ops.object.delete()
-				activeObj.select = True
+				activeObj.select_set(True)
 		return {'FINISHED'}
 
 ############################
@@ -285,7 +286,7 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 	bl_description = "Sets number of subdivisions during rendering of selected object subsurfmodifaia"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	level = bpy.props.IntProperty(name="Number of Divisions", default=2, min=0, max=6)
+	level : IntProperty(name="Number of Divisions", default=2, min=0, max=6)
 
 	@classmethod
 	def poll(cls, context):
@@ -313,7 +314,7 @@ class EqualizeSubsurfLevel(bpy.types.Operator):
 		('ToRender', "Preview => Rendering", "", 1),
 		('ToPreview', "Rendering => Preview", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="How to set up")
+	mode : EnumProperty(items=items, name="How to set up")
 
 	@classmethod
 	def poll(cls, context):
@@ -340,7 +341,7 @@ class SetSubsurfOptimalDisplay(bpy.types.Operator):
 	bl_description = "Sets optimization of subsurfmodifaia of selected object"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	mode =  bpy.props.BoolProperty(name="Optimized View")
+	mode : BoolProperty(name="Optimized View")
 
 	# @classmethod
 	# def poll(cls, context):
@@ -401,11 +402,11 @@ class AddSubsurf(bpy.types.Operator):
 	bl_description = "Add subsurfmodifaia to selected object"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	subdivision_type = bpy.props.EnumProperty(items=[("CATMULL_CLARK", "Catmulclark", "", 1), ("SIMPLE", "Simple", "", 2)], name="Subdivision Method")
-	levels = bpy.props.IntProperty(name="Number of View", default=2, min=0, max=6)
-	render_levels = bpy.props.IntProperty(name="Number of Render", default=2, min=0, max=6)
-	use_subsurf_uv =  bpy.props.BoolProperty(name="Subdivide UV", default=True)
-	show_only_control_edges =  bpy.props.BoolProperty(name="Optimized View")
+	subdivision_type : EnumProperty(items=[("CATMULL_CLARK", "Catmulclark", "", 1), ("SIMPLE", "Simple", "", 2)], name="Subdivision Method")
+	levels : IntProperty(name="Number of View", default=2, min=0, max=6)
+	render_levels : IntProperty(name="Number of Render", default=2, min=0, max=6)
+	use_subsurf_uv : BoolProperty(name="Subdivide UV", default=True)
+	show_only_control_edges : BoolProperty(name="Optimized View")
 
 	@classmethod
 	def poll(cls, context):
@@ -434,7 +435,7 @@ class SetArmatureDeformPreserveVolume(bpy.types.Operator):
 	bl_description = "Armtuamodifaia selected objects keep volume together off and on the"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	use_deform_preserve_volume =  bpy.props.BoolProperty(name="Use Preserve Volume", default=True)
+	use_deform_preserve_volume : BoolProperty(name="Use Preserve Volume", default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -469,8 +470,8 @@ class QuickCurveDeform(bpy.types.Operator):
 		('NEG_Y', "-Y", "", 5),
 		('NEG_Z', "-Z", "", 6),
 		]
-	deform_axis = bpy.props.EnumProperty(items=items, name="Axis Deformation")
-	is_apply = bpy.props.BoolProperty(name="Apply Modifiers", default=False)
+	deform_axis : EnumProperty(items=items, name="Axis Deformation")
+	is_apply : BoolProperty(name="Apply Modifiers", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -532,9 +533,9 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 		('NEG_Y', "-Y", "", 5),
 		('NEG_Z', "-Z", "", 6),
 		]
-	deform_axis = bpy.props.EnumProperty(items=items, name="Axis Deformation")
-	use_merge_vertices = bpy.props.BoolProperty(name="Combine Vertices", default=True)
-	is_apply = bpy.props.BoolProperty(name="Apply Modifiers", default=False)
+	deform_axis : EnumProperty(items=items, name="Axis Deformation")
+	use_merge_vertices : BoolProperty(name="Combine Vertices", default=True)
+	is_apply : BoolProperty(name="Apply Modifiers", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -609,7 +610,7 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 ################
 
 class ModifierMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_modifiers_specials"
+	bl_idname = "DATA_MT_modifiers_specials"
 	bl_label = "Modifier Actions"
 	bl_description = "Modifiers"
 
@@ -622,7 +623,7 @@ class ModifierMenu(bpy.types.Menu):
 		self.layout.operator(ApplyModifiersAndJoin.bl_idname, icon='PLUGIN')
 
 class SubsurfMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_modifiers_subsurf"
+	bl_idname = "DATA_MT_modifiers_subsurf"
 	bl_label = "Subsurf"
 	bl_description = "Subsurface Operations"
 
@@ -635,7 +636,7 @@ class SubsurfMenu(bpy.types.Menu):
 		self.layout.operator(SetSubsurfOptimalDisplay.bl_idname, icon='PLUGIN')
 
 class BooleanMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_modifiers_boolean"
+	bl_idname = "DATA_MT_modifiers_boolean"
 	bl_label = "Boolean"
 	bl_description = "Boolean Operations"
 
@@ -649,7 +650,7 @@ class BooleanMenu(bpy.types.Menu):
 		self.layout.operator(ApplyBoolean.bl_idname, icon='PLUGIN', text="Boolean Apply (Difference)").mode = "DIFFERENCE"
 
 class ArmatureMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_modifiers_armature"
+	bl_idname = "DATA_MT_modifiers_armature"
 	bl_label = "Armature"
 	bl_description = "Armatures"
 
@@ -657,7 +658,7 @@ class ArmatureMenu(bpy.types.Menu):
 		self.layout.operator(SetArmatureDeformPreserveVolume.bl_idname, icon='PLUGIN')
 
 class CurveMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_modifiers_curve"
+	bl_idname = "DATA_MT_modifiers_curve"
 	bl_label = "Curve"
 	bl_description = "Curve Operators"
 
@@ -709,7 +710,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons['Scramble Addon'].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -730,5 +731,5 @@ def menu(self, context):
 				row.operator(ToggleAllShowExpanded.bl_idname, icon='FULLSCREEN_ENTER', text="Expand/Close")
 				row.operator(SyncShowModifiers.bl_idname, icon='LINKED', text="Use Sync")
 		self.layout.menu(ModifierMenu.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons['Scramble Addon'].preferences.use_disabled_menu):
+	if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

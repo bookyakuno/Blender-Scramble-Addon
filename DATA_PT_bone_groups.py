@@ -2,6 +2,7 @@
 # "Propaties" Area > "Armature" Tab > "Bone Groups" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class BoneGroupOnlyShow(bpy.types.Operator):
 	bl_label = "Show only bone in this bones group"
 	bl_description = "Group active on bones and bones of other hide"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	reverse = bpy.props.BoolProperty(name="Invert", default=False)
-	
+
+	reverse : BoolProperty(name="Invert", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (context.active_object):
@@ -22,7 +23,7 @@ class BoneGroupOnlyShow(bpy.types.Operator):
 				if (len(context.active_object.pose.bone_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -54,9 +55,9 @@ class BoneGroupShow(bpy.types.Operator):
 	bl_label = "Show bone in bone group"
 	bl_description = "Active bone group show or hide"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	reverse = bpy.props.BoolProperty(name="Invert", default=False)
-	
+
+	reverse : BoolProperty(name="Invert", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (context.active_object):
@@ -64,7 +65,7 @@ class BoneGroupShow(bpy.types.Operator):
 				if (len(context.active_object.pose.bone_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -104,7 +105,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -120,5 +121,5 @@ def menu(self, context):
 		sub = row.row(align=True)
 		sub.operator(BoneGroupOnlyShow.bl_idname, icon='RESTRICT_VIEW_OFF', text="Only Show").reverse = False
 		sub.operator(BoneGroupOnlyShow.bl_idname, icon='RESTRICT_VIEW_ON', text="Only Hide").reverse = True
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

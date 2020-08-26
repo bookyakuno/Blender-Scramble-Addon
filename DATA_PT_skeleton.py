@@ -2,6 +2,7 @@
 # "Propaties" Area > "Armature" Tab > "Skeleton" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,18 +13,18 @@ class ShowAllBoneLayers(bpy.types.Operator):
 	bl_label = "View all bone layer"
 	bl_description = "All bone layer and then displays the"
 	bl_options = {'REGISTER'}
-	
+
 	layers = [False] * 32
 	layers[0] = True
-	pre_layers = bpy.props.BoolVectorProperty(name="Last Layer Information", size=32, default=layers[:])
-	
+	pre_layers : BoolVectorProperty(name="Last Layer Information", size=32, default=layers[:])
+
 	@classmethod
 	def poll(cls, context):
 		if (context.object):
 			if (context.object.type == 'ARMATURE'):
 				return True
 		return False
-	
+
 	def execute(self, context):
 		if (all(context.object.data.layers)):
 			context.object.data.layers = self.pre_layers[:]
@@ -58,7 +59,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -70,5 +71,5 @@ def menu(self, context):
 		row = self.layout.row(align=True)
 		row.operator('pose.toggle_pose_position', icon='POSE_HLT', text="Enable/Disable Pose")
 		row.operator(ShowAllBoneLayers.bl_idname, icon='RESTRICT_VIEW_OFF', text="Show All Layers")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

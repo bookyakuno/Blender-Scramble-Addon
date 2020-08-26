@@ -2,6 +2,7 @@
 # "3D View" Area > "Object" Mode > "Object" Menu > "Show/Hide" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class hide_view_clear_unselect(bpy.types.Operator):
 	bl_label = "Show Hidden (non-select)"
 	bl_description = "Does not display objects were hidden again, select"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		pre_selectable_objects = []
 		for ob in context.selectable_objects:
@@ -20,7 +21,7 @@ class hide_view_clear_unselect(bpy.types.Operator):
 		bpy.ops.object.hide_view_clear()
 		for ob in context.selectable_objects:
 			if ob.name not in pre_selectable_objects:
-				ob.select = False
+				ob.select_set(False)
 		return {'FINISHED'}
 
 class InvertHide(bpy.types.Operator):
@@ -28,7 +29,7 @@ class InvertHide(bpy.types.Operator):
 	bl_label = "Invert Show/Hide"
 	bl_description = "Flips object\'s view state and non-State"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		objs = []
 		for obj in bpy.data.objects:
@@ -40,7 +41,7 @@ class InvertHide(bpy.types.Operator):
 					else:
 						objs.append(obj)
 		for obj in objs:
-			obj.hide = not obj.hide
+			obj.hide_set(not obj.hide_get)
 		return {'FINISHED'}
 
 class HideOnlyType(bpy.types.Operator):
@@ -48,7 +49,7 @@ class HideOnlyType(bpy.types.Operator):
 	bl_label = "Hide only type of objects"
 	bl_description = "Hides object of specific type are displayed"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		("MESH", "Mesh", "", 1),
 		("CURVE", "Curve", "", 2),
@@ -62,12 +63,12 @@ class HideOnlyType(bpy.types.Operator):
 		("LAMP", "Lamp", "", 10),
 		("SPEAKER", "Speaker", "", 11),
 		]
-	type = bpy.props.EnumProperty(items=items, name="Hide Object Type")
-	
+	type : EnumProperty(items=items, name="Hide Object Type")
+
 	def execute(self, context):
 		for obj in context.selectable_objects:
 			if (obj.type == self.type):
-				obj.hide = True
+				obj.hide_set(True)
 		return {'FINISHED'}
 
 class HideExceptType(bpy.types.Operator):
@@ -75,7 +76,7 @@ class HideExceptType(bpy.types.Operator):
 	bl_label = "Hide except type of objects"
 	bl_description = "Hides object non-specific type that is displayed"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		("MESH", "Mesh", "", 1),
 		("CURVE", "Curve", "", 2),
@@ -89,12 +90,12 @@ class HideExceptType(bpy.types.Operator):
 		("LAMP", "Lamp", "", 10),
 		("SPEAKER", "Speaker", "", 11),
 		]
-	type = bpy.props.EnumProperty(items=items, name="Extract Object Type")
-	
+	type : EnumProperty(items=items, name="Extract Object Type")
+
 	def execute(self, context):
 		for obj in context.selectable_objects:
 			if (obj.type != self.type):
-				obj.hide = True
+				obj.hide_set(True)
 		return {'FINISHED'}
 
 ################
@@ -123,7 +124,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -138,6 +139,6 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.operator(HideOnlyType.bl_idname, icon='PLUGIN')
 		self.layout.operator(HideExceptType.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

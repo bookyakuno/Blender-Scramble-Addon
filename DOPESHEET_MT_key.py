@@ -2,6 +2,7 @@
 # "Dope Sheet" Area > "Key" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class DeleteUnmessage(bpy.types.Operator):
 	bl_label = "Delete KeyFrames (Non-Confirm)"
 	bl_description = "Delete without checking all selected keyframes"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		bpy.ops.action.delete()
 		return {'FINISHED'}
@@ -22,10 +23,10 @@ class CreanEX(bpy.types.Operator):
 	bl_label = "Cleaning up all keyframes"
 	bl_description = "Remove keyframe duplicates for all actions"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	keep_fcurves = bpy.props.BoolProperty(name="Except One Key", default=False)
-	threshold = bpy.props.FloatProperty(name="Threshold", default=0.00001, min=0, max=1, soft_min=0, soft_max=1, step=0.001, precision=5)
-	
+
+	keep_fcurves : BoolProperty(name="Except One Key", default=False)
+	threshold : FloatProperty(name="Threshold", default=0.00001, min=0, max=1, soft_min=0, soft_max=1, step=0.001, precision=5)
+
 	def execute(self, context):
 		threshold = self.threshold
 		for action in bpy.data.actions[:]:
@@ -84,7 +85,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -97,6 +98,6 @@ def menu(self, context):
 		self.layout.operator(DeleteUnmessage.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.operator(CreanEX.bl_idname, icon="PLUGIN")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

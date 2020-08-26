@@ -2,6 +2,7 @@
 # "Propaties" Area > "Object" Tab > ShapeKeys List Right ▼
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class CopyShape(bpy.types.Operator):
 	bl_label = "Duplicate Shape Key"
 	bl_description = "Duplicate active shape key"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -21,7 +22,7 @@ class CopyShape(bpy.types.Operator):
 				if (ob.active_shape_key):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type == "MESH"):
@@ -46,7 +47,7 @@ class InsertKeyframeAllShapes(bpy.types.Operator):
 	bl_label = "Insert keyframes to all shapes"
 	bl_description = "Inserts keyframe for all shapes on current frame"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -55,7 +56,7 @@ class InsertKeyframeAllShapes(bpy.types.Operator):
 				if (ob.active_shape_key):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		for shape in context.active_object.data.shape_keys.key_blocks:
 			shape.keyframe_insert(data_path="value")
@@ -68,7 +69,7 @@ class SelectShapeTop(bpy.types.Operator):
 	bl_label = "Select Top"
 	bl_description = "Select top shape key"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -78,7 +79,7 @@ class SelectShapeTop(bpy.types.Operator):
 					if (2 <= len(ob.data.shape_keys.key_blocks)):
 						return True
 		return False
-	
+
 	def execute(self, context):
 		context.active_object.active_shape_key_index = 0
 		return {'FINISHED'}
@@ -88,7 +89,7 @@ class SelectShapeBottom(bpy.types.Operator):
 	bl_label = "Select Bottom"
 	bl_description = "Select bottom shape key"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -98,7 +99,7 @@ class SelectShapeBottom(bpy.types.Operator):
 					if (2 <= len(ob.data.shape_keys.key_blocks)):
 						return True
 		return False
-	
+
 	def execute(self, context):
 		context.active_object.active_shape_key_index = len(context.active_object.data.shape_keys.key_blocks) - 1
 		return {'FINISHED'}
@@ -108,7 +109,7 @@ class ShapeKeyApplyRemoveAll(bpy.types.Operator):
 	bl_label = "Remove all shapes and hold current configuration"
 	bl_description = "Remove all shape key while maintaining shape of current mesh"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -118,7 +119,7 @@ class ShapeKeyApplyRemoveAll(bpy.types.Operator):
 					if (2 <= len(ob.data.shape_keys.key_blocks)):
 						return True
 		return False
-	
+
 	def execute(self, context):
 		bpy.ops.object.shape_key_add(from_mix=True)
 		bpy.ops.object.shape_key_move(type='DOWN')
@@ -132,9 +133,9 @@ class AddLinkDriverShapeKeys(bpy.types.Operator):
 	bl_label = "Link shape keys same name by driver"
 	bl_description = "Behavior of selection of other shape key drivers link active object"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	add_shape_key = bpy.props.BoolProperty(name="Add Missing Shapes", default=True)
-	
+
+	add_shape_key : BoolProperty(name="Add Missing Shapes", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -148,13 +149,13 @@ class AddLinkDriverShapeKeys(bpy.types.Operator):
 							if obj.data.shape_keys:
 								return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def draw(self, context):
 		self.layout.prop(self, 'add_shape_key')
-	
+
 	def execute(self, context):
 		active_ob = context.active_object
 		active_key = active_ob.data.shape_keys
@@ -182,13 +183,13 @@ class mute_all_shape_keys(bpy.types.Operator):
 	bl_label = "Disable/Enable All Shapes"
 	bl_description = "All shape key to disable or enable the"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('ENABLE', "Enabled", "", 1),
 		('DISABLE', "Disabled", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Mode")
-	
+	mode : EnumProperty(items=items, name="Mode")
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -198,7 +199,7 @@ class mute_all_shape_keys(bpy.types.Operator):
 					if len(ob.data.shape_keys.key_blocks):
 						return True
 		return False
-	
+
 	def execute(self, context):
 		ob = context.active_object
 		for key in ob.data.shape_keys.key_blocks:
@@ -237,7 +238,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -258,6 +259,6 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.operator(InsertKeyframeAllShapes.bl_idname, icon='PLUGIN')
 		self.layout.operator(AddLinkDriverShapeKeys.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

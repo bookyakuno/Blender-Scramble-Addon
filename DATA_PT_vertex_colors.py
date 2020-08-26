@@ -2,6 +2,7 @@
 # "Propaties" Area > "Mesh" Tab > "Vertex Colors" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,13 +13,13 @@ class MoveActiveVertexColor(bpy.types.Operator):
 	bl_label = "Move Vertex Color"
 	bl_description = "Move vertex color of active objects, sorts"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('UP', "To Up", "", 1),
 		('DOWN', "To Down", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Direction", default="UP")
-	
+	mode : EnumProperty(items=items, name="Direction", default="UP")
+
 	@classmethod
 	def poll(cls, context):
 		obj = context.active_object
@@ -27,7 +28,7 @@ class MoveActiveVertexColor(bpy.types.Operator):
 				if (2 <= len(obj.data.vertex_colors)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		if (not obj):
@@ -73,9 +74,9 @@ class VertexColorSet(bpy.types.Operator):
 	bl_label = "Fill Vertex Color"
 	bl_description = "Vertex color of active object with specified color fills"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	color = bpy.props.FloatVectorProperty(name="Vertex Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=3, precision=10, subtype='COLOR_GAMMA')
-	
+
+	color : FloatVectorProperty(name="Vertex Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=3, precision=10, subtype='COLOR_GAMMA')
+
 	@classmethod
 	def poll(cls, context):
 		obj = context.active_object
@@ -84,7 +85,7 @@ class VertexColorSet(bpy.types.Operator):
 				if (obj.data.vertex_colors.active):
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		obj = context.active_object
 		if (not obj):
@@ -99,7 +100,7 @@ class VertexColorSet(bpy.types.Operator):
 			self.report(type={'ERROR'}, message="Vertex color not exist")
 			return {'CANCELLED'}
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		pre_mode = obj.mode
@@ -116,20 +117,20 @@ class AddVertexColorSelectedObject(bpy.types.Operator):
 	bl_label = "Altogether add vertex colors"
 	bl_description = "Specify color and name all selected mesh object, adds vertex color"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	name = bpy.props.StringProperty(name="Vertex Color Name", default="Col")
-	color = bpy.props.FloatVectorProperty(name="Vertex Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
-	
+
+	name : StringProperty(name="Vertex Color Name", default="Col")
+	color : FloatVectorProperty(name="Vertex Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
 			if (obj.type == 'MESH'):
 				return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type == "MESH"):
@@ -147,10 +148,10 @@ class AddVertexColorSelectedObject(bpy.types.Operator):
 ################
 
 class SubMenu(bpy.types.Menu):
-	bl_idname = "DATA_PT_vertex_colors_sub_menu"
+	bl_idname = "DATA_MT_vertex_colors_sub_menu"
 	bl_label = "Vertex Color Operation"
 	bl_description = "Vertex color operators menu"
-	
+
 	def draw(self, context):
 		self.layout.operator(AddVertexColorSelectedObject.bl_idname, icon='PLUGIN')
 
@@ -180,7 +181,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -197,5 +198,5 @@ def menu(self, context):
 				sub.operator(MoveActiveVertexColor.bl_idname, icon='TRIA_DOWN', text="").mode = 'DOWN'
 				row.operator(VertexColorSet.bl_idname, icon='BRUSH_DATA', text="Paint Out")
 		row.menu(SubMenu.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

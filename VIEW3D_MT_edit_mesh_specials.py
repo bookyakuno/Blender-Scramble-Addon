@@ -2,6 +2,7 @@
 # "3D View" Area > "Mesh Editor" Mode > "W" Key
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class PaintSelectedVertexColor(bpy.types.Operator):
 	bl_label = "Paint out selected vertex color"
 	bl_description = "Active vertex colors for selected vertices with specified color fills"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	color = bpy.props.FloatVectorProperty(name="Color", default=(1, 1, 1), step=1, precision=3, subtype='COLOR_GAMMA', min=0, max=1, soft_min=0, soft_max=1)
-	
+
+	color : FloatVectorProperty(name="Color", default=(1, 1, 1), step=1, precision=3, subtype='COLOR_GAMMA', min=0, max=1, soft_min=0, soft_max=1)
+
 	def execute(self, context):
 		activeObj = context.active_object
 		me = activeObj.data
@@ -33,7 +34,7 @@ class SelectTopShape(bpy.types.Operator):
 	bl_label = "Select shape at top"
 	bl_description = "Schipke is at top of list, select"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		context.active_object.active_shape_key_index = 0
 		return {'FINISHED'}
@@ -43,7 +44,7 @@ class ToggleShowCage(bpy.types.Operator):
 	bl_label = "Transition modifiers apply to editing cage"
 	bl_description = "Toggles whether to apply modifiers to total en bloc spondylectomy in editing"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		activeObj = context.active_object
 		nowMode = 0
@@ -78,18 +79,18 @@ class ToggleMirrorModifier(bpy.types.Operator):
 	bl_label = "Toggle Mirror Modifiers"
 	bl_description = "Delete if not Miller modifier added, Yes"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	use_x = bpy.props.BoolProperty(name="X Axis", default=True)
-	use_y = bpy.props.BoolProperty(name="Y Axis", default=False)
-	use_z = bpy.props.BoolProperty(name="Z Axis", default=False)
-	use_mirror_merge = bpy.props.BoolProperty(name="Combine", default=True)
-	use_clip = bpy.props.BoolProperty(name="Clipping", default=False)
-	use_mirror_vertex_groups = bpy.props.BoolProperty(name="Vertex Group Mirror", default=False)
-	use_mirror_u = bpy.props.BoolProperty(name="Texture U Mirror", default=False)
-	use_mirror_v = bpy.props.BoolProperty(name="Texture V Mirror", default=False)
-	merge_threshold = bpy.props.FloatProperty(name="Combine Distance", default=0.001, min=0, max=1, soft_min=0, soft_max=1, step=0.01, precision=6)
-	is_top = bpy.props.BoolProperty(name="Add Top", default=True)
-	
+
+	use_x : BoolProperty(name="X Axis", default=True)
+	use_y : BoolProperty(name="Y Axis", default=False)
+	use_z : BoolProperty(name="Z Axis", default=False)
+	use_mirror_merge : BoolProperty(name="Combine", default=True)
+	use_clip : BoolProperty(name="Clipping", default=False)
+	use_mirror_vertex_groups : BoolProperty(name="Vertex Group Mirror", default=False)
+	use_mirror_u : BoolProperty(name="Texture U Mirror", default=False)
+	use_mirror_v : BoolProperty(name="Texture V Mirror", default=False)
+	merge_threshold : FloatProperty(name="Combine Distance", default=0.001, min=0, max=1, soft_min=0, soft_max=1, step=0.01, precision=6)
+	is_top : BoolProperty(name="Add Top", default=True)
+
 	def execute(self, context):
 		activeObj = context.active_object
 		is_mirrored = False
@@ -129,9 +130,9 @@ class SelectedVertexGroupAverage(bpy.types.Operator):
 	bl_label = "Fill selected vertices average weight"
 	bl_description = "Fills selected vertex, vertices weighted average"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	strength = bpy.props.FloatProperty(name="Mix Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
-	
+
+	strength : FloatProperty(name="Mix Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 	def execute(self, context):
@@ -203,7 +204,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -220,6 +221,6 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.operator(SelectedVertexGroupAverage.bl_idname, icon="PLUGIN")
 		self.layout.operator(PaintSelectedVertexColor.bl_idname, icon="PLUGIN")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

@@ -2,6 +2,7 @@
 # "Propaties" Area > "Object" Tab > "Display" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,28 +13,28 @@ class CopyDisplaySetting(bpy.types.Operator):
 	bl_label = "Copy Display Setting"
 	bl_description = "Copy selected objects of other display settings"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	copy_show_name = bpy.props.BoolProperty(name="Name", default=True)
-	copy_show_axis = bpy.props.BoolProperty(name="Axis", default=True)
-	copy_show_wire = bpy.props.BoolProperty(name="Wire Frame", default=True)
-	copy_show_all_edges = bpy.props.BoolProperty(name="Show All Edges", default=True)
-	copy_show_bounds = bpy.props.BoolProperty(name="Bound", default=True)
-	copy_draw_bounds_type = bpy.props.BoolProperty(name="Bound Type", default=True)
-	copy_show_texture_space = bpy.props.BoolProperty(name="Texture Space", default=True)
-	copy_show_x_ray = bpy.props.BoolProperty(name="X-ray", default=True)
-	copy_show_transparent = bpy.props.BoolProperty(name="Alpha", default=True)
-	copy_draw_type = bpy.props.BoolProperty(name="Maximum Draw Type", default=True)
-	copy_color = bpy.props.BoolProperty(name="Object Color", default=True)
-	
+
+	copy_show_name : BoolProperty(name="Name", default=True)
+	copy_show_axis : BoolProperty(name="Axis", default=True)
+	copy_show_wire : BoolProperty(name="Wire Frame", default=True)
+	copy_show_all_edges : BoolProperty(name="Show All Edges", default=True)
+	copy_show_bounds : BoolProperty(name="Bound", default=True)
+	copy_draw_bounds_type : BoolProperty(name="Bound Type", default=True)
+	copy_show_texture_space : BoolProperty(name="Texture Space", default=True)
+	copy_show_x_ray : BoolProperty(name="X-ray", default=True)
+	copy_show_transparent : BoolProperty(name="Alpha", default=True)
+	copy_display_type : BoolProperty(name="Maximum Draw Type", default=True)
+	copy_color : BoolProperty(name="Object Color", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) <= 1):
 			return False
 		return True
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def draw(self, context):
 		row = self.layout.row()
 		row.prop(self, 'copy_show_name')
@@ -51,9 +52,9 @@ class CopyDisplaySetting(bpy.types.Operator):
 		row.prop(self, 'copy_show_all_edges')
 		row.prop(self, 'copy_show_transparent')
 		row = self.layout.row()
-		row.prop(self, 'copy_draw_type')
+		row.prop(self, 'copy_display_type')
 		row.prop(self, 'copy_color')
-	
+
 	def execute(self, context):
 		active_obj = context.active_object
 		for obj in context.selected_objects:
@@ -76,8 +77,8 @@ class CopyDisplaySetting(bpy.types.Operator):
 					obj.show_x_ray = active_obj.show_x_ray
 				if (self.copy_show_transparent):
 					obj.show_transparent = active_obj.show_transparent
-				if (self.copy_draw_type):
-					obj.draw_type = active_obj.draw_type
+				if (self.copy_display_type):
+					obj.display_type = active_obj.display_type
 				if (self.copy_color):
 					obj.color = active_obj.color[:]
 		return {'FINISHED'}
@@ -105,7 +106,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -117,13 +118,13 @@ def menu(self, context):
 		row = self.layout.row()
 		sub = row.row(align=True)
 		op = sub.operator('wm.context_set_string', icon='MESH_CUBE', text="")
-		op.data_path, op.value = 'active_object.draw_type', 'BOUNDS'
+		op.data_path, op.value = 'active_object.display_type', 'BOUNDS'
 		op = sub.operator('wm.context_set_string', icon='WIRE', text="")
-		op.data_path, op.value = 'active_object.draw_type', 'WIRE'
+		op.data_path, op.value = 'active_object.display_type', 'WIRE'
 		op = sub.operator('wm.context_set_string', icon='SOLID', text="")
-		op.data_path, op.value = 'active_object.draw_type', 'SOLID'
+		op.data_path, op.value = 'active_object.display_type', 'SOLID'
 		op = sub.operator('wm.context_set_string', icon='TEXTURE_SHADED', text="")
-		op.data_path, op.value = 'active_object.draw_type', 'TEXTURED'
+		op.data_path, op.value = 'active_object.display_type', 'TEXTURED'
 		row.operator(CopyDisplaySetting.bl_idname, icon='MESH_UVSPHERE')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

@@ -3,6 +3,7 @@
 
 import bpy, mathutils
 import re
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -13,7 +14,7 @@ class CreateMirror(bpy.types.Operator):
 	bl_label = "Select Bones Mirroring"
 	bl_description = "Mirrored at any axes selected bone"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type == "ARMATURE"):
@@ -21,11 +22,11 @@ class CreateMirror(bpy.types.Operator):
 				preCursorCo = context.space_data.cursor_location[:]
 				prePivotPoint = context.space_data.pivot_point
 				preUseMirror = context.object.data.use_mirror_x
-				
+
 				context.space_data.cursor_location = (0, 0, 0)
 				context.space_data.pivot_point = 'CURSOR'
 				context.object.data.use_mirror_x = True
-				
+
 				selectedBones = context.selected_bones[:]
 				bpy.ops.armature.autoside_names(type='XAXIS')
 				bpy.ops.armature.duplicate()
@@ -50,7 +51,7 @@ class CreateMirror(bpy.types.Operator):
 					bone.select = True
 					bone.select_head = True
 					bone.select_tail = True
-				
+
 				context.space_data.cursor_location = preCursorCo[:]
 				context.space_data.pivot_point = prePivotPoint
 				context.object.data.use_mirror_x = preUseMirror
@@ -65,9 +66,9 @@ class CopyBoneName(bpy.types.Operator):
 	bl_label = "Bone name to Clipboard"
 	bl_description = "Copies Clipboard name of active bone"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isObject = bpy.props.BoolProperty(name="And Object Name", default=False)
-	
+
+	isObject : BoolProperty(name="And Object Name", default=False)
+
 	def execute(self, context):
 		if (self.isObject):
 			context.window_manager.clipboard = context.active_object.name + ":" + context.active_bone.name
@@ -80,11 +81,11 @@ class RenameBoneRegularExpression(bpy.types.Operator):
 	bl_label = "Replace bone names by regular expression"
 	bl_description = "In bone name (of choice) to match regular expression replace"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isAll = bpy.props.BoolProperty(name="Include Non-select", default=False)
-	pattern = bpy.props.StringProperty(name="Before replace (regular expressions)", default="^")
-	repl = bpy.props.StringProperty(name="After", default="@")
-	
+
+	isAll : BoolProperty(name="Include Non-select", default=False)
+	pattern : StringProperty(name="Before replace (regular expressions)", default="^")
+	repl : StringProperty(name="After", default="@")
+
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type == "ARMATURE"):
@@ -109,9 +110,9 @@ class RenameOppositeBone(bpy.types.Operator):
 	bl_label = "Rename bone symmetry position"
 	bl_description = "Bone is located opposite X axis selection in bone \"1.R longs 1.L \' of so versus the"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	threshold = bpy.props.FloatProperty(name="Position of Threshold", default=0.00001, min=0, soft_min=0, step=0.001, precision=5)
-	
+
+	threshold : FloatProperty(name="Position of Threshold", default=0.00001, min=0, soft_min=0, step=0.001, precision=5)
+
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type == "ARMATURE"):
@@ -152,11 +153,11 @@ class extend_bone(bpy.types.Operator):
 	bl_label = "Extend Bone"
 	bl_description = "Stretch new bone in direction of selected bone"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	length = bpy.props.FloatProperty(name="Length", default=0.1, min=-10, max=10, soft_min=-10, soft_max=10, step=10, precision=3)
-	is_parent = bpy.props.BoolProperty(name="Source Parent", default=True)
-	is_connect = bpy.props.BoolProperty(name="Connection", default=True)
-	
+
+	length : FloatProperty(name="Length", default=0.1, min=-10, max=10, soft_min=-10, soft_max=10, step=10, precision=3)
+	is_parent : BoolProperty(name="Source Parent", default=True)
+	is_connect : BoolProperty(name="Connection", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -167,7 +168,7 @@ class extend_bone(bpy.types.Operator):
 						if 1 <= len(context.selected_bones):
 							return True
 		return False
-	
+
 	def execute(self, context):
 		ob = context.active_object
 		arm = ob.data
@@ -221,7 +222,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -239,6 +240,6 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.operator(CopyBoneName.bl_idname, icon='PLUGIN')
 		self.layout.operator(RenameBoneRegularExpression.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

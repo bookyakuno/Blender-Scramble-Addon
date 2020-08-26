@@ -3,6 +3,7 @@
 
 import bpy
 import sys, subprocess
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -13,9 +14,9 @@ class SetRenderResolutionPercentage(bpy.types.Operator):
 	bl_label = "Set multi of resolution"
 	bl_description = "Set to be rendered settings resolution percentage?"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	size = bpy.props.IntProperty(name="Render Size (%)", default=100, min=1, max=1000, soft_min=1, soft_max=1000, step=1)
-	
+
+	size : IntProperty(name="Render Size (%)", default=100, min=1, max=1000, soft_min=1, soft_max=1000, step=1)
+
 	def execute(self, context):
 		context.scene.render.resolution_percentage = self.size
 		return {'FINISHED'}
@@ -25,9 +26,9 @@ class SetRenderSlot(bpy.types.Operator):
 	bl_label = "Set Render Slot"
 	bl_description = "Sets slot to save rendering results"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	slot = bpy.props.IntProperty(name="Slot", default=1, min=0, max=100, soft_min=0, soft_max=100, step=1)
-	
+
+	slot : IntProperty(name="Slot", default=1, min=0, max=100, soft_min=0, soft_max=100, step=1)
+
 	def execute(self, context):
 		for img in bpy.data.images:
 			if (img.type == 'RENDER_RESULT'):
@@ -39,9 +40,9 @@ class ToggleThreadsMode(bpy.types.Operator):
 	bl_label = "Switch Use Threads"
 	bl_description = "Toggles thread number of CPUS used to render"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	threads = bpy.props.IntProperty(name="Number of Threads", default=1, min=1, max=16, soft_min=1, soft_max=16, step=1)
-	
+
+	threads : IntProperty(name="Number of Threads", default=1, min=1, max=16, soft_min=1, soft_max=16, step=1)
+
 	def execute(self, context):
 		if (context.scene.render.threads_mode == 'AUTO'):
 			context.scene.render.threads_mode = 'FIXED'
@@ -61,14 +62,14 @@ class SetAllSubsurfRenderLevels(bpy.types.Operator):
 	bl_label = "Set Subsurf levels during rendering"
 	bl_description = "Together sets granularity of Subsurf applied during rendering"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('ABSOLUTE', "Absolute Value", "", 1),
 		('RELATIVE', "Relative Value", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Setting Mode")
-	levels = bpy.props.IntProperty(name="Level of Subsurf", default=2, min=-20, max=20, soft_min=-20, soft_max=20, step=1)
-	
+	mode : EnumProperty(items=items, name="Setting Mode")
+	levels : IntProperty(name="Level of Subsurf", default=2, min=-20, max=20, soft_min=-20, soft_max=20, step=1)
+
 	def execute(self, context):
 		for obj in bpy.data.objects:
 			if (obj.type != 'MESH' and obj.type != 'CURVE'):
@@ -91,9 +92,9 @@ class SyncAllSubsurfRenderLevels(bpy.types.Operator):
 	bl_label = "Sync preview value when rendering Subsurf levels"
 	bl_description = "Granularity of Subsurf apply when rendering entire object sets level in preview"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	level_offset = bpy.props.IntProperty(name="Subdivision-level Offset", default=0, min=-20, max=20, soft_min=-20, soft_max=20, step=1)
-	
+
+	level_offset : IntProperty(name="Subdivision-level Offset", default=0, min=-20, max=20, soft_min=-20, soft_max=20, step=1)
+
 	def execute(self, context):
 		for obj in bpy.data.objects:
 			if (obj.type != 'MESH'):
@@ -115,7 +116,7 @@ class RenderResolutionPercentageMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_resolution_percentage"
 	bl_label = "Render Size (%)"
 	bl_description = "Set to be rendered settings resolution percentage?"
-	
+
 	def draw(self, context):
 		x = bpy.context.scene.render.resolution_x
 		y = bpy.context.scene.render.resolution_y
@@ -139,7 +140,7 @@ class SimplifyRenderMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_simplify"
 	bl_label = "Simplification of Render"
 	bl_description = "Simplify Rendering Settings"
-	
+
 	def draw(self, context):
 		self.layout.prop(context.scene.render, "use_simplify", icon="PLUGIN")
 		self.layout.separator()
@@ -153,7 +154,7 @@ class SlotsRenderMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_slots"
 	bl_label = "Render Slots"
 	bl_description = "Change slot to save rendering results"
-	
+
 	def draw(self, context):
 		for i in range(len(bpy.data.images["Render Result"].render_slots)):
 			self.layout.operator(SetRenderSlot.bl_idname, text="Slot"+str(i+1)).slot = i
@@ -162,7 +163,7 @@ class ShadeingMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_shadeing"
 	bl_label = "Used Shading"
 	bl_description = "Oon/Off shading"
-	
+
 	def draw(self, context):
 		self.layout.prop(context.scene.render, 'use_textures', icon="PLUGIN")
 		self.layout.prop(context.scene.render, 'use_shadows', icon="PLUGIN")
@@ -174,7 +175,7 @@ class SubsurfMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_subsurf"
 	bl_label = "All Subsurf Levels"
 	bl_description = "Setting Subsurf subdivision level of all objects at once"
-	
+
 	def draw(self, context):
 		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivision + 1", icon="PLUGIN")
 		operator.mode = 'RELATIVE'
@@ -230,7 +231,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -270,6 +271,6 @@ def menu(self, context):
 		self.layout.prop(context.scene.world.light_settings, 'samples', text="AO Samples", icon="PLUGIN")
 		self.layout.separator()
 		self.layout.menu(SimplifyRenderMenu.bl_idname, icon="PLUGIN")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

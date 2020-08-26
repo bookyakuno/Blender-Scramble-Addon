@@ -2,6 +2,7 @@
 # "Propaties" Area > "Armature" Tab > "Pose Library" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class MoveActivePose(bpy.types.Operator):
 	bl_label = "Pose Library Sort"
 	bl_description = "Sorts by posing for an active pose library"
 	bl_options = {'REGISTER'}
-	
-	is_up = bpy.props.BoolProperty(name="To Up", default=False)
-	
+
+	is_up : BoolProperty(name="To Up", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -24,7 +25,7 @@ class MoveActivePose(bpy.types.Operator):
 		if (len(context.object.pose_library.pose_markers) < 2):
 			return False
 		return True
-	
+
 	def execute(self, context):
 		pose_markers = context.object.pose_library.pose_markers
 		source = pose_markers.active
@@ -53,9 +54,9 @@ class MoveActivePoseMost(bpy.types.Operator):
 	bl_label = "To top/bottom pose of library"
 	bl_description = "Active pose of pose library moves to top/bottom"
 	bl_options = {'REGISTER'}
-	
-	is_top = bpy.props.BoolProperty(name="To Top", default=False)
-	
+
+	is_top : BoolProperty(name="To Top", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -65,7 +66,7 @@ class MoveActivePoseMost(bpy.types.Operator):
 		if (len(context.object.pose_library.pose_markers) < 2):
 			return False
 		return True
-	
+
 	def execute(self, context):
 		pose_markers = context.object.pose_library.pose_markers
 		if (not self.is_top):
@@ -100,7 +101,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -117,5 +118,5 @@ def menu(self, context):
 					row.operator(MoveActivePose.bl_idname, icon='TRIA_DOWN', text="").is_up = False
 					row.operator(MoveActivePoseMost.bl_idname, icon='TRIA_UP_BAR', text="To Top").is_top = True
 					row.operator(MoveActivePoseMost.bl_idname, icon='TRIA_DOWN_BAR', text="To Bottom").is_top = False
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

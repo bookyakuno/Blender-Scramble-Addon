@@ -2,6 +2,7 @@
 # "Node Editor" Area > "Node" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,10 +13,10 @@ class CopyAllMaterialNode(bpy.types.Operator):
 	bl_label = "Copy to other material shader node"
 	bl_description = "Copies of other material shader nodes are displayed"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isOnlySelected = bpy.props.BoolProperty(name="Selected Object Only", default=False)
-	isOnlyUseNode = bpy.props.BoolProperty(name="Only Used Nodes", default=False)
-	
+
+	isOnlySelected : BoolProperty(name="Selected Object Only", default=False)
+	isOnlyUseNode : BoolProperty(name="Only Used Nodes", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -67,10 +68,10 @@ class CopyAllMaterialNode(bpy.types.Operator):
 						node.material = mat
 				except AttributeError: pass
 		bpy.ops.object.delete()
-		activeObj.select = True
-		context.scene.objects.active = activeObj
+		activeObj.select_set(True)
+		bpy.context.view_layer.objects.active = activeObj
 		return {'FINISHED'}
-	
+
 	def invoke(self, context, event):
 		if (context.space_data.tree_type != 'ShaderNodeTree'):
 			self.report(type={"ERROR"}, message="Please run shader nodes")
@@ -101,7 +102,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -112,6 +113,6 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
 		self.layout.operator(CopyAllMaterialNode.bl_idname, icon="PLUGIN")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

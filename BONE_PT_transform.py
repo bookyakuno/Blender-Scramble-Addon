@@ -2,6 +2,7 @@
 # "Propaties" Area > "Bone" Tab > "Transform" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,18 +13,18 @@ class CopyBoneTransform(bpy.types.Operator):
 	bl_label = "Copy Bone Transform"
 	bl_description = "Copy selected bones of other active bone deformation information"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	copy_location = bpy.props.BoolProperty(name="Location", default=True)
-	copy_rotation = bpy.props.BoolProperty(name="Rotation", default=True)
-	copy_scale = bpy.props.BoolProperty(name="Scale", default=True)
-	
+
+	copy_location : BoolProperty(name="Location", default=True)
+	copy_rotation : BoolProperty(name="Rotation", default=True)
+	copy_scale : BoolProperty(name="Scale", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (context.selected_pose_bones):
 			if (2 <= len(context.selected_pose_bones)):
 				return True
 		return False
-	
+
 	def execute(self, context):
 		active_bone = context.active_pose_bone
 		for bone in context.selected_pose_bones:
@@ -65,7 +66,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -81,5 +82,5 @@ def menu(self, context):
 		op.copy_location, op.copy_rotation, op.copy_scale = False, True, False
 		op = row.operator(CopyBoneTransform.bl_idname, icon='MAN_SCALE', text="Copy Scale")
 		op.copy_location, op.copy_rotation, op.copy_scale = False, False, True
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

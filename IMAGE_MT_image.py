@@ -3,6 +3,7 @@
 
 import bpy
 import os, numpy, urllib, math
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -13,9 +14,9 @@ class RenameImageFileName(bpy.types.Operator):
 	bl_label = "Image name from file name"
 	bl_description = "External images are using name of active image file name"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isExt = bpy.props.BoolProperty(name="Include Extension", default=True)
-	
+
+	isExt : BoolProperty(name="Include Extension", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.edit_image):
@@ -41,9 +42,9 @@ class AllRenameImageFileName(bpy.types.Operator):
 	bl_label = "Change all image names to used file name"
 	bl_description = "names of all images using external image file name"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isExt = bpy.props.BoolProperty(name="Include Extension", default=True)
-	
+
+	isExt : BoolProperty(name="Include Extension", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (len(bpy.data.images) <= 0):
@@ -67,7 +68,7 @@ class ReloadAllImage(bpy.types.Operator):
 	bl_label = "Reload All Images"
 	bl_description = "Reloads all image data referring to external file"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (len(bpy.data.images) <= 0):
@@ -93,9 +94,9 @@ class FillOverrideColor(bpy.types.Operator):
 	bl_label = "Override Color"
 	bl_description = "All over colors you specify active image"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	color = bpy.props.FloatVectorProperty(name="Color", description="Fill Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
-	
+
+	color : FloatVectorProperty(name="Color", description="Fill Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -103,11 +104,11 @@ class FillOverrideColor(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		wm = context.window_manager
 		return wm.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		pixel = list(self.color[:3])
@@ -124,9 +125,9 @@ class FillColor(bpy.types.Operator):
 	bl_label = "Fill With Color"
 	bl_description = "Fill with color image active all"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	color = bpy.props.FloatVectorProperty(name="Color", description="Fill Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
-	
+
+	color : FloatVectorProperty(name="Color", description="Fill Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -134,10 +135,10 @@ class FillColor(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		color = self.color[:3]
@@ -159,9 +160,9 @@ class FillTransparency(bpy.types.Operator):
 	bl_label = "Fill Transparent"
 	bl_description = "transparent parts of image are active in specified color fills"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	color = bpy.props.FloatVectorProperty(name="Fill Color", default=(1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
-	
+
+	color : FloatVectorProperty(name="Fill Color", default=(1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.edit_image):
@@ -199,7 +200,7 @@ class Normalize(bpy.types.Operator):
 	bl_label = "Normalize Image"
 	bl_description = "Normalize Active Image"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -207,7 +208,7 @@ class Normalize(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
@@ -232,9 +233,9 @@ class RenameImageFile(bpy.types.Operator):
 	bl_label = "Change name of image file"
 	bl_description = "Change file name of active image"
 	bl_options = {'REGISTER'}
-	
-	new_name = bpy.props.StringProperty(name="New File Name")
-	
+
+	new_name : StringProperty(name="New File Name")
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.edit_image):
@@ -266,9 +267,9 @@ class BlurImage(bpy.types.Operator):
 	bl_label = "Blur image (Note heavy)"
 	bl_description = "Blur Active Image"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	strength = bpy.props.IntProperty(name="Blur Strength", default=10, min=1, max=100, soft_min=1, soft_max=100)
-	
+
+	strength : IntProperty(name="Blur Strength", default=10, min=1, max=100, soft_min=1, soft_max=100)
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -276,10 +277,10 @@ class BlurImage(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		if (not img):
@@ -328,7 +329,7 @@ class ReverseWidthImage(bpy.types.Operator):
 	bl_label = "Flip Horizontally"
 	bl_description = "Reverse this image horizontally"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -336,7 +337,7 @@ class ReverseWidthImage(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		if (not img):
@@ -358,7 +359,7 @@ class ReverseHeightImage(bpy.types.Operator):
 	bl_label = "Flip Vertically"
 	bl_description = "Reverse this image verticaliy"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -366,7 +367,7 @@ class ReverseHeightImage(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		if (not img):
@@ -386,7 +387,7 @@ class Rotate90Image(bpy.types.Operator):
 	bl_label = "Rotate 90 Degrees"
 	bl_description = "Rotate active image 90 degrees"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -394,7 +395,7 @@ class Rotate90Image(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
@@ -414,7 +415,7 @@ class Rotate180Image(bpy.types.Operator):
 	bl_label = "Rotate 180 Degrees"
 	bl_description = "Rotate active image 180 degrees"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -422,7 +423,7 @@ class Rotate180Image(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		if (not img):
@@ -443,7 +444,7 @@ class Rotate270Image(bpy.types.Operator):
 	bl_label = "Rotate 270 Degrees"
 	bl_description = "Rotate active image 270 degrees"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -451,7 +452,7 @@ class Rotate270Image(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
@@ -471,9 +472,9 @@ class ExternalEditEX(bpy.types.Operator):
 	bl_label = "Edit by external editor (Advance)"
 	bl_description = "Open image in an external editor of additional files page of custom"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	index = bpy.props.IntProperty(name="Number of Use", default=1, min=1, max=3, soft_min=1, soft_max=3)
-	
+
+	index : IntProperty(name="Number of Use", default=1, min=1, max=3, soft_min=1, soft_max=3)
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.edit_image):
@@ -481,7 +482,7 @@ class ExternalEditEX(bpy.types.Operator):
 		if (context.edit_image.filepath == ""):
 			return False
 		return True
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		if (not img):
@@ -493,11 +494,11 @@ class ExternalEditEX(bpy.types.Operator):
 		path = bpy.path.abspath(img.filepath)
 		pre_path = context.preferences.filepaths.image_editor
 		if (self.index == 1):
-			context.preferences.filepaths.image_editor = context.preferences.addons['Scramble Addon'].preferences.image_editor_path_1
+			context.preferences.filepaths.image_editor = bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1
 		elif (self.index == 2):
-			context.preferences.filepaths.image_editor = context.preferences.addons['Scramble Addon'].preferences.image_editor_path_2
+			context.preferences.filepaths.image_editor = bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2
 		elif (self.index == 3):
-			context.preferences.filepaths.image_editor = context.preferences.addons['Scramble Addon'].preferences.image_editor_path_3
+			context.preferences.filepaths.image_editor = bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3
 		bpy.ops.image.external_edit(filepath=path)
 		context.preferences.filepaths.image_editor = pre_path
 		return {'FINISHED'}
@@ -507,7 +508,7 @@ class Resize(bpy.types.Operator):
 	bl_label = "Resize Image"
 	bl_description = "Resize Active Image"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def width_update(self, context):
 		if (self.keep_ratio):
 			img = bpy.context.edit_image
@@ -522,11 +523,11 @@ class Resize(bpy.types.Operator):
 			ratio = w / h
 			self.width = round(self.height * ratio)
 		return None
-	
-	width = bpy.props.IntProperty(name="Width", default=0, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL', update=width_update)
-	height = bpy.props.IntProperty(name="Height", default=0, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL', update=height_update)
-	keep_ratio = bpy.props.BoolProperty(name="Keep Ratio", default=True)
-	
+
+	width : IntProperty(name="Width", default=0, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL', update=width_update)
+	height : IntProperty(name="Height", default=0, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL', update=height_update)
+	keep_ratio : BoolProperty(name="Keep Ratio", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -534,7 +535,7 @@ class Resize(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		img = context.edit_image
 		self.width, self.height = img.size[0], img.size[1]
@@ -552,7 +553,7 @@ class Duplicate(bpy.types.Operator):
 	bl_label = "Copy Image"
 	bl_description = "Duplicate Active Image"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -560,7 +561,7 @@ class Duplicate(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		src = context.edit_image
 		new = bpy.data.images.new(
@@ -600,7 +601,7 @@ class NewUVChecker(bpy.types.Operator):
 	bl_label = "New UV Grid"
 	bl_description = "UV grid to download from WEB, and create new images"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('UVCheckerMap01-1024.png', "01 (1024x1024)", "", 1),
 		('UVCheckerMap02-1024.png', "02 (1024x1024)", "", 2),
@@ -637,12 +638,12 @@ class NewUVChecker(bpy.types.Operator):
 		('UVCheckerMap16-512.png', "16 (512x512)", "", 33),
 		('UVCheckerMap17-512.png', "17 (512x512)", "", 34),
 		]
-	image_name = bpy.props.EnumProperty(items=items, name="Image File")
-	name = bpy.props.StringProperty(name="Name", default="UVCheckerMap")
-	
+	image_name : EnumProperty(items=items, name="Image File")
+	name : StringProperty(name="Name", default="UVCheckerMap")
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		base_url = "https://raw.githubusercontent.com/Arahnoid/UVChecker-map/master/UVCheckerMaps/"
 		temp_path = os.path.join(bpy.app.tempdir, self.name)
@@ -666,9 +667,9 @@ class Tiles(bpy.types.Operator):
 	bl_label = "Tile Image"
 	bl_description = "Array and scale-down active image"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	count = bpy.props.IntProperty(name="Number of Tile", default=2, min=2, max=8, soft_min=2, soft_max=8)
-	
+
+	count : IntProperty(name="Number of Tile", default=2, min=2, max=8, soft_min=2, soft_max=8)
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -676,10 +677,10 @@ class Tiles(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
@@ -710,10 +711,10 @@ class ResizeBlur(bpy.types.Operator):
 	bl_label = "Blur Image Fast"
 	bl_description = "active image blur fast do"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	size = bpy.props.FloatProperty(name="Strength", default=50, min=1, max=99, soft_min=1, soft_max=99, step=0, precision=0, subtype='PERCENTAGE')
-	count = bpy.props.IntProperty(name="Count", default=10, min=1, max=100, soft_min=1, soft_max=100)
-	
+
+	size : FloatProperty(name="Strength", default=50, min=1, max=99, soft_min=1, soft_max=99, step=0, precision=0, subtype='PERCENTAGE')
+	count : IntProperty(name="Count", default=10, min=1, max=100, soft_min=1, soft_max=100)
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -721,10 +722,10 @@ class ResizeBlur(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		img_w, img_h = img.size[0], img.size[1]
@@ -743,18 +744,18 @@ class NewNoise(bpy.types.Operator):
 	bl_label = "Create new noise image"
 	bl_description = "Add new noise image"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	monochrome = bpy.props.BoolProperty(name="Decolor Noise", default=False)
-	alpha_noise = bpy.props.BoolProperty(name="Alpha Noise", default=False)
-	name = bpy.props.StringProperty(name="Name", default="Noise")
-	width = bpy.props.IntProperty(name="Width", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
-	height = bpy.props.IntProperty(name="Height", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
-	alpha = bpy.props.BoolProperty(name="Alpha", default=True)
-	float_buffer = bpy.props.BoolProperty(name="32-bit Float", default=False)
-	
+
+	monochrome : BoolProperty(name="Decolor Noise", default=False)
+	alpha_noise : BoolProperty(name="Alpha Noise", default=False)
+	name : StringProperty(name="Name", default="Noise")
+	width : IntProperty(name="Width", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
+	height : IntProperty(name="Height", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
+	alpha : BoolProperty(name="Alpha", default=True)
+	float_buffer : BoolProperty(name="32-bit Float", default=False)
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		img = bpy.data.images.new(self.name, self.width, self.height, self.alpha, self.float_buffer)
 		width, height, channel = img.size[0], img.size[1], img.channels
@@ -783,7 +784,7 @@ class Decolorization(bpy.types.Operator):
 	bl_label = "Decolorize"
 	bl_description = "This decolor active image"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -791,7 +792,7 @@ class Decolorization(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
@@ -811,23 +812,23 @@ class Clipping(bpy.types.Operator):
 	bl_label = "Change size of image"
 	bl_description = "Change size active image"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	width = bpy.props.IntProperty(name="Width", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
-	height = bpy.props.IntProperty(name="Height", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
+
+	width : IntProperty(name="Width", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
+	height : IntProperty(name="Height", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
 	items = [
 		('LEFT', "Left", "", 1),
 		('CENTER', "Center", "", 2),
 		('RIGHT', "Right", "", 3),
 		]
-	width_align = bpy.props.EnumProperty(items=items, name="Horizontal Position")
+	width_align : EnumProperty(items=items, name="Horizontal Position")
 	items = [
 		('UP', "Up", "", 1),
 		('CENTER', "Center", "", 2),
 		('DOWN', "Down", "", 3),
 		]
-	height_align = bpy.props.EnumProperty(items=items, name="Vertical Position")
-	fill_color = bpy.props.FloatVectorProperty(name="Fill Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=3, precision=2, subtype='COLOR_GAMMA', size=4)
-	
+	height_align : EnumProperty(items=items, name="Vertical Position")
+	fill_color : FloatVectorProperty(name="Fill Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=3, precision=2, subtype='COLOR_GAMMA', size=4)
+
 	@classmethod
 	def poll(cls, context):
 		if 'edit_image' in dir(context):
@@ -835,12 +836,12 @@ class Clipping(bpy.types.Operator):
 				if len(context.edit_image.pixels):
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		img = context.edit_image
 		self.width, self.height = img.size[0], img.size[1]
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		img = context.edit_image
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
@@ -902,7 +903,7 @@ class TransformMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_transform"
 	bl_label = "Transform"
 	bl_description = "Image Transform Menu"
-	
+
 	def draw(self, context):
 		self.layout.operator(ReverseWidthImage.bl_idname, icon='PLUGIN')
 		self.layout.operator(ReverseHeightImage.bl_idname, icon='PLUGIN')
@@ -914,25 +915,25 @@ class TransformMenu(bpy.types.Menu):
 class ExternalEditEXMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_external_edit_ex"
 	bl_label = "External Editor (Extra)"
-	
+
 	def draw(self, context):
-		if (context.preferences.addons['Scramble Addon'].preferences.image_editor_path_1):
-			path = os.path.basename(context.preferences.addons['Scramble Addon'].preferences.image_editor_path_1)
+		if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1):
+			path = os.path.basename(bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEditEX.bl_idname, icon='PLUGIN', text=name).index = 1
-		if (context.preferences.addons['Scramble Addon'].preferences.image_editor_path_2):
-			path = os.path.basename(context.preferences.addons['Scramble Addon'].preferences.image_editor_path_2)
+		if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2):
+			path = os.path.basename(bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEditEX.bl_idname, icon='PLUGIN', text=name).index = 2
-		if (context.preferences.addons['Scramble Addon'].preferences.image_editor_path_3):
-			path = os.path.basename(context.preferences.addons['Scramble Addon'].preferences.image_editor_path_3)
+		if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3):
+			path = os.path.basename(bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEditEX.bl_idname, icon='PLUGIN', text=name).index = 3
 
 class FillMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_fill"
 	bl_label = "Paint"
-	
+
 	def draw(self, context):
 		self.layout.operator(FillOverrideColor.bl_idname, icon='PLUGIN', text="Override")
 		self.layout.operator(FillColor.bl_idname, icon='PLUGIN', text="Paint Out")
@@ -941,7 +942,7 @@ class FillMenu(bpy.types.Menu):
 class NewMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_new"
 	bl_label = "New Images (Extra)"
-	
+
 	def draw(self, context):
 		self.layout.operator(NewUVChecker.bl_idname, icon='PLUGIN', text="UV Grid")
 		self.layout.operator(NewNoise.bl_idname, icon='PLUGIN', text="Noise")
@@ -949,7 +950,7 @@ class NewMenu(bpy.types.Menu):
 class ColorMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_color"
 	bl_label = "Color"
-	
+
 	def draw(self, context):
 		self.layout.operator(Normalize.bl_idname, icon='PLUGIN', text="Normalize")
 		self.layout.operator(Decolorization.bl_idname, icon='PLUGIN', text="Decolorization")
@@ -957,7 +958,7 @@ class ColorMenu(bpy.types.Menu):
 class EditMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_edit"
 	bl_label = "Edit"
-	
+
 	def draw(self, context):
 		self.layout.operator(Duplicate.bl_idname, icon='PLUGIN', text="Copy")
 		self.layout.operator(Clipping.bl_idname, icon='PLUGIN', text="Change Size")
@@ -967,7 +968,7 @@ class EditMenu(bpy.types.Menu):
 class FilterMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_filter"
 	bl_label = "Filter"
-	
+
 	def draw(self, context):
 		self.layout.operator(ResizeBlur.bl_idname, icon='PLUGIN', text="Blur (high Speed)")
 		self.layout.operator(BlurImage.bl_idname, icon='PLUGIN', text="Blur (slow)")
@@ -1024,7 +1025,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons['Scramble Addon'].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -1048,6 +1049,6 @@ def menu(self, context):
 		self.layout.operator(AllRenameImageFileName.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.operator(ReloadAllImage.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons['Scramble Addon'].preferences.use_disabled_menu):
+	if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

@@ -30,12 +30,12 @@ def Operation(context,_operation):
           
             #   if modifier_ob.type !='MESH' and modifier_ob.type !="CURVE":
           #      mirror_ob = modifier_ob # set to mirror_ob , hope the other one is a mesh
-           #     mirror_ob.select = False
+           #     mirror_ob.select_set(False)
             #    modifier_ob = bpy.context.selected_objects[0]
             else:
                 #mirror_ob
                 mirror_ob = bpy.context.active_object         # last ob selected
-                mirror_ob.select = False # pop modifier_ob from sel_stack
+                mirror_ob.select_set(False) # pop modifier_ob from sel_stack
                 print("popped")
                 
                 #modifier_ob
@@ -72,7 +72,7 @@ def Operation(context,_operation):
                 #selection at the end -add back the deselected mirror modifier object
             mirror_ob.select= 1
             modifier_ob.select=1
-            bpy.context.scene.objects.active = modifier_ob
+            bpy.bpy.context.view_layer.objects.active = modifier_ob
             print("Selected" + str(modifier_ob)) # modifier ob is the active ob
                 #mirror_ob.select = 0
             #one = bpy.context.selected_objects[0]

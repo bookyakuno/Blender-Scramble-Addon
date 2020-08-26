@@ -3,6 +3,7 @@
 
 import bpy, mathutils
 import re
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -13,12 +14,12 @@ class SelectBoundBoxSize(bpy.types.Operator):
 	bl_label = "Compare size and select objects"
 	bl_description = "Select maximum objects larger or smaller objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('LARGE', "Select Big", "", 1),
 		('SMALL', "Select Small", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Select Mode")
+	mode : EnumProperty(items=items, name="Select Mode")
 	items = [
 		('MESH', "Mesh", "", 1),
 		('CURVE', "Curve", "", 2),
@@ -29,15 +30,15 @@ class SelectBoundBoxSize(bpy.types.Operator):
 		('LATTICE', "Lattice", "", 7),
 		('ALL', "All", "", 8),
 		]
-	select_type = bpy.props.EnumProperty(items=items, name="Select Type", default='MESH')
-	threshold = bpy.props.FloatProperty(name="Selection Range", default=50, min=0, max=100, soft_min=0, soft_max=100, step=100, precision=1, subtype='PERCENTAGE')
-	
+	select_type : EnumProperty(items=items, name="Select Type", default='MESH')
+	threshold : FloatProperty(name="Selection Range", default=50, min=0, max=100, soft_min=0, soft_max=100, step=100, precision=1, subtype='PERCENTAGE')
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selectable_objects:
 			return True
 		return False
-	
+
 	def execute(self, context):
 		context.scene.update()
 		max_volume = -1
@@ -67,12 +68,12 @@ class SelectBoundBoxSize(bpy.types.Operator):
 		for obj, volume in objs:
 			if (self.mode == 'LARGE'):
 				if (threshold_volume <= volume):
-					obj.select = True
+					obj.select_set(True)
 			elif (self.mode == 'SMALL'):
 				if (volume <= threshold_volume):
-					obj.select = True
+					obj.select_set(True)
 		if (min_obj and self.mode == 'SMALL'):
-			min_obj.select = True
+			min_obj.select_set(True)
 		return {'FINISHED'}
 
 class UnselectUnactiveObjects(bpy.types.Operator):
@@ -80,17 +81,17 @@ class UnselectUnactiveObjects(bpy.types.Operator):
 	bl_label = "Non-active to Non-select"
 	bl_description = "Uncheck everything except for active object"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
 			return True
 		return False
-	
+
 	def execute(self, context):
-		for ob in bpy.data.objects:
-			ob.select = False
-		context.active_object.select = True
+		for ob in bpy.context.selected_objects:
+			ob.select_set(False)
+		context.active_object.select_set(True)
 		return {'FINISHED'}
 
 ############################
@@ -102,20 +103,20 @@ class SelectGroupedName(bpy.types.Operator):
 	bl_label = "Select object same name"
 	bl_description = "Select visible object of active object with same name, such as (X.001 X X.002)"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
 			return True
 		return False
-	
+
 	def execute(self, context):
 		name_base = context.active_object.name
 		if (re.search(r'\.\d+$', name_base)):
 			name_base = re.search(r'^(.*)\.\d+$', name_base).groups()[0]
 		for obj in context.selectable_objects:
 			if (re.search('^'+name_base+r'\.\d+$', obj.name) or name_base == obj.name):
-				obj.select = True
+				obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectGroupedMaterial(bpy.types.Operator):
@@ -123,13 +124,13 @@ class SelectGroupedMaterial(bpy.types.Operator):
 	bl_label = "Select objects of same material structure"
 	bl_description = "Select active object material structure and same visible objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
 			return True
 		return False
-	
+
 	def execute(self, context):
 		def GetMaterialList(slots):
 			list = []
@@ -141,7 +142,7 @@ class SelectGroupedMaterial(bpy.types.Operator):
 		if (0 < len(activeMats)):
 			for obj in context.selectable_objects:
 				if (activeMats == GetMaterialList(obj.material_slots)):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectGroupedModifiers(bpy.types.Operator):
@@ -149,13 +150,13 @@ class SelectGroupedModifiers(bpy.types.Operator):
 	bl_label = "Select same modifier structure object"
 	bl_description = "Select same modifier of active objects visible objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
 			return True
 		return False
-	
+
 	def execute(self, context):
 		def GetModifiersString(obj):
 			str = ""
@@ -174,13 +175,13 @@ class SelectGroupedSubsurfLevel(bpy.types.Operator):
 	bl_label = "Select same subsurf level object"
 	bl_description = "Select Subsurf levels of active objects have same visible objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
 			return True
 		return False
-	
+
 	def execute(self, context):
 		def GetSubsurfLevel(obj):
 			level = 0
@@ -200,13 +201,13 @@ class SelectGroupedArmatureTarget(bpy.types.Operator):
 	bl_label = "Select objects that transform in same armature"
 	bl_description = "Select visible objects are transformed in an active object with same armature"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
 			return True
 		return False
-	
+
 	def execute(self, context):
 		def GetArmatureTarget(obj):
 			target = []
@@ -232,13 +233,13 @@ class SelectGroupedSizeThan(bpy.types.Operator):
 	bl_label = "Compare size and select objects"
 	bl_description = "Greater than active object, or select additional small objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('LARGER', "Select Bigger", "", 1),
 		('SMALLER', "Select Smaller", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Select Mode")
-	select_same_size = bpy.props.BoolProperty(name="Select Same Size", default=True)
+	mode : EnumProperty(items=items, name="Select Mode")
+	select_same_size : BoolProperty(name="Select Same Size", default=True)
 	items = [
 		('MESH', "Mesh", "", 1),
 		('CURVE', "Curve", "", 2),
@@ -250,15 +251,15 @@ class SelectGroupedSizeThan(bpy.types.Operator):
 		('ALL', "All", "", 8),
 		('SAME', "Same Type", "", 9),
 		]
-	select_type = bpy.props.EnumProperty(items=items, name="Select Type", default='SAME')
-	size_multi = bpy.props.FloatProperty(name="Standard Size Offset", default=1.0, min=0, max=10, soft_min=0, soft_max=10, step=10, precision=3)
-	
+	select_type : EnumProperty(items=items, name="Select Type", default='SAME')
+	size_multi : FloatProperty(name="Standard Size Offset", default=1.0, min=0, max=10, soft_min=0, soft_max=10, step=10, precision=3)
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
 			return True
 		return False
-	
+
 	def execute(self, context):
 		def GetSize(obj):
 			bound_box = obj.bound_box[:]
@@ -268,7 +269,7 @@ class SelectGroupedSizeThan(bpy.types.Operator):
 			y = (bound_box0 - mathutils.Vector(bound_box[3][:])).length * obj.scale.y
 			z = (bound_box0 - mathutils.Vector(bound_box[1][:])).length * obj.scale.z
 			return x + y + z
-		
+
 		active_obj = context.active_object
 		if (not active_obj):
 			self.report(type={'ERROR'}, message="There is no active object")
@@ -286,13 +287,13 @@ class SelectGroupedSizeThan(bpy.types.Operator):
 			size = GetSize(obj)
 			if (self.mode == 'LARGER'):
 				if (active_obj_size < size):
-					obj.select = True
+					obj.select_set(True)
 			elif (self.mode == 'SMALLER'):
 				if (size < active_obj_size):
-					obj.select = True
+					obj.select_set(True)
 			if (self.select_same_size):
 				if (active_obj_size == size):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 ##########################
@@ -304,20 +305,20 @@ class SelectMeshFaceOnly(bpy.types.Operator):
 	bl_label = "Select face exist mesh"
 	bl_description = "Select mesh more than one face"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selectable_objects:
 			if (obj.type == 'MESH'):
 				return True
 		return False
-	
+
 	def execute(self, context):
 		for obj in context.selectable_objects:
 			if (obj.type == 'MESH'):
 				me = obj.data
 				if (0 < len(me.polygons)):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectMeshEdgeOnly(bpy.types.Operator):
@@ -325,20 +326,20 @@ class SelectMeshEdgeOnly(bpy.types.Operator):
 	bl_label = "Select edge only mesh"
 	bl_description = "Terms, select only side mesh"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selectable_objects:
 			if (obj.type == 'MESH'):
 				return True
 		return False
-	
+
 	def execute(self, context):
 		for obj in context.selectable_objects:
 			if (obj.type == 'MESH'):
 				me = obj.data
 				if (len(me.polygons) == 0 and 0 < len(me.edges)):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectMeshVertexOnly(bpy.types.Operator):
@@ -346,20 +347,20 @@ class SelectMeshVertexOnly(bpy.types.Operator):
 	bl_label = "Select only vertices of mesh"
 	bl_description = "Surfaces and edges, select mesh vertices only"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selectable_objects:
 			if (obj.type == 'MESH'):
 				return True
 		return False
-	
+
 	def execute(self, context):
 		for obj in context.selectable_objects:
 			if (obj.type == 'MESH'):
 				me = obj.data
 				if (len(me.polygons) == 0 and len(me.edges) == 0 and 0 < len(me.vertices)):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectMeshNone(bpy.types.Operator):
@@ -367,20 +368,20 @@ class SelectMeshNone(bpy.types.Operator):
 	bl_label = "Select mesh even non vertex"
 	bl_description = "Surface and edge and select mesh object vertex is not empty"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selectable_objects:
 			if (obj.type == 'MESH'):
 				return True
 		return False
-	
+
 	def execute(self, context):
 		for obj in context.selectable_objects:
 			if (obj.type == 'MESH'):
 				me = obj.data
 				if (len(me.polygons) == 0 and len(me.edges) == 0 and len(me.vertices) == 0):
-					obj.select = True
+					obj.select_set(True)
 		return {'FINISHED'}
 
 ################
@@ -391,7 +392,7 @@ class SelectGroupedEX(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_select_object_grouped_ex"
 	bl_label = "Select by relation (Extra)"
 	bl_description = "Select all visible objects grouped by properties"
-	
+
 	def draw(self, context):
 		column = self.layout.column()
 		column.operator("object.select_grouped", text="Child").type = 'CHILDREN_RECURSIVE'
@@ -422,7 +423,7 @@ class SelectMesh(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_select_object_mesh"
 	bl_label = "Select characteristics of mesh"
 	bl_description = "Ability to select mesh object visualization menu"
-	
+
 	def draw(self, context):
 		self.layout.operator(SelectMeshFaceOnly.bl_idname, text="Face Only", icon='PLUGIN')
 		self.layout.operator(SelectMeshEdgeOnly.bl_idname, text="Edge Only", icon='PLUGIN')
@@ -465,7 +466,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -482,6 +483,6 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.menu(SelectMesh.bl_idname, icon='PLUGIN')
 		self.layout.menu(SelectGroupedEX.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

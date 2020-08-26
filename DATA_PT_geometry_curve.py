@@ -2,6 +2,7 @@
 # "Propaties" Area > "Curve" Tab > "Geometry" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,20 +13,20 @@ class copy_geometry_settings(bpy.types.Operator):
 	bl_label = "Copy Geometry Settings"
 	bl_description = "Copy selection curve of other settings panel geometry of curve object is active"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	offset = bpy.props.BoolProperty(name="Offset", default=True)
-	extrude = bpy.props.BoolProperty(name="Extrude", default=True)
-	bevel_depth = bpy.props.BoolProperty(name="Depth", default=True)
-	bevel_resolution = bpy.props.BoolProperty(name="Resolution", default=True)
-	taper_object = bpy.props.BoolProperty(name="Taper", default=True)
-	bevel_object = bpy.props.BoolProperty(name="Bevel", default=True)
-	bevel_factor_mapping_start = bpy.props.BoolProperty(name="Start Method", default=True)
-	bevel_factor_start = bpy.props.BoolProperty(name="Start", default=True)
-	bevel_factor_mapping_end = bpy.props.BoolProperty(name="End Method", default=True)
-	bevel_factor_end = bpy.props.BoolProperty(name="End", default=True)
-	use_map_taper = bpy.props.BoolProperty(name="Map Taper", default=True)
-	use_fill_caps = bpy.props.BoolProperty(name="Fill Caps", default=True)
-	
+
+	offset : BoolProperty(name="Offset", default=True)
+	extrude : BoolProperty(name="Extrude", default=True)
+	bevel_depth : BoolProperty(name="Depth", default=True)
+	bevel_resolution : BoolProperty(name="Resolution", default=True)
+	taper_object : BoolProperty(name="Taper", default=True)
+	bevel_object : BoolProperty(name="Bevel", default=True)
+	bevel_factor_mapping_start : BoolProperty(name="Start Method", default=True)
+	bevel_factor_start : BoolProperty(name="Start", default=True)
+	bevel_factor_mapping_end : BoolProperty(name="End Method", default=True)
+	bevel_factor_end : BoolProperty(name="End", default=True)
+	use_map_taper : BoolProperty(name="Map Taper", default=True)
+	use_fill_caps : BoolProperty(name="Fill Caps", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
@@ -36,7 +37,7 @@ class copy_geometry_settings(bpy.types.Operator):
 							if ob.type == 'CURVE':
 								return True
 		return False
-	
+
 	def invoke(self, context, event):
 		self.offset = False
 		self.extrude = False
@@ -50,7 +51,7 @@ class copy_geometry_settings(bpy.types.Operator):
 		self.bevel_factor_end = False
 		self.use_map_taper = False
 		self.use_fill_caps = False
-		
+
 		curve = context.active_object.data
 		if 0.0 < curve.offset:
 			self.offset = True
@@ -59,7 +60,7 @@ class copy_geometry_settings(bpy.types.Operator):
 		if curve.taper_object:
 			self.taper_object = True
 			self.use_map_taper = True
-		
+
 		if curve.bevel_object:
 			self.bevel_object = True
 			self.bevel_factor_mapping_start = True
@@ -74,9 +75,9 @@ class copy_geometry_settings(bpy.types.Operator):
 			self.bevel_factor_start = True
 			self.bevel_factor_mapping_end = True
 			self.bevel_factor_end = True
-			
+
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def draw(self, context):
 		row = self.layout.row()
 		row.label("Modification:")
@@ -103,7 +104,7 @@ class copy_geometry_settings(bpy.types.Operator):
 		row = self.layout.row()
 		row.prop(self, 'use_map_taper')
 		row.prop(self, 'use_fill_caps')
-	
+
 	def execute(self, context):
 		active_ob = context.active_object
 		active_data = active_ob.data
@@ -142,7 +143,7 @@ class ActivateTaperObject(bpy.types.Operator):
 	bl_label = "Activate taper object"
 	bl_description = "curve is specified as tapered object"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -150,12 +151,12 @@ class ActivateTaperObject(bpy.types.Operator):
 			if ob.data.taper_object:
 				return True
 		return False
-	
+
 	def execute(self, context):
 		ob = context.active_object.data.taper_object
-		ob.select = True
+		ob.select_set(True)
 		ob.hide = False
-		context.scene.objects.active = ob
+		bpy.context.view_layer.objects.active = ob
 		for i, b in enumerate(ob.layers):
 			if b:
 				context.scene.layers[i] = True
@@ -166,7 +167,7 @@ class ActivateBevelObject(bpy.types.Operator):
 	bl_label = "Activate Bevel Object"
 	bl_description = "curve is specified as beveled objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -174,12 +175,12 @@ class ActivateBevelObject(bpy.types.Operator):
 			if ob.data.bevel_object:
 				return True
 		return False
-	
+
 	def execute(self, context):
 		ob = context.active_object.data.bevel_object
-		ob.select = True
+		ob.select_set(True)
 		ob.hide = False
-		context.scene.objects.active = ob
+		bpy.context.view_layer.objects.active = ob
 		for i, b in enumerate(ob.layers):
 			if b:
 				context.scene.layers[i] = True
@@ -190,7 +191,7 @@ class activate_taper_parent_object(bpy.types.Operator):
 	bl_label = "Used as taper curve to activate"
 	bl_description = "Activates curve as tapered object using this curve"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -199,7 +200,7 @@ class activate_taper_parent_object(bpy.types.Operator):
 			if target_name == ob.name:
 				return True
 		return False
-	
+
 	def execute(self, context):
 		count = 0
 		active_ob = context.active_object
@@ -208,9 +209,9 @@ class activate_taper_parent_object(bpy.types.Operator):
 				curve = ob.data
 				target_name = curve.taper_object.name if curve.taper_object else ""
 				if active_ob.name == target_name:
-					ob.select = True
+					ob.select_set(True)
 					ob.hide = False
-					context.scene.objects.active = ob
+					bpy.context.view_layer.objects.active = ob
 					for i, b in enumerate(ob.layers):
 						if b:
 							context.scene.layers[i] = True
@@ -224,7 +225,7 @@ class activate_bevel_parent_object(bpy.types.Operator):
 	bl_label = "Activate bevel curve object"
 	bl_description = "Activates curve as beveled objects using this curve"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -233,7 +234,7 @@ class activate_bevel_parent_object(bpy.types.Operator):
 			if target_name == ob.name:
 				return True
 		return False
-	
+
 	def execute(self, context):
 		count = 0
 		active_ob = context.active_object
@@ -242,9 +243,9 @@ class activate_bevel_parent_object(bpy.types.Operator):
 				curve = ob.data
 				target_name = curve.bevel_object.name if curve.bevel_object else ""
 				if active_ob.name == target_name:
-					ob.select = True
+					ob.select_set(True)
 					ob.hide = False
-					context.scene.objects.active = ob
+					bpy.context.view_layer.objects.active = ob
 					for i, b in enumerate(ob.layers):
 						if b:
 							context.scene.layers[i] = True
@@ -280,7 +281,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -305,7 +306,7 @@ def menu(self, context):
 					sub.prop(data.bevel_object.data, 'resolution_u')
 				else:
 					row.label("")
-		
+
 		flag = [False, False]
 		ob = context.active_object
 		for curve in bpy.data.curves:
@@ -327,7 +328,7 @@ def menu(self, context):
 				row.operator(activate_bevel_parent_object.bl_idname, icon='OUTLINER_OB_SURFACE', text="Active Parent Bevel")
 			else:
 				row.label("")
-		
+
 		if 2 <= len(context.selected_objects):
 			i = 0
 			for obj in context.selected_objects:
@@ -335,5 +336,5 @@ def menu(self, context):
 					i += 1
 			if 2 <= i:
 				self.layout.operator(copy_geometry_settings.bl_idname, icon='COPY_ID')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

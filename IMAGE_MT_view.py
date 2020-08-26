@@ -2,6 +2,7 @@
 # "UV/Image Editor" Area > "View" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class Reset2DCursor(bpy.types.Operator):
 	bl_label = "Reset Cursor Position"
 	bl_description = "Move 2D cursor in lower left"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		("C", "Center", "", 1),
 		("U", "Up", "", 2),
@@ -24,32 +25,41 @@ class Reset2DCursor(bpy.types.Operator):
 		("L", "Left", "", 8),
 		("LU", "Top Left", "", 9),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Location", default="LD")
-	
+	mode : EnumProperty(items=items, name="Location", default="LD")
+
 	def execute(self, context):
 		if (bpy.context.edit_image):
-			x, y = bpy.context.edit_image.size
+			x, y = (1,1)
 		else:
-			x = 256
-			y = 256
+			x = 1
+			y = 1
+
+		area = None
+		for area in bpy.context.screen.areas:
+			if area.type == 'IMAGE_EDITOR':
+				area
+		if not area:
+			self.report({'INFO'}, "Not found Image Editor !!")
+			return{'FINISHED'}
+			
 		if (self.mode == "C"):
-			bpy.context.space_data.cursor_location = [x/2, y/2]
+			area.spaces[0].cursor_location = [x/2, y/2]
 		elif (self.mode == "U"):
-			bpy.context.space_data.cursor_location = [x/2, y]
+			area.spaces[0].cursor_location = [x/2, y]
 		elif (self.mode == "RU"):
-			bpy.context.space_data.cursor_location = [x, y]
+			area.spaces[0].cursor_location = [x, y]
 		elif (self.mode == "R"):
-			bpy.context.space_data.cursor_location = [x, y/2]
+			area.spaces[0].cursor_location = [x, y/2]
 		elif (self.mode == "RD"):
-			bpy.context.space_data.cursor_location = [x, 0]
+			area.spaces[0].cursor_location = [x, 0]
 		elif (self.mode == "D"):
-			bpy.context.space_data.cursor_location = [x/2, 0]
+			area.spaces[0].cursor_location = [x/2, 0]
 		elif (self.mode == "LD"):
-			bpy.context.space_data.cursor_location = [0, 0]
+			area.spaces[0].cursor_location = [0, 0]
 		elif (self.mode == "L"):
-			bpy.context.space_data.cursor_location = [0, y/2]
+			area.spaces[0].cursor_location = [0, y/2]
 		elif (self.mode == "LU"):
-			bpy.context.space_data.cursor_location = [0, y]
+			area.spaces[0].cursor_location = [0, y]
 		return {'FINISHED'}
 
 class TogglePanelsA(bpy.types.Operator):
@@ -57,7 +67,7 @@ class TogglePanelsA(bpy.types.Operator):
 	bl_label = "Toggle Panel (mode A)"
 	bl_description = "properties/tool shelf \"both display\" / \"both hide\" toggle"
 	bl_options = {'REGISTER'}
-	
+
 	def execute(self, context):
 		toolW = 0
 		uiW = 0
@@ -81,7 +91,7 @@ class TogglePanelsB(bpy.types.Operator):
 	bl_label = "Toggle Panel (mode B)"
 	bl_description = "\"Panel both hide\" => show only tool shelf => show only properties => \"Panel both display\" for toggle"
 	bl_options = {'REGISTER'}
-	
+
 	def execute(self, context):
 		toolW = 0
 		uiW = 0
@@ -104,7 +114,7 @@ class TogglePanelsC(bpy.types.Operator):
 	bl_label = "Toggle Panel (mode C)"
 	bl_description = "\"Panel both hide\" => \"show only tool shelf => show only properties. toggle"
 	bl_options = {'REGISTER'}
-	
+
 	def execute(self, context):
 		toolW = 0
 		uiW = 0
@@ -127,7 +137,7 @@ class panel_pie_operator(bpy.types.Operator):
 	bl_label = "Switch panel pie menu"
 	bl_description = "Toggle panel pie menu"
 	bl_options = {'MACRO'}
-	
+
 	def execute(self, context):
 		bpy.ops.wm.call_menu_pie(name=PanelPie.bl_idname)
 		return {'FINISHED'}
@@ -135,7 +145,7 @@ class PanelPie(bpy.types.Menu): #
 	bl_idname = "IMAGE_MT_view_pie_panel"
 	bl_label = "Switch panel pie menu"
 	bl_description = "Toggle panel pie menu"
-	
+
 	def draw(self, context):
 		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Tool Shelf", icon='TRIA_LEFT')
 		op.properties, op.toolshelf = False, True
@@ -150,10 +160,10 @@ class run_panel_pie(bpy.types.Operator): #
 	bl_label = "Switch panel pie menu"
 	bl_description = "Toggle panel pie menu"
 	bl_options = {'MACRO'}
-	
-	properties = bpy.props.BoolProperty(name="Property")
-	toolshelf = bpy.props.BoolProperty(name="Tool Shelf")
-	
+
+	properties : BoolProperty(name="Property")
+	toolshelf : BoolProperty(name="Tool Shelf")
+
 	def execute(self, context):
 		properties = self.properties
 		toolshelf = self.toolshelf
@@ -180,7 +190,7 @@ class ShortcutsMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_view_shortcuts"
 	bl_label = "By Shortcuts"
 	bl_description = "Registering shortcut feature that might come in handy"
-	
+
 	def draw(self, context):
 		self.layout.operator(TogglePanelsA.bl_idname, icon='PLUGIN')
 		self.layout.operator(TogglePanelsB.bl_idname, icon='PLUGIN')
@@ -192,7 +202,7 @@ class Reset2DCursorMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_view_reset_2d_cursor"
 	bl_label = "Reset Cursor Position"
 	bl_description = "Reset Cursor Position"
-	
+
 	def draw(self, context):
 		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Up").mode = 'U'
 		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Right").mode = 'R'
@@ -237,7 +247,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -250,6 +260,6 @@ def menu(self, context):
 		self.layout.menu(Reset2DCursorMenu.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.menu(ShortcutsMenu.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

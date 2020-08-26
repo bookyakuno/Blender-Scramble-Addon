@@ -2,6 +2,7 @@
 # "3D View" Area > Propaties > Layer Buttons Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class GroupLayers(bpy.types.Operator):
 	bl_label = "Toggle Show/Hide Groups"
 	bl_description = "Switch Show / Hide group has"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	group = bpy.props.StringProperty(name="Group Name")
-	
+
+	group : StringProperty(name="Group Name")
+
 	def execute(self, context):
 		for obj in bpy.data.objects:
 			for l1 in obj.layers:
@@ -44,17 +45,17 @@ class ObjectSelectPanel(bpy.types.Panel):
 	bl_space_type = 'VIEW_3D'
 	bl_region_type = 'UI'
 	bl_options = {'DEFAULT_CLOSED'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		return (context.object is not None)
-#	
+#
 #	def draw_header(self, context):
 #		row = self.layout.row()
 #		row.scale_x = 0.7
 #		row.scale_y = 0.7
 #		row.prop(context.scene, 'layers', text="")
-#	
+#
 	def draw(self, context):
 		if (context.object):
 			if (context.object.type == 'ARMATURE'):

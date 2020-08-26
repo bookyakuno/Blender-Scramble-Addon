@@ -2,6 +2,7 @@
 # "3D View" Area > "Mesh Editor" Mode > "Ctrl + V" Key
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class CellMenuSeparateEX(bpy.types.Operator):
 	bl_label = "Separate (Advance)"
 	bl_description = "Isolate to another object of call extended menu"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		bpy.ops.wm.call_menu(name=SeparateEXMenu.bl_idname)
 		return {'FINISHED'}
@@ -22,7 +23,7 @@ class SeparateSelectedEX(bpy.types.Operator):
 	bl_label = "Selected (Activate Isolated-side)"
 	bl_description = "After \"in choice of separation\" enters edit mode for separation side"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		objs = []
 		for obj in context.selectable_objects:
@@ -32,8 +33,8 @@ class SeparateSelectedEX(bpy.types.Operator):
 		bpy.ops.object.select_all(action='DESELECT')
 		for obj in context.selectable_objects:
 			if (not obj.name in objs):
-				obj.select = True
-				context.scene.objects.active = obj
+				obj.select_set(True)
+				bpy.context.view_layer.objects.active = obj
 				break
 		bpy.ops.object.mode_set(mode='EDIT')
 		bpy.ops.mesh.select_all(action='SELECT')
@@ -44,7 +45,7 @@ class DuplicateNewParts(bpy.types.Operator):
 	bl_label = "Duplicate Selected parts and to new object"
 	bl_description = "Enters edit mode, replication and selection to new object from"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		objs = []
 		for obj in context.selectable_objects:
@@ -55,8 +56,8 @@ class DuplicateNewParts(bpy.types.Operator):
 		bpy.ops.object.select_all(action='DESELECT')
 		for obj in context.selectable_objects:
 			if (not obj.name in objs):
-				obj.select = True
-				context.scene.objects.active = obj
+				obj.select_set(True)
+				bpy.context.view_layer.objects.active = obj
 				break
 		bpy.ops.object.mode_set(mode='EDIT')
 		bpy.ops.mesh.select_all(action='SELECT')
@@ -67,15 +68,15 @@ class QuickShrinkwrap(bpy.types.Operator):
 	bl_label = "Quick Shrinkwrap"
 	bl_description = "Another one you mesh selected vertices pettanko!, glue"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('NEAREST_SURFACEPOINT', "Closest Surface Point", "", 1),
 		('PROJECT', "Projection", "", 2),
 		('NEAREST_VERTEX', "Nearest Vertex", "", 3),
 		]
-	wrap_method = bpy.props.EnumProperty(items=items, name="Mode", default='PROJECT')
-	offset = bpy.props.FloatProperty(name="Offset", default=0.0, min=-10, max=10, soft_min=-10, soft_max=10, step=1, precision=5)
-	
+	wrap_method : EnumProperty(items=items, name="Mode", default='PROJECT')
+	offset : FloatProperty(name="Offset", default=0.0, min=-10, max=10, soft_min=-10, soft_max=10, step=1, precision=5)
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) != 2):
@@ -124,7 +125,7 @@ class SeparateEXMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_edit_mesh_separate_ex"
 	bl_label = "Separate (Advance)"
 	bl_description = "Isolate to another object of extended menu"
-	
+
 	def draw(self, context):
 		self.layout.operator("mesh.separate", text="Selected").type = 'SELECTED'
 		self.layout.operator(SeparateSelectedEX.bl_idname, icon="PLUGIN")
@@ -135,7 +136,7 @@ class SeparateEXMenu(bpy.types.Menu):
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -150,7 +151,7 @@ def menu(self, context):
 		self.layout.operator(CellMenuSeparateEX.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.operator(DuplicateNewParts.bl_idname, icon="PLUGIN")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
 

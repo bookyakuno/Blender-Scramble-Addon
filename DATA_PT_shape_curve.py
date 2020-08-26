@@ -2,6 +2,7 @@
 # "Propaties" Area > "Armature" Tab > "Shape" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,18 +13,18 @@ class copy_curve_shape_setting(bpy.types.Operator):
 	bl_label = "Copy Shape Settings"
 	bl_description = "Copy selected curve other active curve shape settings"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	dimensions = bpy.props.BoolProperty(name="2D/3D", default=True)
-	resolution_u = bpy.props.BoolProperty(name="Preview U", default=True)
-	render_resolution_u = bpy.props.BoolProperty(name="Render U", default=True)
-	fill_mode = bpy.props.BoolProperty(name="Fill Method", default=True)
-	use_fill_deform = bpy.props.BoolProperty(name="Fill Deformed", default=True)
-	twist_mode = bpy.props.BoolProperty(name="Twist Method", default=True)
-	use_radius = bpy.props.BoolProperty(name="Radius", default=True)
-	use_stretch = bpy.props.BoolProperty(name="Stretch", default=True)
-	twist_smooth = bpy.props.BoolProperty(name="Smooth", default=True)
-	use_deform_bounds = bpy.props.BoolProperty(name="Fix Border", default=True)
-	
+
+	dimensions : BoolProperty(name="2D/3D", default=True)
+	resolution_u : BoolProperty(name="Preview U", default=True)
+	render_resolution_u : BoolProperty(name="Render U", default=True)
+	fill_mode : BoolProperty(name="Fill Method", default=True)
+	use_fill_deform : BoolProperty(name="Fill Deformed", default=True)
+	twist_mode : BoolProperty(name="Twist Method", default=True)
+	use_radius : BoolProperty(name="Radius", default=True)
+	use_stretch : BoolProperty(name="Stretch", default=True)
+	twist_smooth : BoolProperty(name="Smooth", default=True)
+	use_deform_bounds : BoolProperty(name="Fix Border", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -34,10 +35,10 @@ class copy_curve_shape_setting(bpy.types.Operator):
 						if obj.type == 'CURVE':
 							return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def draw(self, context):
 		self.layout.label("Shape")
 		self.layout.prop(self, 'dimensions')
@@ -60,7 +61,7 @@ class copy_curve_shape_setting(bpy.types.Operator):
 		row = self.layout.row()
 		row.prop(self, 'twist_smooth')
 		row.prop(self, 'use_deform_bounds')
-	
+
 	def execute(self, context):
 		active_ob = context.active_object
 		active_curve = active_ob.data
@@ -68,7 +69,7 @@ class copy_curve_shape_setting(bpy.types.Operator):
 			if active_ob.name != ob.name:
 				if ob.type == 'CURVE':
 					curve = ob.data
-					
+
 					if self.dimensions:
 						curve.dimensions = active_curve.dimensions
 					if self.resolution_u:
@@ -114,7 +115,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -125,5 +126,5 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		if 2 <= len(context.selected_objects):
 			self.layout.operator(copy_curve_shape_setting.bl_idname, icon='COPY_ID')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

@@ -2,6 +2,7 @@
 # "3D View" Area > "Object" Mode > "Ctrl + L" Key
 
 import bpy, bmesh
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class MakeLinkObjectName(bpy.types.Operator):
 	bl_label = "Sync Object Name"
 	bl_description = "Link name of active object to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) < 2):
@@ -32,7 +33,7 @@ class MakeLinkLayer(bpy.types.Operator):
 	bl_label = "Set Same Layer"
 	bl_description = "link active object layers to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) < 2):
@@ -49,20 +50,20 @@ class MakeLinkDisplaySetting(bpy.types.Operator):
 	bl_label = "Make same objects display setting"
 	bl_description = "Copy settings panel of active object to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isSameType = bpy.props.BoolProperty(name="Only objects of same type", default=True)
-	show_name = bpy.props.BoolProperty(name="Name", default=True)
-	show_axis = bpy.props.BoolProperty(name="Axis", default=True)
-	show_wire = bpy.props.BoolProperty(name="Wire Frame", default=True)
-	show_all_edges = bpy.props.BoolProperty(name="Show All Edges", default=True)
-	show_bounds = bpy.props.BoolProperty(name="Bound", default=True)
-	show_texture_space = bpy.props.BoolProperty(name="Texture Space", default=True)
-	show_x_ray = bpy.props.BoolProperty(name="X-ray", default=True)
-	show_transparent = bpy.props.BoolProperty(name="Alpha", default=True)
-	draw_bounds_type = bpy.props.BoolProperty(name="Bound Type", default=True)
-	draw_type = bpy.props.BoolProperty(name="Maximum Draw Type", default=True)
-	color = bpy.props.BoolProperty(name="Object Color", default=True)
-	
+
+	isSameType : BoolProperty(name="Only objects of same type", default=True)
+	show_name : BoolProperty(name="Name", default=True)
+	show_axis : BoolProperty(name="Axis", default=True)
+	show_wire : BoolProperty(name="Wire Frame", default=True)
+	show_all_edges : BoolProperty(name="Show All Edges", default=True)
+	show_bounds : BoolProperty(name="Bound", default=True)
+	show_texture_space : BoolProperty(name="Texture Space", default=True)
+	show_x_ray : BoolProperty(name="X-ray", default=True)
+	show_transparent : BoolProperty(name="Alpha", default=True)
+	draw_bounds_type : BoolProperty(name="Bound Type", default=True)
+	display_type : BoolProperty(name="Maximum Draw Type", default=True)
+	color : BoolProperty(name="Object Color", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) < 2):
@@ -91,8 +92,8 @@ class MakeLinkDisplaySetting(bpy.types.Operator):
 						obj.show_transparent = activeObj.show_transparent
 					if (self.draw_bounds_type):
 						obj.draw_bounds_type = activeObj.draw_bounds_type
-					if (self.draw_type):
-						obj.draw_type = activeObj.draw_type
+					if (self.display_type):
+						obj.display_type = activeObj.display_type
 					if (self.color):
 						obj.color = activeObj.color
 		return {'FINISHED'}
@@ -102,7 +103,7 @@ class MakeLinkUVNames(bpy.types.Operator):
 	bl_label = "Link empty UV map"
 	bl_description = "Empty, add UV active objects to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) < 2):
@@ -124,7 +125,7 @@ class MakeLinkUVNames(bpy.types.Operator):
 				target_objs.append(obj)
 		for obj in target_objs:
 			for uv in active_obj.data.uv_layers:
-				obj.data.uv_textures.new(uv.name)
+				obj.data.uv_layers.new(uv.name)
 		return {'FINISHED'}
 
 class MakeLinkArmaturePose(bpy.types.Operator):
@@ -132,7 +133,7 @@ class MakeLinkArmaturePose(bpy.types.Operator):
 	bl_label = "Link motion of armature"
 	bl_description = "By constraints on other selected armature mimic active armature movement"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) < 2):
@@ -173,11 +174,11 @@ class MakeLinkTransform(bpy.types.Operator):
 	bl_label = "Link Transform"
 	bl_description = "Information of active object copies to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	copy_location = bpy.props.BoolProperty(name="Location", default=True)
-	copy_rotation = bpy.props.BoolProperty(name="Rotation", default=True)
-	copy_scale = bpy.props.BoolProperty(name="Scale", default=True)
-	
+
+	copy_location : BoolProperty(name="Location", default=True)
+	copy_rotation : BoolProperty(name="Rotation", default=True)
+	copy_scale : BoolProperty(name="Scale", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) < 2):
@@ -209,7 +210,7 @@ class TransformMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_make_links_transform"
 	bl_label = "Transform"
 	bl_description = "Link object transforms"
-	
+
 	def draw(self, context):
 		op = self.layout.operator(MakeLinkTransform.bl_idname, text="Transform", icon='PLUGIN')
 		op.copy_location, op.copy_rotation, op.copy_scale = True, True, True
@@ -250,7 +251,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -268,6 +269,6 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.operator(MakeLinkUVNames.bl_idname, text="Empty UV", icon="PLUGIN")
 		self.layout.operator(MakeLinkArmaturePose.bl_idname, text="Movement of Armature", icon="PLUGIN")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

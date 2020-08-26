@@ -1,26 +1,32 @@
-さいでんか氏の Scramble Addon です。
-Githubが削除されてしまったため追加しました。問題があれば消します。
+# クレジット
+
+原作：さいでんか  
+このGithubでの公開：忘却野(https://github.com/bookyakuno/Blender-Scramble-Addon)  
+Blender2.8への対応：nikogoli, 忘却野  
+
+# 2.8x向けバージョン(ver1.0.1-)
 
 
-### 2.8xへの対応　by nikogoli
+### 未サポート情報
 
-現在の進捗：　　
-- addonの読み込み・・・**可能**　　
-    - 記法への警告が大量に出るため少し時間がかかる　　
-    - ベイク、テクスチャリストの操作、blenderのバージョンごとの関連付け、オブジェクトID関連の操作は読み込みを行っていない　　
-- addonの機能・・・**一部のみ利用可能**　　
-    - メニューやボタンがない場合や、ボタンはあるものの反応しない場合あり　　
+**Blender2.8x向けバージョンは、完全にアップデートされていません。**  
+メニューやボタンがない場合や、ボタンはあるものの反応しない場合・Blender標準機能として実装されて機能が重複している場合などがあります。  
+個人で完全に対処しきれないので、バグ報告やプルリクエストがあれば修正されるかも知れません。  
+  
+- (例)ベイク、テクスチャリストの操作、blenderのバージョンごとの関連付け、オブジェクトID関連の操作は読み込みを行っていない
 
 
-**フォルダ名は「Scramble Addon」にしてください**。別の名前を使用した場合、機能しない可能性があります
+
 
 # Blender-Scramble-Addon
+
 Blenderのかゆいところに手が届くかもしれない機能が詰まったアドオンです。
 > This add-on is packed with Blender useful features.
 > English-speaking people should be on the English translation.
 ![Translation](http://i.imgur.com/U1pO6Jh.jpg)
 
 ## インストール (Installation)
+
 まず画面右の「Download ZIP」でZIPファイルをダウンロードし解凍。
 中の「Scramble Addon」フォルダをBlenderのaddonsフォルダに置いて下さい。
 (Windows7なら： C:\Users\ユーザー名\AppData\Roaming\Blender Foundation\Blender\バージョン\scripts\addons\Scramble Addon)

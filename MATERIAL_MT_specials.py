@@ -23,7 +23,7 @@ class RemoveNoAssignMaterial(bpy.types.Operator):
 		preActiveObj = context.active_object
 		for obj in context.selected_objects:
 			if (obj.type == "MESH"):
-				context.scene.objects.active = obj
+				bpy.context.view_layer.objects.active = obj
 				preActiveMaterial = obj.active_material
 				slots = []
 				for slot in obj.material_slots:
@@ -40,7 +40,7 @@ class RemoveNoAssignMaterial(bpy.types.Operator):
 							i += 1
 						obj.active_material_index = i
 						bpy.ops.object.material_slot_remove()
-		context.scene.objects.active = preActiveObj
+		bpy.context.view_layer.objects.active = preActiveObj
 		return {'FINISHED'}
 
 class RemoveAllMaterialSlot(bpy.types.Operator):
@@ -202,7 +202,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons['Scramble Addon'].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -220,6 +220,6 @@ def menu(self, context):
 		self.layout.operator(RemoveNoAssignMaterial.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.operator(SetTransparentBackSide.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons['Scramble Addon'].preferences.use_disabled_menu):
+	if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

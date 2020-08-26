@@ -2,6 +2,7 @@
 # "Propaties" Area > "Scene" Tab > "Rigid Body World" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class WorldReset(bpy.types.Operator):
 	bl_label = "Recreate RigidBody World"
 	bl_description = "Keep setting, recreate rigid world"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.scene.rigidbody_world):
@@ -27,10 +28,10 @@ class WorldReset(bpy.types.Operator):
 		solver_iterations = context.scene.rigidbody_world.solver_iterations
 		frame_start = context.scene.rigidbody_world.point_cache.frame_start
 		frame_end = context.scene.rigidbody_world.point_cache.frame_end
-		
+
 		bpy.ops.rigidbody.world_remove()
 		bpy.ops.rigidbody.world_add()
-		
+
 		context.scene.rigidbody_world.group = group
 		context.scene.rigidbody_world.constraints = constraints
 		context.scene.rigidbody_world.time_scale = time_scale
@@ -46,19 +47,19 @@ class SyncFrames(bpy.types.Operator):
 	bl_label = "Set start/end frames rigid body world"
 	bl_description = "Start / end frame rigid world of sets to start / end frame rendering"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	frame_margin = bpy.props.IntProperty(name="Margin", default=0, min=-999, max=999, soft_min=-999, soft_max=999)
-	
+
+	frame_margin : IntProperty(name="Margin", default=0, min=-999, max=999, soft_min=-999, soft_max=999)
+
 	@classmethod
 	def poll(cls, context):
 		if context.scene.rigidbody_world:
 			if context.scene.rigidbody_world.point_cache:
 				return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		rigidbody_world = context.scene.rigidbody_world
 		point_cache = rigidbody_world.point_cache
@@ -92,7 +93,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -112,5 +113,5 @@ def menu(self, context):
 				row.prop(context.scene.rigidbody_world.point_cache, 'frame_start')
 				row.prop(context.scene.rigidbody_world.point_cache, 'frame_end')
 				row.operator('rigidbody.sync_frames', icon='LINKED', text="")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

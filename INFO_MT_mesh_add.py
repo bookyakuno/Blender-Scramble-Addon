@@ -3,6 +3,7 @@
 
 import bpy, bmesh
 import math
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -13,14 +14,14 @@ class AddSphereOnlySquare(bpy.types.Operator):
 	bl_label = "Square Polygon Sphere"
 	bl_description = "Add sphere mesh is composed only of quadrilateral polygon"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	level = bpy.props.IntProperty(name="Number of Divisions", default=2, step=1, min=1, max=6, soft_min=1, soft_max=6)
-	radius = bpy.props.FloatProperty(name="Radius (roughly)", default=1.0, step=10, precision=3, min=0.001, max=100, soft_min=0.001, soft_max=100)
-	view_align = bpy.props.BoolProperty(name="Align View", default=False)
-	location = bpy.props.FloatVectorProperty(name="Location", default=(0.0, 0.0, 0.0), step=10, precision=3, subtype='XYZ', min=-100, max=100, soft_min=-100, soft_max=100)
-	rotation = bpy.props.IntVectorProperty(name="Rotation", default=(0, 0, 0), step=1, subtype='XYZ', min=-360, max=360, soft_min=-360, soft_max=360)
+
+	level : IntProperty(name="Number of Divisions", default=2, step=1, min=1, max=6, soft_min=1, soft_max=6)
+	radius : FloatProperty(name="Radius (roughly)", default=1.0, step=10, precision=3, min=0.001, max=100, soft_min=0.001, soft_max=100)
+	view_align : BoolProperty(name="Align View", default=False)
+	location : FloatVectorProperty(name="Location", default=(0.0, 0.0, 0.0), step=10, precision=3, subtype='XYZ', min=-100, max=100, soft_min=-100, soft_max=100)
+	rotation : IntVectorProperty(name="Rotation", default=(0, 0, 0), step=1, subtype='XYZ', min=-360, max=360, soft_min=-360, soft_max=360)
 	enter_editmode = False
-	
+
 	def execute(self, context):
 		isEdited = False
 		if (context.mode == 'EDIT_MESH'):
@@ -43,8 +44,8 @@ class AddSphereOnlySquare(bpy.types.Operator):
 		bpy.ops.transform.tosphere(value=1)
 		bpy.ops.object.mode_set(mode="OBJECT")
 		if (isEdited and False):
-			activeObj.select = True
-			context.scene.objects.active = activeObj
+			activeObj.select_set(True)
+			bpy.context.view_layer.objects.active = activeObj
 			bpy.ops.object.join()
 			bpy.ops.object.mode_set(mode="EDIT")
 		return {'FINISHED'}
@@ -54,7 +55,7 @@ class AddVertexOnlyObject(bpy.types.Operator):
 	bl_label = "Only Vertex"
 	bl_description = "Only 1 vertex meshes 3D adds to position of cursor"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		if (context.mode != 'OBJECT'):
 			bpy.ops.object.mode_set(mode="OBJECT")
@@ -63,10 +64,10 @@ class AddVertexOnlyObject(bpy.types.Operator):
 		me.update()
 		obj = bpy.data.objects.new("Vertex", me)
 		obj.data = me
-		bpy.context.scene.objects.link(obj)
+		bpy.context.collection.objects.link(obj)
 		bpy.ops.object.select_all(action='DESELECT')
-		obj.select = True
-		bpy.context.scene.objects.active = obj
+		obj.select_set(True)
+		bpy.bpy.context.view_layer.objects.active = obj
 		obj.location = context.space_data.cursor_location[:]
 		bpy.ops.object.mode_set(mode="EDIT")
 		context.tool_settings.mesh_select_mode = (True, False, False)
@@ -77,10 +78,10 @@ class CreateVertexGroupSplits(bpy.types.Operator):
 	bl_label = "Isolate by vertex groups"
 	bl_description = "Create separate each part of vertex groups applied mesh group"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	threshold = bpy.props.FloatProperty(name="Enabled Threshold", default=0.5, min=0, max=1, soft_min=0, soft_max=1, step=3, precision=2)
-	delete_source = bpy.props.BoolProperty(name="Delete Source", default=False)
-	
+
+	threshold : FloatProperty(name="Enabled Threshold", default=0.5, min=0, max=1, soft_min=0, soft_max=1, step=3, precision=2)
+	delete_source : BoolProperty(name="Delete Source", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (context.mode == 'OBJECT'):
@@ -89,13 +90,13 @@ class CreateVertexGroupSplits(bpy.types.Operator):
 					if (len(obj.vertex_groups)):
 						return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		for obj in context.selected_objects:
-			obj.select = False
+			obj.select_set(False)
 			if (obj.type != 'MESH'):
 				continue
 			me = obj.data
@@ -126,8 +127,8 @@ class CreateVertexGroupSplits(bpy.types.Operator):
 					new_me.from_pydata(new_verts, [], new_faces)
 					new_obj = bpy.data.objects.new(obj.name +":"+ vertex_group.name, new_me)
 					context.scene.objects.link(new_obj)
-					new_obj.select = True
-					context.scene.objects.active = new_obj
+					new_obj.select_set(True)
+					bpy.context.view_layer.objects.active = new_obj
 					new_obj.location = obj.location[:]
 					new_obj.rotation_mode = obj.rotation_mode
 					if (obj.rotation_mode == 'QUATERNION'):
@@ -166,7 +167,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -180,6 +181,6 @@ def menu(self, context):
 		self.layout.operator(AddSphereOnlySquare.bl_idname, icon='PLUGIN').location = context.space_data.cursor_location
 		self.layout.separator()
 		self.layout.operator(CreateVertexGroupSplits.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

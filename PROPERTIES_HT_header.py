@@ -2,6 +2,7 @@
 # "Propaties" Area > Header
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class ChangeContextTab(bpy.types.Operator):
 	bl_label = "Switch Properties Tab"
 	bl_description = "Switch properties tab in turn"
 	bl_options = {'REGISTER'}
-	
-	is_left = bpy.props.BoolProperty(name="To Left", default=False)
-	
+
+	is_left : BoolProperty(name="To Left", default=False)
+
 	def execute(self, context):
 		space_data = None
 		for area in context.screen.areas:
@@ -70,7 +71,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -82,6 +83,6 @@ def menu(self, context):
 		row = self.layout.row(align=True)
 		row.operator(ChangeContextTab.bl_idname, text="", icon='TRIA_LEFT').is_left = True
 		row.operator(ChangeContextTab.bl_idname, text="", icon='TRIA_RIGHT').is_left = False
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

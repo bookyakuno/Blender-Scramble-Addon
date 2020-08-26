@@ -2,6 +2,7 @@
 # "3D View" Area > "Mesh Edit" Mode > "U" Key
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class CopyOtherUVMenuOperator(bpy.types.Operator): #
 	bl_label = "Copy from other UV"
 	bl_description = "Active UV unwrapping can be copied from other UV"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type != 'MESH'):
@@ -27,7 +28,7 @@ class CopyOtherUVMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_uv_map_copy_other"
 	bl_label = "Copy from other UV"
 	bl_description = "Active UV unwrapping can be copied from other UV"
-	
+
 	def draw(self, context):
 		me = context.active_object.data
 		for uv in me.uv_layers:
@@ -38,9 +39,9 @@ class CopyOtherUV(bpy.types.Operator):
 	bl_label = "Copy from other UV"
 	bl_description = "Active UV unwrapping of selection can be copied from other UV"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	uv = bpy.props.StringProperty(name="Source UV")
-	
+
+	uv : StringProperty(name="Source UV")
+
 	def execute(self, context):
 		obj = context.active_object
 		me = obj.data
@@ -82,7 +83,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -93,6 +94,6 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
 		self.layout.operator(CopyOtherUVMenuOperator.bl_idname, icon="PLUGIN")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

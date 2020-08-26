@@ -2,6 +2,7 @@
 # "3D View" Area > "Pose" Mode > "Pose" Menu > "Constraints" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,10 +13,10 @@ class ConstraintIKToLimitRotation(bpy.types.Operator):
 	bl_label = "IK Rotation Limit to Constraints"
 	bl_description = "Copy rotation constraint restrictions IK rotation restriction settings"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isAdd = bpy.props.BoolProperty(name="If not add constraints", default=True)
-	isLocal = bpy.props.BoolProperty(name="Local Space", default=True)
-	
+
+	isAdd : BoolProperty(name="If not add constraints", default=True)
+	isLocal : BoolProperty(name="Local Space", default=True)
+
 	def execute(self, context):
 		for bone in context.selected_pose_bones:
 			if (self.isAdd):
@@ -62,7 +63,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -73,6 +74,6 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
 		self.layout.operator(ConstraintIKToLimitRotation.bl_idname, icon="PLUGIN")
-	if (context.preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
