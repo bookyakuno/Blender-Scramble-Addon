@@ -52,7 +52,7 @@ class CreateCustomShape(bpy.types.Operator):
 				context.scene.objects.link(meObj)
 				meObj.select_set(True)
 				bpy.context.view_layer.objects.active = meObj
-				meObj.draw_type = 'WIRE'
+				meObj.display_type = 'WIRE'
 				meObj.show_x_ray = True
 				meObj.constraints.new('COPY_TRANSFORMS')
 				meObj.constraints[-1].target = obj
@@ -528,7 +528,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 		('CONE', "Cone", "", 7),
 		('IMAGE', "Image", "", 8),
 		]
-	empty_draw_type : EnumProperty(items=items, name="Show RigidConstraints", default='SPHERE')
+	empty_display_type : EnumProperty(items=items, name="Show RigidConstraints", default='SPHERE')
 	is_parent_shape : BoolProperty(name="Track shape rigid body constraints", default=False)
 	rot_limit : FloatProperty(name="Rotation Limit", default=90, min=0, max=360, soft_min=0, soft_max=360, step=1, precision=3)
 	linear_damping : FloatProperty(name="Damping: Move", default=0.04, min=0, max=1, soft_min=0, soft_max=1, step=1, precision=3)
@@ -594,7 +594,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 		else:
 			obj.scale.x, obj.scale.y, obj.scale.z = self.shape_size, self.shape_size, self.shape_size
 		bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-		obj.draw_type = 'WIRE'
+		obj.display_type = 'WIRE'
 		arm_obj.select_set(True)
 		bpy.context.view_layer.objects.active = arm_obj
 		if base_bone:
@@ -622,7 +622,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 			obj.scale.y = (bone.head_local - bone.tail_local).length * 0.5
 			obj.scale.x, obj.scale.z = self.shape_size, self.shape_size
 			bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-			obj.draw_type = 'WIRE'
+			obj.display_type = 'WIRE'
 			const = arm_obj.pose.bones[bone.name].constraints.new('DAMPED_TRACK')
 			const.target = obj
 			obj.name = "RigidBody"
@@ -632,7 +632,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 			shape.rigid_body.linear_damping = self.linear_damping
 			shape.rigid_body.angular_damping = self.angular_damping
 
-			bpy.ops.object.empty_add(type=self.empty_draw_type, radius=1, view_align=False, location=(0, 0, 0))
+			bpy.ops.object.empty_add(type=self.empty_display_type, radius=1, view_align=False, location=(0, 0, 0))
 			obj = context.active_object
 			const = obj.constraints.new('COPY_TRANSFORMS')
 			const.target = arm_obj

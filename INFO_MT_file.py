@@ -411,7 +411,7 @@ class AllOnShowAllEdges(bpy.types.Operator):
 		return {'FINISHED'}
 
 class AllSetDrawType(bpy.types.Operator):
-	bl_idname = "object.all_set_draw_type"
+	bl_idname = "object.all_set_display_type"
 	bl_label = "Set all maximum drawing type"
 	bl_description = "Best drawing types for all objects in bulk set"
 	bl_options = {'REGISTER', 'UNDO'}
@@ -448,7 +448,7 @@ class AllSetDrawType(bpy.types.Operator):
 	def execute(self, context):
 		for obj in bpy.data.objects:
 			if (self.objType == obj.type or self.objType == "ALL"):
-				obj.draw_type = self.type
+				obj.display_type = self.type
 		return {'FINISHED'}
 
 class AllRenameObjectData(bpy.types.Operator):

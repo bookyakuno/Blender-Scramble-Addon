@@ -240,7 +240,7 @@ class AddBoolean(bpy.types.Operator):
 				modi = activeObj.modifiers.new("Boolean", 'BOOLEAN')
 				modi.object = obj
 				modi.operation = self.mode
-				obj.draw_type = 'BOUNDS'
+				obj.display_type = 'BOUNDS'
 		return {'FINISHED'}
 
 class ApplyBoolean(bpy.types.Operator):

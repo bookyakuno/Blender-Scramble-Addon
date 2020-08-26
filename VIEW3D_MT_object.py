@@ -91,7 +91,7 @@ class SubdivisionSetPie(bpy.types.Menu):
 		self.layout.menu_pie().operator("object.subdivision_set", text="Level: 1", icon="MOD_SUBSURF").level = 1
 
 class DrawTypePieOperator(bpy.types.Operator):
-	bl_idname = "object.draw_type_pie_operator"
+	bl_idname = "object.display_type_pie_operator"
 	bl_label = "Maximum Draw Type"
 	bl_description = "Is pie menu to set up drawing type"
 	bl_options = {'REGISTER', 'UNDO'}
@@ -100,7 +100,7 @@ class DrawTypePieOperator(bpy.types.Operator):
 		bpy.ops.wm.call_menu_pie(name=DrawTypePie.bl_idname)
 		return {'FINISHED'}
 class DrawTypePie(bpy.types.Menu):
-	bl_idname = "VIEW3D_MT_object_pie_draw_type"
+	bl_idname = "VIEW3D_MT_object_pie_display_type"
 	bl_label = "Maximum Draw Type"
 	bl_description = "Is pie menu to set up drawing type"
 
@@ -110,7 +110,7 @@ class DrawTypePie(bpy.types.Menu):
 		self.layout.menu_pie().operator(SetDrawType.bl_idname, text="Solid", icon="SOLID").type = "SOLID"
 		self.layout.menu_pie().operator(SetDrawType.bl_idname, text="Texture", icon="POTATO").type = "TEXTURED"
 class SetDrawType(bpy.types.Operator): #
-	bl_idname = "object.set_draw_type"
+	bl_idname = "object.set_display_type"
 	bl_label = "Setting maximum Drawing Type"
 	bl_description = "Set maximum drawing type"
 	bl_options = {'REGISTER'}
@@ -119,7 +119,7 @@ class SetDrawType(bpy.types.Operator): #
 
 	def execute(self, context):
 		for obj in context.selected_objects:
-			obj.draw_type = self.type
+			obj.display_type = self.type
 		return {'FINISHED'}
 
 ################

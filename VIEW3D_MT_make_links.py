@@ -61,7 +61,7 @@ class MakeLinkDisplaySetting(bpy.types.Operator):
 	show_x_ray : BoolProperty(name="X-ray", default=True)
 	show_transparent : BoolProperty(name="Alpha", default=True)
 	draw_bounds_type : BoolProperty(name="Bound Type", default=True)
-	draw_type : BoolProperty(name="Maximum Draw Type", default=True)
+	display_type : BoolProperty(name="Maximum Draw Type", default=True)
 	color : BoolProperty(name="Object Color", default=True)
 
 	@classmethod
@@ -92,8 +92,8 @@ class MakeLinkDisplaySetting(bpy.types.Operator):
 						obj.show_transparent = activeObj.show_transparent
 					if (self.draw_bounds_type):
 						obj.draw_bounds_type = activeObj.draw_bounds_type
-					if (self.draw_type):
-						obj.draw_type = activeObj.draw_type
+					if (self.display_type):
+						obj.display_type = activeObj.display_type
 					if (self.color):
 						obj.color = activeObj.color
 		return {'FINISHED'}

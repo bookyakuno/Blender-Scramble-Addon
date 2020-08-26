@@ -23,7 +23,7 @@ class CopyDisplaySetting(bpy.types.Operator):
 	copy_show_texture_space : BoolProperty(name="Texture Space", default=True)
 	copy_show_x_ray : BoolProperty(name="X-ray", default=True)
 	copy_show_transparent : BoolProperty(name="Alpha", default=True)
-	copy_draw_type : BoolProperty(name="Maximum Draw Type", default=True)
+	copy_display_type : BoolProperty(name="Maximum Draw Type", default=True)
 	copy_color : BoolProperty(name="Object Color", default=True)
 
 	@classmethod
@@ -52,7 +52,7 @@ class CopyDisplaySetting(bpy.types.Operator):
 		row.prop(self, 'copy_show_all_edges')
 		row.prop(self, 'copy_show_transparent')
 		row = self.layout.row()
-		row.prop(self, 'copy_draw_type')
+		row.prop(self, 'copy_display_type')
 		row.prop(self, 'copy_color')
 
 	def execute(self, context):
@@ -77,8 +77,8 @@ class CopyDisplaySetting(bpy.types.Operator):
 					obj.show_x_ray = active_obj.show_x_ray
 				if (self.copy_show_transparent):
 					obj.show_transparent = active_obj.show_transparent
-				if (self.copy_draw_type):
-					obj.draw_type = active_obj.draw_type
+				if (self.copy_display_type):
+					obj.display_type = active_obj.display_type
 				if (self.copy_color):
 					obj.color = active_obj.color[:]
 		return {'FINISHED'}
@@ -118,13 +118,13 @@ def menu(self, context):
 		row = self.layout.row()
 		sub = row.row(align=True)
 		op = sub.operator('wm.context_set_string', icon='MESH_CUBE', text="")
-		op.data_path, op.value = 'active_object.draw_type', 'BOUNDS'
+		op.data_path, op.value = 'active_object.display_type', 'BOUNDS'
 		op = sub.operator('wm.context_set_string', icon='WIRE', text="")
-		op.data_path, op.value = 'active_object.draw_type', 'WIRE'
+		op.data_path, op.value = 'active_object.display_type', 'WIRE'
 		op = sub.operator('wm.context_set_string', icon='SOLID', text="")
-		op.data_path, op.value = 'active_object.draw_type', 'SOLID'
+		op.data_path, op.value = 'active_object.display_type', 'SOLID'
 		op = sub.operator('wm.context_set_string', icon='TEXTURE_SHADED', text="")
-		op.data_path, op.value = 'active_object.draw_type', 'TEXTURED'
+		op.data_path, op.value = 'active_object.display_type', 'TEXTURED'
 		row.operator(CopyDisplaySetting.bl_idname, icon='MESH_UVSPHERE')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

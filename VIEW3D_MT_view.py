@@ -254,7 +254,7 @@ class LayerPie(bpy.types.Menu):
 				objs.append(obj)
 		if (objs):
 			for obj in objs:
-				if (obj.draw_type != 'WIRE'):
+				if (obj.display_type != 'WIRE'):
 					break
 			else:
 				isHalf = True
@@ -288,12 +288,12 @@ class LayerPieRun(bpy.types.Operator): #
 			for obj in context.blend_data.objects:
 				if (obj.layers[nr]):
 					obj.show_all_edges = True
-					obj.draw_type = 'WIRE'
+					obj.display_type = 'WIRE'
 		elif (self.unhalf):
 			context.scene.layers[nr] = True
 			for obj in context.blend_data.objects:
 				if (obj.layers[nr]):
-					obj.draw_type = 'TEXTURED'
+					obj.display_type = 'TEXTURED'
 		elif (self.extend):
 			context.scene.layers[nr] = not context.scene.layers[nr]
 		else:
