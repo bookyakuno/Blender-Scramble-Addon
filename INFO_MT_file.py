@@ -1,5 +1,5 @@
-# 「情報」エリア > 「ファイル」メニュー
-# "Info" Area > "File" Menu
+# 「トップバー」エリア > 「ファイル」メニュー
+# "TOPBAR" Area > "File" Menu
 
 import bpy
 import mathutils
@@ -36,7 +36,7 @@ class RecoverLatestAutoSave(bpy.types.Operator):
 	
 	@classmethod
 	def poll(cls, context):
-		tempPath = context.user_preferences.filepaths.temporary_directory
+		tempPath = context.preferences.filepaths.temporary_directory
 		if (not tempPath):
 			return False
 		for fileName in fnmatch.filter(os.listdir(tempPath), "*.blend"):
@@ -45,7 +45,7 @@ class RecoverLatestAutoSave(bpy.types.Operator):
 		return False
 	
 	def execute(self, context):
-		tempPath = context.user_preferences.filepaths.temporary_directory
+		tempPath = context.preferences.filepaths.temporary_directory
 		lastFile = None
 		for fileName in fnmatch.filter(os.listdir(tempPath), "*.blend"):
 			path = os.path.join(tempPath, fileName)
@@ -917,12 +917,51 @@ class EntireProcessPhysicsMenu(bpy.types.Menu):
 		self.layout.operator(AllSetPhysicsFrames.bl_idname, icon='PLUGIN')
 
 ################
+# クラスの登録 #
+################
+
+classes = [
+	RestartBlender,
+	RecoverLatestAutoSave,
+	SaveMainfileUnmassage,
+	LoadLastFile,
+	RenameDataBlocks,
+	AllOnShowAllEdges,
+	AllSetDrawType,
+	AllRenameObjectData,
+	AllSetMaterialReceiveTransparent,
+	AllSetMaterialColorRamp,
+	AllSetMaterialFreestyleColor,
+	AllSetMaterialFreestyleColorByDiffuse,
+	AllSetMaterialObjectColor,
+	AllSetBumpMethod,
+	AllRenameTextureFileName,
+	FixEmptyTextureUVLayer,
+	AllSetPhysicsFrames,
+	EntireProcessMenu,
+	EntireProcessObjectMenu,
+	EntireProcessMaterialMenu,
+	EntireProcessTextureMenu,
+	EntireProcessImageMenu,
+	EntireProcessPhysicsMenu
+]
+
+def register():
+	for cls in classes:
+		bpy.utils.register_class(cls)
+
+def unregister():
+	for cls in classes:
+		bpy.utils.unregister_class(cls)
+
+
+################
 # メニュー追加 #
 ################
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.user_preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -943,6 +982,6 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.separator()
 		self.layout.menu(EntireProcessMenu.bl_idname, icon='PLUGIN')
-	if (context.user_preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
