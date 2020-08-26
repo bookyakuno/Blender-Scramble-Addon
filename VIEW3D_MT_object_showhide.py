@@ -2,6 +2,7 @@
 # "3D View" Area > "Object" Mode > "Object" Menu > "Show/Hide" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class hide_view_clear_unselect(bpy.types.Operator):
 	bl_label = "Show Hidden (non-select)"
 	bl_description = "Does not display objects were hidden again, select"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		pre_selectable_objects = []
 		for ob in context.selectable_objects:
@@ -28,7 +29,7 @@ class InvertHide(bpy.types.Operator):
 	bl_label = "Invert Show/Hide"
 	bl_description = "Flips object\'s view state and non-State"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		objs = []
 		for obj in bpy.data.objects:
@@ -48,7 +49,7 @@ class HideOnlyType(bpy.types.Operator):
 	bl_label = "Hide only type of objects"
 	bl_description = "Hides object of specific type are displayed"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		("MESH", "Mesh", "", 1),
 		("CURVE", "Curve", "", 2),
@@ -62,8 +63,8 @@ class HideOnlyType(bpy.types.Operator):
 		("LAMP", "Lamp", "", 10),
 		("SPEAKER", "Speaker", "", 11),
 		]
-	type = bpy.props.EnumProperty(items=items, name="Hide Object Type")
-	
+	type : EnumProperty(items=items, name="Hide Object Type")
+
 	def execute(self, context):
 		for obj in context.selectable_objects:
 			if (obj.type == self.type):
@@ -75,7 +76,7 @@ class HideExceptType(bpy.types.Operator):
 	bl_label = "Hide except type of objects"
 	bl_description = "Hides object non-specific type that is displayed"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		("MESH", "Mesh", "", 1),
 		("CURVE", "Curve", "", 2),
@@ -89,8 +90,8 @@ class HideExceptType(bpy.types.Operator):
 		("LAMP", "Lamp", "", 10),
 		("SPEAKER", "Speaker", "", 11),
 		]
-	type = bpy.props.EnumProperty(items=items, name="Extract Object Type")
-	
+	type : EnumProperty(items=items, name="Extract Object Type")
+
 	def execute(self, context):
 		for obj in context.selectable_objects:
 			if (obj.type != self.type):

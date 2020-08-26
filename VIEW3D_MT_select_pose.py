@@ -3,6 +3,7 @@
 
 import bpy
 import re
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -13,7 +14,7 @@ class SelectSerialNumberNameBone(bpy.types.Operator):
 	bl_label = "Select Numbered Bone"
 	bl_description = "Select bones with number names (example x.001)"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -28,7 +29,7 @@ class SelectSerialNumberNameBone(bpy.types.Operator):
 					if re.search(r'\.\d+$', bone.name):
 						return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -45,7 +46,7 @@ class SelectMoveSymmetryNameBones(bpy.types.Operator):
 	bl_label = "Symmetrical bones move select"
 	bl_description = "If you select X.R change selection to X.L, X.L if to X.R"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def GetMirrorBoneName(self, name):
 		new_name = re.sub(r'([\._])L$', r"\1R", name)
 		if (new_name != name): return new_name
@@ -64,7 +65,7 @@ class SelectMoveSymmetryNameBones(bpy.types.Operator):
 		new_name = re.sub(r'([\._])r([\._]\d+)$', r"\1l\2", name)
 		if (new_name != name): return new_name
 		return name
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -84,7 +85,7 @@ class SelectMoveSymmetryNameBones(bpy.types.Operator):
 						except KeyError:
 							pass
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -116,7 +117,7 @@ class SelectSameConstraintBone(bpy.types.Operator):
 	bl_label = "Select bone same constraints"
 	bl_description = "Select additional bone with active bone and same kind of constraint"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -130,7 +131,7 @@ class SelectSameConstraintBone(bpy.types.Operator):
 				for bone in bones:
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -154,7 +155,7 @@ class SelectSameNameBones(bpy.types.Operator):
 	bl_label = "Select bone of same name"
 	bl_description = "Select bones same names (example X X.001 X.002)"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -168,7 +169,7 @@ class SelectSameNameBones(bpy.types.Operator):
 				for bone in bones:
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -188,7 +189,7 @@ class SelectSymmetryNameBones(bpy.types.Operator):
 	bl_label = "Select add name symmetrical bone"
 	bl_description = "If you select X.R X.L also selected X.R X.L you select additional"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def GetMirrorBoneName(self, name):
 		new_name = re.sub(r'([\._])L$', r"\1R", name)
 		if (new_name != name): return new_name
@@ -207,7 +208,7 @@ class SelectSymmetryNameBones(bpy.types.Operator):
 		new_name = re.sub(r'([\._])r([\._]\d+)$', r"\1l\2", name)
 		if (new_name != name): return new_name
 		return name
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -227,7 +228,7 @@ class SelectSymmetryNameBones(bpy.types.Operator):
 						except KeyError:
 							pass
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -252,7 +253,7 @@ class SelectChildrenEnd(bpy.types.Operator):
 	bl_label = "Select end of bone"
 	bl_description = "Select bones child-child child\'s bones. And we will select to end"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -266,7 +267,7 @@ class SelectChildrenEnd(bpy.types.Operator):
 				for bone in bones:
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -292,7 +293,7 @@ class SelectParentEnd(bpy.types.Operator):
 	bl_label = "Select root of bone"
 	bl_description = "Choice bones parent => parent of parent bone. And we will select to end"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -306,7 +307,7 @@ class SelectParentEnd(bpy.types.Operator):
 				for bone in bones:
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -325,7 +326,7 @@ class SelectPath(bpy.types.Operator):
 	bl_label = "Select path of bones"
 	bl_description = "Select bones path"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		bones = []
@@ -344,7 +345,7 @@ class SelectPath(bpy.types.Operator):
 			if (parents[0].name == parents[1].name):
 				return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		pose = obj.pose
@@ -370,21 +371,21 @@ class SelectAxisOver(bpy.types.Operator):
 	bl_label = "Select Right Half"
 	bl_description = "Select right half of bone (other settings are also available)"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('0', "X", "", 1),
 		('1', "Y", "", 2),
 		('2', "Z", "", 3),
 		]
-	axis = bpy.props.EnumProperty(items=items, name="Axis")
+	axis : EnumProperty(items=items, name="Axis")
 	items = [
 		('-1', "-(Minus)", "", 1),
 		('1', "+(Plus)", "", 2),
 		]
-	direction = bpy.props.EnumProperty(items=items, name="Direction")
-	offset = bpy.props.FloatProperty(name="Offset", default=0, step=10, precision=3)
-	threshold = bpy.props.FloatProperty(name="Threshold", default=-0.0001, step=0.01, precision=4)
-	
+	direction : EnumProperty(items=items, name="Direction")
+	offset : FloatProperty(name="Offset", default=0, step=10, precision=3)
+	threshold : FloatProperty(name="Threshold", default=-0.0001, step=0.01, precision=4)
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -398,7 +399,7 @@ class SelectAxisOver(bpy.types.Operator):
 				for bone in bones:
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -426,9 +427,9 @@ class SelectOneAndPath(bpy.types.Operator):
 	bl_label = "Select bone and path"
 	bl_description = "Select path to it, select cursor part bone and"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	mouse_pos = bpy.props.IntVectorProperty(name="Mouse Position", size=2, options={'HIDDEN'})
-	
+
+	mouse_pos : IntVectorProperty(name="Mouse Position", size=2, options={'HIDDEN'})
+
 	@classmethod
 	def poll(cls, context):
 		bones = []
@@ -439,11 +440,11 @@ class SelectOneAndPath(bpy.types.Operator):
 			if len(context.selected_pose_bones):
 				return True
 		return False
-	
+
 	def invoke(self, context, event):
 		self.mouse_pos = event.mouse_region_x, event.mouse_region_y
 		return self.execute(context)
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		pose = obj.pose
@@ -479,7 +480,7 @@ class SelectGroupedMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_select_pose_grouped"
 	bl_label = "Select by relation (Extra)"
 	bl_description = "Ability to select all visible bones together with same properties menu"
-	
+
 	def draw(self, context):
 		self.layout.operator('pose.select_grouped', text="Layer", icon='PLUGIN').type = 'LAYER'
 		self.layout.operator('pose.select_grouped', text="Group", icon='PLUGIN').type = 'GROUP'
@@ -493,7 +494,7 @@ class ShortcutsMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_select_pose_shortcuts"
 	bl_label = "By Shortcuts"
 	bl_description = "Registering shortcut feature that might come in handy"
-	
+
 	def draw(self, context):
 		self.layout.operator(SelectOneAndPath.bl_idname, icon='PLUGIN')
 

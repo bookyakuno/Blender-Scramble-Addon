@@ -2,6 +2,7 @@
 # "Propaties" Area > "Render" Tab > "Bake" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,14 +13,14 @@ class NewBakeImage(bpy.types.Operator):
 	bl_label = "New image for bake"
 	bl_description = "New images used to bake quickly, is available"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	name = bpy.props.StringProperty(name="Name", default="Bake")
-	width = bpy.props.IntProperty(name="Width", default=1024, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL')
-	height = bpy.props.IntProperty(name="Height", default=1024, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL')
-	alpha = bpy.props.BoolProperty(name="Alpha", default=True)
-	float = bpy.props.BoolProperty(name="32-bit Float", default=False)
-	show_image = bpy.props.BoolProperty(name="Show Image", default=True)
-	
+
+	name : StringProperty(name="Name", default="Bake")
+	width : IntProperty(name="Width", default=1024, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL')
+	height : IntProperty(name="Height", default=1024, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL')
+	alpha : BoolProperty(name="Alpha", default=True)
+	float : BoolProperty(name="32-bit Float", default=False)
+	show_image : BoolProperty(name="Show Image", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (context.active_object):
@@ -27,10 +28,10 @@ class NewBakeImage(bpy.types.Operator):
 				if (len(context.active_object.data.uv_layers)):
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		new_image = bpy.data.images.new(self.name, self.width, self.height, self.alpha, self.float)
 		me = context.active_object.data

@@ -2,6 +2,7 @@
 # "User Prefences" Area > Header
 
 import bpy
+from bpy.props import *
 import zipfile, urllib.request, os, sys, re
 import csv, codecs
 import collections
@@ -26,7 +27,7 @@ class ChangeUserPreferencesTab(bpy.types.Operator):
 	bl_description = "Cycles user settings tab"
 	bl_options = {'REGISTER'}
 
-	is_left = bpy.props.BoolProperty(name="To Left", default=False)
+	is_left : BoolProperty(name="To Left", default=False)
 
 	def execute(self, context):
 		tabs = ['INTERFACE', 'EDITING', 'INPUT', 'ADDONS', 'THEMES', 'FILES', 'SYSTEM']
@@ -226,9 +227,9 @@ class RegisterLastCommandKeyconfig(bpy.types.Operator):
 
 
 
-	is_clipboard = bpy.props.BoolProperty(name="(Do Not Change)")
-	command = bpy.props.StringProperty(name="(Do Not Change)")
-	sub_command = bpy.props.StringProperty(name="(Do Not Change)")
+	is_clipboard : BoolProperty(name="(Do Not Change)")
+	command : StringProperty(name="(Do Not Change)")
+	sub_command : StringProperty(name="(Do Not Change)")
 	items = [
 		('Window', "Window", "", 1),
 		('Screen', "Screen", "", 2),
@@ -307,7 +308,7 @@ class RegisterLastCommandKeyconfig(bpy.types.Operator):
 		('Clip Graph Editor', "Clip Graph Editor", "", 75),
 		('Clip Dopesheet Editor', "Clip Deepseat Editor", "", 76),
 		]
-	key_map = bpy.props.EnumProperty(items=items, name="Effective Area")
+	key_map : EnumProperty(items=items, name="Effective Area")
 	items = [
 		('LEFTMOUSE', "Left Click", "", 1),
 		('MIDDLEMOUSE', "Click Wheel", "", 2),
@@ -427,17 +428,17 @@ class RegisterLastCommandKeyconfig(bpy.types.Operator):
 		('PAGE_DOWN', "PageDown Key", "", 116),
 		('END', "End Key", "", 117),
 		]
-	type = bpy.props.EnumProperty(items=items, name="Input Keys",update=update_func)
-	shift = bpy.props.BoolProperty(name="Shift key is modifier", default=False,update=update_func)
-	ctrl = bpy.props.BoolProperty(name="Set Ctrl modifier keys", default=False,update=update_func)
-	alt = bpy.props.BoolProperty(name="Alt key is modifier", default=False,update=update_func)
-	oskey = bpy.props.BoolProperty(name="oskey key is modifier", default=False,update=update_func)
+	type : EnumProperty(items=items, name="Input Keys",update=update_func)
+	shift : BoolProperty(name="Shift key is modifier", default=False,update=update_func)
+	ctrl : BoolProperty(name="Set Ctrl modifier keys", default=False,update=update_func)
+	alt : BoolProperty(name="Alt key is modifier", default=False,update=update_func)
+	oskey : BoolProperty(name="oskey key is modifier", default=False,update=update_func)
 
 
-	# bpy.types.Scene.shift = bpy.props.BoolProperty(update=update_func)
-	# bpy.types.Scene.ctrl = bpy.props.BoolProperty(update=update_func, default=True)
-	# bpy.types.Scene.alt = bpy.props.BoolProperty(update=update_func)
-	# bpy.types.Scene.oskey = bpy.props.BoolProperty(update=update_func)
+	# bpy.types.Scene.shift : BoolProperty(update=update_func)
+	# bpy.types.Scene.ctrl : BoolProperty(update=update_func, default=True)
+	# bpy.types.Scene.alt : BoolProperty(update=update_func)
+	# bpy.types.Scene.oskey : BoolProperty(update=update_func)
 
 	def execute(self, context):
 		keymap_item = context.window_manager.keyconfigs.user.keymaps[self.key_map].keymap_items.new(self.command, self.type, 'PRESS', False, self.shift, self.ctrl, self.alt, self.oskey)
@@ -592,12 +593,12 @@ class ImportKeyConfigXml(bpy.types.Operator):
 	bl_description = "game reads in XML format"
 	bl_options = {'REGISTER'}
 
-	filepath = bpy.props.StringProperty(subtype='FILE_PATH')
+	filepath : StringProperty(subtype='FILE_PATH')
 	items = [
 		('RESET', "Reset", "", 1),
 		('ADD', "Add", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Mode", default='ADD')
+	mode : EnumProperty(items=items, name="Mode", default='ADD')
 
 	def execute(self, context):
 		context.preferences.addons[__name__.partition('.')[0]].preferences.key_config_xml_path = self.filepath
@@ -695,7 +696,7 @@ class ExportKeyConfigXml(bpy.types.Operator):
 	bl_description = "Game save in XML format"
 	bl_options = {'REGISTER'}
 
-	filepath = bpy.props.StringProperty(subtype='FILE_PATH')
+	filepath : StringProperty(subtype='FILE_PATH')
 
 	def execute(self, context):
 		context.preferences.addons[__name__.partition('.')[0]].preferences.key_config_xml_path = self.filepath
@@ -841,8 +842,8 @@ class MoveKeyBindCategory(bpy.types.Operator):
 		('Clip Graph Editor', "Clip Graph Editor", "", 75),
 		('Clip Dopesheet Editor', "Clip Deepseat Editor", "", 76),
 		]
-	category = bpy.props.EnumProperty(items=items, name="Move Category")
-	source_delete = bpy.props.BoolProperty(name="Remove Original", default=True)
+	category : EnumProperty(items=items, name="Move Category")
+	source_delete : BoolProperty(name="Remove Original", default=True)
 
 	@classmethod
 	def poll(cls, context):

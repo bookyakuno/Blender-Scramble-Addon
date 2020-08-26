@@ -2,6 +2,7 @@
 # "Propaties" Area > "Armature" Tab > "Skeleton" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,18 +13,18 @@ class ShowAllBoneLayers(bpy.types.Operator):
 	bl_label = "View all bone layer"
 	bl_description = "All bone layer and then displays the"
 	bl_options = {'REGISTER'}
-	
+
 	layers = [False] * 32
 	layers[0] = True
-	pre_layers = bpy.props.BoolVectorProperty(name="Last Layer Information", size=32, default=layers[:])
-	
+	pre_layers : BoolVectorProperty(name="Last Layer Information", size=32, default=layers[:])
+
 	@classmethod
 	def poll(cls, context):
 		if (context.object):
 			if (context.object.type == 'ARMATURE'):
 				return True
 		return False
-	
+
 	def execute(self, context):
 		if (all(context.object.data.layers)):
 			context.object.data.layers = self.pre_layers[:]

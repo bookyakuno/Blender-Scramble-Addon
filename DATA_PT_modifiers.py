@@ -2,6 +2,7 @@
 # "Propaties" Area > "Modifiers" Tab
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -84,7 +85,7 @@ class SyncShowModifiers(bpy.types.Operator):
 		("1", "Rendering => View", "", 1),
 		("0", "View => Rendering", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Calculate", default="0")
+	mode : EnumProperty(items=items, name="Calculate", default="0")
 
 	@classmethod
 	def poll(cls, context):
@@ -145,9 +146,9 @@ class ApplyModifiersAndJoin(bpy.types.Operator):
 	bl_description = "integration from object\'s modifiers to apply all"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	unapply_subsurf = bpy.props.BoolProperty(name="Except Subsurf", default=True)
-	unapply_armature = bpy.props.BoolProperty(name="Except Armature", default=True)
-	unapply_mirror = bpy.props.BoolProperty(name="Except Mirror", default=False)
+	unapply_subsurf : BoolProperty(name="Except Subsurf", default=True)
+	unapply_armature : BoolProperty(name="Except Armature", default=True)
+	unapply_mirror : BoolProperty(name="Except Mirror", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -224,7 +225,7 @@ class AddBoolean(bpy.types.Operator):
 		('UNION', "Union", "", 2),
 		('DIFFERENCE', "Difference", "", 3),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Calculate")
+	mode : EnumProperty(items=items, name="Calculate")
 
 	@classmethod
 	def poll(cls, context):
@@ -253,7 +254,7 @@ class ApplyBoolean(bpy.types.Operator):
 		('UNION', "Union", "", 2),
 		('DIFFERENCE', "Difference", "", 3),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Calculate")
+	mode : EnumProperty(items=items, name="Calculate")
 
 	@classmethod
 	def poll(cls, context):
@@ -285,7 +286,7 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 	bl_description = "Sets number of subdivisions during rendering of selected object subsurfmodifaia"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	level = bpy.props.IntProperty(name="Number of Divisions", default=2, min=0, max=6)
+	level : IntProperty(name="Number of Divisions", default=2, min=0, max=6)
 
 	@classmethod
 	def poll(cls, context):
@@ -313,7 +314,7 @@ class EqualizeSubsurfLevel(bpy.types.Operator):
 		('ToRender', "Preview => Rendering", "", 1),
 		('ToPreview', "Rendering => Preview", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="How to set up")
+	mode : EnumProperty(items=items, name="How to set up")
 
 	@classmethod
 	def poll(cls, context):
@@ -401,9 +402,9 @@ class AddSubsurf(bpy.types.Operator):
 	bl_description = "Add subsurfmodifaia to selected object"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	subdivision_type = bpy.props.EnumProperty(items=[("CATMULL_CLARK", "Catmulclark", "", 1), ("SIMPLE", "Simple", "", 2)], name="Subdivision Method")
-	levels = bpy.props.IntProperty(name="Number of View", default=2, min=0, max=6)
-	render_levels = bpy.props.IntProperty(name="Number of Render", default=2, min=0, max=6)
+	subdivision_type : EnumProperty(items=[("CATMULL_CLARK", "Catmulclark", "", 1), ("SIMPLE", "Simple", "", 2)], name="Subdivision Method")
+	levels : IntProperty(name="Number of View", default=2, min=0, max=6)
+	render_levels : IntProperty(name="Number of Render", default=2, min=0, max=6)
 	use_subsurf_uv =  bpy.props.BoolProperty(name="Subdivide UV", default=True)
 	show_only_control_edges =  bpy.props.BoolProperty(name="Optimized View")
 
@@ -469,8 +470,8 @@ class QuickCurveDeform(bpy.types.Operator):
 		('NEG_Y', "-Y", "", 5),
 		('NEG_Z', "-Z", "", 6),
 		]
-	deform_axis = bpy.props.EnumProperty(items=items, name="Axis Deformation")
-	is_apply = bpy.props.BoolProperty(name="Apply Modifiers", default=False)
+	deform_axis : EnumProperty(items=items, name="Axis Deformation")
+	is_apply : BoolProperty(name="Apply Modifiers", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -532,9 +533,9 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 		('NEG_Y', "-Y", "", 5),
 		('NEG_Z', "-Z", "", 6),
 		]
-	deform_axis = bpy.props.EnumProperty(items=items, name="Axis Deformation")
-	use_merge_vertices = bpy.props.BoolProperty(name="Combine Vertices", default=True)
-	is_apply = bpy.props.BoolProperty(name="Apply Modifiers", default=False)
+	deform_axis : EnumProperty(items=items, name="Axis Deformation")
+	use_merge_vertices : BoolProperty(name="Combine Vertices", default=True)
+	is_apply : BoolProperty(name="Apply Modifiers", default=False)
 
 	@classmethod
 	def poll(cls, context):

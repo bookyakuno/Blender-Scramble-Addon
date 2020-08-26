@@ -2,6 +2,7 @@
 # "3D View" Area > "Mesh Edit" Mode > "Select" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,16 +13,16 @@ class SelectAxisLimit(bpy.types.Operator):
 	bl_label = "Select Vertex X=0"
 	bl_description = "Select vertex of X=0"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		("0", "X Axis", "", 1),
 		("1", "Y Axis", "", 2),
 		("2", "Z Axis", "", 3),
 		]
-	axis = bpy.props.EnumProperty(items=items, name="Axis")
-	offset = bpy.props.FloatProperty(name="Offset", default=0.0, step=10, precision=3)
-	threshold = bpy.props.FloatProperty(name="Threshold", default=0.0000001, min=0.0, soft_min=0.0, step=0.1, precision=10)
-	
+	axis : EnumProperty(items=items, name="Axis")
+	offset : FloatProperty(name="Offset", default=0.0, step=10, precision=3)
+	threshold : FloatProperty(name="Threshold", default=0.0000001, min=0.0, soft_min=0.0, step=0.1, precision=10)
+
 	def execute(self, context):
 		bpy.ops.object.mode_set(mode="OBJECT")
 		sel_mode = context.tool_settings.mesh_select_mode[:]
@@ -42,21 +43,21 @@ class SelectAxisOver(bpy.types.Operator):
 	bl_label = "Select Right Half"
 	bl_description = "Select right half of mesh (other settings too)"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		("0", "X Axis", "", 1),
 		("1", "Y Axis", "", 2),
 		("2", "Z Axis", "", 3),
 		]
-	axis = bpy.props.EnumProperty(items=items, name="Axis")
+	axis : EnumProperty(items=items, name="Axis")
 	items = [
 		("-1", "-(Minus)", "", 1),
 		("1", "+(Plus)", "", 2),
 		]
-	direction = bpy.props.EnumProperty(items=items, name="Direction")
-	offset = bpy.props.FloatProperty(name="Offset", default=0, step=10, precision=3)
-	threshold = bpy.props.FloatProperty(name="Threshold", default=0.0000001, step=0.1, precision=10)
-	
+	direction : EnumProperty(items=items, name="Direction")
+	offset : FloatProperty(name="Offset", default=0, step=10, precision=3)
+	threshold : FloatProperty(name="Threshold", default=0.0000001, step=0.1, precision=10)
+
 	def execute(self, context):
 		bpy.ops.object.mode_set(mode="OBJECT")
 		sel_mode = context.tool_settings.mesh_select_mode[:]

@@ -3,6 +3,7 @@
 
 import bpy, bmesh
 import math
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -13,14 +14,14 @@ class AddSphereOnlySquare(bpy.types.Operator):
 	bl_label = "Square Polygon Sphere"
 	bl_description = "Add sphere mesh is composed only of quadrilateral polygon"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	level = bpy.props.IntProperty(name="Number of Divisions", default=2, step=1, min=1, max=6, soft_min=1, soft_max=6)
-	radius = bpy.props.FloatProperty(name="Radius (roughly)", default=1.0, step=10, precision=3, min=0.001, max=100, soft_min=0.001, soft_max=100)
-	view_align = bpy.props.BoolProperty(name="Align View", default=False)
-	location = bpy.props.FloatVectorProperty(name="Location", default=(0.0, 0.0, 0.0), step=10, precision=3, subtype='XYZ', min=-100, max=100, soft_min=-100, soft_max=100)
-	rotation = bpy.props.IntVectorProperty(name="Rotation", default=(0, 0, 0), step=1, subtype='XYZ', min=-360, max=360, soft_min=-360, soft_max=360)
+
+	level : IntProperty(name="Number of Divisions", default=2, step=1, min=1, max=6, soft_min=1, soft_max=6)
+	radius : FloatProperty(name="Radius (roughly)", default=1.0, step=10, precision=3, min=0.001, max=100, soft_min=0.001, soft_max=100)
+	view_align : BoolProperty(name="Align View", default=False)
+	location : FloatVectorProperty(name="Location", default=(0.0, 0.0, 0.0), step=10, precision=3, subtype='XYZ', min=-100, max=100, soft_min=-100, soft_max=100)
+	rotation : IntVectorProperty(name="Rotation", default=(0, 0, 0), step=1, subtype='XYZ', min=-360, max=360, soft_min=-360, soft_max=360)
 	enter_editmode = False
-	
+
 	def execute(self, context):
 		isEdited = False
 		if (context.mode == 'EDIT_MESH'):
@@ -54,7 +55,7 @@ class AddVertexOnlyObject(bpy.types.Operator):
 	bl_label = "Only Vertex"
 	bl_description = "Only 1 vertex meshes 3D adds to position of cursor"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		if (context.mode != 'OBJECT'):
 			bpy.ops.object.mode_set(mode="OBJECT")
@@ -77,10 +78,10 @@ class CreateVertexGroupSplits(bpy.types.Operator):
 	bl_label = "Isolate by vertex groups"
 	bl_description = "Create separate each part of vertex groups applied mesh group"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	threshold = bpy.props.FloatProperty(name="Enabled Threshold", default=0.5, min=0, max=1, soft_min=0, soft_max=1, step=3, precision=2)
-	delete_source = bpy.props.BoolProperty(name="Delete Source", default=False)
-	
+
+	threshold : FloatProperty(name="Enabled Threshold", default=0.5, min=0, max=1, soft_min=0, soft_max=1, step=3, precision=2)
+	delete_source : BoolProperty(name="Delete Source", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (context.mode == 'OBJECT'):
@@ -89,10 +90,10 @@ class CreateVertexGroupSplits(bpy.types.Operator):
 					if (len(obj.vertex_groups)):
 						return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		for obj in context.selected_objects:
 			obj.select = False

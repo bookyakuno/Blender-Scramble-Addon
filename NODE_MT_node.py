@@ -2,6 +2,7 @@
 # "Node Editor" Area > "Node" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,10 +13,10 @@ class CopyAllMaterialNode(bpy.types.Operator):
 	bl_label = "Copy to other material shader node"
 	bl_description = "Copies of other material shader nodes are displayed"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isOnlySelected = bpy.props.BoolProperty(name="Selected Object Only", default=False)
-	isOnlyUseNode = bpy.props.BoolProperty(name="Only Used Nodes", default=False)
-	
+
+	isOnlySelected : BoolProperty(name="Selected Object Only", default=False)
+	isOnlyUseNode : BoolProperty(name="Only Used Nodes", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -70,7 +71,7 @@ class CopyAllMaterialNode(bpy.types.Operator):
 		activeObj.select = True
 		context.scene.objects.active = activeObj
 		return {'FINISHED'}
-	
+
 	def invoke(self, context, event):
 		if (context.space_data.tree_type != 'ShaderNodeTree'):
 			self.report(type={"ERROR"}, message="Please run shader nodes")

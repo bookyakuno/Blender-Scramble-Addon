@@ -3,6 +3,7 @@
 
 import bpy, bmesh, mathutils
 import re, random
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -13,16 +14,16 @@ class VertexGroupTransferWeightObjmode(bpy.types.Operator):
 	bl_label = "Weight Transfer"
 	bl_description = "From mesh during selection of other active forwarding weight paint"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isDeleteWeights = bpy.props.BoolProperty(name="Befere delete all weights", default=True)
+
+	isDeleteWeights : BoolProperty(name="Befere delete all weights", default=True)
 	items = [
 		('WT_BY_INDEX', "Index of Vertex", "", 1),
 		('WT_BY_NEAREST_VERTEX', "Nearest Vertex", "", 2),
 		('WT_BY_NEAREST_FACE', "Recently Face", "", 3),
 		('WT_BY_NEAREST_VERTEX_IN_FACE', "In-Face Nearest Vertex", "", 4),
 		]
-	method = bpy.props.EnumProperty(items=items, name="Method", default="WT_BY_NEAREST_VERTEX")
-	
+	method : EnumProperty(items=items, name="Method", default="WT_BY_NEAREST_VERTEX")
+
 	def execute(self, context):
 		if (self.isDeleteWeights):
 			try:
@@ -37,7 +38,7 @@ class ToggleSmooth(bpy.types.Operator):
 	bl_label = "Toggle Smooth/Flat"
 	bl_description = "Toggles selected mesh object smooth / flat state"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -71,11 +72,11 @@ class VertexGroupTransfer(bpy.types.Operator):
 	bl_label = "Transfer Vertex Group"
 	bl_description = "Transfers to other selected mesh vertex group active mesh"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	vertex_group_remove_all = bpy.props.BoolProperty(name="Delete all vertex groups first", default=False)
-	vertex_group_clean = bpy.props.BoolProperty(name="Clean Vertex Groups", default=True)
-	vertex_group_delete = bpy.props.BoolProperty(name="Delete no-assignment vertex group", default=True)
-	
+
+	vertex_group_remove_all : BoolProperty(name="Delete all vertex groups first", default=False)
+	vertex_group_clean : BoolProperty(name="Clean Vertex Groups", default=True)
+	vertex_group_delete : BoolProperty(name="Delete no-assignment vertex group", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) <= 1):
@@ -127,9 +128,9 @@ class VertexGroupAverageAll(bpy.types.Operator):
 	bl_label = "Fill average weight of all vertices"
 	bl_description = "In average weight of all, fills all vertices"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	strength = bpy.props.FloatProperty(name="Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
-	
+
+	strength : FloatProperty(name="Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -180,12 +181,12 @@ class CreateVertexToMetaball(bpy.types.Operator):
 	bl_label = "Hook Metaballs"
 	bl_description = "Have made new metaballs to vertices of selected mesh object"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	name = bpy.props.StringProperty(name="Metaball Name", default="Mball")
-	size = bpy.props.FloatProperty(name="Size", default=0.1, min=0.001, max=10, soft_min=0.001, soft_max=10, step=1, precision=3)
-	resolution = bpy.props.FloatProperty(name="Resolution", default=0.1, min=0.001, max=10, soft_min=0.001, soft_max=10, step=0.5, precision=3)
-	isUseVg = bpy.props.BoolProperty(name="Size from vertex group", default=False)
-	
+
+	name : StringProperty(name="Metaball Name", default="Mball")
+	size : FloatProperty(name="Size", default=0.1, min=0.001, max=10, soft_min=0.001, soft_max=10, step=1, precision=3)
+	resolution : FloatProperty(name="Resolution", default=0.1, min=0.001, max=10, soft_min=0.001, soft_max=10, step=0.5, precision=3)
+	isUseVg : BoolProperty(name="Size from vertex group", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -233,11 +234,11 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 	bl_label = "Metaballs to GreasePencil"
 	bl_description = "metaballs align with active grease pencil"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	dissolve_verts_count = bpy.props.IntProperty(name="Density", default=3, min=1, max=100, soft_min=1, soft_max=100, step=1)
-	radius = bpy.props.FloatProperty(name="Metaball Size", default=0.05, min=0, max=1, soft_min=0, soft_max=1, step=0.2, precision=3)
-	resolution = bpy.props.FloatProperty(name="Metaball Resolution", default=0.05, min=0.001, max=1, soft_min=0.001, soft_max=1, step=0.2, precision=3)
-	
+
+	dissolve_verts_count : IntProperty(name="Density", default=3, min=1, max=100, soft_min=1, soft_max=100, step=1)
+	radius : FloatProperty(name="Metaball Size", default=0.05, min=0, max=1, soft_min=0, soft_max=1, step=0.2, precision=3)
+	resolution : FloatProperty(name="Metaball Resolution", default=0.05, min=0.001, max=1, soft_min=0.001, soft_max=1, step=0.2, precision=3)
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.scene.grease_pencil):
@@ -284,13 +285,13 @@ class CreateMeshImitateArmature(bpy.types.Operator):
 	bl_label = "Creating an armature to mimic mesh deformation"
 	bl_description = "Creates new armature to follow active mesh objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	bone_length = bpy.props.FloatProperty(name="Bone Length", default=0.1, min=0, max=10, soft_min=0, soft_max=10, step=1, precision=3)
-	use_normal = bpy.props.BoolProperty(name="Rotate From Normal", default=False)
-	add_edge = bpy.props.BoolProperty(name="Add bones to edge", default=False)
-	vert_bone_name = bpy.props.StringProperty(name="Bone name at vertex", default="Vertex")
-	edge_bone_name = bpy.props.StringProperty(name="Bone name of edge parts", default="Edge")
-	
+
+	bone_length : FloatProperty(name="Bone Length", default=0.1, min=0, max=10, soft_min=0, soft_max=10, step=1, precision=3)
+	use_normal : BoolProperty(name="Rotate From Normal", default=False)
+	add_edge : BoolProperty(name="Add bones to edge", default=False)
+	vert_bone_name : StringProperty(name="Bone name at vertex", default="Vertex")
+	edge_bone_name : StringProperty(name="Bone name of edge parts", default="Edge")
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -361,11 +362,11 @@ class CreateVertexGroupsArmature(bpy.types.Operator):
 	bl_label = "Create bone to vertices of vertex groups"
 	bl_description = "Create vertex group names bone vertices where vertex group of selected objects that are assigned"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	armature_name = bpy.props.StringProperty(name="Armature Name", default="Armature")
-	use_vertex_group_name = bpy.props.BoolProperty(name="Bone name to vertex group name", default=True)
-	bone_length = bpy.props.FloatProperty(name="Bone Length", default=0.5, min=0, max=10, soft_min=0, soft_max=10, step=1, precision=3)
-	
+
+	armature_name : StringProperty(name="Armature Name", default="Armature")
+	use_vertex_group_name : BoolProperty(name="Bone name to vertex group name", default=True)
+	bone_length : FloatProperty(name="Bone Length", default=0.5, min=0, max=10, soft_min=0, soft_max=10, step=1, precision=3)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -415,13 +416,13 @@ class CreateSolidifyEdge(bpy.types.Operator):
 	bl_label = "Create line drawing by solidify modifier"
 	bl_description = "Add to thicken modi contour drawing selection"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	use_render = bpy.props.BoolProperty(name="Apply Render", default=False)
-	thickness = bpy.props.FloatProperty(name="Thickness of Lines", default=0.01, min=0, max=1, soft_min=0, soft_max=1, step=0.1, precision=3)
-	color = bpy.props.FloatVectorProperty(name="Line Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
-	use_rim = bpy.props.BoolProperty(name="Fill face to edge", default=False)
-	show_backface_culling = bpy.props.BoolProperty(name="On Backface Culling", default=True)
-	
+
+	use_render : BoolProperty(name="Apply Render", default=False)
+	thickness : FloatProperty(name="Thickness of Lines", default=0.01, min=0, max=1, soft_min=0, soft_max=1, step=0.1, precision=3)
+	color : FloatVectorProperty(name="Line Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
+	use_rim : BoolProperty(name="Fill face to edge", default=False)
+	show_backface_culling : BoolProperty(name="On Backface Culling", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -453,13 +454,13 @@ class CreateSolidifyEdge(bpy.types.Operator):
 				"""
 				pass
 			context.scene.objects.active = obj
-			
+
 			mtl = bpy.data.materials.new(obj.name+"Lines")
 			mtl.use_shadeless = True
 			mtl.diffuse_color = self.color
 			mtl.use_nodes = True
 			mtl.use_transparency = True
-			
+
 			for n in mtl.node_tree.nodes:
 				if (n.bl_idname == 'ShaderNodeMaterial'):
 					n.material = mtl
@@ -469,12 +470,12 @@ class CreateSolidifyEdge(bpy.types.Operator):
 				if (n.bl_idname == 'ShaderNodeOutput'):
 					link_output = n.inputs[1]
 			mtl.node_tree.links.new(link_input, link_output)
-			
+
 			slot_index = len(obj.material_slots)
 			bpy.ops.object.material_slot_add()
 			slot = obj.material_slots[-1]
 			slot.material = mtl
-			
+
 			mod = obj.modifiers.new("Line", 'SOLIDIFY')
 			mod.use_flip_normals = True
 			if (not self.use_rim):
@@ -500,9 +501,9 @@ class SetRenderHide(bpy.types.Operator):
 	bl_label = "Limit Rendering Selected"
 	bl_description = "setting does not render selected object"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	reverse = bpy.props.BoolProperty(name="No Render", default=True)
-	
+
+	reverse : BoolProperty(name="No Render", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -518,9 +519,9 @@ class SyncRenderHide(bpy.types.Operator):
 	bl_label = "Or to render \"show / hide\" to sync"
 	bl_description = "Synchronize display / hide status and whether or not to render objects in current layer"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isAll = bpy.props.BoolProperty(name="All Objects", default=False)
-	
+
+	isAll : BoolProperty(name="All Objects", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -549,9 +550,9 @@ class AllResetHideSelect(bpy.types.Operator):
 	bl_label = "Clear all selected limits"
 	bl_description = "Removes all non-select settings (vice versa)"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	reverse = bpy.props.BoolProperty(name="Set Unselect", default=False)
-	
+
+	reverse : BoolProperty(name="Set Unselect", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in bpy.data.objects:
@@ -570,9 +571,9 @@ class SetUnselectHideSelect(bpy.types.Operator):
 	bl_label = "Limit select to non-selected"
 	bl_description = "Cannot select object other than selection of"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	reverse = bpy.props.BoolProperty(name="Set Unselect", default=True)
-	
+
+	reverse : BoolProperty(name="Set Unselect", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in bpy.data.objects:
@@ -594,9 +595,9 @@ class SetHideSelect(bpy.types.Operator):
 	bl_label = "Limit Select"
 	bl_description = "Can\'t select selected object"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	reverse = bpy.props.BoolProperty(name="Set Unselect", default=True)
-	
+
+	reverse : BoolProperty(name="Set Unselect", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -618,10 +619,10 @@ class RenameObjectRegularExpression(bpy.types.Operator):
 	bl_label = "Replace object names by regular expression"
 	bl_description = "Name of currently selected object replace with regular expressions"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	pattern = bpy.props.StringProperty(name="Before replace (regular expressions)", default="")
-	repl = bpy.props.StringProperty(name="After", default="")
-	
+
+	pattern : StringProperty(name="Before replace (regular expressions)", default="")
+	repl : StringProperty(name="After", default="")
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -641,7 +642,7 @@ class EqualizeObjectNameAndDataName(bpy.types.Operator):
 	bl_label = "Sync object name and data name"
 	bl_description = "same object and data names for selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -662,10 +663,10 @@ class ApplyObjectColor(bpy.types.Operator):
 	bl_label = "Enable object color + set color"
 	bl_description = "Object color of selected object and sets color,"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	color = bpy.props.FloatVectorProperty(name="Color", default=(0, 0, 0), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
-	use_random = bpy.props.BoolProperty(name="Use Random Colors", default=True)
-	
+
+	color : FloatVectorProperty(name="Color", default=(0, 0, 0), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
+	use_random : BoolProperty(name="Use Random Colors", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -691,10 +692,10 @@ class ClearObjectColor(bpy.types.Operator):
 	bl_label = "Disable object color + set color"
 	bl_description = "To disable object color of selected object, sets color"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	set_color = bpy.props.BoolProperty(name="Set Color", default=False)
-	color = bpy.props.FloatVectorProperty(name="Color", default=(1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
-	
+
+	set_color : BoolProperty(name="Set Color", default=False)
+	color : FloatVectorProperty(name="Color", default=(1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -718,13 +719,13 @@ class ParentSetApplyModifiers(bpy.types.Operator):
 	bl_label = "Applied Modifiers and Create Parent"
 	bl_description = "Create parent/child relationship after applying modifiers of parent object"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('VERTEX', "Vertex", "", 1),
 		('VERTEX_TRI', "Vertex (triangle)", "", 2),
 		]
-	type = bpy.props.EnumProperty(items=items, name="Calculate")
-	
+	type : EnumProperty(items=items, name="Calculate")
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -785,12 +786,12 @@ class CreateRopeMesh(bpy.types.Operator):
 	bl_label = "Create rope-shaped mesh from curves"
 	bl_description = "Creates mesh like rope along curve object is active or snake new"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	vertices = bpy.props.IntProperty(name="Number of Vertices", default=32, min=3, soft_min=3, max=999, soft_max=999, step=1)
-	radius = bpy.props.FloatProperty(name="Radius", default=0.1, step=1, precision=3, min=0, soft_min=0, max=99, soft_max=99)
-	number_cuts = bpy.props.IntProperty(name="Number of Divisions", default=32, min=2, soft_min=2, max=999, soft_max=999, step=1)
-	resolution_u = bpy.props.IntProperty(name="Resolution of Curve", default=64, min=1, soft_min=1, max=999, soft_max=999, step=1)
-	
+
+	vertices : IntProperty(name="Number of Vertices", default=32, min=3, soft_min=3, max=999, soft_max=999, step=1)
+	radius : FloatProperty(name="Radius", default=0.1, step=1, precision=3, min=0, soft_min=0, max=99, soft_max=99)
+	number_cuts : IntProperty(name="Number of Divisions", default=32, min=2, soft_min=2, max=999, soft_max=999, step=1)
+	resolution_u : IntProperty(name="Resolution of Curve", default=64, min=1, soft_min=1, max=999, soft_max=999, step=1)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -804,7 +805,7 @@ class CreateRopeMesh(bpy.types.Operator):
 			pre_use_stretch = activeObj.data.use_stretch
 			pre_use_deform_bounds = activeObj.data.use_deform_bounds
 			bpy.ops.object.transform_apply_all()
-			
+
 			bpy.ops.mesh.primitive_cylinder_add(vertices=self.vertices, radius=self.radius, depth=1, end_fill_type='NOTHING', view_align=False, enter_editmode=True, location=(0, 0, 0), rotation=(0, 1.5708, 0))
 			bpy.ops.mesh.select_all(action='DESELECT')
 			context.tool_settings.mesh_select_mode = [False, True, False]
@@ -812,7 +813,7 @@ class CreateRopeMesh(bpy.types.Operator):
 			bpy.ops.mesh.select_all(action='INVERT')
 			bpy.ops.mesh.subdivide(number_cuts=self.number_cuts, smoothness=0)
 			bpy.ops.object.mode_set(mode='OBJECT')
-			
+
 			meshObj = context.active_object
 			modi = meshObj.modifiers.new("temp", 'CURVE')
 			modi.object = activeObj
@@ -820,7 +821,7 @@ class CreateRopeMesh(bpy.types.Operator):
 			activeObj.data.use_deform_bounds = True
 			activeObj.data.resolution_u = self.resolution_u
 			bpy.ops.object.modifier_apply(apply_as='DATA', modifier=modi.name)
-			
+
 			activeObj.data.use_stretch = pre_use_stretch
 			activeObj.data.use_deform_bounds = pre_use_deform_bounds
 		return {'FINISHED'}
@@ -830,18 +831,18 @@ class MoveBevelObject(bpy.types.Operator):
 	bl_label = "Bevel object move section"
 	bl_description = "Curve beveled objects that move and selection curve section"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('START', "Top", "", 1),
 		('END', "End", "", 2),
 		('CENTER', "Center", "", 3),
 		]
-	move_position = bpy.props.EnumProperty(items=items, name="Move Location", default='END')
-	use_duplicate = bpy.props.BoolProperty(name="Copy Bevel", default=True)
-	delete_pre_bevel = bpy.props.BoolProperty(name="Delete original bevel object", default=False)
-	tilt = bpy.props.FloatProperty(name="Z Angle", default=0.0, min=-3.14159265359, max=3.14159265359, soft_min=-3.14159265359, soft_max=3.14159265359, step=1, precision=1, subtype='ANGLE')
-	use_2d = bpy.props.BoolProperty(name="To 2D Curve", default=True)
-	
+	move_position : EnumProperty(items=items, name="Move Location", default='END')
+	use_duplicate : BoolProperty(name="Copy Bevel", default=True)
+	delete_pre_bevel : BoolProperty(name="Delete original bevel object", default=False)
+	tilt : FloatProperty(name="Z Angle", default=0.0, min=-3.14159265359, max=3.14159265359, soft_min=-3.14159265359, soft_max=3.14159265359, step=1, precision=1, subtype='ANGLE')
+	use_2d : BoolProperty(name="To 2D Curve", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		for obj in context.selected_objects:
@@ -931,7 +932,7 @@ class MoveBevelObject(bpy.types.Operator):
 			base_point.resize_3d()
 			sub_point.resize_3d()
 			bevel_object.location = base_point
-			
+
 			vec = sub_point - base_point
 			vec.normalize()
 			up = mathutils.Vector((0,0,1))
@@ -961,7 +962,7 @@ class RenderHideMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_render_hide"
 	bl_label = "Rendering Limit"
 	bl_description = "Menu object rendering limits involved"
-	
+
 	def draw(self, context):
 		self.layout.operator(SetRenderHide.bl_idname, text="Limit Rendering Selected", icon="PLUGIN").reverse = True
 		self.layout.operator('object.isolate_type_render')
@@ -975,7 +976,7 @@ class HideSelectMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_hide_select"
 	bl_label = "Select Limit"
 	bl_description = "Menu selection limits relationships between objects"
-	
+
 	def draw(self, context):
 		self.layout.operator(SetHideSelect.bl_idname, text="Limit Select", icon="PLUGIN").reverse = True
 		self.layout.operator(SetUnselectHideSelect.bl_idname, icon="PLUGIN").reverse = True
@@ -986,7 +987,7 @@ class ObjectNameMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_object_name"
 	bl_label = "Object Name"
 	bl_description = "Object Name of Menu"
-	
+
 	def draw(self, context):
 		self.layout.operator(RenameObjectRegularExpression.bl_idname, icon="PLUGIN")
 		self.layout.operator(EqualizeObjectNameAndDataName.bl_idname, icon="PLUGIN")
@@ -995,7 +996,7 @@ class ObjectColorMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_object_color"
 	bl_label = "Object Color"
 	bl_description = "Object color operators menu"
-	
+
 	def draw(self, context):
 		self.layout.operator(ApplyObjectColor.bl_idname, icon="PLUGIN")
 		self.layout.operator(ClearObjectColor.bl_idname, icon="PLUGIN")
@@ -1004,7 +1005,7 @@ class ParentMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_parent"
 	bl_label = "Parent/Child Relation"
 	bl_description = "Parent/Child Menu"
-	
+
 	def draw(self, context):
 		self.layout.operator(ParentSetApplyModifiers.bl_idname, icon="PLUGIN", text="Modifiers apply => + vertex (triangle)").type = 'VERTEX_TRI'
 
@@ -1012,7 +1013,7 @@ class CurveMenu(bpy.types.Menu):
 	bl_idname = "view3d_mt_object_specials_curve"
 	bl_label = "Curve"
 	bl_description = "Curve Operators"
-	
+
 	def draw(self, context):
 		self.layout.operator(CreateRopeMesh.bl_idname, icon="PLUGIN")
 		self.layout.operator(MoveBevelObject.bl_idname, icon="PLUGIN")
@@ -1021,7 +1022,7 @@ class SpecialsMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_specials"
 	bl_label = "Special Processing"
 	bl_description = "Special actions menu"
-	
+
 	def draw(self, context):
 		self.layout.operator(CreateVertexToMetaball.bl_idname, icon="PLUGIN")
 		self.layout.operator(AddGreasePencilPathMetaballs.bl_idname, icon="PLUGIN")

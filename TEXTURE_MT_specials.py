@@ -2,6 +2,7 @@
 # "Propaties" Area > "Texture" Tab > List Right ▼
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class RenameTextureFileName(bpy.types.Operator):
 	bl_label = "Image File name to Texture Name"
 	bl_description = "file name of external images using name of active texture"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isExt = bpy.props.BoolProperty(name="Include Extension", default=True)
-	
+
+	isExt : BoolProperty(name="Include Extension", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.texture):
@@ -52,7 +53,7 @@ class RemoveAllTextureSlots(bpy.types.Operator):
 	bl_label = "Clear all texture slots"
 	bl_description = "Empties all active material texture slots"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -74,7 +75,7 @@ class SlotMoveTop(bpy.types.Operator):
 	bl_label = "To Top"
 	bl_description = "Move active texture slot at top"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -103,7 +104,7 @@ class SlotMoveBottom(bpy.types.Operator):
 	bl_label = "To Bottom"
 	bl_description = "Move active texture slot to bottom"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -139,9 +140,9 @@ class RemoveUnenabledSlots(bpy.types.Operator):
 	bl_label = "Remove Invalid Texture"
 	bl_description = "Removes all textures have turned off"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	is_truncate = bpy.props.BoolProperty(name="Cut", default=True)
-	
+
+	is_truncate : BoolProperty(name="Cut", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		try:
@@ -168,7 +169,7 @@ class TruncateEmptySlots(bpy.types.Operator):
 	bl_label = "Cut empty texture slots"
 	bl_description = "No texture is assigned an empty texture slots will be filled, truncated"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.material):
@@ -198,7 +199,7 @@ class RemoveFollowingSlots(bpy.types.Operator):
 	bl_label = "Delete Below Here"
 	bl_description = "Remove all active texture slot below"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):

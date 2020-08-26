@@ -2,6 +2,7 @@
 # "3D View" Area > "Mesh Editor" Mode > "Mesh" Menu > "Show/Hide" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class InvertHide(bpy.types.Operator):
 	bl_label = "Invert Show/Hide"
 	bl_description = "Invert show or non-show state"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type == "MESH"):
@@ -44,7 +45,7 @@ class HideVertexOnly(bpy.types.Operator):
 	bl_label = "Hide Only Vertex"
 	bl_description = "Hide and Fix Selected vertices"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type == "MESH"):
@@ -63,9 +64,9 @@ class HideParts(bpy.types.Operator):
 	bl_label = "Hide Selected Parts"
 	bl_description = "Hides mesh part has selected more than one top"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	unselected = bpy.props.BoolProperty(name="Non-select Parts", default=False)
-	
+
+	unselected : BoolProperty(name="Non-select Parts", default=False)
+
 	def execute(self, context):
 		isSelecteds = []
 		for vert in context.active_object.data.vertices:

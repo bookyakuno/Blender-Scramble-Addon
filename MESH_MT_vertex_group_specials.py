@@ -3,6 +3,7 @@
 
 import bpy
 import re
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -13,7 +14,7 @@ class RemoveEmptyVertexGroups(bpy.types.Operator):
 	bl_label = "Delete empty vertex groups"
 	bl_description = "Remove weights assigned to mesh vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -22,7 +23,7 @@ class RemoveEmptyVertexGroups(bpy.types.Operator):
 				if (len(ob.vertex_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type == "MESH"):
@@ -42,7 +43,7 @@ class AddOppositeVertexGroups(bpy.types.Operator):
 	bl_label = "Add empty mirroring vertex group"
 	bl_description = ". L... R, add an empty pair of bones according to mandate rule in Miller\'s new born"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -51,7 +52,7 @@ class AddOppositeVertexGroups(bpy.types.Operator):
 				if (len(ob.vertex_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type == "MESH"):
@@ -85,7 +86,7 @@ class SelectVertexGroupsTop(bpy.types.Operator):
 	bl_label = "Select Top"
 	bl_description = "Select item at top of vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -94,7 +95,7 @@ class SelectVertexGroupsTop(bpy.types.Operator):
 				if (2 <= len(ob.vertex_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		context.active_object.vertex_groups.active_index = 0
 		return {'FINISHED'}
@@ -103,7 +104,7 @@ class SelectVertexGroupsBottom(bpy.types.Operator):
 	bl_label = "Select Bottom"
 	bl_description = "Select item at bottom of vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -112,7 +113,7 @@ class SelectVertexGroupsBottom(bpy.types.Operator):
 				if (2 <= len(ob.vertex_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		context.active_object.vertex_groups.active_index = len(context.active_object.vertex_groups) - 1
 		return {'FINISHED'}
@@ -122,7 +123,7 @@ class MoveVertexGroupTop(bpy.types.Operator):
 	bl_label = "To Top"
 	bl_description = "Move to top active vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -131,7 +132,7 @@ class MoveVertexGroupTop(bpy.types.Operator):
 				if (2 <= len(ob.vertex_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		for i in range(context.active_object.vertex_groups.active_index):
 			bpy.ops.object.vertex_group_move(direction='UP')
@@ -142,7 +143,7 @@ class MoveVertexGroupBottom(bpy.types.Operator):
 	bl_label = "To Bottom"
 	bl_description = "Move to bottom vertex group active"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -151,7 +152,7 @@ class MoveVertexGroupBottom(bpy.types.Operator):
 				if (2 <= len(ob.vertex_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		for i in range(len(context.active_object.vertex_groups) - context.active_object.vertex_groups.active_index - 1):
 			bpy.ops.object.vertex_group_move(direction='DOWN')
@@ -162,9 +163,9 @@ class RemoveSpecifiedStringVertexGroups(bpy.types.Operator):
 	bl_label = "Delete vertex groups contain specific text"
 	bl_description = "Removes all vertex group names contains specified string"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	string = bpy.props.StringProperty(name="Part of name deleteing", default="")
-	
+
+	string : StringProperty(name="Part of name deleteing", default="")
+
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
@@ -173,7 +174,7 @@ class RemoveSpecifiedStringVertexGroups(bpy.types.Operator):
 				if (len(ob.vertex_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		count = 0

@@ -2,6 +2,7 @@
 # "Propaties" Area > "Armature" Tab > "Bone Groups" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class BoneGroupOnlyShow(bpy.types.Operator):
 	bl_label = "Show only bone in this bones group"
 	bl_description = "Group active on bones and bones of other hide"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	reverse = bpy.props.BoolProperty(name="Invert", default=False)
-	
+
+	reverse : BoolProperty(name="Invert", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (context.active_object):
@@ -22,7 +23,7 @@ class BoneGroupOnlyShow(bpy.types.Operator):
 				if (len(context.active_object.pose.bone_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data
@@ -54,9 +55,9 @@ class BoneGroupShow(bpy.types.Operator):
 	bl_label = "Show bone in bone group"
 	bl_description = "Active bone group show or hide"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	reverse = bpy.props.BoolProperty(name="Invert", default=False)
-	
+
+	reverse : BoolProperty(name="Invert", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (context.active_object):
@@ -64,7 +65,7 @@ class BoneGroupShow(bpy.types.Operator):
 				if (len(context.active_object.pose.bone_groups)):
 					return True
 		return False
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		arm = obj.data

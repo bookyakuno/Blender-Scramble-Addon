@@ -2,6 +2,7 @@
 # "Propaties" Area > "Armature" Tab > "Pose Library" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class MoveActivePose(bpy.types.Operator):
 	bl_label = "Pose Library Sort"
 	bl_description = "Sorts by posing for an active pose library"
 	bl_options = {'REGISTER'}
-	
-	is_up = bpy.props.BoolProperty(name="To Up", default=False)
-	
+
+	is_up : BoolProperty(name="To Up", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -24,7 +25,7 @@ class MoveActivePose(bpy.types.Operator):
 		if (len(context.object.pose_library.pose_markers) < 2):
 			return False
 		return True
-	
+
 	def execute(self, context):
 		pose_markers = context.object.pose_library.pose_markers
 		source = pose_markers.active
@@ -53,9 +54,9 @@ class MoveActivePoseMost(bpy.types.Operator):
 	bl_label = "To top/bottom pose of library"
 	bl_description = "Active pose of pose library moves to top/bottom"
 	bl_options = {'REGISTER'}
-	
-	is_top = bpy.props.BoolProperty(name="To Top", default=False)
-	
+
+	is_top : BoolProperty(name="To Top", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -65,7 +66,7 @@ class MoveActivePoseMost(bpy.types.Operator):
 		if (len(context.object.pose_library.pose_markers) < 2):
 			return False
 		return True
-	
+
 	def execute(self, context):
 		pose_markers = context.object.pose_library.pose_markers
 		if (not self.is_top):

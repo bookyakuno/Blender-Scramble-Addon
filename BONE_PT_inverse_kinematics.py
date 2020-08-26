@@ -2,6 +2,7 @@
 # "Propaties" Area > "Bone" Tab > "Inverse Kinematics" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,33 +13,33 @@ class copy_ik_settings(bpy.types.Operator):
 	bl_label = "Copy IK Setting"
 	bl_description = "Copies of other selected bone IK settings Active"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	lock_ik_x = bpy.props.BoolProperty(name="Lock", default=True)
-	ik_stiffness_x = bpy.props.BoolProperty(name="Stiffness", default=True)
-	use_ik_limit_x = bpy.props.BoolProperty(name="Limit", default=True)
-	ik_min_x = bpy.props.BoolProperty(name="Minimum", default=True)
-	ik_max_x = bpy.props.BoolProperty(name="Maximum", default=True)
-	
-	lock_ik_y = bpy.props.BoolProperty(name="Lock", default=True)
-	ik_stiffness_y = bpy.props.BoolProperty(name="Stiffness", default=True)
-	use_ik_limit_y = bpy.props.BoolProperty(name="Limit", default=True)
-	ik_min_y = bpy.props.BoolProperty(name="Minimum", default=True)
-	ik_max_y = bpy.props.BoolProperty(name="Maximum", default=True)
-	
-	lock_ik_z = bpy.props.BoolProperty(name="Lock", default=True)
-	ik_stiffness_z = bpy.props.BoolProperty(name="Stiffness", default=True)
-	use_ik_limit_z = bpy.props.BoolProperty(name="Limit", default=True)
-	ik_min_z = bpy.props.BoolProperty(name="Minimum", default=True)
-	ik_max_z = bpy.props.BoolProperty(name="Maximum", default=True)
-	
-	ik_stretch = bpy.props.BoolProperty(name="Stretch", default=True)
-	
+
+	lock_ik_x : BoolProperty(name="Lock", default=True)
+	ik_stiffness_x : BoolProperty(name="Stiffness", default=True)
+	use_ik_limit_x : BoolProperty(name="Limit", default=True)
+	ik_min_x : BoolProperty(name="Minimum", default=True)
+	ik_max_x : BoolProperty(name="Maximum", default=True)
+
+	lock_ik_y : BoolProperty(name="Lock", default=True)
+	ik_stiffness_y : BoolProperty(name="Stiffness", default=True)
+	use_ik_limit_y : BoolProperty(name="Limit", default=True)
+	ik_min_y : BoolProperty(name="Minimum", default=True)
+	ik_max_y : BoolProperty(name="Maximum", default=True)
+
+	lock_ik_z : BoolProperty(name="Lock", default=True)
+	ik_stiffness_z : BoolProperty(name="Stiffness", default=True)
+	use_ik_limit_z : BoolProperty(name="Limit", default=True)
+	ik_min_z : BoolProperty(name="Minimum", default=True)
+	ik_max_z : BoolProperty(name="Maximum", default=True)
+
+	ik_stretch : BoolProperty(name="Stretch", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (2 <= len(context.selected_pose_bones)):
 			return True
 		return False
-	
+
 	def draw(self, context):
 		for axis in ['x', 'y', 'z']:
 			self.layout.label(axis.upper())
@@ -51,10 +52,10 @@ class copy_ik_settings(bpy.types.Operator):
 			row.prop(self, 'ik_max_'+axis)
 		self.layout.label("")
 		self.layout.prop(self, 'ik_stretch')
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		source = context.active_pose_bone
 		for target in context.selected_pose_bones[:]:
@@ -79,11 +80,11 @@ class reverse_ik_min_max(bpy.types.Operator):
 	bl_label = "Invert Minimum/maximum Angle"
 	bl_description = "Reverses minimum and maximum angle of IK setup this bone"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	is_x = bpy.props.BoolProperty(name="X Invert", default=False)
-	is_y = bpy.props.BoolProperty(name="Y Invert", default=False)
-	is_z = bpy.props.BoolProperty(name="Z Invert", default=False)
-	
+
+	is_x : BoolProperty(name="X Invert", default=False)
+	is_y : BoolProperty(name="Y Invert", default=False)
+	is_z : BoolProperty(name="Z Invert", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		bone = context.active_pose_bone
@@ -94,7 +95,7 @@ class reverse_ik_min_max(bpy.types.Operator):
 					return True
 			return False
 		return False
-	
+
 	def invoke(self, context, event):
 		bone = context.active_pose_bone
 		for axis in ['x', 'y', 'z']:
@@ -104,7 +105,7 @@ class reverse_ik_min_max(bpy.types.Operator):
 			else:
 				self.__setattr__('is_' + axis, False)
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		bone = context.active_pose_bone
 		if (self.is_x):
@@ -131,23 +132,23 @@ class copy_ik_axis_setting(bpy.types.Operator):
 	bl_label = "Copy axis-setting to other axis"
 	bl_description = "Copy settings other axis from one axis"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('x', "X Axis", "", 1),
 		('y', "Y Axis", "", 2),
 		('z', "Z Axis", "", 3),
 		]
-	source_axis = bpy.props.EnumProperty(items=items, name="Source Axis")
-	target_x = bpy.props.BoolProperty(name="To X", default=True)
-	target_y = bpy.props.BoolProperty(name="To Y", default=True)
-	target_z = bpy.props.BoolProperty(name="To Z", default=True)
-	
-	lock_ik = bpy.props.BoolProperty(name="Lock", default=True)
-	ik_stiffness = bpy.props.BoolProperty(name="Stiffness", default=True)
-	use_ik_limit = bpy.props.BoolProperty(name="Limit", default=True)
-	ik_min = bpy.props.BoolProperty(name="Minimum", default=True)
-	ik_max = bpy.props.BoolProperty(name="Maximum", default=True)
-	
+	source_axis : EnumProperty(items=items, name="Source Axis")
+	target_x : BoolProperty(name="To X", default=True)
+	target_y : BoolProperty(name="To Y", default=True)
+	target_z : BoolProperty(name="To Z", default=True)
+
+	lock_ik : BoolProperty(name="Lock", default=True)
+	ik_stiffness : BoolProperty(name="Stiffness", default=True)
+	use_ik_limit : BoolProperty(name="Limit", default=True)
+	ik_min : BoolProperty(name="Minimum", default=True)
+	ik_max : BoolProperty(name="Maximum", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		bone = context.active_pose_bone
@@ -161,10 +162,10 @@ class copy_ik_axis_setting(bpy.types.Operator):
 				else:
 					return True
 		return False
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def draw(self, context):
 		self.layout.prop(self, 'source_axis')
 		row = self.layout.row()
@@ -179,7 +180,7 @@ class copy_ik_axis_setting(bpy.types.Operator):
 		row.prop(self, 'use_ik_limit')
 		row.prop(self, 'ik_min')
 		row.prop(self, 'ik_max')
-	
+
 	def execute(self, context):
 		bone = context.active_pose_bone
 		source_axis = self.source_axis
@@ -211,7 +212,7 @@ class reset_ik_settings(bpy.types.Operator):
 	bl_label = "Reset IK Settings"
 	bl_description = "Reset this bone IK settings"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		bone = context.active_pose_bone
@@ -230,7 +231,7 @@ class reset_ik_settings(bpy.types.Operator):
 			if bone.ik_stretch != 0.0:
 				return True
 		return False
-	
+
 	def execute(self, context):
 		bone = context.active_pose_bone
 		for axis in ['x', 'y', 'z']:

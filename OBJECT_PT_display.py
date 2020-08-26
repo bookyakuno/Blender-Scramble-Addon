@@ -2,6 +2,7 @@
 # "Propaties" Area > "Object" Tab > "Display" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,28 +13,28 @@ class CopyDisplaySetting(bpy.types.Operator):
 	bl_label = "Copy Display Setting"
 	bl_description = "Copy selected objects of other display settings"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	copy_show_name = bpy.props.BoolProperty(name="Name", default=True)
-	copy_show_axis = bpy.props.BoolProperty(name="Axis", default=True)
-	copy_show_wire = bpy.props.BoolProperty(name="Wire Frame", default=True)
-	copy_show_all_edges = bpy.props.BoolProperty(name="Show All Edges", default=True)
-	copy_show_bounds = bpy.props.BoolProperty(name="Bound", default=True)
-	copy_draw_bounds_type = bpy.props.BoolProperty(name="Bound Type", default=True)
-	copy_show_texture_space = bpy.props.BoolProperty(name="Texture Space", default=True)
-	copy_show_x_ray = bpy.props.BoolProperty(name="X-ray", default=True)
-	copy_show_transparent = bpy.props.BoolProperty(name="Alpha", default=True)
-	copy_draw_type = bpy.props.BoolProperty(name="Maximum Draw Type", default=True)
-	copy_color = bpy.props.BoolProperty(name="Object Color", default=True)
-	
+
+	copy_show_name : BoolProperty(name="Name", default=True)
+	copy_show_axis : BoolProperty(name="Axis", default=True)
+	copy_show_wire : BoolProperty(name="Wire Frame", default=True)
+	copy_show_all_edges : BoolProperty(name="Show All Edges", default=True)
+	copy_show_bounds : BoolProperty(name="Bound", default=True)
+	copy_draw_bounds_type : BoolProperty(name="Bound Type", default=True)
+	copy_show_texture_space : BoolProperty(name="Texture Space", default=True)
+	copy_show_x_ray : BoolProperty(name="X-ray", default=True)
+	copy_show_transparent : BoolProperty(name="Alpha", default=True)
+	copy_draw_type : BoolProperty(name="Maximum Draw Type", default=True)
+	copy_color : BoolProperty(name="Object Color", default=True)
+
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) <= 1):
 			return False
 		return True
-	
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def draw(self, context):
 		row = self.layout.row()
 		row.prop(self, 'copy_show_name')
@@ -53,7 +54,7 @@ class CopyDisplaySetting(bpy.types.Operator):
 		row = self.layout.row()
 		row.prop(self, 'copy_draw_type')
 		row.prop(self, 'copy_color')
-	
+
 	def execute(self, context):
 		active_obj = context.active_object
 		for obj in context.selected_objects:

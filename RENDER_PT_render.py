@@ -2,6 +2,7 @@
 # "Propaties" Area > "Render" Tab > "Render" Panel
 
 import bpy
+from bpy.props import *
 import sys, subprocess
 
 ################
@@ -13,15 +14,15 @@ class RenderBackground(bpy.types.Operator):
 	bl_label = "Background Rendering"
 	bl_description = "Renders current blend file from command line"
 	bl_options = {'REGISTER'}
-	
-	is_quit = bpy.props.BoolProperty(name="Quit Blender", default=True)
+
+	is_quit : BoolProperty(name="Quit Blender", default=True)
 	items = [
 		('IMAGE', "Image", "", 1),
 		('ANIME', "Animation", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Setting Mode", default='IMAGE')
-	thread = bpy.props.IntProperty(name="Number of Threads", default=2, min=1, max=16, soft_min=1, soft_max=16)
-	
+	mode : EnumProperty(items=items, name="Setting Mode", default='IMAGE')
+	thread : IntProperty(name="Number of Threads", default=2, min=1, max=16, soft_min=1, soft_max=16)
+
 	@classmethod
 	def poll(cls, context):
 		if (bpy.data.filepath == ""):

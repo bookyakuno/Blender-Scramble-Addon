@@ -2,6 +2,7 @@
 # "3D View" Area > "Weight Paint" Mode > "Weights" Menu
 
 import bpy, bmesh
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,10 +13,10 @@ class MargeSelectedVertexGroup(bpy.types.Operator):
 	bl_label = "Combine Weights"
 	bl_description = "Weight of selected bone and same vertex group merges"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isNewVertGroup = bpy.props.BoolProperty(name="Create new vertex group", default=False)
-	ext = bpy.props.StringProperty(name="End of new vertex group name", default="... Such as combine")
-	
+
+	isNewVertGroup : BoolProperty(name="Create new vertex group", default=False)
+	ext : StringProperty(name="End of new vertex group name", default="... Such as combine")
+
 	def execute(self, context):
 		obj = context.active_object
 		me = obj.data
@@ -44,7 +45,7 @@ class RemoveSelectedVertexGroup(bpy.types.Operator):
 	bl_label = "Subtraction Weights"
 	bl_description = "Subtracts weight of selected bone and same vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		obj = context.active_object
 		me = obj.data
@@ -69,9 +70,9 @@ class VertexGroupAverageAll(bpy.types.Operator):
 	bl_label = "Fill average weight of all vertices"
 	bl_description = "In average weight of all, fills all vertices"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	strength = bpy.props.FloatProperty(name="Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
-	
+
+	strength : FloatProperty(name="Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
+
 	def execute(self, context):
 		pre_mode = context.mode
 		for obj in context.selected_objects:
@@ -111,16 +112,16 @@ class ApplyDynamicPaint(bpy.types.Operator):
 	bl_label = "Paint objects overlap"
 	bl_description = "I painted weight of portion that overlaps other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isNew = bpy.props.BoolProperty(name="To new vertex group", default=False)
-	distance = bpy.props.FloatProperty(name="Distance", default=1.0, min=0, max=100, soft_min=0, soft_max=100, step=10, precision=3)
+
+	isNew : BoolProperty(name="To new vertex group", default=False)
+	distance : FloatProperty(name="Distance", default=1.0, min=0, max=100, soft_min=0, soft_max=100, step=10, precision=3)
 	items = [
 		("ADD", "Add", "", 1),
 		("SUBTRACT", "Sub", "", 2),
 		("REPLACE", "Replace", "", 3),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Fill Method")
-	
+	mode : EnumProperty(items=items, name="Fill Method")
+
 	def execute(self, context):
 		activeObj = context.active_object
 		preActiveVg = activeObj.vertex_groups.active
@@ -165,16 +166,16 @@ class BlurWeight(bpy.types.Operator):
 	bl_label = "Vertex Group Blur"
 	bl_description = "Blurs active or all vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	items = [
 		('ACTIVE', "Active Only", "", 1),
 		('ALL', "All", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Target", default='ACTIVE')
-	blur_count = bpy.props.IntProperty(name="Repeat Count", default=10, min=1, max=100, soft_min=1, soft_max=100, step=1)
-	use_clean = bpy.props.BoolProperty(name="Remove weight of 0.0", default=True)
-	
-	
+	mode : EnumProperty(items=items, name="Target", default='ACTIVE')
+	blur_count : IntProperty(name="Repeat Count", default=10, min=1, max=100, soft_min=1, soft_max=100, step=1)
+	use_clean : BoolProperty(name="Remove weight of 0.0", default=True)
+
+
 	def execute(self, context):
 		activeObj = context.active_object
 		if (not activeObj):

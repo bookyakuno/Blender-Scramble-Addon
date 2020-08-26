@@ -1,6 +1,7 @@
 # アドオンを読み込む時に最初にこのファイルが読み込まれます
 
 import os, csv, codecs
+from bpy.props import *
 
 # アドオン情報
 bl_info = {
@@ -207,18 +208,18 @@ import bpy
 class AddonPreferences(bpy.types.AddonPreferences):
 	bl_idname = __name__
 
-	disabled_menu = bpy.props.StringProperty(name="Invalid Menu", default="")
-	use_disabled_menu = bpy.props.BoolProperty(name="\"On/Off additional items\" hidden", default=False)
-	view_savedata = bpy.props.StringProperty(name="View Save Data", default="")
-	key_config_xml_path = bpy.props.StringProperty(name="XML Config Path", default="BlenderKeyConfig.xml")
+	disabled_menu : StringProperty(name="Invalid Menu", default="")
+	use_disabled_menu : BoolProperty(name="\"On/Off additional items\" hidden", default=False)
+	view_savedata : StringProperty(name="View Save Data", default="")
+	key_config_xml_path : StringProperty(name="XML Config Path", default="BlenderKeyConfig.xml")
 
-	image_editor_path_1 = bpy.props.StringProperty(name="Path of Image Edit Software 1", default="", subtype='FILE_PATH')
-	image_editor_path_2 = bpy.props.StringProperty(name="Path of Image Edit Software 2", default="", subtype='FILE_PATH')
-	image_editor_path_3 = bpy.props.StringProperty(name="Path of Image Edit Software 3", default="", subtype='FILE_PATH')
+	image_editor_path_1 : StringProperty(name="Path of Image Edit Software 1", default="", subtype='FILE_PATH')
+	image_editor_path_2 : StringProperty(name="Path of Image Edit Software 2", default="", subtype='FILE_PATH')
+	image_editor_path_3 : StringProperty(name="Path of Image Edit Software 3", default="", subtype='FILE_PATH')
 
-	text_editor_path_1 = bpy.props.StringProperty(name="Path Text Edit Software 1", default="", subtype='FILE_PATH')
-	text_editor_path_2 = bpy.props.StringProperty(name="Path Text Edit Software 2", default="", subtype='FILE_PATH')
-	text_editor_path_3 = bpy.props.StringProperty(name="Path Text Edit Software 3", default="", subtype='FILE_PATH')
+	text_editor_path_1 : StringProperty(name="Path Text Edit Software 1", default="", subtype='FILE_PATH')
+	text_editor_path_2 : StringProperty(name="Path Text Edit Software 2", default="", subtype='FILE_PATH')
+	text_editor_path_3 : StringProperty(name="Path Text Edit Software 3", default="", subtype='FILE_PATH')
 
 	def draw(self, context):
 		layout = self.layout
@@ -242,7 +243,7 @@ class ToggleMenuEnable(bpy.types.Operator):
 	bl_description = "Extra menu of ScrambleAddon toggle Enable/Disable"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	id = bpy.props.StringProperty()
+	id : StringProperty()
 
 	def execute(self, context):
 		recovery = ""

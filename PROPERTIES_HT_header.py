@@ -2,6 +2,7 @@
 # "Propaties" Area > Header
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class ChangeContextTab(bpy.types.Operator):
 	bl_label = "Switch Properties Tab"
 	bl_description = "Switch properties tab in turn"
 	bl_options = {'REGISTER'}
-	
-	is_left = bpy.props.BoolProperty(name="To Left", default=False)
-	
+
+	is_left : BoolProperty(name="To Left", default=False)
+
 	def execute(self, context):
 		space_data = None
 		for area in context.screen.areas:

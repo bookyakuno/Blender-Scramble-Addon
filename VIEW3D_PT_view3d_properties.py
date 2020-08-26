@@ -2,6 +2,7 @@
 # "3D View" Area > Propaties > "View" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class SaveView(bpy.types.Operator):
 	bl_label = "Save View"
 	bl_description = "Save current 3D view perspective"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	save_name = bpy.props.StringProperty(name="Name", default="View Save Data")
-	
+
+	save_name : StringProperty(name="Name", default="View Save Data")
+
 	def execute(self, context):
 		data = ""
 		for line in context.preferences.addons[__name__.partition('.')[0]].preferences.view_savedata.split('|'):
@@ -48,9 +49,9 @@ class LoadView(bpy.types.Operator):
 	bl_label = "Load View"
 	bl_description = "Load to current 3D view perspective"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	index = bpy.props.StringProperty(name="View save data name", default="View Save Data")
-	
+
+	index : StringProperty(name="View save data name", default="View Save Data")
+
 	def execute(self, context):
 		for line in context.preferences.addons[__name__.partition('.')[0]].preferences.view_savedata.split('|'):
 			if (line == ""):
@@ -79,7 +80,7 @@ class DeleteViewSavedata(bpy.types.Operator):
 	bl_label = "Delete View Save"
 	bl_description = "Removes all view save data"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (context.preferences.addons[__name__.partition('.')[0]].preferences.view_savedata == ""):

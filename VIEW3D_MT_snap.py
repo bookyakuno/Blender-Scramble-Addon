@@ -2,6 +2,7 @@
 # "3D View" Area > "Shift + S" Key
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,9 +13,9 @@ class SnapMesh3DCursor(bpy.types.Operator):
 	bl_label = "3D Cursor Snap to Mesh"
 	bl_description = "(Please use shortcuts) mesh surface under mouse move 3D cursor"
 	bl_options = {'REGISTER'}
-	
-	mouse_co = bpy.props.IntVectorProperty(name="Mouse Position", size=2)
-	
+
+	mouse_co : IntVectorProperty(name="Mouse Position", size=2)
+
 	def execute(self, context):
 		preGp = context.scene.grease_pencil
 		preGpSource = context.scene.tool_settings.grease_pencil_source
@@ -45,7 +46,7 @@ class Move3DCursorToViewLocation(bpy.types.Operator):
 	bl_label = "3D cursor to view"
 	bl_description = "Move 3D cursor to location of center point of"
 	bl_options = {'REGISTER'}
-	
+
 	def execute(self, context):
 		bpy.context.space_data.cursor_location = context.region_data.view_location[:]
 		return {'FINISHED'}
@@ -55,7 +56,7 @@ class Move3DCursorFar(bpy.types.Operator):
 	bl_label = "Hide 3D Cursor (move far)"
 	bl_description = "Pretend to hide 3D cursor to move far far away"
 	bl_options = {'REGISTER'}
-	
+
 	def execute(self, context):
 		bpy.context.space_data.cursor_location = (24210, 102260, 38750)
 		return {'FINISHED'}

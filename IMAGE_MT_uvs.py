@@ -2,6 +2,7 @@
 # "UV/Image Editor" Area > "UV" Menu
 
 import bpy, bmesh
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,7 +13,7 @@ class ConvertMesh(bpy.types.Operator):
 	bl_label = "Convert UV to mesh"
 	bl_description = "Converts new mesh to UV active"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	def execute(self, context):
 		obj = context.object
 		if (not obj):
@@ -27,16 +28,16 @@ class ConvertMesh(bpy.types.Operator):
 			return {'CANCELLED'}
 		bpy.ops.object.mode_set(mode='OBJECT')
 		bpy.ops.object.select_all(action='DESELECT')
-		
+
 		new_mesh_name = obj.name + ":" + me.uv_layers.active.name
 		new_me = bpy.data.meshes.new(new_mesh_name)
 		new_obj = bpy.data.objects.new(new_mesh_name, new_me)
 		context.scene.objects.link(new_obj)
-		
+
 		bm = bmesh.new()
 		bm.from_mesh(me)
 		uv_lay = bm.loops.layers.uv.active
-		
+
 		pydata_verts = []
 		already_verts = []
 		pydata_uvs = []
@@ -51,7 +52,7 @@ class ConvertMesh(bpy.types.Operator):
 					pydata_verts.append((x, y, 0.0))
 					pydata_uvs.append(uv[:])
 					already_verts.append(id)
-		
+
 		pydata_edges = []
 		pydata_faces = []
 		already_edges = []
@@ -87,12 +88,12 @@ class ConvertMesh(bpy.types.Operator):
 						if (index == id[0]):
 							pydata_face.append(already_verts.index(id))
 							break
-				
+
 				if (set(pydata_face) not in already_faces):
 					pydata_faces.append(pydata_face)
 					already_faces.append(set(pydata_face))
 		new_me.from_pydata(pydata_verts, [], pydata_faces)
-		
+
 		new_me.uv_textures.new(me.uv_layers.active.name)
 		new_bm = bmesh.new()
 		new_bm.from_mesh(new_me)
@@ -101,11 +102,11 @@ class ConvertMesh(bpy.types.Operator):
 			for loop in face.loops:
 				uv = loop[uv_lay].uv
 				vert = loop.vert
-				
+
 				loop[uv_lay].uv = pydata_uvs[vert.index]
 		new_bm.to_mesh(new_me)
 		new_bm.free()
-		
+
 		new_obj.select = True
 		context.scene.objects.active = new_obj
 		return {'FINISHED'}
@@ -115,17 +116,17 @@ class scale_uv_parts(bpy.types.Operator):
 	bl_label = "Resize UV Islands"
 	bl_description = "UV island into central position and resize"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	scale = bpy.props.FloatProperty(name="Size", default=0.9, min=0, max=10, soft_min=0, soft_max=10, step=3, precision=2)
+
+	scale : FloatProperty(name="Size", default=0.9, min=0, max=10, soft_min=0, soft_max=10, step=3, precision=2)
 	items = [
 		('MEDIAN', "Median Point", "", 1),
 		('CENTER', "Bounding Box Center", "", 2),
 		]
-	mode = bpy.props.EnumProperty(items=items, name="Center")
-	
+	mode : EnumProperty(items=items, name="Center")
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-	
+
 	def execute(self, context):
 		pre_pivot_point = context.space_data.pivot_point
 		context.space_data.pivot_point = self.mode

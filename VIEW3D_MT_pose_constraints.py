@@ -2,6 +2,7 @@
 # "3D View" Area > "Pose" Mode > "Pose" Menu > "Constraints" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,10 +13,10 @@ class ConstraintIKToLimitRotation(bpy.types.Operator):
 	bl_label = "IK Rotation Limit to Constraints"
 	bl_description = "Copy rotation constraint restrictions IK rotation restriction settings"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-	isAdd = bpy.props.BoolProperty(name="If not add constraints", default=True)
-	isLocal = bpy.props.BoolProperty(name="Local Space", default=True)
-	
+
+	isAdd : BoolProperty(name="If not add constraints", default=True)
+	isLocal : BoolProperty(name="Local Space", default=True)
+
 	def execute(self, context):
 		for bone in context.selected_pose_bones:
 			if (self.isAdd):
