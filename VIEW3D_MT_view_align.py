@@ -15,12 +15,12 @@ class ViewSelectedEX(bpy.types.Operator):
 	
 	def execute(self, context):
 		pre_view_location = context.region_data.view_location[:]
-		smooth_view = context.user_preferences.view.smooth_view
-		context.user_preferences.view.smooth_view = 0
+		smooth_view = context.preferences.view.smooth_view
+		context.preferences.view.smooth_view = 0
 		view_distance = context.region_data.view_distance
 		bpy.ops.view3d.view_selected()
 		context.region_data.view_distance = view_distance
-		context.user_preferences.view.smooth_view = smooth_view
+		context.preferences.view.smooth_view = smooth_view
 		context.region_data.update()
 		new_view_location = context.region_data.view_location[:]
 		context.region_data.view_location = pre_view_location[:]
@@ -167,12 +167,35 @@ class SnapMeshViewAndCursor(bpy.types.Operator):
 		return self.execute(context)
 
 ################
+# クラスの登録 #
+################
+
+classes = [
+	ViewSelectedEX,
+	ResetView,
+	SelectAndView,
+	SnapMeshView,
+	ReverseView,
+	ResetViewAndCursor,
+	SnapMeshViewAndCursor
+]
+
+def register():
+	for cls in classes:
+		bpy.utils.register_class(cls)
+
+def unregister():
+	for cls in classes:
+		bpy.utils.unregister_class(cls)
+
+
+################
 # メニュー追加 #
 ################
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.user_preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -191,6 +214,6 @@ def menu(self, context):
 		self.layout.operator(SnapMeshView.bl_idname, icon="PLUGIN")
 		self.layout.operator(SnapMeshViewAndCursor.bl_idname, icon="PLUGIN")
 		self.layout.operator(ReverseView.bl_idname, icon="PLUGIN")
-	if (context.user_preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
