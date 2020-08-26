@@ -9,9 +9,11 @@ Blender2.8への対応：nikogoli, 忘却野　　
 
 ### 未サポート情報
 
+**Blender2.8xでは、一部のみ利用可能です**。完全にアップデートされていません。　　
+メニューやボタンがない場合や、ボタンはあるものの反応しない場合があります。　　
+
 - ベイク、テクスチャリストの操作、blenderのバージョンごとの関連付け、オブジェクトID関連の操作は読み込みを行っていない　　
-- addonの機能・・・**一部のみ利用可能**　　
-    - メニューやボタンがない場合や、ボタンはあるものの反応しない場合あり　　
+
 
 
 # Blender-Scramble-Addon
@@ -22,6 +24,7 @@ Blenderのかゆいところに手が届くかもしれない機能が詰まっ�
 ![Translation](http://i.imgur.com/U1pO6Jh.jpg)
 
 ## インストール (Installation)
+
 まず画面右の「Download ZIP」でZIPファイルをダウンロードし解凍。
 中の「Scramble Addon」フォルダをBlenderのaddonsフォルダに置いて下さい。
 (Windows7なら： C:\Users\ユーザー名\AppData\Roaming\Blender Foundation\Blender\バージョン\scripts\addons\Scramble Addon)

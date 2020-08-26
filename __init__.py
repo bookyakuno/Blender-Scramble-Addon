@@ -1,4 +1,8 @@
 # アドオンを読み込む時に最初にこのファイルが読み込まれます
+'''
+original author   ：Saidenka
+update Blender2.8x：Bookyakuno, nikogoli
+'''
 
 import os, csv, codecs
 from bpy.props import *
@@ -12,196 +16,202 @@ bl_info = {
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",
 	"warning" : "",
-	"wiki_url" : "http://github.com/saidenka/Blender-Scramble-Addon",
-	"tracker_url" : "http://github.com/saidenka/Blender-Scramble-Addon/issues",
+	"wiki_url" : "https://github.com/bookyakuno/Blender-Scramble-Addon",
+	"tracker_url" : "https://github.com/bookyakuno/Blender-Scramble-Addon/issues",
 	"category" : "Custom"
 }
 
 # サブスクリプト群をインポート
 if "bpy" in locals():
-	import imp
-
-	imp.reload(BONE_PT_context_bone)
-	imp.reload(BONE_PT_display)
-	imp.reload(BONE_PT_inverse_kinematics)
-	imp.reload(BONE_PT_transform)
-	imp.reload(DATA_PT_bone_groups)
-	imp.reload(DATA_PT_geometry_curve)
-	imp.reload(DATA_PT_modifiers)
-	imp.reload(DATA_PT_pose_library)
-	imp.reload(DATA_PT_shape_keys)
-	imp.reload(DATA_PT_skeleton)
-	imp.reload(DATA_PT_uv_texture)
-	imp.reload(DATA_PT_vertex_colors)
-	imp.reload(DOPESHEET_MT_key)
-	imp.reload(IMAGE_MT_image)
-	imp.reload(IMAGE_MT_select)
-	imp.reload(IMAGE_MT_uvs)
-	imp.reload(IMAGE_MT_view)
-	imp.reload(INFO_HT_header)
-	imp.reload(INFO_MT_file)
-	imp.reload(INFO_MT_file_external_data)
-	imp.reload(INFO_MT_help)
-	imp.reload(INFO_MT_mesh_add)
-	imp.reload(INFO_MT_render)
-	imp.reload(INFO_MT_window)
-	imp.reload(MATERIAL_MT_specials)
-	imp.reload(MATERIAL_PT_context_material)
-	imp.reload(MESH_MT_shape_key_specials)
-	imp.reload(MESH_MT_vertex_group_specials)
-	imp.reload(NODE_MT_node)
-	imp.reload(NODE_MT_view)
-	imp.reload(OBJECT_PT_context_object)
-	imp.reload(OBJECT_PT_display)
-	imp.reload(OBJECT_PT_transform)
-	imp.reload(PHYSICS_PT_rigid_body)
-	imp.reload(PHYSICS_PT_rigid_body_constraint)
-	imp.reload(PROPERTIES_HT_header)
-	imp.reload(RENDER_PT_bake)
-	imp.reload(RENDER_PT_render)
-	imp.reload(SCENE_PT_rigid_body_world)
-	imp.reload(TEXTURE_MT_specials)
-	imp.reload(TEXTURE_PT_context_texture)
-	imp.reload(TEXTURE_PT_image)
-	imp.reload(TEXTURE_PT_mapping)
-	imp.reload(TEXT_MT_text)
-	imp.reload(USERPREF_HT_header)
-	imp.reload(USERPREF_PT_file)
-	imp.reload(VIEW3D_MT_armature_specials)
-	imp.reload(VIEW3D_MT_bone_options_toggle)
-	imp.reload(VIEW3D_MT_edit_armature)
-	imp.reload(VIEW3D_MT_edit_mesh)
-	imp.reload(VIEW3D_MT_edit_mesh_delete)
-	imp.reload(VIEW3D_MT_edit_mesh_showhide)
-	imp.reload(VIEW3D_MT_edit_mesh_specials)
-	imp.reload(VIEW3D_MT_edit_mesh_vertices)
-	imp.reload(VIEW3D_MT_make_links)
-	imp.reload(VIEW3D_MT_object)
-	imp.reload(VIEW3D_MT_object_apply)
-	imp.reload(VIEW3D_MT_object_showhide)
-	imp.reload(VIEW3D_MT_object_specials)
-	imp.reload(VIEW3D_MT_paint_weight)
-	imp.reload(VIEW3D_MT_pose_constraints)
-	imp.reload(VIEW3D_MT_pose_showhide)
-	imp.reload(VIEW3D_MT_pose_specials)
-	imp.reload(VIEW3D_MT_select_edit_armature)
-	imp.reload(VIEW3D_MT_select_edit_mesh)
-	imp.reload(VIEW3D_MT_select_object)
-	imp.reload(VIEW3D_MT_select_pose)
-	imp.reload(VIEW3D_MT_snap)
-	imp.reload(VIEW3D_MT_uv_map)
-	imp.reload(VIEW3D_MT_view)
-	imp.reload(VIEW3D_MT_view_align)
-	imp.reload(VIEW3D_MT_view_align_selected)
-	imp.reload(VIEW3D_PT_imapaint_tools_missing)
-	imp.reload(VIEW3D_PT_layers)
-	imp.reload(VIEW3D_PT_slots_projectpaint)
-	imp.reload(VIEW3D_PT_tools_imagepaint_external)
-	imp.reload(VIEW3D_PT_transform_orientations)
-	imp.reload(VIEW3D_PT_view3d_cursor)
-	imp.reload(VIEW3D_PT_view3d_name)
-	imp.reload(VIEW3D_PT_view3d_properties)
-	imp.reload(undisplay_commands)
-	imp.reload(DATA_PT_shape_curve)
-	imp.reload(BONE_PT_constraints)
-	imp.reload(PHYSICS_PT_dynamic_paint)
-	imp.reload(PHYSICS_PT_field)
-	imp.reload(PHYSICS_PT_softbody)
-	imp.reload(PHYSICS_PT_cloth)
-	imp.reload(BONE_PT_transform_locks)
-	imp.reload(BONE_PT_relations)
-	#imp.reload(***)
+	import importlib
+	reloadable_modules = [
+	"BONE_PT_context_bone",
+	"BONE_PT_display",
+	"BONE_PT_inverse_kinematics",
+	"BONE_PT_transform",
+	"DATA_PT_bone_groups",
+	"DATA_PT_geometry_curve",
+	"DATA_PT_modifiers",
+	"DATA_PT_pose_library",
+	"DATA_PT_shape_keys",
+	"DATA_PT_skeleton",
+	"DATA_PT_uv_texture",
+	"DATA_PT_vertex_colors",
+	"DOPESHEET_MT_key",
+	"IMAGE_MT_image",
+	"IMAGE_MT_select",
+	"IMAGE_MT_uvs",
+	"IMAGE_MT_view",
+	"INFO_HT_header",
+	"INFO_MT_file",
+	"INFO_MT_file_external_data",
+	"INFO_MT_help",
+	"INFO_MT_mesh_add",
+	"INFO_MT_render",
+	"INFO_MT_window",
+	"MATERIAL_MT_specials",
+	"MATERIAL_PT_context_material",
+	"MESH_MT_shape_key_specials",
+	"MESH_MT_vertex_group_specials",
+	"NODE_MT_node",
+	"NODE_MT_view",
+	"OBJECT_PT_context_object",
+	"OBJECT_PT_display",
+	"OBJECT_PT_transform",
+	"PHYSICS_PT_rigid_body",
+	"PHYSICS_PT_rigid_body_constraint",
+	"PROPERTIES_HT_header",
+	"RENDER_PT_bake",
+	"RENDER_PT_render",
+	"SCENE_PT_rigid_body_world",
+	"TEXTURE_MT_specials",
+	"TEXTURE_PT_context_texture",
+	"TEXTURE_PT_image",
+	"TEXTURE_PT_mapping",
+	"TEXT_MT_text",
+	"USERPREF_HT_header",
+	"USERPREF_PT_file",
+	"VIEW3D_MT_armature_specials",
+	"VIEW3D_MT_bone_options_toggle",
+	"VIEW3D_MT_edit_armature",
+	"VIEW3D_MT_edit_mesh",
+	"VIEW3D_MT_edit_mesh_delete",
+	"VIEW3D_MT_edit_mesh_showhide",
+	"VIEW3D_MT_edit_mesh_specials",
+	"VIEW3D_MT_edit_mesh_vertices",
+	"VIEW3D_MT_make_links",
+	"VIEW3D_MT_object",
+	"VIEW3D_MT_object_apply",
+	"VIEW3D_MT_object_showhide",
+	"VIEW3D_MT_object_specials",
+	"VIEW3D_MT_paint_weight",
+	"VIEW3D_MT_pose_constraints",
+	"VIEW3D_MT_pose_showhide",
+	"VIEW3D_MT_pose_specials",
+	"VIEW3D_MT_select_edit_armature",
+	"VIEW3D_MT_select_edit_mesh",
+	"VIEW3D_MT_select_object",
+	"VIEW3D_MT_select_pose",
+	"VIEW3D_MT_snap",
+	"VIEW3D_MT_uv_map",
+	"VIEW3D_MT_view",
+	"VIEW3D_MT_view_align",
+	"VIEW3D_MT_view_align_selected",
+	"VIEW3D_PT_imapaint_tools_missing",
+	"VIEW3D_PT_layers",
+	"VIEW3D_PT_slots_projectpaint",
+	"VIEW3D_PT_tools_imagepaint_external",
+	"VIEW3D_PT_transform_orientations",
+	"VIEW3D_PT_view3d_cursor",
+	"VIEW3D_PT_view3d_name",
+	"VIEW3D_PT_view3d_properties",
+	"undisplay_commands",
+	"DATA_PT_shape_curve",
+	"BONE_PT_constraints",
+	"PHYSICS_PT_dynamic_paint",
+	"PHYSICS_PT_field",
+	"PHYSICS_PT_softbody",
+	"PHYSICS_PT_cloth",
+	"BONE_PT_transform_locks",
+	"BONE_PT_relations",
+	]
+	for module in reloadable_modules:
+		if module in locals():
+			importlib.reload(locals()[module])
 else:
-	from . import BONE_PT_context_bone
-	from . import BONE_PT_display
-	from . import BONE_PT_inverse_kinematics
-	from . import BONE_PT_transform
-	from . import DATA_PT_bone_groups
-	from . import DATA_PT_geometry_curve
-	from . import DATA_PT_modifiers
-	from . import DATA_PT_pose_library
-	from . import DATA_PT_shape_keys
-	from . import DATA_PT_skeleton
-	from . import DATA_PT_uv_texture
-	from . import DATA_PT_vertex_colors
-	from . import DOPESHEET_MT_key
-	from . import IMAGE_MT_image
-	from . import IMAGE_MT_select
-	from . import IMAGE_MT_uvs
-	from . import IMAGE_MT_view
-	from . import INFO_HT_header
-	from . import INFO_MT_file
-	from . import INFO_MT_file_external_data
-	from . import INFO_MT_help
-	from . import INFO_MT_mesh_add
-	from . import INFO_MT_render
-	from . import INFO_MT_window
-	from . import MATERIAL_MT_specials
-	from . import MATERIAL_PT_context_material
-	from . import MESH_MT_shape_key_specials
-	from . import MESH_MT_vertex_group_specials
-	from . import NODE_MT_node
-	from . import NODE_MT_view
-	from . import OBJECT_PT_context_object
-	from . import OBJECT_PT_display
-	from . import OBJECT_PT_transform
-	from . import PHYSICS_PT_rigid_body
-	from . import PHYSICS_PT_rigid_body_constraint
-	from . import PROPERTIES_HT_header
-	from . import RENDER_PT_bake
-	from . import RENDER_PT_render
-	from . import SCENE_PT_rigid_body_world
-	from . import TEXTURE_MT_specials
-	from . import TEXTURE_PT_context_texture
-	from . import TEXTURE_PT_image
-	from . import TEXTURE_PT_mapping
-	from . import TEXT_MT_text
-	from . import USERPREF_HT_header
-	from . import USERPREF_PT_file
-	from . import VIEW3D_MT_armature_specials
-	from . import VIEW3D_MT_bone_options_toggle
-	from . import VIEW3D_MT_edit_armature
-	from . import VIEW3D_MT_edit_mesh
-	from . import VIEW3D_MT_edit_mesh_delete
-	from . import VIEW3D_MT_edit_mesh_showhide
-	from . import VIEW3D_MT_edit_mesh_specials
-	from . import VIEW3D_MT_edit_mesh_vertices
-	from . import VIEW3D_MT_make_links
-	from . import VIEW3D_MT_object
-	from . import VIEW3D_MT_object_apply
-	from . import VIEW3D_MT_object_showhide
-	from . import VIEW3D_MT_object_specials
-	from . import VIEW3D_MT_paint_weight
-	from . import VIEW3D_MT_pose_constraints
-	from . import VIEW3D_MT_pose_showhide
-	from . import VIEW3D_MT_pose_specials
-	from . import VIEW3D_MT_select_edit_armature
-	from . import VIEW3D_MT_select_edit_mesh
-	from . import VIEW3D_MT_select_object
-	from . import VIEW3D_MT_select_pose
-	from . import VIEW3D_MT_snap
-	from . import VIEW3D_MT_uv_map
-	from . import VIEW3D_MT_view
-	from . import VIEW3D_MT_view_align
-	from . import VIEW3D_MT_view_align_selected
-	from . import VIEW3D_PT_imapaint_tools_missing
-	from . import VIEW3D_PT_layers
-	from . import VIEW3D_PT_slots_projectpaint
-	from . import VIEW3D_PT_tools_imagepaint_external
-	from . import VIEW3D_PT_transform_orientations
-	from . import VIEW3D_PT_view3d_cursor
-	from . import VIEW3D_PT_view3d_name
-	from . import VIEW3D_PT_view3d_properties
-	from . import undisplay_commands
-	from . import DATA_PT_shape_curve
-	from . import BONE_PT_constraints
-	from . import PHYSICS_PT_dynamic_paint
-	from . import PHYSICS_PT_field
-	from . import PHYSICS_PT_softbody
-	from . import PHYSICS_PT_cloth
-	from . import BONE_PT_transform_locks
-	from . import BONE_PT_relations
+	from . import (
+	BONE_PT_context_bone,
+	BONE_PT_display,
+	BONE_PT_inverse_kinematics,
+	BONE_PT_transform,
+	DATA_PT_bone_groups,
+	DATA_PT_geometry_curve,
+	DATA_PT_modifiers,
+	DATA_PT_pose_library,
+	DATA_PT_shape_keys,
+	DATA_PT_skeleton,
+	DATA_PT_uv_texture,
+	DATA_PT_vertex_colors,
+	DOPESHEET_MT_key,
+	IMAGE_MT_image,
+	IMAGE_MT_select,
+	IMAGE_MT_uvs,
+	IMAGE_MT_view,
+	INFO_HT_header,
+	INFO_MT_file,
+	INFO_MT_file_external_data,
+	INFO_MT_help,
+	INFO_MT_mesh_add,
+	INFO_MT_render,
+	INFO_MT_window,
+	MATERIAL_MT_specials,
+	MATERIAL_PT_context_material,
+	MESH_MT_shape_key_specials,
+	MESH_MT_vertex_group_specials,
+	NODE_MT_node,
+	NODE_MT_view,
+	OBJECT_PT_context_object,
+	OBJECT_PT_display,
+	OBJECT_PT_transform,
+	PHYSICS_PT_rigid_body,
+	PHYSICS_PT_rigid_body_constraint,
+	PROPERTIES_HT_header,
+	RENDER_PT_bake,
+	RENDER_PT_render,
+	SCENE_PT_rigid_body_world,
+	TEXTURE_MT_specials,
+	TEXTURE_PT_context_texture,
+	TEXTURE_PT_image,
+	TEXTURE_PT_mapping,
+	TEXT_MT_text,
+	USERPREF_HT_header,
+	USERPREF_PT_file,
+	VIEW3D_MT_armature_specials,
+	VIEW3D_MT_bone_options_toggle,
+	VIEW3D_MT_edit_armature,
+	VIEW3D_MT_edit_mesh,
+	VIEW3D_MT_edit_mesh_delete,
+	VIEW3D_MT_edit_mesh_showhide,
+	VIEW3D_MT_edit_mesh_specials,
+	VIEW3D_MT_edit_mesh_vertices,
+	VIEW3D_MT_make_links,
+	VIEW3D_MT_object,
+	VIEW3D_MT_object_apply,
+	VIEW3D_MT_object_showhide,
+	VIEW3D_MT_object_specials,
+	VIEW3D_MT_paint_weight,
+	VIEW3D_MT_pose_constraints,
+	VIEW3D_MT_pose_showhide,
+	VIEW3D_MT_pose_specials,
+	VIEW3D_MT_select_edit_armature,
+	VIEW3D_MT_select_edit_mesh,
+	VIEW3D_MT_select_object,
+	VIEW3D_MT_select_pose,
+	VIEW3D_MT_snap,
+	VIEW3D_MT_uv_map,
+	VIEW3D_MT_view,
+	VIEW3D_MT_view_align,
+	VIEW3D_MT_view_align_selected,
+	VIEW3D_PT_imapaint_tools_missing,
+	VIEW3D_PT_layers,
+	VIEW3D_PT_slots_projectpaint,
+	VIEW3D_PT_tools_imagepaint_external,
+	VIEW3D_PT_transform_orientations,
+	VIEW3D_PT_view3d_cursor,
+	VIEW3D_PT_view3d_name,
+	VIEW3D_PT_view3d_properties,
+	undisplay_commands,
+	DATA_PT_shape_curve,
+	BONE_PT_constraints,
+	PHYSICS_PT_dynamic_paint,
+	PHYSICS_PT_field,
+	PHYSICS_PT_softbody,
+	PHYSICS_PT_cloth,
+	BONE_PT_transform_locks,
+	BONE_PT_relations,
+	)
 	#from . import ***
+
 import bpy
 
 # アドオン設定

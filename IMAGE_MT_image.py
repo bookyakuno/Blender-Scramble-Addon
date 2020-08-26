@@ -494,11 +494,11 @@ class ExternalEditEX(bpy.types.Operator):
 		path = bpy.path.abspath(img.filepath)
 		pre_path = context.preferences.filepaths.image_editor
 		if (self.index == 1):
-			context.preferences.filepaths.image_editor = context.preferences.addons['Scramble Addon'].preferences.image_editor_path_1
+			context.preferences.filepaths.image_editor = bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1
 		elif (self.index == 2):
-			context.preferences.filepaths.image_editor = context.preferences.addons['Scramble Addon'].preferences.image_editor_path_2
+			context.preferences.filepaths.image_editor = bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2
 		elif (self.index == 3):
-			context.preferences.filepaths.image_editor = context.preferences.addons['Scramble Addon'].preferences.image_editor_path_3
+			context.preferences.filepaths.image_editor = bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3
 		bpy.ops.image.external_edit(filepath=path)
 		context.preferences.filepaths.image_editor = pre_path
 		return {'FINISHED'}
@@ -917,16 +917,16 @@ class ExternalEditEXMenu(bpy.types.Menu):
 	bl_label = "External Editor (Extra)"
 
 	def draw(self, context):
-		if (context.preferences.addons['Scramble Addon'].preferences.image_editor_path_1):
-			path = os.path.basename(context.preferences.addons['Scramble Addon'].preferences.image_editor_path_1)
+		if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1):
+			path = os.path.basename(bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEditEX.bl_idname, icon='PLUGIN', text=name).index = 1
-		if (context.preferences.addons['Scramble Addon'].preferences.image_editor_path_2):
-			path = os.path.basename(context.preferences.addons['Scramble Addon'].preferences.image_editor_path_2)
+		if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2):
+			path = os.path.basename(bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEditEX.bl_idname, icon='PLUGIN', text=name).index = 2
-		if (context.preferences.addons['Scramble Addon'].preferences.image_editor_path_3):
-			path = os.path.basename(context.preferences.addons['Scramble Addon'].preferences.image_editor_path_3)
+		if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3):
+			path = os.path.basename(bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEditEX.bl_idname, icon='PLUGIN', text=name).index = 3
 
@@ -1025,7 +1025,7 @@ def unregister():
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.preferences.addons['Scramble Addon'].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -1049,6 +1049,6 @@ def menu(self, context):
 		self.layout.operator(AllRenameImageFileName.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.operator(ReloadAllImage.bl_idname, icon='PLUGIN')
-	if (context.preferences.addons['Scramble Addon'].preferences.use_disabled_menu):
+	if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
