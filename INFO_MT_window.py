@@ -1,5 +1,5 @@
-# 「情報」エリア > 「ウィンドウ」メニュー
-# "Info" Area > "Window" Menu
+# 「トップバー」エリア > 「ウィンドウ」メニュー
+# "TOPBAR" Area > "Window" Menu
 
 import bpy
 
@@ -86,12 +86,35 @@ class ToggleJapaneseInterface(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	def execute(self, context):
-		if (not bpy.context.user_preferences.system.use_international_fonts):
-			bpy.context.user_preferences.system.use_international_fonts = True
-		if (bpy.context.user_preferences.system.language != "ja_JP"):
-			bpy.context.user_preferences.system.language = "ja_JP"
-		bpy.context.user_preferences.system.use_translate_interface = not bpy.context.user_preferences.system.use_translate_interface
+		if (not bpy.context.preferences.system.use_international_fonts):
+			bpy.context.preferences.system.use_international_fonts = True
+		if (bpy.context.preferences.system.language != "ja_JP"):
+			bpy.context.preferences.system.language = "ja_JP"
+		bpy.context.preferences.system.use_translate_interface = not bpy.context.preferences.system.use_translate_interface
 		return {'FINISHED'}
+
+################
+# クラスの登録 #
+################
+
+classes = [
+	PieMenu,
+	AreaTypePieOperator,
+	AreaTypePie,
+	AreaTypePieAnim,
+	AreaTypePieOther,
+	SetAreaType,
+	ToggleJapaneseInterface
+]
+
+def register():
+	for cls in classes:
+		bpy.utils.register_class(cls)
+
+def unregister():
+	for cls in classes:
+		bpy.utils.unregister_class(cls)
+
 
 ################
 # メニュー追加 #
@@ -99,7 +122,7 @@ class ToggleJapaneseInterface(bpy.types.Operator):
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.user_preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -112,6 +135,6 @@ def menu(self, context):
 		self.layout.operator(ToggleJapaneseInterface.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.menu(PieMenu.bl_idname, icon="PLUGIN")
-	if (context.user_preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
