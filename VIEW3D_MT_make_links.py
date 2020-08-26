@@ -125,7 +125,7 @@ class MakeLinkUVNames(bpy.types.Operator):
 				target_objs.append(obj)
 		for obj in target_objs:
 			for uv in active_obj.data.uv_layers:
-				obj.data.uv_textures.new(uv.name)
+				obj.data.uv_layers.new(uv.name)
 		return {'FINISHED'}
 
 class MakeLinkArmaturePose(bpy.types.Operator):

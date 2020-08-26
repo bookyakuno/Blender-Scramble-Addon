@@ -94,7 +94,7 @@ class ConvertMesh(bpy.types.Operator):
 					already_faces.append(set(pydata_face))
 		new_me.from_pydata(pydata_verts, [], pydata_faces)
 
-		new_me.uv_textures.new(me.uv_layers.active.name)
+		new_me.uv_layers.new(me.uv_layers.active.name)
 		new_bm = bmesh.new()
 		new_bm.from_mesh(new_me)
 		uv_lay = new_bm.loops.layers.uv.active

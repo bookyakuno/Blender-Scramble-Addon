@@ -35,7 +35,7 @@ class NewBakeImage(bpy.types.Operator):
 	def execute(self, context):
 		new_image = bpy.data.images.new(self.name, self.width, self.height, self.alpha, self.float)
 		me = context.active_object.data
-		for data in me.uv_textures.active.data:
+		for data in me.uv_layers.active.data:
 			data.image = new_image
 		if (self.show_image):
 			max = -1

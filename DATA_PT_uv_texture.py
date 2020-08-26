@@ -22,16 +22,18 @@ class RenameSpecificNameUV(bpy.types.Operator):
 		if (len(context.selected_objects) <= 1):
 			return False
 		return True
+
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type != 'MESH'):
 				self.report(type={'WARNING'}, message=obj.name+" mesh object, ignore")
 				continue
 			me = obj.data
-			for uv in me.uv_textures[:]:
+			for uv in me.uv_layers[:]:
 				if (uv.name == self.source_name):
 					uv.name = self.replace_name
 		return {'FINISHED'}
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 
@@ -54,9 +56,9 @@ class DeleteSpecificNameUV(bpy.types.Operator):
 				self.report(type={'WARNING'}, message=obj.name+" mesh object, ignore")
 				continue
 			me = obj.data
-			for uv in me.uv_textures:
+			for uv in me.uv_layers:
 				if (uv.name == self.name):
-					me.uv_textures.remove(uv)
+					me.uv_layers.remove(uv)
 		return {'FINISHED'}
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
@@ -192,8 +194,8 @@ class MoveActiveUV(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode='OBJECT')
 		uv_layer = me.uv_layers.active
 		target_uv_layer = me.uv_layers[target_index]
-		uv_tex = me.uv_textures.active
-		target_uv_tex = me.uv_textures[target_index]
+		uv_tex = me.uv_layers.active
+		target_uv_tex = me.uv_layers[target_index]
 		for data_name in dir(uv_tex):
 			if (data_name[0] != '_' and data_name != 'bl_rna' and data_name != 'rna_type' and data_name != 'data'):
 				temp = uv_tex.__getattribute__(data_name)
@@ -215,7 +217,7 @@ class MoveActiveUV(bpy.types.Operator):
 			temp = uv_tex.data[i].image
 			uv_tex.data[i].image = target_uv_tex.data[i].image
 			target_uv_tex.data[i].image = temp
-		me.uv_textures.active_index = target_index
+		me.uv_layers.active_index = target_index
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
