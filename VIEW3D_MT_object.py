@@ -105,10 +105,10 @@ class DrawTypePie(bpy.types.Menu):
 	bl_description = "Is pie menu to set up drawing type"
 
 	def draw(self, context):
-		self.layout.menu_pie().operator(SetDrawType.bl_idname, text="Bound", icon="BBOX").type = "BOUNDS"
-		self.layout.menu_pie().operator(SetDrawType.bl_idname, text="Wire Frame", icon="WIRE").type = "WIRE"
-		self.layout.menu_pie().operator(SetDrawType.bl_idname, text="Solid", icon="SOLID").type = "SOLID"
-		self.layout.menu_pie().operator(SetDrawType.bl_idname, text="Texture", icon="POTATO").type = "TEXTURED"
+		self.layout.menu_pie().operator(SetDrawType.bl_idname, text="Bound", icon="SHADING_BBOX").type = "BOUNDS"
+		self.layout.menu_pie().operator(SetDrawType.bl_idname, text="Wire Frame", icon="SHADING_WIRE").type = "WIRE"
+		self.layout.menu_pie().operator(SetDrawType.bl_idname, text="Solid", icon="SHADING_SOLID").type = "SOLID"
+		self.layout.menu_pie().operator(SetDrawType.bl_idname, text="Texture", icon="SHADING_TEXTURE").type = "TEXTURED"
 class SetDrawType(bpy.types.Operator): #
 	bl_idname = "object.set_display_type"
 	bl_label = "Setting maximum Drawing Type"
