@@ -42,7 +42,7 @@ class copy_ik_settings(bpy.types.Operator):
 
 	def draw(self, context):
 		for axis in ['x', 'y', 'z']:
-			self.layout.label(axis.upper())
+			self.layout.label(text="")#axis.upper()
 			row = self.layout.row()
 			row.prop(self, 'lock_ik_'+axis)
 			row.prop(self, 'ik_stiffness_'+axis)
@@ -50,7 +50,7 @@ class copy_ik_settings(bpy.types.Operator):
 			row.prop(self, 'use_ik_limit_'+axis)
 			row.prop(self, 'ik_min_'+axis)
 			row.prop(self, 'ik_max_'+axis)
-		self.layout.label("")
+		self.layout.label(text="")
 		self.layout.prop(self, 'ik_stretch')
 
 	def invoke(self, context, event):
@@ -172,7 +172,7 @@ class copy_ik_axis_setting(bpy.types.Operator):
 		row.prop(self, 'target_x')
 		row.prop(self, 'target_y')
 		row.prop(self, 'target_z')
-		self.layout.label("Copy Setting")
+		self.layout.label(text="Copy Setting")
 		row = self.layout.row()
 		row.prop(self, 'lock_ik')
 		row.prop(self, 'ik_stiffness')
