@@ -143,6 +143,7 @@ class AppendActiveBoneName(bpy.types.Operator):
 			bone = context.active_pose_bone
 		bone.name = bone.name + self.string
 		return {'FINISHED'}
+
 ################
 # サブメニュー #
 ################
@@ -164,13 +165,36 @@ class AppendNameMenu(bpy.types.Menu):
 		self.layout.operator(AppendActiveBoneName.bl_idname, text="_left").string = '_left'
 		self.layout.operator(AppendActiveBoneName.bl_idname, text="_right").string = '_right'
 
+    
+
+################
+# クラスの登録 #
+################
+
+classes = [
+	CopyBoneName,
+	RenameMirrorActiveBone,
+	AppendActiveBoneName,
+	AppendNameMenu
+]
+
+def register():
+	for cls in classes:
+		bpy.utils.register_class(cls)
+
+def unregister():
+	for cls in classes:
+		bpy.utils.unregister_class(cls)
+
+
 ################
 # メニュー追加 #
 ################
 
+
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.user_preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -184,5 +208,6 @@ def menu(self, context):
 			row.operator(CopyBoneName.bl_idname, icon='COPYDOWN', text="To Clipboard")
 			row.operator(RenameMirrorActiveBone.bl_idname, icon='MOD_MIRROR', text="Invert Mirror Name")
 			row.menu(AppendNameMenu.bl_idname, icon='PLUGIN')
-	if (context.user_preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
+
