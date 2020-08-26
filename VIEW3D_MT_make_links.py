@@ -222,12 +222,35 @@ class TransformMenu(bpy.types.Menu):
 		op.copy_location, op.copy_rotation, op.copy_scale = False, False, True
 
 ################
+# クラスの登録 #
+################
+
+classes = [
+	MakeLinkObjectName,
+	MakeLinkLayer,
+	MakeLinkDisplaySetting,
+	MakeLinkUVNames,
+	MakeLinkArmaturePose,
+	MakeLinkTransform,
+	TransformMenu
+]
+
+def register():
+	for cls in classes:
+		bpy.utils.register_class(cls)
+
+def unregister():
+	for cls in classes:
+		bpy.utils.unregister_class(cls)
+
+
+################
 # メニュー追加 #
 ################
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
-	for id in bpy.context.user_preferences.addons["Scramble Addon"].preferences.disabled_menu.split(','):
+	for id in bpy.context.preferences.addons["Blender-Scramble-Addon-master"].preferences.disabled_menu.split(','):
 		if (id == self_id):
 			return False
 	else:
@@ -245,6 +268,6 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.operator(MakeLinkUVNames.bl_idname, text="Empty UV", icon="PLUGIN")
 		self.layout.operator(MakeLinkArmaturePose.bl_idname, text="Movement of Armature", icon="PLUGIN")
-	if (context.user_preferences.addons["Scramble Addon"].preferences.use_disabled_menu):
+	if (context.preferences.addons["Blender-Scramble-Addon-master"].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
