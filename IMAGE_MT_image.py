@@ -917,16 +917,17 @@ class ExternalEditEXMenu(bpy.types.Menu):
 	bl_label = "External Editor (Extra)"
 
 	def draw(self, context):
-		if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1):
-			path = os.path.basename(bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1)
+		prefs = bpy.context.preferences.addons[__name__.partition('.')[0]].preferences
+		if (prefs.image_editor_path_1):
+			path = os.path.basename(prefs.image_editor_path_1)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEditEX.bl_idname, icon='PLUGIN', text=name).index = 1
-		if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2):
-			path = os.path.basename(bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2)
+		if (prefs.image_editor_path_2):
+			path = os.path.basename(prefs.image_editor_path_2)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEditEX.bl_idname, icon='PLUGIN', text=name).index = 2
-		if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3):
-			path = os.path.basename(bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3)
+		if (prefs.image_editor_path_3):
+			path = os.path.basename(prefs.image_editor_path_3)
 			name, ext = os.path.splitext(path)
 			self.layout.operator(ExternalEditEX.bl_idname, icon='PLUGIN', text=name).index = 3
 

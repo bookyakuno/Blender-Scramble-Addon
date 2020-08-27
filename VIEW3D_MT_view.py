@@ -143,9 +143,9 @@ class ViewNumpadPie(bpy.types.Menu): #
 		self.layout.menu_pie().operator("view3d.viewnumpad", text="Right", icon="TRIA_RIGHT").type = "RIGHT"
 		self.layout.menu_pie().operator("view3d.viewnumpad", text="Down", icon="TRIA_DOWN").type = "BOTTOM"
 		self.layout.menu_pie().operator("view3d.viewnumpad", text="Up", icon="TRIA_UP").type = "TOP"
-		self.layout.menu_pie().operator("view3d.viewnumpad", text="Back", icon="BBOX").type = "BACK"
+		self.layout.menu_pie().operator("view3d.viewnumpad", text="Back", icon="SHADING_BBOX").type = "BACK"
 		self.layout.menu_pie().operator("view3d.viewnumpad", text="Camera", icon="CAMERA_DATA").type = "CAMERA"
-		self.layout.menu_pie().operator("view3d.viewnumpad", text="Front", icon="SOLID").type = "FRONT"
+		self.layout.menu_pie().operator("view3d.viewnumpad", text="Front", icon="SHADING_SOLID").type = "FRONT"
 		self.layout.menu_pie().operator("view3d.view_persportho", text="Perspective/Orthographic", icon="BORDERMOVE")
 
 class ViewportShadePieOperator(bpy.types.Operator):
@@ -163,11 +163,11 @@ class ViewportShadePie(bpy.types.Menu): #
 	bl_description = "Is shading switch pie"
 
 	def draw(self, context):
-		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Bounding Box", icon="BBOX").mode = "BOUNDBOX"
+		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Bounding Box", icon="SHADING_BBOX").mode = "BOUNDBOX"
 		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Render", icon="SMOOTH").mode = "RENDERED"
-		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Solid", icon="SOLID").mode = "SOLID"
-		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Texture", icon="POTATO").mode = "TEXTURED"
-		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Wire Frame", icon="WIRE").mode = "WIREFRAME"
+		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Solid", icon="SHADING_SOLID").mode = "SOLID"
+		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Texture", icon="SHADING_TEXTURE").mode = "TEXTURED"
+		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Wire Frame", icon="SHADING_WIRE").mode = "WIREFRAME"
 		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Material", icon="MATERIAL").mode = "MATERIAL"
 class SetViewportShade(bpy.types.Operator): #
 	bl_idname = "view3d.set_viewport_shade"
