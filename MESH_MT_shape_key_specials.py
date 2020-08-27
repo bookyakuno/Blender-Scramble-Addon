@@ -18,14 +18,14 @@ class CopyShape(bpy.types.Operator):
 	def poll(cls, context):
 		ob = context.active_object
 		if (ob):
-			if (ob.type == 'MESH'):
+			if ob.type in {'MESH','CURVE'}:
 				if (ob.active_shape_key):
 					return True
 		return False
 
 	def execute(self, context):
 		obj = context.active_object
-		if (obj.type == "MESH"):
+		if obj.type in {'MESH','CURVE'}:
 			me = obj.data
 			keys = {}
 			for key in me.shape_keys.key_blocks:
@@ -52,7 +52,7 @@ class InsertKeyframeAllShapes(bpy.types.Operator):
 	def poll(cls, context):
 		ob = context.active_object
 		if (ob):
-			if (ob.type == 'MESH'):
+			if ob.type in {'MESH','CURVE'}:
 				if (ob.active_shape_key):
 					return True
 		return False
@@ -74,7 +74,7 @@ class SelectShapeTop(bpy.types.Operator):
 	def poll(cls, context):
 		ob = context.active_object
 		if (ob):
-			if (ob.type == 'MESH'):
+			if ob.type in {'MESH','CURVE'}:
 				if (ob.data.shape_keys):
 					if (2 <= len(ob.data.shape_keys.key_blocks)):
 						return True
@@ -94,7 +94,7 @@ class SelectShapeBottom(bpy.types.Operator):
 	def poll(cls, context):
 		ob = context.active_object
 		if (ob):
-			if (ob.type == 'MESH'):
+			if ob.type in {'MESH','CURVE'}:
 				if (ob.data.shape_keys):
 					if (2 <= len(ob.data.shape_keys.key_blocks)):
 						return True
@@ -114,7 +114,7 @@ class ShapeKeyApplyRemoveAll(bpy.types.Operator):
 	def poll(cls, context):
 		ob = context.active_object
 		if (ob):
-			if (ob.type == 'MESH'):
+			if ob.type in {'MESH','CURVE'}:
 				if (ob.data.shape_keys):
 					if (2 <= len(ob.data.shape_keys.key_blocks)):
 						return True
@@ -140,12 +140,12 @@ class AddLinkDriverShapeKeys(bpy.types.Operator):
 	def poll(cls, context):
 		ob = context.active_object
 		if ob:
-			if ob.type == 'MESH':
+			if ob.type in {'MESH','CURVE'}:
 				if ob.data.shape_keys:
 					for obj in context.selected_objects:
 						if ob.name == obj.name:
 							continue
-						if obj.type == 'MESH':
+						if ob.type in {'MESH','CURVE'}:
 							if obj.data.shape_keys:
 								return True
 		return False
@@ -194,7 +194,7 @@ class mute_all_shape_keys(bpy.types.Operator):
 	def poll(cls, context):
 		ob = context.active_object
 		if ob:
-			if ob.type == 'MESH':
+			if ob.type in {'MESH','CURVE'}:
 				if ob.data.shape_keys:
 					if len(ob.data.shape_keys.key_blocks):
 						return True
