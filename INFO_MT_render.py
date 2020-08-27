@@ -145,10 +145,10 @@ class SimplifyRenderMenu(bpy.types.Menu):
 		self.layout.prop(context.scene.render, "use_simplify", icon="PLUGIN")
 		self.layout.separator()
 		self.layout.prop(context.scene.render, "simplify_subdivision", icon="PLUGIN")
-		self.layout.prop(context.scene.render, "simplify_shadow_samples", icon="PLUGIN")
+		#self.layout.prop(context.scene.render, "simplify_shadow_samples", icon="PLUGIN")
 		self.layout.prop(context.scene.render, "simplify_child_particles", icon="PLUGIN")
-		self.layout.prop(context.scene.render, "simplify_ao_sss", icon="PLUGIN")
-		self.layout.prop(context.scene.render, "use_simplify_triangulate", icon="PLUGIN")
+		#self.layout.prop(context.scene.render, "simplify_ao_sss", icon="PLUGIN")
+		#self.layout.prop(context.scene.render, "use_simplify_triangulate", icon="PLUGIN")
 
 class SlotsRenderMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_slots"
@@ -156,9 +156,9 @@ class SlotsRenderMenu(bpy.types.Menu):
 	bl_description = "Change slot to save rendering results"
 
 	def draw(self, context):
-		for i in range(len(bpy.data.images["Render Result"].render_slots)):
+		for i in range(max([len(im.render_slots) for im in bpy.data.images])):
 			self.layout.operator(SetRenderSlot.bl_idname, text="Slot"+str(i+1)).slot = i
-
+"""
 class ShadeingMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_shadeing"
 	bl_label = "Used Shading"
@@ -170,7 +170,7 @@ class ShadeingMenu(bpy.types.Menu):
 		self.layout.prop(context.scene.render, 'use_sss', icon="PLUGIN")
 		self.layout.prop(context.scene.render, 'use_envmaps', icon="PLUGIN")
 		self.layout.prop(context.scene.render, 'use_raytrace', icon="PLUGIN")
-
+"""
 class SubsurfMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_subsurf"
 	bl_label = "All Subsurf Levels"
@@ -197,7 +197,7 @@ class SubsurfMenu(bpy.types.Menu):
 		operator.mode = 'ABSOLUTE'
 		operator.levels = 3
 		self.layout.separator()
-		self.layout.operator(SyncAllSubsurfRenderLevels.bl_idname, text="Sync Preview Value", icon="PLUGIN")
+		self.layout.operator(SyncAllSubsurfRenderLevels.bl_idname, text="Sync Viewport Value", icon="PLUGIN")
 
 ################
 # クラスの登録 #
@@ -212,7 +212,7 @@ classes = [
 	RenderResolutionPercentageMenu,
 	SimplifyRenderMenu,
 	SlotsRenderMenu,
-	ShadeingMenu,
+	#ShadeingMenu,
 	SubsurfMenu
 ]
 
@@ -255,10 +255,10 @@ def menu(self, context):
 		self.layout.prop(context.scene, 'frame_step', text="Frame Step", icon="PLUGIN")
 		self.layout.prop(context.scene.render, 'fps', text="FPS", icon="PLUGIN")
 		self.layout.separator()
-		self.layout.prop(context.scene.render, 'use_antialiasing', text="Use Anti-aliasing", icon="PLUGIN")
+		#self.layout.prop(context.scene.render, 'use_antialiasing', text="Use Anti-aliasing", icon="PLUGIN")
 		self.layout.prop(context.scene.world.light_settings, 'use_ambient_occlusion', text="Use AO", icon="PLUGIN")
 		self.layout.prop(context.scene.render, 'use_freestyle', text="Use FreeStyle", icon="PLUGIN")
-		self.layout.menu(ShadeingMenu.bl_idname, icon="PLUGIN")
+		#self.layout.menu(ShadeingMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		text = ToggleThreadsMode.bl_label
 		if (context.scene.render.threads_mode == 'AUTO'):
@@ -267,8 +267,8 @@ def menu(self, context):
 			text = text + " (Current constant value:" + str(context.scene.render.threads) + ")"
 		self.layout.operator(ToggleThreadsMode.bl_idname, text=text, icon="PLUGIN")
 		self.layout.menu(SubsurfMenu.bl_idname, icon="PLUGIN")
-		self.layout.prop_menu_enum(context.scene.render, 'antialiasing_samples', text="Anti-aliasing Samples", icon="PLUGIN")
-		self.layout.prop(context.scene.world.light_settings, 'samples', text="AO Samples", icon="PLUGIN")
+		#self.layout.prop_menu_enum(context.scene.render, 'antialiasing_samples', text="Anti-aliasing Samples", icon="PLUGIN")
+		#self.layout.prop(context.scene.world.light_settings, 'samples', text="AO Samples", icon="PLUGIN")
 		self.layout.separator()
 		self.layout.menu(SimplifyRenderMenu.bl_idname, icon="PLUGIN")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
