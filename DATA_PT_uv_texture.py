@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「メッシュデータ」タブ > 「UVマップ」パネル
-# "Propaties" Area > "Mesh" Tab > "UV Maps" Panel
+# 「プロパティ」エリア > 「オブジェクトデータ」タブ > 「UVマップ」パネル
+# "Propaties" Area > "Object Data" Tab > "UV Maps" Panel
 
 import bpy
 from bpy.props import *
@@ -214,9 +214,9 @@ class MoveActiveUV(bpy.types.Operator):
 					target_uv_layer.data[i].__setattr__(data_name, uv_layer.data[i].__getattribute__(data_name))
 					uv_layer.data[i].__setattr__(data_name, temp)
 		for i in range(len(uv_tex.data)):
-			temp = uv_tex.data[i].image
-			uv_tex.data[i].image = target_uv_tex.data[i].image
-			target_uv_tex.data[i].image = temp
+			temp = uv_tex.data[i].uv
+			uv_tex.data[i].uv = target_uv_tex.data[i].uv
+			target_uv_tex.data[i].uv = temp
 		me.uv_layers.active_index = target_index
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}

@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「オブジェクト」タブ > 「トランスフォーム」パネル
-# "Propaties" Area > "Object" Tab > "Transform" Panel
+# 「プロパティ」エリア > 「オブジェクトデータ」タブ > 「シェイプキー」パネル
+# "Propaties" Area > "Object Data" Tab > "Shape keys" Panel
 
 import bpy
 
