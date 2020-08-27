@@ -478,7 +478,7 @@ class AllRenameObjectData(bpy.types.Operator):
 ############################
 # オペレーター(マテリアル) #
 ############################
-
+"""
 class AllSetMaterialReceiveTransparent(bpy.types.Operator):
 	bl_idname = "material.all_set_material_receive_transparent"
 	bl_label = "On all material \"Receive Transparent\""
@@ -551,7 +551,7 @@ class AllSetMaterialColorRamp(bpy.types.Operator):
 				mat.diffuse_ramp_blend = activeMat.diffuse_ramp_blend
 				mat.diffuse_ramp_factor = activeMat.diffuse_ramp_factor
 		return {'FINISHED'}
-
+"""
 class AllSetMaterialFreestyleColor(bpy.types.Operator):
 	bl_idname = "material.all_set_material_freestyle_color"
 	bl_label = "FreeStyle color of an active copy to other"
@@ -648,7 +648,7 @@ class AllSetMaterialFreestyleColorByDiffuse(bpy.types.Operator):
 				c = ( (c[0]*(1-v))+(1-((1-c[0])*(1-b[0]))*v), (c[1]*(1-v))+(1-((1-c[1])*(1-b[1]))*v), (c[2]*(1-v))+(1-((1-c[2])*(1-b[2]))*v), c[3] )
 			mat.line_color = c
 		return {'FINISHED'}
-
+"""
 class AllSetMaterialObjectColor(bpy.types.Operator):
 	bl_idname = "material.all_set_material_object_color"
 	bl_label = "Enable object colors all material"
@@ -680,11 +680,11 @@ class AllSetMaterialObjectColor(bpy.types.Operator):
 		for mat in mats:
 			mat.use_object_color = self.use_object_color
 		return {'FINISHED'}
-
+"""
 ############################
 # オペレーター(テクスチャ) #
 ############################
-
+"""
 class AllSetBumpMethod(bpy.types.Operator):
 	bl_idname = "texture.all_set_bump_method"
 	bl_label = "Set all bump of quality"
@@ -717,7 +717,7 @@ class AllSetBumpMethod(bpy.types.Operator):
 					slot.bump_method = self.method
 				except AttributeError: pass
 		return {'FINISHED'}
-
+"""
 class AllRenameTextureFileName(bpy.types.Operator):
 	bl_idname = "texture.all_rename_texture_file_name"
 	bl_label = "All image file names to texture names"
@@ -749,7 +749,7 @@ class AllRenameTextureFileName(bpy.types.Operator):
 						tex.name = name
 					except: pass
 		return {'FINISHED'}
-
+"""
 class FixEmptyTextureUVLayer(bpy.types.Operator):
 	bl_idname = "texture.fix_empty_texture_uv_layer"
 	bl_label = "Fill active UV if blanks"
@@ -790,7 +790,7 @@ class FixEmptyTextureUVLayer(bpy.types.Operator):
 										if(tslot.uv_layer == ""):
 											tslot.uv_layer = uv.name
 		return {'FINISHED'}
-
+"""
 ##########################
 # オペレーター(物理演算) #
 ##########################
@@ -885,11 +885,11 @@ class EntireProcessMaterialMenu(bpy.types.Menu):
 	bl_description = "This is all materials manage functions"
 
 	def draw(self, context):
-		self.layout.operator(AllSetMaterialReceiveTransparent.bl_idname, icon='PLUGIN')
-		self.layout.operator(AllSetMaterialColorRamp.bl_idname, icon='PLUGIN')
+		#self.layout.operator(AllSetMaterialReceiveTransparent.bl_idname, icon='PLUGIN')
+		#self.layout.operator(AllSetMaterialColorRamp.bl_idname, icon='PLUGIN')
 		self.layout.operator(AllSetMaterialFreestyleColor.bl_idname, icon='PLUGIN')
 		self.layout.operator(AllSetMaterialFreestyleColorByDiffuse.bl_idname, icon='PLUGIN')
-		self.layout.operator(AllSetMaterialObjectColor.bl_idname, icon='PLUGIN')
+		#self.layout.operator(AllSetMaterialObjectColor.bl_idname, icon='PLUGIN')
 
 class EntireProcessTextureMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_entire_process_texture"
@@ -898,8 +898,8 @@ class EntireProcessTextureMenu(bpy.types.Menu):
 
 	def draw(self, context):
 		self.layout.operator(AllRenameTextureFileName.bl_idname, icon='PLUGIN')
-		self.layout.operator(AllSetBumpMethod.bl_idname, icon='PLUGIN')
-		self.layout.operator(FixEmptyTextureUVLayer.bl_idname, icon='PLUGIN')
+		#self.layout.operator(AllSetBumpMethod.bl_idname, icon='PLUGIN')
+		#self.layout.operator(FixEmptyTextureUVLayer.bl_idname, icon='PLUGIN')
 
 class EntireProcessImageMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_entire_process_image"
@@ -930,14 +930,14 @@ classes = [
 	AllOnShowAllEdges,
 	AllSetDrawType,
 	AllRenameObjectData,
-	AllSetMaterialReceiveTransparent,
-	AllSetMaterialColorRamp,
+	#AllSetMaterialReceiveTransparent,
+	#AllSetMaterialColorRamp,
 	AllSetMaterialFreestyleColor,
 	AllSetMaterialFreestyleColorByDiffuse,
-	AllSetMaterialObjectColor,
-	AllSetBumpMethod,
+	#AllSetMaterialObjectColor,
+	#AllSetBumpMethod,
 	AllRenameTextureFileName,
-	FixEmptyTextureUVLayer,
+	#FixEmptyTextureUVLayer,
 	AllSetPhysicsFrames,
 	EntireProcessMenu,
 	EntireProcessObjectMenu,
