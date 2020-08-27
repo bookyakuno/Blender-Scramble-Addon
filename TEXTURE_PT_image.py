@@ -12,7 +12,7 @@ class ShowTextureImage(bpy.types.Operator):
 	bl_label = "Texture images show in UV / image editor"
 	bl_description = "Image is used in active texture shows UV / image editor"
 	bl_options = {'REGISTER'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.texture):
@@ -38,7 +38,7 @@ class StartTexturePaint(bpy.types.Operator):
 	bl_label = "Texture paint by this texture"
 	bl_description = "Active texture provides texture paint"
 	bl_options = {'REGISTER'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
