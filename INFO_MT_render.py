@@ -256,16 +256,23 @@ def menu(self, context):
 		self.layout.prop(context.scene.render, 'fps', text="FPS", icon="PLUGIN")
 		self.layout.separator()
 		#self.layout.prop(context.scene.render, 'use_antialiasing', text="Use Anti-aliasing", icon="PLUGIN")
-		self.layout.prop(context.scene.world.light_settings, 'use_ambient_occlusion', text="Use AO", icon="PLUGIN")
+		if context.scene.render.engine == "CYCLES":
+			self.layout.prop(context.scene.world.light_settings, 'use_ambient_occlusion', text="Use AO", icon="PLUGIN")
+		elif context.scene.render.engine == "BLENDER_EEVEE":
+			self.layout.prop(context.scene.eevee, 'use_gtao', text="Use AO", icon="PLUGIN")
+			self.layout.prop(context.scene.eevee, 'use_bloom', text="Use Bloom", icon="PLUGIN")
+			self.layout.prop(context.scene.eevee, 'use_shadow_high_bitdepth', text="Use 32bit shadows", icon="PLUGIN")
+			self.layout.prop(context.scene.eevee, 'use_soft_shadows', text="Create soft shadows", icon="PLUGIN")
 		self.layout.prop(context.scene.render, 'use_freestyle', text="Use FreeStyle", icon="PLUGIN")
 		#self.layout.menu(ShadeingMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
-		text = ToggleThreadsMode.bl_label
-		if (context.scene.render.threads_mode == 'AUTO'):
-			text = text + " (Now Auto-sensing)"
-		else:
-			text = text + " (Current constant value:" + str(context.scene.render.threads) + ")"
-		self.layout.operator(ToggleThreadsMode.bl_idname, text=text, icon="PLUGIN")
+		if context.scene.render.engine == "CYCLES":
+			text = ToggleThreadsMode.bl_label
+			if (context.scene.render.threads_mode == 'AUTO'):
+				text = text + " (Now Auto-sensing)"
+			else:
+				text = text + " (Current constant value:" + str(context.scene.render.threads) + ")"
+			self.layout.operator(ToggleThreadsMode.bl_idname, text=text, icon="PLUGIN")
 		self.layout.menu(SubsurfMenu.bl_idname, icon="PLUGIN")
 		#self.layout.prop_menu_enum(context.scene.render, 'antialiasing_samples', text="Anti-aliasing Samples", icon="PLUGIN")
 		#self.layout.prop(context.scene.world.light_settings, 'samples', text="AO Samples", icon="PLUGIN")
