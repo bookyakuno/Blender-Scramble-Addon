@@ -15,6 +15,10 @@ Blender2.8への対応：nikogoli, 忘却野
   
 - (例)ベイク、テクスチャリストの操作、blenderのバージョンごとの関連付け、オブジェクトID関連の操作は読み込みを行っていない
 
+## リンク
+
+[忘却まとめ](https://bookyakuno.com/scramble-addon/)  
+[Blender Artists](https://blenderartists.org/t/scramble-addon-blender2-8ver/1249433)
 
 
 

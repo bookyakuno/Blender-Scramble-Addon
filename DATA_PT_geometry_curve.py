@@ -80,8 +80,8 @@ class copy_geometry_settings(bpy.types.Operator):
 
 	def draw(self, context):
 		row = self.layout.row()
-		row.label("Modification:")
-		row.label("Bevel:")
+		row.label(text="Modification:")
+		row.label(text="Bevel:")
 		row = self.layout.row()
 		row.prop(self, 'offset')
 		row.prop(self, 'bevel_depth')
@@ -89,12 +89,12 @@ class copy_geometry_settings(bpy.types.Operator):
 		row.prop(self, 'extrude')
 		row.prop(self, 'bevel_resolution')
 		row = self.layout.row()
-		row.label("Objects:")
+		row.label(text="Objects:")
 		row = self.layout.row()
 		row.prop(self, 'taper_object')
 		row.prop(self, 'bevel_object')
 		row = self.layout.row()
-		row.label("Bevel Factor:")
+		row.label(text="Bevel Factor:")
 		row = self.layout.row()
 		row.prop(self, 'bevel_factor_mapping_start')
 		row.prop(self, 'bevel_factor_start')
@@ -154,12 +154,12 @@ class ActivateTaperObject(bpy.types.Operator):
 
 	def execute(self, context):
 		ob = context.active_object.data.taper_object
+		ob.hide_set(False)
 		ob.select_set(True)
-		ob.hide = False
+		context.active_object.select_set(False)
 		bpy.context.view_layer.objects.active = ob
-		for i, b in enumerate(ob.layers):
-			if b:
-				context.scene.layers[i] = True
+		for c in ob.users_collection:
+			bpy.context.view_layer.layer_collection.children[c.name].hide_viewport = False
 		return {'FINISHED'}
 
 class ActivateBevelObject(bpy.types.Operator):
@@ -178,12 +178,12 @@ class ActivateBevelObject(bpy.types.Operator):
 
 	def execute(self, context):
 		ob = context.active_object.data.bevel_object
+		ob.hide_set(False)
 		ob.select_set(True)
-		ob.hide = False
+		context.active_object.select_set(False)
 		bpy.context.view_layer.objects.active = ob
-		for i, b in enumerate(ob.layers):
-			if b:
-				context.scene.layers[i] = True
+		for c in ob.users_collection:
+			bpy.context.view_layer.layer_collection.children[c.name].hide_viewport = False
 		return {'FINISHED'}
 
 class activate_taper_parent_object(bpy.types.Operator):
@@ -209,12 +209,12 @@ class activate_taper_parent_object(bpy.types.Operator):
 				curve = ob.data
 				target_name = curve.taper_object.name if curve.taper_object else ""
 				if active_ob.name == target_name:
+					ob.hide_set(False)
 					ob.select_set(True)
-					ob.hide = False
+					active_ob.select_set(False)
 					bpy.context.view_layer.objects.active = ob
-					for i, b in enumerate(ob.layers):
-						if b:
-							context.scene.layers[i] = True
+					for c in ob.users_collection:
+						bpy.context.view_layer.layer_collection.children[c.name].hide_viewport = False
 					count += 1
 		if 2 <= count:
 			self.report(type={'WARNING'}, message="Found more than one")
@@ -243,12 +243,12 @@ class activate_bevel_parent_object(bpy.types.Operator):
 				curve = ob.data
 				target_name = curve.bevel_object.name if curve.bevel_object else ""
 				if active_ob.name == target_name:
+					ob.hide_set(False)
 					ob.select_set(True)
-					ob.hide = False
+					active_ob.select_set(False)
 					bpy.context.view_layer.objects.active = ob
-					for i, b in enumerate(ob.layers):
-						if b:
-							context.scene.layers[i] = True
+					for c in ob.users_collection:
+						bpy.context.view_layer.layer_collection.children[c.name].hide_viewport = False
 					count += 1
 		if 2 <= count:
 			self.report(type={'WARNING'}, message="Found more than one")
@@ -293,19 +293,19 @@ def menu(self, context):
 		if context.active_object:
 			data = context.active_object.data
 			if data.bevel_object or data.taper_object:
-				row = self.layout.split(percentage=0.5)
+				row = self.layout.split(factor=0.5)
 				if data.taper_object:
 					sub = row.row(align=True)
 					sub.operator(ActivateTaperObject.bl_idname, icon='PARTICLE_PATH', text="")
 					sub.prop(data.taper_object.data, 'resolution_u')
 				else:
-					row.label("")
+					row.label(text="")
 				if data.bevel_object:
 					sub = row.row(align=True)
 					sub.operator(ActivateBevelObject.bl_idname, icon='OUTLINER_OB_SURFACE', text="")
 					sub.prop(data.bevel_object.data, 'resolution_u')
 				else:
-					row.label("")
+					row.label(text="")
 
 		flag = [False, False]
 		ob = context.active_object
@@ -319,15 +319,15 @@ def menu(self, context):
 			if any(flag):
 				break
 		if any(flag):
-			row = self.layout.split(percentage=0.5)
+			row = self.layout.split(factor=0.5)
 			if flag[0]:
 				row.operator(activate_taper_parent_object.bl_idname, icon='PARTICLE_PATH', text="Active Parent Taper")
 			else:
-				row.label("")
+				row.label(text="")
 			if flag[1]:
 				row.operator(activate_bevel_parent_object.bl_idname, icon='OUTLINER_OB_SURFACE', text="Active Parent Bevel")
 			else:
-				row.label("")
+				row.label(text="")
 
 		if 2 <= len(context.selected_objects):
 			i = 0

@@ -1,5 +1,5 @@
 # 「プロパティ」エリア > 「カーブデータ」タブ > 「シェイプ」パネル
-# "Propaties" Area > "Armature" Tab > "Shape" Panel
+# "Propaties" Area > "Curve" Tab > "Shape" Panel
 
 import bpy
 from bpy.props import *
@@ -40,11 +40,11 @@ class copy_curve_shape_setting(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def draw(self, context):
-		self.layout.label("Shape")
+		self.layout.label(text="Shape")
 		self.layout.prop(self, 'dimensions')
 		row = self.layout.row()
-		row.label("Resolution:")
-		row.label("Fill:")
+		row.label(text="Resolution:")
+		row.label(text="Fill:")
 		row = self.layout.row()
 		row.prop(self, 'resolution_u')
 		row.prop(self, 'fill_mode')
@@ -52,8 +52,8 @@ class copy_curve_shape_setting(bpy.types.Operator):
 		row.prop(self, 'render_resolution_u')
 		row.prop(self, 'use_fill_deform')
 		row = self.layout.row()
-		row.label("Twisting:")
-		row.label("Path / Curve-Deform:")
+		row.label(text="Twisting:")
+		row.label(text="Path / Curve-Deform:")
 		row = self.layout.row()
 		row.prop(self, 'twist_mode')
 		row.prop(self, 'use_radius')

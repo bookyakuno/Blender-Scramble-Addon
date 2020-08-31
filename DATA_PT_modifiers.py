@@ -405,7 +405,7 @@ class AddSubsurf(bpy.types.Operator):
 	subdivision_type : EnumProperty(items=[("CATMULL_CLARK", "Catmulclark", "", 1), ("SIMPLE", "Simple", "", 2)], name="Subdivision Method")
 	levels : IntProperty(name="Number of View", default=2, min=0, max=6)
 	render_levels : IntProperty(name="Number of Render", default=2, min=0, max=6)
-	use_subsurf_uv : BoolProperty(name="Subdivide UV", default=True)
+	uv_smooth : EnumProperty(items=[("NONE", "None", "", 1), ("PRESERVE_CORNERS", "Preseve corners", "", 2)], name="UV-smoothing Method", default="PRESERVE_CORNERS")
 	show_only_control_edges : BoolProperty(name="Optimized View")
 
 	@classmethod
@@ -421,7 +421,7 @@ class AddSubsurf(bpy.types.Operator):
 				modi.subdivision_type = self.subdivision_type
 				modi.levels = self.levels
 				modi.render_levels = self.render_levels
-				modi.use_subsurf_uv = self.use_subsurf_uv
+				modi.uv_smooth = self.uv_smooth
 				modi.show_only_control_edges = self.show_only_control_edges
 		return {'FINISHED'}
 
