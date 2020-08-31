@@ -80,9 +80,9 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		row = self.layout.row(align=True)
-		row.operator(ChangeContextTab.bl_idname, text="", icon='TRIA_LEFT').is_left = True
-		row.operator(ChangeContextTab.bl_idname, text="", icon='TRIA_RIGHT').is_left = False
+		column = self.layout.column(align=True)
+		column.operator(ChangeContextTab.bl_idname, text="", icon='TRIA_LEFT').is_left = True
+		column.operator(ChangeContextTab.bl_idname, text="", icon='TRIA_RIGHT').is_left = False
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
