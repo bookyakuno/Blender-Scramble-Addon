@@ -23,12 +23,12 @@ class TogglePanelsA(bpy.types.Operator):
 				uiW = region.width
 		if (1 < toolW or 1 < uiW):
 			if (1 < toolW):
-				bpy.ops.node.toolbar()
+				context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
 			if (1 < uiW):
-				bpy.ops.node.properties()
+				context.space_data.show_region_ui = not context.space_data.show_region_ui
 		else:
-			bpy.ops.node.toolbar()
-			bpy.ops.node.properties()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
+			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		return {'FINISHED'}
 
 class TogglePanelsB(bpy.types.Operator):
@@ -46,12 +46,12 @@ class TogglePanelsB(bpy.types.Operator):
 			if (region.type == 'UI'):
 				uiW = region.width
 		if (toolW <= 1 and uiW <= 1):
-			bpy.ops.node.toolbar()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
 		elif (toolW <= 1 and 1 < uiW):
-			bpy.ops.node.toolbar()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
 		else:
-			bpy.ops.node.toolbar()
-			bpy.ops.node.properties()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
+			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		return {'FINISHED'}
 
 class TogglePanelsC(bpy.types.Operator):
@@ -69,12 +69,12 @@ class TogglePanelsC(bpy.types.Operator):
 			if (region.type == 'UI'):
 				uiW = region.width
 		if (toolW <= 1 and uiW <= 1):
-			bpy.ops.node.toolbar()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
 		elif (1 < toolW and uiW <= 1):
-			bpy.ops.node.toolbar()
-			bpy.ops.node.properties()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
+			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		else:
-			bpy.ops.node.properties()
+			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		return {'FINISHED'}
 
 ################
