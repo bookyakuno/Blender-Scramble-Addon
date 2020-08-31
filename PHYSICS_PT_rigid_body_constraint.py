@@ -83,12 +83,12 @@ class ClearConstraintLimits(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def draw(self, context):
-		self.layout.label("Clear Move Limit")
+		self.layout.label(text="Clear Move Limit")
 		row = self.layout.row()
 		row.prop(self, 'is_lin_x', text="X")
 		row.prop(self, 'is_lin_y', text="Y")
 		row.prop(self, 'is_lin_z', text="Z")
-		self.layout.label("Clear Rotate Limit")
+		self.layout.label(text="Clear Rotate Limit")
 		row = self.layout.row()
 		row.prop(self, 'is_ang_x', text="X")
 		row.prop(self, 'is_ang_y', text="Y")
@@ -134,12 +134,12 @@ class ReverseConstraintLimits(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def draw(self, context):
-		self.layout.label("Invert Move Limit")
+		self.layout.label(text="Invert Move Limit")
 		row = self.layout.row()
 		row.prop(self, 'is_lin_x', text="X")
 		row.prop(self, 'is_lin_y', text="Y")
 		row.prop(self, 'is_lin_z', text="Z")
-		self.layout.label("Invert Rotate Limit")
+		self.layout.label(text="Invert Rotate Limit")
 		row = self.layout.row()
 		row.prop(self, 'is_ang_x', text="X")
 		row.prop(self, 'is_ang_y', text="Y")
