@@ -514,14 +514,18 @@ class Resize(bpy.types.Operator):
 			img = bpy.context.edit_image
 			w, h = img.size[0], img.size[1]
 			ratio = w / h
-			self.height = round(self.width / ratio)
+			new_height = round(self.width / ratio)
+			if self.height != new_height:
+				self.height = new_height
 		return None
 	def height_update(self, context):
 		if (self.keep_ratio):
 			img = bpy.context.edit_image
 			w, h = img.size[0], img.size[1]
 			ratio = w / h
-			self.width = round(self.height * ratio)
+			new_width = round(self.height * ratio)
+			if self.width != new_width:
+				self.width = new_width
 		return None
 
 	width : IntProperty(name="Width", default=0, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL', update=width_update)
@@ -568,7 +572,6 @@ class Duplicate(bpy.types.Operator):
 			name = src.name,
 			width = src.size[0],
 			height = src.size[1],
-			alpha = src.use_alpha,
 			float_buffer = src.is_float,
 			stereo3d = src.is_stereo_3d)
 		for name in dir(src):
@@ -757,7 +760,7 @@ class NewNoise(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def execute(self, context):
-		img = bpy.data.images.new(self.name, self.width, self.height, self.alpha, self.float_buffer)
+		img = bpy.data.images.new(self.name, self.width, self.height, alpha=self.alpha, float_buffer=self.float_buffer)
 		width, height, channel = img.size[0], img.size[1], img.channels
 		pixels = numpy.array(img.pixels).reshape(width, height, channel)
 		if (self.monochrome):

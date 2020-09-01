@@ -78,7 +78,7 @@ class AddOppositeVertexGroups(bpy.types.Operator):
 					if (newName.lower() == v.name.lower()):
 						break
 				else:
-					obj.vertex_groups.new(newName)
+					obj.vertex_groups.new(name=newName)
 		return {'FINISHED'}
 
 class SelectVertexGroupsTop(bpy.types.Operator):

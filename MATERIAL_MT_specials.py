@@ -45,7 +45,7 @@ class RemoveNoAssignMaterial(bpy.types.Operator):
 
 class RemoveAllMaterialSlot(bpy.types.Operator):
 	bl_idname = "material.remove_all_material_slot"
-	bl_label = ""
+	bl_label = "Delete all material slots"
 	bl_description = "Delete all material slots for this object"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -56,16 +56,16 @@ class RemoveAllMaterialSlot(bpy.types.Operator):
 			return False
 		return True
 	def execute(self, context):
-		# activeObj = context.active_object
-		# if (activeObj.type == "MESH"):
-		# 	while True:
-		# 		if (0 < len(activeObj.material_slots)):
-		# 			bpy.ops.object.material_slot_remove()
-		# 		else:
-		# 			break
-		for material in bpy.data.materials:
-		    if not material.users:
-		        bpy.data.materials.remove(material)
+		activeObj = context.active_object
+		if 0 < len(activeObj.material_slots):
+			while True:
+		 		if (0 < len(activeObj.material_slots)):
+		 			bpy.ops.object.material_slot_remove()
+		 		else:
+		 			break
+		#for material in bpy.data.materials:
+		#    if not material.users:
+		#        bpy.data.materials.remove(material)
 		return {'FINISHED'}
 
 class RemoveEmptyMaterialSlot(bpy.types.Operator):
@@ -97,7 +97,7 @@ class RemoveEmptyMaterialSlot(bpy.types.Operator):
 class SetTransparentBackSide(bpy.types.Operator):
 	bl_idname = "material.set_transparent_back_side"
 	bl_label = "Set transparent face back"
-	bl_description = "Sets shader nodes transparently mesh back"
+	bl_description = "Enable backface-culling (EEVEE)/ Sets shader nodes transparently mesh back (Cycles)"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -106,27 +106,36 @@ class SetTransparentBackSide(bpy.types.Operator):
 		if (not mat):
 			return False
 		if (mat.node_tree):
-			if (len(mat.node_tree.nodes) == 0):
+			if (len(mat.node_tree.nodes) == 2):
 				return True
 		if (not mat.use_nodes):
 			return True
 		return False
 	def execute(self, context):
 		mat = context.material
-		mat.use_nodes = True
-		if (mat.node_tree):
-			for node in mat.node_tree.nodes:
-				if (node):
-					mat.node_tree.nodes.remove(node)
-		mat.use_transparency = True
-		node_mat = mat.node_tree.nodes.new('ShaderNodeMaterial')
-		node_out = mat.node_tree.nodes.new('ShaderNodeOutput')
-		node_geo = mat.node_tree.nodes.new('ShaderNodeGeometry')
-		node_mat.material = mat
-		node_out.location = [node_out.location[0]+500, node_out.location[1]]
-		node_geo.location = [node_geo.location[0]+150, node_geo.location[1]-150]
-		mat.node_tree.links.new(node_mat.outputs[0], node_out.inputs[0])
-		mat.node_tree.links.new(node_geo.outputs[8], node_out.inputs[1])
+		if context.scene.render.engine == "BLENDER_EEVEE":
+			mat.use_backface_culling = True
+		elif context.scene.render.engine == "CYCLES":
+			mat.use_nodes = True
+			#if (mat.node_tree):
+			#	for node in mat.node_tree.nodes:
+			#		if (node):
+			#			mat.node_tree.nodes.remove(node)
+			node_mat = mat.node_tree.nodes['Principled BSDF']
+			node_trn = mat.node_tree.nodes.new('ShaderNodeBsdfTransparent')
+			node_out = mat.node_tree.nodes['Material Output']
+			node_geo = mat.node_tree.nodes.new('ShaderNodeNewGeometry')
+			node_mix = mat.node_tree.nodes.new('ShaderNodeMixShader')
+			#node_mat.material = mat
+			node_mat.location = [node_mat.location[0]-300, node_mat.location[1]]
+			node_out.location = [node_out.location[0], node_out.location[1]]
+			node_geo.location = [node_geo.location[0], node_geo.location[1]+600]
+			node_trn.location = [node_trn.location[0]+100, node_trn.location[1]]
+			node_mix.location = [node_mix.location[0]+50, node_mix.location[1]+300]
+			mat.node_tree.links.new(node_mat.outputs[0], node_mix.inputs[1])
+			mat.node_tree.links.new(node_trn.outputs[0], node_mix.inputs[2])
+			mat.node_tree.links.new(node_geo.outputs[6], node_mix.inputs[0])
+			mat.node_tree.links.new(node_mix.outputs[0], node_out.inputs[0])
 		return {'FINISHED'}
 
 class MoveMaterialSlotTop(bpy.types.Operator):

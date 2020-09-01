@@ -45,11 +45,20 @@ class MakeLinkSoftbodySettings(bpy.types.Operator):
 				target_softbody = obj.modifiers.new("Softbody", 'SOFT_BODY')
 			for name in dir(active_softbody.settings):
 				if (name[0] != '_'):
-					try:
-						value = active_softbody.settings.__getattribute__(name)
-						target_softbody.settings.__setattr__(name, value)
-					except AttributeError:
-						pass
+					if name != "effector_weights":
+						try:
+							value = active_softbody.settings.__getattribute__(name)
+							target_softbody.settings.__setattr__(name, value)
+						except AttributeError:
+							pass
+					else:
+						for nam in dir(active_softbody.settings.effector_weights):
+							if (nam[0] != '_'):
+								try:
+									value = active_softbody.settings.effector_weights.__getattribute__(nam)
+									target_softbody.settings.effector_weights.__setattr__(nam, value)
+								except AttributeError:
+									pass
 			for name in dir(active_softbody.point_cache):
 				if (name[0] != '_'):
 					try:

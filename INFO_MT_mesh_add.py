@@ -31,11 +31,11 @@ class AddSphereOnlySquare(bpy.types.Operator):
 			bpy.ops.object.mode_set(mode="OBJECT")
 		except RuntimeError: pass
 		if (self.view_align):
-			bpy.ops.mesh.primitive_cube_add(radius=self.radius, view_align=True, location=self.location)
+			bpy.ops.mesh.primitive_cube_add(size=self.radius*2, view_align=True, location=self.location)
 		else:
 			rotation = self.rotation
 			rotation = (math.radians(rotation[0]), math.radians(rotation[1]), math.radians(rotation[2]))
-			bpy.ops.mesh.primitive_cube_add(radius=self.radius, location=self.location, rotation=rotation)
+			bpy.ops.mesh.primitive_cube_add(size=self.radius*2, location=self.location, rotation=rotation)
 		context.active_object.name = "SquarePolySphere"
 		subsurf = context.active_object.modifiers.new("temp", "SUBSURF")
 		subsurf.levels = self.level
@@ -67,8 +67,8 @@ class AddVertexOnlyObject(bpy.types.Operator):
 		bpy.context.collection.objects.link(obj)
 		bpy.ops.object.select_all(action='DESELECT')
 		obj.select_set(True)
-		bpy.bpy.context.view_layer.objects.active = obj
-		obj.location = context.space_data.cursor_location[:]
+		bpy.context.view_layer.objects.active = obj
+		obj.location = context.scene.cursor.location[:]
 		bpy.ops.object.mode_set(mode="EDIT")
 		context.tool_settings.mesh_select_mode = (True, False, False)
 		return {'FINISHED'}
@@ -126,7 +126,7 @@ class CreateVertexGroupSplits(bpy.types.Operator):
 					new_me = bpy.data.meshes.new(obj.name +":"+ vertex_group.name)
 					new_me.from_pydata(new_verts, [], new_faces)
 					new_obj = bpy.data.objects.new(obj.name +":"+ vertex_group.name, new_me)
-					context.scene.objects.link(new_obj)
+					context.view_layer.active_layer_collection.collection.objects.link(new_obj)
 					new_obj.select_set(True)
 					bpy.context.view_layer.objects.active = new_obj
 					new_obj.location = obj.location[:]
@@ -178,7 +178,7 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
 		self.layout.operator(AddVertexOnlyObject.bl_idname, icon='PLUGIN')
-		self.layout.operator(AddSphereOnlySquare.bl_idname, icon='PLUGIN').location = context.space_data.cursor_location
+		self.layout.operator(AddSphereOnlySquare.bl_idname, icon='PLUGIN').location = context.scene.cursor.location
 		self.layout.separator()
 		self.layout.operator(CreateVertexGroupSplits.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):

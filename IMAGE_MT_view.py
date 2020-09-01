@@ -29,10 +29,10 @@ class Reset2DCursor(bpy.types.Operator):
 
 	def execute(self, context):
 		if (bpy.context.edit_image):
-			x, y = (1,1)
+			x, y = (1.0, 1.0)
 		else:
-			x = 1
-			y = 1
+			x = 1.0
+			y = 1.0
 
 		area = None
 		for area in bpy.context.screen.areas:
@@ -41,31 +41,30 @@ class Reset2DCursor(bpy.types.Operator):
 		if not area:
 			self.report({'INFO'}, "Not found Image Editor !!")
 			return{'FINISHED'}
-			
 		if (self.mode == "C"):
-			area.spaces[0].cursor_location = [x/2, y/2]
+			bpy.ops.uv.cursor_set(location=(x/2, y/2))
 		elif (self.mode == "U"):
-			area.spaces[0].cursor_location = [x/2, y]
+			bpy.ops.uv.cursor_set(location=(x/2, y))
 		elif (self.mode == "RU"):
-			area.spaces[0].cursor_location = [x, y]
+			bpy.ops.uv.cursor_set(location=(x, y))
 		elif (self.mode == "R"):
-			area.spaces[0].cursor_location = [x, y/2]
+			bpy.ops.uv.cursor_set(location=(x, y/2))
 		elif (self.mode == "RD"):
-			area.spaces[0].cursor_location = [x, 0]
+			bpy.ops.uv.cursor_set(location=(x, 0))
 		elif (self.mode == "D"):
-			area.spaces[0].cursor_location = [x/2, 0]
+			bpy.ops.uv.cursor_set(location=(x/2, 0))
 		elif (self.mode == "LD"):
-			area.spaces[0].cursor_location = [0, 0]
+			bpy.ops.uv.cursor_set(location=(0, 0))
 		elif (self.mode == "L"):
-			area.spaces[0].cursor_location = [0, y/2]
+			bpy.ops.uv.cursor_set(location=(0, y/2))
 		elif (self.mode == "LU"):
-			area.spaces[0].cursor_location = [0, y]
+			bpy.ops.uv.cursor_set(location=(0, y))
 		return {'FINISHED'}
 
 class TogglePanelsA(bpy.types.Operator):
 	bl_idname = "image.toggle_panels_a"
 	bl_label = "Toggle Panel (mode A)"
-	bl_description = "properties/tool shelf \"both display\" / \"both hide\" toggle"
+	bl_description = "sidebar/toolbar \"both display\" / \"both hide\" toggle"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -78,18 +77,19 @@ class TogglePanelsA(bpy.types.Operator):
 				uiW = region.width
 		if (1 < toolW or 1 < uiW):
 			if (1 < toolW):
-				bpy.ops.image.toolshelf()
+				context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
 			if (1 < uiW):
-				bpy.ops.image.properties()
+				context.space_data.show_region_ui = not context.space_data.show_region_ui
+
 		else:
-			bpy.ops.image.toolshelf()
-			bpy.ops.image.properties()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
+			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		return {'FINISHED'}
 
 class TogglePanelsB(bpy.types.Operator):
 	bl_idname = "image.toggle_panels_b"
 	bl_label = "Toggle Panel (mode B)"
-	bl_description = "\"Panel both hide\" => show only tool shelf => show only properties => \"Panel both display\" for toggle"
+	bl_description = "\"Panel both hide\" => show only toolbar => show only sidebar => \"Panel both display\" for toggle"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -101,12 +101,12 @@ class TogglePanelsB(bpy.types.Operator):
 			if (region.type == 'UI'):
 				uiW = region.width
 		if (toolW <= 1 and uiW <= 1):
-			bpy.ops.image.toolshelf()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
 		elif (toolW <= 1 and 1 < uiW):
-			bpy.ops.image.toolshelf()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
 		else:
-			bpy.ops.image.toolshelf()
-			bpy.ops.image.properties()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
+			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		return {'FINISHED'}
 
 class TogglePanelsC(bpy.types.Operator):
@@ -124,12 +124,12 @@ class TogglePanelsC(bpy.types.Operator):
 			if (region.type == 'UI'):
 				uiW = region.width
 		if (toolW <= 1 and uiW <= 1):
-			bpy.ops.image.toolshelf()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
 		elif (1 < toolW and uiW <= 1):
-			bpy.ops.image.toolshelf()
-			bpy.ops.image.properties()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
+			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		else:
-			bpy.ops.image.properties()
+			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		return {'FINISHED'}
 
 class panel_pie_operator(bpy.types.Operator):
@@ -147,9 +147,9 @@ class PanelPie(bpy.types.Menu): #
 	bl_description = "Toggle panel pie menu"
 
 	def draw(self, context):
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Tool Shelf", icon='TRIA_LEFT')
+		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Toolbar", icon='TRIA_LEFT')
 		op.properties, op.toolshelf = False, True
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Properties", icon='TRIA_RIGHT')
+		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Sidebar", icon='TRIA_RIGHT')
 		op.properties, op.toolshelf = True, False
 		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Double Sided", icon='ARROW_LEFTRIGHT')
 		op.properties, op.toolshelf = True, True
@@ -177,9 +177,9 @@ class run_panel_pie(bpy.types.Operator): #
 				if (1 < region.width):
 					toolshelf = True
 		if (properties != self.properties):
-			bpy.ops.image.properties()
+			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		if (toolshelf != self.toolshelf):
-			bpy.ops.image.toolshelf()
+			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
 		return {'FINISHED'}
 
 ################

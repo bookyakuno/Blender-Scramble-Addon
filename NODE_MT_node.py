@@ -25,7 +25,7 @@ class CopyAllMaterialNode(bpy.types.Operator):
 			return False
 		if (not context.object.active_material.use_nodes):
 			return False
-		if (context.space_data.tree_type != 'ShaderNodeTree'):
+		if (context.space_data.node_tree.type != 'SHADER'):
 			return False
 		return True
 	def execute(self, context):
