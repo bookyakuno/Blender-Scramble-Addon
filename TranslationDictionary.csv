@@ -1577,3 +1577,5 @@
 "所属しているグループで表示/非表示を切り替えます","Switch Show / Hide group has"
 "アクティブなペイントスロットをアクティブなテクスチャスロットにします","active texture slot slot active paint"
 "ユーザー設定のファイルタブで設定した追加の外部エディターでクイック編集を行います","Do quick editing in an external editor of additional files page of custom"
+"メニューの表示・除去ボタンを有効","Enable 'On/Off additional items' Button"
+"外部アプリ","External app"
