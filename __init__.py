@@ -11,8 +11,8 @@ from bpy.props import *
 bl_info = {
 	"name" : "Scramble Addon",
 	"author" : "Saidenka, Bookyakuno, nikogoli",
-	"version" : (1, 0, 1),
-	"blender" : (2, 83, 0),
+	"version" : (1, 0, 3),
+	"blender" : (2, 90, 0),
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",
 	"warning" : "",
@@ -265,6 +265,8 @@ class AddonPreferences(bpy.types.AddonPreferences):
 			box.prop(self, 'text_editor_path_1')
 			box.prop(self, 'text_editor_path_2')
 			box.prop(self, 'text_editor_path_3')
+
+
 		elif self.tab_addon_menu == "LINK":
 			box = layout.box()
 			box.operator(
@@ -302,6 +304,7 @@ class ToggleMenuEnable(bpy.types.Operator):
 			area.tag_redraw()
 		return {'FINISHED'}
 
+
 # 翻訳辞書の取得
 def GetTranslationDict():
 	dict = {}
@@ -312,16 +315,8 @@ def GetTranslationDict():
 		for row in reader:
 			if row:
 				for context in bpy.app.translations.contexts:
-					dict['ja_JP'][(context, row[1])] = row[0]
-		"""
-		for lang in bpy.app.translations.locales:
-			if (lang == 'ja_JP'):
-				continue
-			dict[lang] = {}
-			for row in reader:
-				for context in bpy.app.translations.contexts:
-					dict[lang][(context, row[0])] = row[1]
-		"""
+					dict['ja_JP'][(context, row[1].replace('\\n', '\n'))] = row[0].replace('\\n', '\n')
+
 	return dict
 
 
