@@ -24,7 +24,7 @@ class ApplyAllModifiers(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selected_objects:
 			for mod in obj.modifiers[:]:
-				bpy.ops.object.modifier_apply(apply_as='DATA', modifier=mod.name)
+				bpy.ops.object.modifier_apply(modifier=mod.name)
 		return {'FINISHED'}
 
 class DeleteAllModifiers(bpy.types.Operator):
@@ -167,7 +167,7 @@ class ApplyModifiersAndJoin(bpy.types.Operator):
 					continue
 				if self.unapply_mirror and mod.type == 'MIRROR':
 					continue
-				bpy.ops.object.modifier_apply(apply_as='DATA', modifier=mod.name)
+				bpy.ops.object.modifier_apply(modifier=mod.name)
 		bpy.context.view_layer.objects.active = pre_active_object
 		bpy.ops.object.join()
 		return {'FINISHED'}
