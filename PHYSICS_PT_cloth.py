@@ -45,16 +45,32 @@ class MakeLinkClothSettings(bpy.types.Operator):
 				target_cloth = obj.modifiers.new("Cloth", 'CLOTH')
 			for name in dir(active_cloth.settings):
 				if (name[0] != '_'):
-					try:
-						value = active_cloth.settings.__getattribute__(name)
-						target_cloth.settings.__setattr__(name, value)
-					except AttributeError:
-						pass
+					if name != "effector_weights":
+						try:
+							value = active_cloth.settings.__getattribute__(name)
+							target_cloth.settings.__setattr__(name, value)
+						except AttributeError:
+							pass
+					else:
+						for nam in dir(active_cloth.settings.effector_weights):
+							if (nam[0] != '_'):
+								try:
+									value = active_cloth.settings.effector_weights.__getattribute__(nam)
+									target_cloth.settings.effector_weights.__setattr__(nam, value)
+								except AttributeError:
+									pass
 			for name in dir(active_cloth.point_cache):
 				if (name[0] != '_'):
 					try:
 						value = active_cloth.point_cache.__getattribute__(name)
 						target_cloth.point_cache.__setattr__(name, value)
+					except AttributeError:
+						pass
+			for name in dir(active_cloth.collision_settings):
+				if (name[0] != '_'):
+					try:
+						value = active_cloth.collision_settings.__getattribute__(name)
+						target_cloth.collision_settings.__setattr__(name, value)
 					except AttributeError:
 						pass
 		return {'FINISHED'}

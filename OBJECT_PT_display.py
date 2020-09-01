@@ -19,9 +19,9 @@ class CopyDisplaySetting(bpy.types.Operator):
 	copy_show_wire : BoolProperty(name="Wire Frame", default=True)
 	copy_show_all_edges : BoolProperty(name="Show All Edges", default=True)
 	copy_show_bounds : BoolProperty(name="Bound", default=True)
-	copy_draw_bounds_type : BoolProperty(name="Bound Type", default=True)
+	copy_display_bounds_type : BoolProperty(name="Bound Type", default=True)
 	copy_show_texture_space : BoolProperty(name="Texture Space", default=True)
-	copy_show_x_ray : BoolProperty(name="X-ray", default=True)
+	copy_show_in_front : BoolProperty(name="X-ray", default=True)
 	copy_show_transparent : BoolProperty(name="Alpha", default=True)
 	copy_display_type : BoolProperty(name="Maximum Draw Type", default=True)
 	copy_color : BoolProperty(name="Object Color", default=True)
@@ -41,13 +41,13 @@ class CopyDisplaySetting(bpy.types.Operator):
 		row.prop(self, 'copy_show_bounds')
 		row = self.layout.row()
 		row.label(text="")
-		row.prop(self, 'copy_draw_bounds_type')
+		row.prop(self, 'copy_display_bounds_type')
 		row = self.layout.row()
 		row.prop(self, 'copy_show_axis')
 		row.prop(self, 'copy_show_texture_space')
 		row = self.layout.row()
 		row.prop(self, 'copy_show_wire')
-		row.prop(self, 'copy_show_x_ray')
+		row.prop(self, 'copy_show_in_front')
 		row = self.layout.row()
 		row.prop(self, 'copy_show_all_edges')
 		row.prop(self, 'copy_show_transparent')
@@ -69,12 +69,12 @@ class CopyDisplaySetting(bpy.types.Operator):
 					obj.show_all_edges = active_obj.show_all_edges
 				if (self.copy_show_bounds):
 					obj.show_bounds = active_obj.show_bounds
-				if (self.copy_draw_bounds_type):
-					obj.draw_bounds_type = active_obj.draw_bounds_type
+				if (self.copy_display_bounds_type):
+					obj.display_bounds_type = active_obj.display_bounds_type
 				if (self.copy_show_texture_space):
 					obj.show_texture_space = active_obj.show_texture_space
-				if (self.copy_show_x_ray):
-					obj.show_x_ray = active_obj.show_x_ray
+				if (self.copy_show_in_front):
+					obj.show_in_front = active_obj.show_in_front
 				if (self.copy_show_transparent):
 					obj.show_transparent = active_obj.show_transparent
 				if (self.copy_display_type):
@@ -117,13 +117,13 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		row = self.layout.row()
 		sub = row.row(align=True)
-		op = sub.operator('wm.context_set_string', icon='MESH_CUBE', text="")
+		op = sub.operator('wm.context_set_string', icon='SHADING_BBOX', text="")
 		op.data_path, op.value = 'active_object.display_type', 'BOUNDS'
-		op = sub.operator('wm.context_set_string', icon='WIRE', text="")
+		op = sub.operator('wm.context_set_string', icon='SHADING_WIRE', text="")
 		op.data_path, op.value = 'active_object.display_type', 'WIRE'
-		op = sub.operator('wm.context_set_string', icon='SOLID', text="")
+		op = sub.operator('wm.context_set_string', icon='SHADING_SOLID', text="")
 		op.data_path, op.value = 'active_object.display_type', 'SOLID'
-		op = sub.operator('wm.context_set_string', icon='TEXTURE_SHADED', text="")
+		op = sub.operator('wm.context_set_string', icon='SHADING_TEXTURE', text="")
 		op.data_path, op.value = 'active_object.display_type', 'TEXTURED'
 		row.operator(CopyDisplaySetting.bl_idname, icon='MESH_UVSPHERE')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):

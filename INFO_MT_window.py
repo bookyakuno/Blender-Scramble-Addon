@@ -10,7 +10,7 @@ from bpy.props import *
 
 class PieMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_window_pie"
-	bl_label = "Pie Menu"
+	bl_label = "Area Pie Menu (for short-cut)"
 	bl_description = "Window Pie Menus"
 
 	def draw(self, context):

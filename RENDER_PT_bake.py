@@ -33,10 +33,12 @@ class NewBakeImage(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def execute(self, context):
-		new_image = bpy.data.images.new(self.name, self.width, self.height, self.alpha, self.float)
-		me = context.active_object.data
-		for data in me.uv_layers.active.data:
-			data.image = new_image
+		new_image = bpy.data.images.new(self.name, self.width, self.height, alpha=self.alpha, float_buffer=self.float)
+		for mslot in bpy.context.active_object.material_slots:
+			mslot.material.use_nodes = True
+			node_tex = mslot.material.node_tree.nodes.new('ShaderNodeTexImage')
+			node_tex.image = new_image
+			node_tex.location = [node_tex.location[0]-300, node_tex.location[1]+300]
 		if (self.show_image):
 			max = -1
 			for area in context.screen.areas:

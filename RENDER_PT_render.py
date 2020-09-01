@@ -4,6 +4,7 @@
 import bpy
 from bpy.props import *
 import sys, subprocess
+from bpy.app.handlers import persistent
 
 ################
 # オペレーター #
@@ -40,9 +41,16 @@ class RenderBackground(bpy.types.Operator):
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 
+
+#context.preferences.view.render_display_typeの初期値を IMAGE →　WIONDOW
+@persistent
+def setIt(context):
+	bpy.context.preferences.view.render_display_type = "WINDOW"	
+
 ################
 # クラスの登録 #
 ################
+
 
 classes = [
 	RenderBackground
@@ -51,10 +59,14 @@ classes = [
 def register():
 	for cls in classes:
 		bpy.utils.register_class(cls)
+	bpy.app.handlers.depsgraph_update_pre.append(setIt)
+	bpy.app.handlers.load_post.append(setIt)
 
 def unregister():
 	for cls in classes:
 		bpy.utils.unregister_class(cls)
+	bpy.app.handlers.depsgraph_update_pre.remove(setIt)
+	bpy.app.handlers.load_post.remove(setIt)
 
 
 ################
@@ -72,6 +84,16 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
+		row = self.layout.row(align=True)
+		row.operator("render.render", text="Render", icon='RENDER_STILL')
+		row.operator("render.render", text="Animation", icon='RENDER_ANIMATION').animation = True
+		row = self.layout.split()
+		row.label(text="Display:")
+		row = row.row(align=True)
+		row.prop(context.preferences.view, "render_display_type", text="")
+		row.prop(bpy.context.scene.render, "use_lock_interface", icon_only=True)
 		self.layout.operator(RenderBackground.bl_idname, icon='CONSOLE')
+
+
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
