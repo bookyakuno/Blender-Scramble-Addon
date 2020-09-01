@@ -194,6 +194,11 @@ class AutoRenameModifiers(bpy.types.Operator):
 					continue
 				except AttributeError: pass
 				try:
+					if mod.mirror_object:
+						mod.name = mod.mirror_object.name
+					continue
+				except AttributeError: pass
+				try:
 					if mod.target:
 						mod.name = mod.target.name
 					continue
