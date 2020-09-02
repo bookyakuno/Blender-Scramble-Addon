@@ -11,8 +11,8 @@ from bpy.props import *
 bl_info = {
 	"name" : "Scramble Addon",
 	"author" : "Saidenka, Bookyakuno, nikogoli",
-	"version" : (1, 0, 1),
-	"blender" : (2, 83, 0),
+	"version" : (1, 0, 3),
+	"blender" : (2, 90, 0),
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",
 	"warning" : "",
@@ -218,8 +218,15 @@ import bpy
 class AddonPreferences(bpy.types.AddonPreferences):
 	bl_idname = __name__
 
+	tab_addon_menu            : EnumProperty(name="Tab", description="", items=[
+	('DISPLAY', "Display", ""),
+	 # ('KEYMAP', "Keymap", ""),
+	('EXTERNAL_APP', "External app", ""),
+	('LINK', "Link", "")
+	], default='DISPLAY')
+
 	disabled_menu : StringProperty(name="Invalid Menu", default="")
-	use_disabled_menu : BoolProperty(name="\"On/Off additional items\" hidden", default=False)
+	use_disabled_menu : BoolProperty(name="Enable 'On/Off additional items' Button", default=False)
 	view_savedata : StringProperty(name="View Save Data", default="")
 	key_config_xml_path : StringProperty(name="XML Config Path", default="BlenderKeyConfig.xml")
 
@@ -233,18 +240,40 @@ class AddonPreferences(bpy.types.AddonPreferences):
 
 	def draw(self, context):
 		layout = self.layout
-		layout.prop(self, 'disabled_menu')
-		layout.prop(self, 'use_disabled_menu')
-		layout.prop(self, 'view_savedata')
-		layout.prop(self, 'key_config_xml_path')
-		box = layout.box()
-		box.prop(self, 'image_editor_path_1')
-		box.prop(self, 'image_editor_path_2')
-		box.prop(self, 'image_editor_path_3')
-		box = layout.box()
-		box.prop(self, 'text_editor_path_1')
-		box.prop(self, 'text_editor_path_2')
-		box.prop(self, 'text_editor_path_3')
+
+		row = layout.row(align=True)
+		row.prop(self,"tab_addon_menu",expand=True)
+
+		if self.tab_addon_menu == "DISPLAY":
+			box = layout.box()
+			box.prop(self, 'use_disabled_menu')
+			box.prop(self, 'disabled_menu')
+			box = layout.box()
+			box.prop(self, 'view_savedata')
+			box = layout.box()
+			box.prop(self, 'key_config_xml_path')
+
+
+		elif self.tab_addon_menu == "EXTERNAL_APP":
+			box = layout.box()
+			box.label(text="Image Editor",icon="IMAGE")
+			box.prop(self, 'image_editor_path_1')
+			box.prop(self, 'image_editor_path_2')
+			box.prop(self, 'image_editor_path_3')
+			box = layout.box()
+			box.label(text="Eext Editoer",icon="TEXT")
+			box.prop(self, 'text_editor_path_1')
+			box.prop(self, 'text_editor_path_2')
+			box.prop(self, 'text_editor_path_3')
+
+
+		elif self.tab_addon_menu == "LINK":
+			box = layout.box()
+			box.operator(
+				"wm.url_open", text="Github", icon="URL"
+			).url = "https://github.com/bookyakuno/Blender-Scramble-Addon"
+
+
 
 # 追加メニューの有効/無効
 class ToggleMenuEnable(bpy.types.Operator):
@@ -275,6 +304,7 @@ class ToggleMenuEnable(bpy.types.Operator):
 			area.tag_redraw()
 		return {'FINISHED'}
 
+
 # 翻訳辞書の取得
 def GetTranslationDict():
 	dict = {}
@@ -283,22 +313,16 @@ def GetTranslationDict():
 		reader = csv.reader(f)
 		dict['ja_JP'] = {}
 		for row in reader:
-			for context in bpy.app.translations.contexts:
-				dict['ja_JP'][(context, row[1])] = row[0]
-		"""
-		for lang in bpy.app.translations.locales:
-			if (lang == 'ja_JP'):
-				continue
-			dict[lang] = {}
-			for row in reader:
+			if row:
 				for context in bpy.app.translations.contexts:
-					dict[lang][(context, row[0])] = row[1]
-		"""
+					dict['ja_JP'][(context, row[1].replace('\\n', '\n'))] = row[0].replace('\\n', '\n')
+
 	return dict
 
 
 classes = [
-	AddonPreferences
+	ToggleMenuEnable,
+	AddonPreferences,
 ]
 
 # プラグインをインストールしたときの処理

@@ -145,7 +145,7 @@ class ApplyDynamicPaint(bpy.types.Operator):
 		bpy.ops.dpaint.type_toggle(type='CANVAS')
 		activeObj.modifiers[-1].canvas_settings.canvas_surfaces[-1].surface_type = 'WEIGHT'
 		bpy.ops.dpaint.output_toggle(output='A')
-		bpy.ops.object.modifier_apply(apply_as='DATA', modifier=activeObj.modifiers[-1].name)
+		bpy.ops.object.modifier_apply(modifier=activeObj.modifiers[-1].name)
 		dpVg = activeObj.vertex_groups[-1]
 		if (not isNew):
 			me = activeObj.data

@@ -39,7 +39,7 @@ class AddSphereOnlySquare(bpy.types.Operator):
 		context.active_object.name = "SquarePolySphere"
 		subsurf = context.active_object.modifiers.new("temp", "SUBSURF")
 		subsurf.levels = self.level
-		bpy.ops.object.modifier_apply(apply_as="DATA", modifier=subsurf.name)
+		bpy.ops.object.modifier_apply(modifier=subsurf.name)
 		bpy.ops.object.mode_set(mode="EDIT")
 		bpy.ops.transform.tosphere(value=1)
 		bpy.ops.object.mode_set(mode="OBJECT")
