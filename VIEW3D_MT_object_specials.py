@@ -820,7 +820,7 @@ class CreateRopeMesh(bpy.types.Operator):
 			activeObj.data.use_stretch = True
 			activeObj.data.use_deform_bounds = True
 			activeObj.data.resolution_u = self.resolution_u
-			bpy.ops.object.modifier_apply(apply_as='DATA', modifier=modi.name)
+			bpy.ops.object.modifier_apply(modifier=modi.name)
 
 			activeObj.data.use_stretch = pre_use_stretch
 			activeObj.data.use_deform_bounds = pre_use_deform_bounds

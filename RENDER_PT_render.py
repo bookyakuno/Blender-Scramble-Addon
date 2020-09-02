@@ -16,19 +16,28 @@ class RenderBackground(bpy.types.Operator):
 	bl_description = "Renders current blend file from command line"
 	bl_options = {'REGISTER'}
 
-	is_quit : BoolProperty(name="Quit Blender", default=True)
+	is_quit : BoolProperty(name="Quit Blender", default=False)
 	items = [
 		('IMAGE', "Image", "", 1),
 		('ANIME', "Animation", "", 2),
 		]
 	mode : EnumProperty(items=items, name="Setting Mode", default='IMAGE')
-	thread : IntProperty(name="Number of Threads", default=2, min=1, max=16, soft_min=1, soft_max=16)
+	thread : IntProperty(name="Number of Threads", default=0, min=1, max=16, soft_min=1, soft_max=16)
 
 	@classmethod
 	def poll(cls, context):
 		if (bpy.data.filepath == ""):
 			return False
 		return True
+	def draw(self, context):
+		layout = self.layout
+		row = layout.row(align=True)
+		row.scale_y = 1.2
+		row.prop(self,"mode",expand=True)
+		layout.prop(self,"thread")
+		layout.separator()
+		layout.prop(self,"is_quit")
+		return {'FINISHED'}
 	def execute(self, context):
 		blend_path = bpy.data.filepath
 		if (self.mode == 'IMAGE'):

@@ -31,7 +31,24 @@ class ChangeContextTab(bpy.types.Operator):
 			self.report(type={'ERROR'}, message="Cannot find properties area")
 			return {'CANCELLED'}
 		now_tab = space_data.context
-		tabs = ['RENDER', 'RENDER_LAYER', 'SCENE', 'WORLD', 'OBJECT', 'CONSTRAINT', 'MODIFIER', 'DATA', 'BONE', 'BONE_CONSTRAINT', 'MATERIAL', 'TEXTURE', 'PARTICLES', 'PHYSICS']
+		tabs = [
+		'TOOL',
+		'RENDER',
+		'OUTPUT',
+		'VIEW_LAYER',
+		'SCENE',
+		'WORLD',
+		'OBJECT',
+		'MODIFIER',
+		'PARTICLES',
+		'PHYSICS',
+		'CONSTRAINT',
+		'DATA',
+		'BONE',
+		'BONE_CONSTRAINT',
+		'MATERIAL',
+		'TEXTURE',
+		]
 		if (now_tab not in tabs):
 			self.report(type={'ERROR'}, message="Unexpected Tab Now")
 			return {'CANCELLED'}
@@ -79,10 +96,11 @@ def IsMenuEnable(self_id):
 
 # メニューを登録する関数
 def menu(self, context):
+	layout = self.layout
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		column = self.layout.column(align=True)
-		column.operator(ChangeContextTab.bl_idname, text="", icon='TRIA_LEFT').is_left = True
-		column.operator(ChangeContextTab.bl_idname, text="", icon='TRIA_RIGHT').is_left = False
+		row = layout.row(align=True)
+		row.operator(ChangeContextTab.bl_idname, text="", icon='TRIA_LEFT').is_left = True
+		row.operator(ChangeContextTab.bl_idname, text="", icon='TRIA_RIGHT').is_left = False
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
-		self.layout.separator()
-		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
+		layout.separator()
+		layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

@@ -30,7 +30,7 @@ class ChangeUserPreferencesTab(bpy.types.Operator):
 	is_left : BoolProperty(name="To Left", default=False)
 
 	def execute(self, context):
-		tabs = ['INTERFACE', 'EDITING', 'INPUT', 'ADDONS', 'THEMES', 'FILES', 'SYSTEM']
+		tabs = ['INTERFACE', 'THEMES', 'VIEWPORT', 'LIGHTS', 'EDITING', 'ANIMATION', 'ADDONS', 'INPUT', 'NAVIGATION', 'KEYMAP', 'SYSTEM', 'SAVE_LOAD', 'FILE_PATHS', 'EXPERIMENTAL']
 		now_tab = context.preferences.active_section
 		if (now_tab not in tabs):
 			self.report(type={'ERROR'}, message="Unexpected Tab Now")
@@ -915,9 +915,9 @@ class UpdateScrambleAddon(bpy.types.Operator):
 		pass
 
 	def execute(self, context):
-		response = urllib.request.urlopen("https://github.com/saidenka/Blender-Scramble-Addon/archive/master.zip")
+		response = urllib.request.urlopen("https://github.com/bookyakuno/Blender-Scramble-Addon/archive/master.zip")
 		tempDir = bpy.app.tempdir
-		zipPath = os.path.join(tempDir, "Scramble Addon.zip")
+		zipPath = os.path.join(tempDir, "scramble_addon.zip")
 		addonDir = os.path.dirname(__file__)
 		f = open(zipPath, "wb")
 		f.write(response.read())
@@ -927,7 +927,7 @@ class UpdateScrambleAddon(bpy.types.Operator):
 			if not os.path.basename(f):
 				pass
 			else:
-				if ("Scramble Addon" in f):
+				if ("scramble_addon" in f):
 					uzf = open(os.path.join(addonDir, os.path.basename(f)), 'wb')
 					uzf.write(zf.read(f))
 					uzf.close()
