@@ -106,7 +106,7 @@ class SetTransparentBackSide(bpy.types.Operator):
 		if (not mat):
 			return False
 		if (mat.node_tree):
-			if (len(mat.node_tree.nodes) == 2):
+			if (len(mat.node_tree.nodes) >= 2):
 				return True
 		if (not mat.use_nodes):
 			return True
@@ -121,9 +121,9 @@ class SetTransparentBackSide(bpy.types.Operator):
 			#	for node in mat.node_tree.nodes:
 			#		if (node):
 			#			mat.node_tree.nodes.remove(node)
-			node_mat = mat.node_tree.nodes['Principled BSDF']
-			node_trn = mat.node_tree.nodes.new('ShaderNodeBsdfTransparent')
 			node_out = mat.node_tree.nodes['Material Output']
+			node_mat = node_out.inputs[0].links[0].from_node#mat.node_tree.nodes['Principled BSDF']
+			node_trn = mat.node_tree.nodes.new('ShaderNodeBsdfTransparent')
 			node_geo = mat.node_tree.nodes.new('ShaderNodeNewGeometry')
 			node_mix = mat.node_tree.nodes.new('ShaderNodeMixShader')
 			#node_mat.material = mat
