@@ -87,8 +87,8 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.label(text="Scramble Addon:", icon='PLUGIN')
-		split = self.layout.split(percentage=0.7)
-		split_sub = split.split(percentage=0.95)
+		split = self.layout.split(factor=0.7)
+		split_sub = split.split(factor=0.95)
 		col = split_sub.column()
 		col.label(text="Image Editor: Advance")
 		col.prop(context.preferences.addons[__name__.partition('.')[0]].preferences, 'image_editor_path_1', text="")
