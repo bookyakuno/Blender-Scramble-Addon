@@ -2,6 +2,10 @@
 # "Propaties" Area > "Texture" Tab > "Image" Panel
 
 import bpy
+import os
+from bpy.props import *
+from bpy.ops import *
+from bpy_extras.io_utils import ImportHelper
 
 ################
 # オペレーター #
@@ -9,34 +13,8 @@ import bpy
 
 class ShowTextureImage(bpy.types.Operator):
 	bl_idname = "texture.show_texture_image"
-	bl_label = "Texture images show in UV / image editor"
-	bl_description = "Image is used in active texture shows UV / image editor"
-	bl_options = {'REGISTER'}
-
-	@classmethod
-	def poll(cls, context):
-		if (not context.texture):
-			return False
-		if (context.texture.type != 'IMAGE'):
-			return False
-		if (not context.texture.image):
-			return False
-		for area in context.screen.areas:
-			if (area.type == 'IMAGE_EDITOR'):
-				return True
-		return False
-	def execute(self, context):
-		for area in context.screen.areas:
-			if (area.type == 'IMAGE_EDITOR'):
-				for space in area.spaces:
-					if (space.type == 'IMAGE_EDITOR'):
-						space.image = context.texture.image
-		return {'FINISHED'}
-
-class StartTexturePaint(bpy.types.Operator):
-	bl_idname = "texture.start_texture_paint"
-	bl_label = "Texture paint by this texture"
-	bl_description = "Active texture provides texture paint"
+	bl_label = "Texture images show in image editor"
+	bl_description = "Image is used in active texture shows image editor"
 	bl_options = {'REGISTER'}
 
 	@classmethod
@@ -45,20 +23,105 @@ class StartTexturePaint(bpy.types.Operator):
 			return False
 		if (not context.object.active_material):
 			return False
-		if (context.object.active_material.paint_active_slot == context.object.active_material.active_texture_index):
-			if (context.object.mode == 'TEXTURE_PAINT'):
+		if context.scene.tool_settings.image_paint.mode == 'MATERIAL':
+			if len(context.object.active_material.texture_paint_images) == 0:
 				return False
-		if (not context.texture):
+		for area in context.screen.areas:
+			if (area.type == 'IMAGE_EDITOR'):
+				return True
+		return False
+	def execute(self, context):
+		mat = context.object.active_material
+		if context.scene.tool_settings.image_paint.mode == 'MATERIAL':
+			active_slot_number = mat.paint_active_slot
+			act_image = mat.texture_paint_images[active_slot_number]
+		elif context.scene.tool_settings.image_paint.mode == 'IMAGE':
+			act_image = context.scene.tool_settings.image_paint.canvas
+		for area in context.screen.areas:
+			if (area.type == 'IMAGE_EDITOR'):
+				for space in area.spaces:
+					if (space.type == 'IMAGE_EDITOR'):
+						space.image = act_image
+		return {'FINISHED'}
+
+class AddExternalImage(bpy.types.Operator, ImportHelper):
+	bl_idname = "texture.add_external_image"
+	bl_label = "Add External Image"
+	bl_description = "Add an external image file for texture paint"
+	bl_options = {'REGISTER'}
+
+	filter_glob : StringProperty( default='*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.bmp', options={'HIDDEN'} )
+
+	def execute(self, context):
+		bpy.ops.image.open(filepath=self.filepath)
+		filename = os.path.basename(self.filepath)
+		mat = context.object.active_material
+		mat.use_nodes = True
+		node_tex = mat.node_tree.nodes.new('ShaderNodeTexImage')
+		try:
+			node_mat = mat.node_tree.nodes['Principled BSDF']
+		except KeyError:
+			node_mat = mat.node_tree.nodes['プリンシプル BSDF']
+		if node_mat.inputs["Base Color"].is_linked:
+			old_node_tex = node_mat.inputs["Base Color"].links[0].from_node
+			node_tex.location = [old_node_tex.location[0]-20, old_node_tex.location[1]-20]
+		else:
+			node_tex.location = [node_tex.location[0]-300, node_tex.location[1]+300]
+		node_tex.image = bpy.data.images[filename]		
+		mat.node_tree.links.new(node_tex.outputs[0], node_mat.inputs[0])
+		context.scene.tool_settings.image_paint.mode = 'MATERIAL'
+		return {'FINISHED'}
+
+
+class StartTexturePaint(bpy.types.Operator):
+	bl_idname = "texture.start_texture_paint"
+	bl_label = "Add an image as base-color for texture paint"
+	bl_description = "Add an image as base-color in texture paint slots"
+	bl_options = {'REGISTER'}
+
+	image_counts : IntProperty(name="Number of images", default=0)
+	image_name : StringProperty(name="Image to be used", default="")
+
+	def __init__(self):
+		self.image_counts = len(bpy.data.images)
+		self.image_name = bpy.data.images[-1].name
+	@classmethod
+	def poll(cls, context):
+		if (not context.object):
 			return False
-		if (context.texture.type != 'IMAGE'):
+		if (not context.object.active_material):
 			return False
-		if (not context.texture.image):
+		if (context.scene.tool_settings.image_paint.mode == 'IMAGE'):
 			return False
 		return True
-	def execute(self, context):
-		bpy.ops.object.set_object_mode(mode='TEXTURE_PAINT')
-		context.object.active_material.paint_active_slot = context.object.active_material.active_texture_index
-		bpy.context.object.active_material.use_nodes = False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+
+	def draw(self, context):
+		if len(bpy.data.images) > self.image_counts:
+			self.image_name = bpy.data.images[-1].name
+			self.image_counts = len(bpy.data.images)
+		self.layout.prop_search(self, "image_name", bpy.data, "images",text="Select image", text_ctxt="", translate=True, icon='IMAGE')
+		row = self.layout.row(align=True)
+		row.operator('image.new', icon='ADD')
+		row.operator(AddExternalImage.bl_idname, icon='FILEBROWSER')
+
+	def execute(self, context):	
+		mat = context.object.active_material
+		mat.use_nodes = True
+		node_tex = mat.node_tree.nodes.new('ShaderNodeTexImage')
+		try:
+			node_mat = mat.node_tree.nodes['Principled BSDF']
+		except KeyError:
+			node_mat = mat.node_tree.nodes['プリンシプルBSDF']
+		if node_mat.inputs["Base Color"].is_linked:
+			old_node_tex = node_mat.inputs["Base Color"].links[0].from_node
+			node_tex.location = [old_node_tex.location[0]-20, old_node_tex.location[1]-20]
+		else:
+			node_tex.location = [node_tex.location[0]-300, node_tex.location[1]+300]
+		node_tex.image = bpy.data.images[self.image_name]
+		mat.node_tree.links.new(node_tex.outputs[0], node_mat.inputs[0])
+		context.scene.tool_settings.image_paint.mode = 'MATERIAL'
 		return {'FINISHED'}
 
 ################
@@ -67,6 +130,7 @@ class StartTexturePaint(bpy.types.Operator):
 
 classes = [
 	ShowTextureImage,
+	AddExternalImage,
 	StartTexturePaint
 ]
 
@@ -94,7 +158,8 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		self.layout.operator(ShowTextureImage.bl_idname, icon='IMAGE_COL', text="Show image UV/Image editor")
-		self.layout.operator(StartTexturePaint.bl_idname, icon='TPAINT_HLT')
+		row = self.layout.row(align=True)
+		row.operator(ShowTextureImage.bl_idname, icon='IMAGE', text="Show image UV/Image editor")
+		row.operator(StartTexturePaint.bl_idname, icon='OUTLINER_OB_IMAGE')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
