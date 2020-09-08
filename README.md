@@ -1,17 +1,17 @@
 # クレジット
 
-原作：さいでんか
-このGithubでの公開：忘却野(https://github.com/bookyakuno/Blender-Scramble-Addon)
-Blender2.8への対応：nikogoli, 忘却野
+原作：さいでんか<br>
+このGithubでの公開：忘却野(https://github.com/bookyakuno/Blender-Scramble-Addon)<br>
+Blender2.8への対応：nikogoli, 忘却野<br>
 
 # 2.8x向けバージョン(ver1.0.1-)
 
 
 ### 未サポート情報
 
-**Blender2.8x向けバージョンは、完全にアップデートされていません。**
-メニューやボタンがない場合や、ボタンはあるものの反応しない場合・Blender標準機能として実装されて機能が重複している場合などがあります。
-個人で完全に対処しきれないので、バグ報告やプルリクエストがあれば修正されるかも知れません。
+**Blender2.8x向けバージョンは、完全にアップデートされていません。**<br>
+メニューやボタンがない場合や、ボタンはあるものの反応しない場合・Blender標準機能として実装されて機能が重複している場合などがあります。<br>
+個人で完全に対処しきれないので、バグ報告やプルリクエストがあれば修正されるかも知れません。<br>
 
 - (例)ベイク、テクスチャリストの操作、blenderのバージョンごとの関連付け、オブジェクトID関連の操作は読み込みを行っていない
 
@@ -24,37 +24,43 @@ Blender2.8への対応：nikogoli, 忘却野
 
 # Blender-Scramble-Addon
 
-Blenderのかゆいところに手が届くかもしれない機能が詰まったアドオンです。
-> This add-on is packed with Blender useful features.
-> English-speaking people should be on the English translation.
+Blenderのかゆいところに手が届くかもしれない機能が詰まったアドオンです。<br>
+<br>
+> This add-on is packed with Blender useful features.<br>
+> English-speaking people should be on the English translation.<br>
 ![Translation](http://i.imgur.com/U1pO6Jh.jpg)
 
 ## インストール (Installation)
 
-まず画面右の「Download ZIP」でZIPファイルをダウンロードし解凍。
-中の「Scramble Addon」フォルダをBlenderのaddonsフォルダに置いて下さい。
-(Windows7なら： C:\Users\ユーザー名\AppData\Roaming\Blender Foundation\Blender\バージョン\scripts\addons\Scramble Addon)
-日本語・英語を問わず、国際フォントの使用には必ずチェックを。
-Blenderを起動しユーザー設定のアドオンタブで「Scramble」等で検索、アドオンをオンにして「ユーザー設定の保存」クリック。
-左上の「ファイル」メニューに「全体処理」という項目が追加されていればインストール成功です。
+1. 下記のリンクから、好きなアドオンバージョンをダウンロードします
+    - **[Release](https://github.com/bookyakuno/Blender-Scramble-Addon/releases)**
+3. 設定 > アドオン > "インストール..." ボタンにて、zipファイルのままアドオンをインストールします
+    - インストールがうまく行かない場合は、zipファイルを解凍したフォルダを、下記のaddonsフォルダ内に置いて下さい
+    - (Windowsの場合： C:\Users\ユーザー名\AppData\Roaming\Blender Foundation\Blender\バージョン\scripts\addons)
+6. 日本語・英語を問わず、国際フォントの使用には必ずチェックを
+7. Blenderを起動しユーザー設定のアドオンタブで「Scramble」等で検索、アドオンをオンにして「ユーザー設定の保存」クリック
+8. 左上の「ファイル」メニューに「全体処理」という項目が追加されていればインストール成功です
 
-> Download the ZIP file first in the "Download ZIP" of right and unzip.
-> Place a "Scramble Addon" folder in the addons folder of Blender.
-> (If on Windows 7: C:\Users\\(UserName)\AppData\Roaming\Blender Foundation\Blender\\(Version)\scripts\addons\Scramble Addon)
-> Regardless of Japanese or English for the use of the international font by all means a check.
-> Search Start the Blender add-on tab of the user settings in the "Scramble", etc., select the add-on click "save user settings".
-> The installation is successful if it is added to item "whole process" in the "File" menu in the upper-left corner.
+> Download your favorite add-on version from the link below<br>
+    > - **[Release](https://github.com/bookyakuno/Blender-Scramble-Addon/releases)**<br>
+
+> Place a unzip folder in the addons folder of Blender.<br>
+> (If on Windows 7: C:\Users\\(UserName)\AppData\Roaming\Blender Foundation\Blender\\(Version)\scripts\addons)<br>
+> Regardless of Japanese or English for the use of the international font by all means a check.<br>
+> Search Start the Blender add-on tab of the user settings in the "Scramble", etc., select the add-on click "save user settings".<br>
+> The installation is successful if it is added to item "whole process" in the "File" menu in the upper-left corner.<br>
 
 ## 使い方 (How to use)
-このアドオンは基本的に、既存のメニューに項目が追加されるのでそれをクリックして実行します。
-例えば「ファイル > 全体処理 > オブジェクト > 全ての「すべての辺を表示」をオン」等です。
-追加された項目には必ず![アイコン](http://i.imgur.com/OOVguPd.png)のようなアイコンが表示されています。
-色々なところに項目が追加されているので探してみてください。
 
-> This add-on is basically, and then run it by clicking on it because the items to the existing menu is added.
-> For example, it is the "File> overall process> object> on all of the" Show all sides, "" and the like.
-> The added items are always displayed an icon such as ![アイコン](http://i.imgur.com/OOVguPd.png).
-> Please look because items have been added to the various places.
+このアドオンは基本的に、既存のメニューに項目が追加されるのでそれをクリックして実行します。<br>
+例えば「ファイル > 全体処理 > オブジェクト > 全ての「すべての辺を表示」をオン」等です。<br>
+追加された項目には必ず![アイコン](http://i.imgur.com/OOVguPd.png)のようなアイコンが表示されています。<br>
+色々なところに項目が追加されているので探してみてください。<br>
+
+> This add-on is basically, and then run it by clicking on it because the items to the existing menu is added.<br>
+> For example, it is the "File> overall process> object> on all of the" Show all sides, "" and the like.<br>
+> The added items are always displayed an icon such as ![アイコン](http://i.imgur.com/OOVguPd.png).<br>
+> Please look because items have been added to the various places.<br>
 
 ## 機能一覧 (List of functions)
 * **「プロパティ」エリア > 「ボーンコンストレイント」タブ**
