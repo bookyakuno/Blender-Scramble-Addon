@@ -67,7 +67,7 @@ class RemoveAllTextureSlots(bpy.types.Operator):
 			nod = tex_nodes_dic[name]
 			try:
 				linked_node = nod.outputs[0].links[0].to_node
-				if linked_node.type in ["NORMAL_MAP", "BUMP"]:
+				if linked_node.type in ["NORMAL_MAP", "BUMP", "ノーマルマップ", "バンプ"]:
 					mat.node_tree.nodes.remove(linked_node)
 			except IndexError:
 				pass
@@ -100,7 +100,7 @@ class RemoveTextureSlot(bpy.types.Operator):
 		tex_node = tex_nodes_dic[act_image_name]
 		try:
 			linked_node = tex_node.outputs[0].links[0].to_node
-			if linked_node.type in ["NORMAL_MAP", "BUMP"]:
+			if linked_node.type in ["NORMAL_MAP", "BUMP", "ノーマルマップ", "バンプ"]:
 				mat.node_tree.nodes.remove(linked_node)
 		except IndexError:
 			pass
@@ -320,7 +320,7 @@ class RemoveUnlinkedSlots(bpy.types.Operator):
 			nod = tex_nodes_dic[name]
 			try:
 				linked_node = nod.outputs[0].links[0].to_node
-				if linked_node.type in ["NORMAL_MAP", "BUMP"]:
+				if linked_node.type in ["NORMAL_MAP", "BUMP", "ノーマルマップ", "バンプ"]:
 					if len(linked_node.outputs[0].links) == 0:
 						mat.node_tree.nodes.remove(linked_node)
 						mat.node_tree.nodes.remove(nod)
@@ -389,7 +389,7 @@ class RemoveFollowingSlots(bpy.types.Operator):
 			nod = tex_nodes_dic[name]
 			try:
 				linked_node = nod.outputs[0].links[0].to_node
-				if linked_node.type in ["NORMAL_MAP", "BUMP"]:
+				if linked_node.type in ["NORMAL_MAP", "BUMP", "ノーマルマップ", "バンプ"]:
 					mat.node_tree.nodes.remove(linked_node)
 			except IndexError:
 				pass
@@ -432,7 +432,7 @@ class CopyPasteTextureSlot(bpy.types.Operator):
 		nod = tex_nodes_dic[act_image_name]
 		try:
 			linked_socket = nod.outputs[0].links[0].to_socket
-			if linked_socket.node.type in ["NORMAL_MAP", "BUMP"]:
+			if linked_socket.node.type in ["NORMAL_MAP", "BUMP", "ノーマルマップ", "バンプ"]:
 				try:
 					more_socket = linked_socket.node.outputs[0].links[0].to_socket
 				except IndexError:
@@ -456,11 +456,17 @@ class CopyPasteTextureSlot(bpy.types.Operator):
 				elif node_info["socket"].node.type == "BUMP":
 					new_node = target_mat.node_tree.nodes.new('ShaderNodeBump')
 				new_node.location = node_info["socket"].node.location
-				node_mat = target_mat.node_tree.nodes["Principled BSDF"]	
+				try:
+					node_mat = target_mat.node_tree.nodes["プリンシプル BSDF"]
+				except KeyError:
+					node_mat = target_mat.node_tree.nodes["Principled BSDF"]
 				target_mat.node_tree.links.new(node_tex.outputs[0], new_node.inputs[node_info["socket"].identifier])
 				target_mat.node_tree.links.new(new_node.outputs[0], node_mat.inputs[node_info["more"].identifier])
 			else:
-				node_mat = target_mat.node_tree.nodes["Principled BSDF"]
+				try:
+					node_mat = target_mat.node_tree.nodes["プリンシプル BSDF"]
+				except KeyError:
+					node_mat = target_mat.node_tree.nodes["Principled BSDF"]
 				target_mat.node_tree.links.new(node_tex.outputs[0], node_mat.inputs[node_info["socket"].identifier])
 		context.object.active_material_index = context.object.material_slots.find(target_mat.name)
 		context.scene.tool_settings.image_paint.mode = 'MATERIAL'

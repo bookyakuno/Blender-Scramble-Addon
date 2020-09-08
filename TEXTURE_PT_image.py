@@ -59,9 +59,9 @@ class AddExternalImage(bpy.types.Operator, ImportHelper):
 		mat.use_nodes = True
 		node_tex = mat.node_tree.nodes.new('ShaderNodeTexImage')
 		try:
-			node_mat = mat.node_tree.nodes['Principled BSDF']
-		except KeyError:
 			node_mat = mat.node_tree.nodes['プリンシプル BSDF']
+		except KeyError:
+			node_mat = mat.node_tree.nodes['Principled BSDF']
 		if node_mat.inputs["Base Color"].is_linked:
 			old_node_tex = node_mat.inputs["Base Color"].links[0].from_node
 			node_tex.location = [old_node_tex.location[0]-20, old_node_tex.location[1]-20]
@@ -111,9 +111,9 @@ class StartTexturePaint(bpy.types.Operator):
 		mat.use_nodes = True
 		node_tex = mat.node_tree.nodes.new('ShaderNodeTexImage')
 		try:
-			node_mat = mat.node_tree.nodes['Principled BSDF']
-		except KeyError:
 			node_mat = mat.node_tree.nodes['プリンシプルBSDF']
+		except KeyError:
+			node_mat = mat.node_tree.nodes['Principled BSDF']
 		if node_mat.inputs["Base Color"].is_linked:
 			old_node_tex = node_mat.inputs["Base Color"].links[0].from_node
 			node_tex.location = [old_node_tex.location[0]-20, old_node_tex.location[1]-20]
