@@ -2,30 +2,43 @@
 # "Propaties" Area > "Texture" Tab > "Mapping" Panel
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
 ################
 
 class UseActiveUV(bpy.types.Operator):
-	bl_idname = "texture.use_active_uv"
-	bl_label = "Use Active UV"
-	bl_description = "Active UV mesh used in this slot"
+	bl_idname = "texture.select_uv"
+	bl_label = "Select UV"
+	bl_description = "Select UV mesh used in this slot"
+	bl_property = "uv_list"
 	bl_options = {'REGISTER', 'UNDO'}
+
+	def get_object_list_callback(self, context):
+		items = ((uv.name, uv.name, "") for uv in context.object.data.uv_layers)
+		return items
+	
+	uv_list : EnumProperty(name="active UV", items=get_object_list_callback)
 	
 	@classmethod
 	def poll(cls, context):
-		if (not context.texture_slot):
-			return False
-		if (context.texture_slot.texture_coords != 'UV'):
-			return False
 		if (context.object.type != 'MESH'):
 			return False
-		if (not context.object.data.uv_layers.active):
+		if (len(context.object.data.uv_layers) <= 1):
+			return False			
+		if (not context.object.active_material):
+			return False
+		if (context.scene.tool_settings.image_paint.mode == 'IMAGE'):
+			return False	
+		if len(context.object.active_material.texture_paint_images) == 0:
 			return False
 		return True
+	def invoke(self, context, event):
+		context.window_manager.invoke_search_popup(self)
+		return {'RUNNING_MODAL'}
 	def execute(self, context):
-		context.texture_slot.uv_layer = context.object.data.uv_layers.active.name
+		context.object.data.uv_layers.active = context.object.data.uv_layers[self.uv_list]
 		return {'FINISHED'}
 
 ################
@@ -60,8 +73,10 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		if (context.texture_slot):
-			if (context.texture_slot.texture_coords == 'UV'):
-				self.layout.operator(UseActiveUV.bl_idname, icon='PLUGIN')
+		if (context.scene.tool_settings.image_paint.mode == 'MATERIAL'):
+			row = self.layout.row(align=True)
+			row.prop_search(context.object.data.uv_layers, "active", context.object.data, "uv_layers",text="Select UV", text_ctxt="", translate=True, icon='PLUGIN')
+			#row.label(text=f" UV name : {context.object.data.uv_layers.active.name}")
+			#row.operator(UseActiveUV.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

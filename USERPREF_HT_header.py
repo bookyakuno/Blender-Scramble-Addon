@@ -667,7 +667,7 @@ class ImportKeyConfigXml(bpy.types.Operator):
 					key_modifier = 'NONE'
 					if ('KeyModifier' in key_elem.attrib):
 						key_modifier = key_elem.attrib['KeyModifier']
-					key_map_item = key_map.keymap_items.new(id_name, type, value, any, shift, ctrl, alt, os, key_modifier)
+					key_map_item = key_map.keymap_items.new(id_name, type, value, any=any, shift=shift, ctrl=ctrl, alt=alt, oskey=os, key_modifier=key_modifier)
 					key_map_item.active = active
 					for property_elem in key_map_item_elem.findall('Property'):
 						try:
@@ -1022,8 +1022,12 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
+		row = self.layout.row(align=True)
+		row.alignment = "CENTER"
+		row.operator(ChangeUserPreferencesTab.bl_idname, icon='TRIA_UP', text="").is_left = True
+		row.operator(ChangeUserPreferencesTab.bl_idname, icon='TRIA_DOWN', text="").is_left = False
 		active_section = context.preferences.active_section
-		if (active_section == 'INPUT'):
+		if (active_section == 'KEYMAP'):
 			row = self.layout.row(align=True)
 			row.menu(InputMenu.bl_idname, icon="PLUGIN")
 			row.operator(CloseKeyMapItems.bl_idname, icon='FULLSCREEN_EXIT', text="")
@@ -1037,21 +1041,22 @@ def menu(self, context):
 				keymap_item = keymap.keymap_items[0]
 			else:
 				keymap_item = keymap.keymap_items.new('', 'W', 'PRESS')
+			self.layout.label(text="Search Key Bind")
 			row = self.layout.row(align=True)
-			sub = row.row()
-			sub.prop(keymap_item, 'type', event=True, text="")
-			sub.scale_x = 0.5
+			#sub = row.row()
+			row.prop(keymap_item, 'type', event=True, text="")
+			#sub.scale_x = 0.5
+			row.operator(SearchKeyBind.bl_idname, icon="VIEWZOOM", text="")
+			row.operator(ClearFilterText.bl_idname, icon='X', text="")
+			row = self.layout.row(align=True)
 			row.prop(keymap_item, 'shift', text="Shift", toggle=True)
 			row.prop(keymap_item, 'ctrl', text="Ctrl", toggle=True)
 			row.prop(keymap_item, 'alt', text="Alt", toggle=True)
 			row.prop(keymap_item, 'oskey', text="Oskey", toggle=True)
 			row.prop(keymap_item, 'any', text="Any", toggle=True)
-			row.operator(SearchKeyBind.bl_idname, icon="PLUGIN")
-			row.operator(ClearFilterText.bl_idname, icon='X', text="")
+			
 		elif (active_section == 'ADDONS'):
 			self.layout.menu(AddonsMenu.bl_idname, icon="PLUGIN")
-		row = self.layout.row(align=True)
-		row.operator(ChangeUserPreferencesTab.bl_idname, icon='TRIA_LEFT', text="").is_left = True
-		row.operator(ChangeUserPreferencesTab.bl_idname, icon='TRIA_RIGHT', text="").is_left = False
+		
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
