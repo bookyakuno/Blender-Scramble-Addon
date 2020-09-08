@@ -121,6 +121,7 @@ class StartTexturePaint(bpy.types.Operator):
 			node_tex.location = [node_tex.location[0]-300, node_tex.location[1]+300]
 		node_tex.image = bpy.data.images[self.image_name]
 		mat.node_tree.links.new(node_tex.outputs[0], node_mat.inputs[0])
+		mat.paint_active_slot = len(mat.texture_paint_images)-1
 		context.scene.tool_settings.image_paint.mode = 'MATERIAL'
 		return {'FINISHED'}
 
