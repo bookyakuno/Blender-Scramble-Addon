@@ -51,10 +51,6 @@ class RenderBackground(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 
 
-#context.preferences.view.render_display_typeの初期値を IMAGE →　WIONDOW
-@persistent
-def setIt(context):
-	bpy.context.preferences.view.render_display_type = "WINDOW"	
 
 ################
 # クラスの登録 #
@@ -68,14 +64,10 @@ classes = [
 def register():
 	for cls in classes:
 		bpy.utils.register_class(cls)
-	bpy.app.handlers.depsgraph_update_pre.append(setIt)
-	bpy.app.handlers.load_post.append(setIt)
 
 def unregister():
 	for cls in classes:
 		bpy.utils.unregister_class(cls)
-	bpy.app.handlers.depsgraph_update_pre.remove(setIt)
-	bpy.app.handlers.load_post.remove(setIt)
 
 
 ################
