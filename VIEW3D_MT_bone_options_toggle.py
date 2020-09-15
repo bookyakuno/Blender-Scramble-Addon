@@ -44,10 +44,16 @@ class SetCurvedBones(bpy.types.Operator):
 	def execute(self, context):
 		obj = bpy.context.active_object
 		if (obj.type == "ARMATURE"):
-			for bone in context.selected_pose_bones:
-				obj.data.bones[bone.name].bbone_segments = self.bbone_segments
-				obj.data.bones[bone.name].bbone_in = self.bbone_in
-				obj.data.bones[bone.name].bbone_out = self.bbone_out
+			if (obj.mode == "EDIT"):
+				for bone in context.selected_bones:
+					bone.bbone_segments = self.bbone_segments
+					bone.bbone_easein = self.bbone_in
+					bone.bbone_easeout = self.bbone_out
+			elif (obj.mode == "POSE"):
+				for bone in context.selected_pose_bones:
+					obj.pose.bones[bone.name].bone.bbone_segments = self.bbone_segments
+					obj.pose.bones[bone.name].bbone_easein = self.bbone_in
+					obj.pose.bones[bone.name].bbone_easeout = self.bbone_out
 		return {'FINISHED'}
 
 class SetBoneRoll(bpy.types.Operator):
