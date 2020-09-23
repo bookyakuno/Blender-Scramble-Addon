@@ -16,6 +16,7 @@ class ConstraintIKToLimitRotation(bpy.types.Operator):
 
 	isAdd : BoolProperty(name="If not add constraints", default=True)
 	isLocal : BoolProperty(name="Local Space", default=True)
+	DisableSetting : BoolProperty(name="Disable IK-restriction", default=False)
 
 	def execute(self, context):
 		for bone in context.selected_pose_bones:
@@ -38,6 +39,10 @@ class ConstraintIKToLimitRotation(bpy.types.Operator):
 					const.max_z = bone.ik_max_z
 					if (self.isLocal):
 						const.owner_space = "LOCAL"
+			if self.DisableSetting:
+				bone.use_ik_limit_x = False
+				bone.use_ik_limit_y = False
+				bone.use_ik_limit_z = False
 		return {'FINISHED'}
 
 ################
