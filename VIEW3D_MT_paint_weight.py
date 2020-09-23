@@ -16,7 +16,22 @@ class MargeSelectedVertexGroup(bpy.types.Operator):
 
 	isNewVertGroup : BoolProperty(name="Create new vertex group", default=False)
 	ext : StringProperty(name="End of new vertex group name", default="... Such as combine")
+	items = [
+		('1', "Merge selected bones' weight", "", 1),
+		('2', "Select another bone and merge their weight", "", 2),
+		]
+	method : EnumProperty(items=items, name="Select manually or not")
+	vgroup_name : StringProperty(name="Vertex group to merge", default="")
 
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, "method", text="Method")
+		if self.method == '2':
+			self.layout.prop_search(self, "vgroup_name", context.active_object, "vertex_groups", text="Select group to merge", translate=True, icon='GROUP_VERTEX')
+		row = self.layout.row()
+		row.prop(self, "isNewVertGroup")
+		row.prop(self, "ext")
 	def execute(self, context):
 		obj = context.active_object
 		me = obj.data
@@ -25,17 +40,18 @@ class MargeSelectedVertexGroup(bpy.types.Operator):
 		else:
 			newVg = obj.vertex_groups[context.active_pose_bone.name]
 		boneNames = []
-		if (not context.selected_pose_bones or len(context.selected_pose_bones) < 2):
-			self.report(type={"ERROR"}, message="Please select two or more bones from running")
+		if (self.method == '2' and not self.vgroup_name) or (self.method == '1' and len(context.selected_pose_bones) <= 1):
+			self.report(type={"ERROR"}, message="Please select two or more bones")
 			return {"CANCELLED"}
 		for bone in context.selected_pose_bones:
 			boneNames.append(bone.name)
+		if self.vgroup_name and not self.vgroup_name in boneNames:
+			boneNames.append(self.vgroup_name)
 		for vert in me.vertices:
 			for vg in vert.groups:
 				if (self.isNewVertGroup or newVg.name != obj.vertex_groups[vg.group].name):
 					if (obj.vertex_groups[vg.group].name in boneNames):
 						newVg.add([vert.index], vg.weight, 'ADD')
-		bpy.ops.object.mode_set(mode="OBJECT")
 		bpy.ops.object.mode_set(mode="WEIGHT_PAINT")
 		obj.vertex_groups.active_index = newVg.index
 		return {'FINISHED'}
@@ -46,22 +62,36 @@ class RemoveSelectedVertexGroup(bpy.types.Operator):
 	bl_description = "Subtracts weight of selected bone and same vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	items = [
+		('1', "Subtract selected bones' weight from active one's", "", 1),
+		('2', "Select another bone and subtract its weight", "", 2),
+		]
+	method : EnumProperty(items=items, name="Select manually or not")
+	vgroup_name : StringProperty(name="Vertex group to merge", default="")
+
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, "method", text="Method")
+		if self.method == '2':
+			self.layout.prop_search(self, "vgroup_name", context.active_object, "vertex_groups", text="Select group to merge", translate=True, icon='GROUP_VERTEX')
 	def execute(self, context):
 		obj = context.active_object
 		me = obj.data
 		newVg = obj.vertex_groups[context.active_pose_bone.name]
 		boneNames = []
-		if (not context.selected_pose_bones or len(context.selected_pose_bones) < 2):
-			self.report(type={"ERROR"}, message="Please select two or more bones from running")
+		if (self.method == '2' and not self.vgroup_name) or (self.method == '1' and len(context.selected_pose_bones) <= 1):
+			self.report(type={"ERROR"}, message="Please select two or more bones")
 			return {"CANCELLED"}
 		for bone in context.selected_pose_bones:
 			boneNames.append(bone.name)
+		if self.vgroup_name and not self.vgroup_name in boneNames:
+			boneNames.append(self.vgroup_name)
 		for vert in me.vertices:
 			for vg in vert.groups:
 				if (newVg.name != obj.vertex_groups[vg.group].name):
 					if (obj.vertex_groups[vg.group].name in boneNames):
 						newVg.add([vert.index], vg.weight, 'SUBTRACT')
-		bpy.ops.object.mode_set(mode="OBJECT")
 		bpy.ops.object.mode_set(mode="WEIGHT_PAINT")
 		return {'FINISHED'}
 
@@ -74,7 +104,6 @@ class VertexGroupAverageAll(bpy.types.Operator):
 	strength : FloatProperty(name="Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
 
 	def execute(self, context):
-		pre_mode = context.mode
 		for obj in context.selected_objects:
 			if (obj.type == "MESH"):
 				vgs = []
@@ -103,8 +132,7 @@ class VertexGroupAverageAll(bpy.types.Operator):
 						w = (vg_average[i] * self.strength) + (w * (1-self.strength))
 						vg.add([vert.index], w, "REPLACE")
 					i += 1
-		bpy.ops.object.mode_set(mode="OBJECT")
-		bpy.ops.object.mode_set(mode=pre_mode)
+		bpy.ops.object.mode_set(mode="WEIGHT_PAINT")
 		return {'FINISHED'}
 
 class ApplyDynamicPaint(bpy.types.Operator):
@@ -145,8 +173,15 @@ class ApplyDynamicPaint(bpy.types.Operator):
 		bpy.ops.dpaint.type_toggle(type='CANVAS')
 		activeObj.modifiers[-1].canvas_settings.canvas_surfaces[-1].surface_type = 'WEIGHT'
 		bpy.ops.dpaint.output_toggle(output='A')
-		bpy.ops.object.modifier_apply(modifier=activeObj.modifiers[-1].name)
 		dpVg = activeObj.vertex_groups[-1]
+		#"Dynamic Paint weight group isn't updated unless weight has been assigned" というバグが2.80にある(あった?)
+		#おそらくこれに関連し、スクリプト経由でダイナミックペイントを適用する際に
+		#何もしない場合、作成される頂点グループ dp_weight の中身がリセットされる
+		#これに対応するため、ここではソフトボディに関連付けして中身を固定している
+		bpy.ops.object.modifier_add(type='SOFT_BODY')
+		activeObj.modifiers[-2].settings.vertex_group_mass = dpVg.name
+		bpy.ops.object.modifier_apply(modifier=activeObj.modifiers[-1].name)
+		activeObj.modifiers.remove(activeObj.modifiers[-1])#ソフトボディ除去削除
 		if (not isNew):
 			me = activeObj.data
 			for vert in me.vertices:

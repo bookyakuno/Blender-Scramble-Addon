@@ -49,11 +49,11 @@ class CreateCustomShape(bpy.types.Operator):
 				me.update()
 				meObj = bpy.data.objects.new(me.name, me)
 				meObj.data = me
-				context.scene.objects.link(meObj)
+				context.view_layer.active_layer_collection.collection.objects.link(meObj)
 				meObj.select_set(True)
 				bpy.context.view_layer.objects.active = meObj
 				meObj.display_type = 'WIRE'
-				meObj.show_x_ray = True
+				meObj.show_in_front = True
 				meObj.constraints.new('COPY_TRANSFORMS')
 				meObj.constraints[-1].target = obj
 				meObj.constraints[-1].subtarget = bone.name
@@ -70,7 +70,7 @@ class CreateCustomShape(bpy.types.Operator):
 		if self.isObjectMode or self.isHide:
 			bpy.ops.object.mode_set(mode='OBJECT')
 		if self.isHide:
-			obj.hide = True
+			obj.hide_set(True)
 		for obj in meObjs:
 			obj.select_set(True)
 			bpy.context.view_layer.objects.active = obj
@@ -125,13 +125,13 @@ class CreateWeightCopyMesh(bpy.types.Operator):
 		me.update()
 		meObj = bpy.data.objects.new(self.name, me)
 		meObj.data = me
-		context.scene.objects.link(meObj)
+		context.view_layer.active_layer_collection.collection.objects.link(meObj)
 		bpy.ops.object.select_all(action='DESELECT')
 		meObj.select_set(True)
 		bpy.context.view_layer.objects.active = meObj
 		i = 0
 		for bone in bones:
-			meObj.vertex_groups.new(bone.name)
+			meObj.vertex_groups.new(name=bone.name)
 			meObj.vertex_groups[bone.name].add([i], 1.0, 'REPLACE')
 			i += 1
 		return {'FINISHED'}
@@ -164,31 +164,42 @@ class SplineGreasePencil(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	isRootReset : BoolProperty(name="Reset Root", default=False)
+	gpencil_name : StringProperty(name="Target GreasePencil", default="")
 
 	@classmethod
 	def poll(cls, context):
 		activeObj = context.active_object
-		i = 0
-		for bone in context.selected_pose_bones:
-			for bone2 in context.selected_pose_bones:
-				if bone.parent:
-					if bone.parent.name == bone2.name:
-						i += 1
-						break
-		if i+1 < len(context.selected_pose_bones):
-			return False
-		if context.scene.grease_pencil:
-			if len(context.scene.grease_pencil.layers):
+		if activeObj.mode == 'POSE':
+			i = 0
+			for bone in context.selected_pose_bones:
+				for bone2 in context.selected_pose_bones:
+					if bone.parent:
+						if bone.parent.name == bone2.name:
+							i += 1
+							break
+			if i+1 < len(context.selected_pose_bones):
+				return False
+			if len(bpy.data.grease_pencils):
 				return True
 		return False
+
+	def __init__(self):
+		self.gpencil_name = bpy.data.grease_pencils[0].name
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop_search(self, "gpencil_name", bpy.data, "grease_pencils",text="Select GreasePencil", translate=True, icon='GP_SELECT_STROKES')
+		self.layout.prop(self, "isRootReset")
 
 	def execute(self, context):
 		activeObj = context.active_object
 		bpy.ops.object.mode_set(mode='OBJECT')
+		context.view_layer.objects.active = bpy.data.objects[self.gpencil_name]
 		bpy.ops.gpencil.convert(type='CURVE', use_timing_data=True)
-		for obj in context.selectable_objects:
-			if "GP_Layer" in obj.name:
-				curveObj = obj
+		for ob in context.selected_objects:
+			if ob.type == "CURVE":
+				curveObj = ob
+		context.view_layer.objects.active = activeObj
 		bpy.ops.object.mode_set(mode='POSE')
 		tails = []
 		for bone in context.selected_pose_bones:
@@ -196,7 +207,7 @@ class SplineGreasePencil(bpy.types.Operator):
 				const = bone.constraints.new('SPLINE_IK')
 				const.target = curveObj
 				const.use_curve_radius = False
-				const.use_y_stretch = False
+				const.y_scale_mode = "NONE"
 				const.chain_count = len(context.selected_pose_bones)
 				tails.append((bone, const))
 			for child in bone.children:
@@ -207,7 +218,7 @@ class SplineGreasePencil(bpy.types.Operator):
 					const = bone.constraints.new('SPLINE_IK')
 					const.target = curveObj
 					const.use_curve_radius = False
-					const.use_y_stretch = False
+					const.y_scale_mode = "NONE"
 					const.chain_count = len(context.selected_pose_bones)
 					tails.append((bone, const))
 					break
@@ -215,7 +226,7 @@ class SplineGreasePencil(bpy.types.Operator):
 		for bone, const in tails:
 			bone.constraints.remove(const)
 		bpy.ops.pose.scale_clear()
-		context.scene.objects.unlink(curveObj)
+		context.view_layer.active_layer_collection.collection.objects.unlink(curveObj)
 		if self.isRootReset:
 			bpy.ops.pose.loc_clear()
 		return {'FINISHED'}
@@ -266,7 +277,7 @@ class SetSlowParentBone(bpy.types.Operator):
 		]
 	constraint : EnumProperty(items=items, name="Constraints")
 	radius : FloatProperty(name="Empty Size", default=0.5, min=0.01, max=10, soft_min=0.01, soft_max=10, step=10, precision=3)
-	slow_parent_offset : FloatProperty(name="SlowParent Strength", default=5, min=0, max=100, soft_min=0, soft_max=100, step=50, precision=3)
+	slow_parent_offset : FloatProperty(name="SlowParent Strength", default=4, min=1, max=10, soft_min=1, soft_max=10, step=1)
 	is_use_driver : BoolProperty(name="Add driver to bone", default=True)
 
 	@classmethod
@@ -279,7 +290,7 @@ class SetSlowParentBone(bpy.types.Operator):
 		return False
 
 	def execute(self, context):
-		pre_cursor_location = context.space_data.cursor_location[:]
+		pre_cursor_location = context.scene.cursor.location[:]
 		pre_active_pose_bone = context.active_pose_bone
 		obj = context.active_object
 		arm = obj.data
@@ -289,13 +300,13 @@ class SetSlowParentBone(bpy.types.Operator):
 				self.report(type={'WARNING'}, message="Ignored " + bone.name)
 				continue
 			if self.constraint == 'COPY_LOCATION':
-				context.space_data.cursor_location = obj.matrix_world * arm.bones[bone.name].head_local
+				context.scene.cursor.location = obj.matrix_world @ arm.bones[bone.name].head_local
 			else:
-				context.space_data.cursor_location = obj.matrix_world * arm.bones[bone.name].tail_local
+				context.scene.cursor.location = obj.matrix_world @ arm.bones[bone.name].tail_local
 			bpy.ops.object.mode_set(mode='OBJECT')
-			bpy.ops.object.empty_add(type='PLAIN_AXES', radius=self.radius)
-			empty_obj = context.active_object
-			empty_obj.name = bone.name+" slow parent"
+			bpy.ops.object.empty_add(type='SPHERE', radius=self.radius*0.5)
+			empty_child = context.active_object
+			empty_child.name = bone.parent.name+" child"			
 			obj.select_set(True)
 			bpy.context.view_layer.objects.active = obj
 			bpy.ops.object.mode_set(mode='POSE')
@@ -304,8 +315,10 @@ class SetSlowParentBone(bpy.types.Operator):
 			bpy.ops.object.parent_set(type='BONE')
 			arm.bones[bone.parent.name].select = pre_parent_select
 			arm.bones.active = arm.bones[bone.name]
-			empty_obj.use_slow_parent = True
-			empty_obj.slow_parent_offset = self.slow_parent_offset
+			bpy.ops.object.mode_set(mode='OBJECT')
+			bpy.ops.object.empty_add(type='PLAIN_AXES', radius=self.radius)
+			empty_obj = context.active_object
+			empty_obj.name = bone.name+" slow parent"
 			const = bone.constraints.new(self.constraint)
 			const.target = empty_obj
 			if self.constraint == 'IK':
@@ -313,13 +326,28 @@ class SetSlowParentBone(bpy.types.Operator):
 			empty_obj.select_set(False)
 			if self.is_use_driver:
 				bone["SlowParentOffset"] = self.slow_parent_offset
-				fcurve = empty_obj.driver_add('slow_parent_offset')
-				fcurve.driver.type = 'AVERAGE'
-				variable = fcurve.driver.variables.new()
-				variable.targets[0].id = obj
-				variable.targets[0].data_path = 'pose.bones["'+bone.name+'"]["SlowParentOffset"]'
+			var_suff = ["_X", "_Y", "_Z"]
+			fcurves = empty_obj.driver_add('location')
+			for idx, fc in enumerate(fcurves):
+				fc.driver.type = 'SCRIPTED'
+				fc.driver.use_self = True
+				variable = fc.driver.variables.new()
+				variable.name = "var" + var_suff[idx]
+				variable.type = 'TRANSFORMS'
+				variable.targets[0].id = empty_child
+				variable.targets[0].transform_type = 'LOC' + var_suff[idx]
+				if self.is_use_driver:
+					var_off = fc.driver.variables.new()
+					var_off.name = "offset"
+					var_off.targets[0].id = obj
+					var_off.targets[0].data_path = f'pose.bones["{bone.name}"]["SlowParentOffset"]'
+					fc.driver.expression = f"(self.location.{var_suff[idx][-1].lower()}*offset+{variable.name})/(offset+1)"
+				else:
+					fc.driver.expression = f"(self.location.{var_suff[idx][-1].lower()}*{self.slow_parent_offset}+{variable.name})/{self.slow_parent_offset+1}"
+		context.view_layer.objects.active = obj
+		bpy.ops.object.mode_set(mode='POSE')
 		arm.bones.active = arm.bones[pre_active_pose_bone.name]
-		context.space_data.cursor_location = pre_cursor_location[:]
+		context.scene.cursor.location = pre_cursor_location[:]
 		return {'FINISHED'}
 
 class RenameBoneNameEnd(bpy.types.Operator):
@@ -546,7 +574,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 	def execute(self, context):
 		pre_active_obj = context.active_object
 		pre_mode = pre_active_obj.mode
-		pre_cursor_location = context.space_data.cursor_location[:]
+		pre_cursor_location = context.scene.cursor.location[:]
 		arm_obj = pre_active_obj
 		arm = arm_obj.data
 		bone_names = []
@@ -571,7 +599,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 			return {'CANCELLED'}
 		bpy.ops.object.mode_set(mode='OBJECT')
 		base_obj = None
-		bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=self.shape_level, size=1, view_align=False, enter_editmode=False, location=(0, 0, 0), rotation=(0, 0, 0))
+		bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=self.shape_level, radius=1, align='WORLD', enter_editmode=False, location=(0, 0, 0), rotation=(0, 0, 0))
 		obj = context.active_object
 		bpy.ops.rigidbody.object_add()
 		obj.rigid_body.enabled = False
@@ -608,7 +636,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 		base_obj.name = "Rigid Origin"
 		pairs = []
 		for bone in bones:
-			bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=self.shape_level, size=1, view_align=False, enter_editmode=False, location=(0, 0, 0), rotation=(0, 0, 0))
+			bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=self.shape_level, radius=1, align='WORLD', enter_editmode=False, location=(0, 0, 0), rotation=(0, 0, 0))
 			obj = context.active_object
 			const = obj.constraints.new('COPY_TRANSFORMS')
 			const.target = arm_obj
@@ -632,7 +660,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 			shape.rigid_body.linear_damping = self.linear_damping
 			shape.rigid_body.angular_damping = self.angular_damping
 
-			bpy.ops.object.empty_add(type=self.empty_display_type, radius=1, view_align=False, location=(0, 0, 0))
+			bpy.ops.object.empty_add(type=self.empty_display_type, radius=1, align='WORLD', location=(0, 0, 0))
 			obj = context.active_object
 			const = obj.constraints.new('COPY_TRANSFORMS')
 			const.target = arm_obj
@@ -672,7 +700,7 @@ class SetRigidBodyBone(bpy.types.Operator):
 			const.rigid_body_constraint.object1 = shape
 
 			bpy.ops.object.select_all(action='DESELECT')
-			const.select = True
+			const.select_set(True)
 			arm_obj.select_set(True)
 			bpy.context.view_layer.objects.active = arm_obj
 			if bone.parent:
@@ -708,7 +736,12 @@ class SetIKRotationLimitByPose(bpy.types.Operator):
 		('CONST', "Constraints Rotation Limit", "", 2),
 		]
 	mode : EnumProperty(items=items, name="Mode")
-	use_reverse : BoolProperty(name="Reverse Limit", default=True)
+	method_items = [
+		('SYMMETRY', "Reversed Limitation", "", 1),
+		('LIMIT_180', "Set 180d as Limit", "", 2),
+		('LIMIT_0', "Set 0d as Limit", "", 3)
+		]
+	other_side : EnumProperty(items=method_items, name="Other-side\'s Limitation")	
 	use_x : BoolProperty(name="X Axis Limit", default=True)
 	use_y : BoolProperty(name="Y Axis Limit", default=True)
 	use_z : BoolProperty(name="Z Axis Limit", default=True)
@@ -735,28 +768,43 @@ class SetIKRotationLimitByPose(bpy.types.Operator):
 			if self.mode == 'IK':
 				if self.use_x:
 					bone.use_ik_limit_x = True
+					rot.x = round(rot.x, 2)
 					if 0 <= rot.x:
 						bone.ik_max_x = rot.x
-						if self.use_reverse: bone.ik_min_x = -rot.x
+						if self.other_side == "SYMMETRY": bone.ik_min_x = -rot.x
+						elif self.other_side == "LIMIT_180": bone.ik_min_x = -3.14159
+						elif self.other_side == "LIMIT_0": bone.ik_min_x = 0
 					else:
 						bone.ik_min_x = rot.x
-						if self.use_reverse: bone.ik_max_x = -rot.x
+						if self.other_side == "SYMMETRY": bone.ik_max_x = -rot.x
+						elif self.other_side == "LIMIT_180": bone.ik_max_x = 3.14159
+						elif self.other_side == "LIMIT_0": bone.ik_max_x = 0
 				if self.use_y:
 					bone.use_ik_limit_y = True
+					rot.y = round(rot.y, 2)
 					if 0 <= rot.y:
 						bone.ik_max_y = rot.y
-						if self.use_reverse: bone.ik_min_y = -rot.y
+						if self.other_side == "SYMMETRY": bone.ik_min_y = -rot.y
+						elif self.other_side == "LIMIT_180": bone.ik_min_y = -3.14159
+						elif self.other_side == "LIMIT_0": bone.ik_min_y = 0
 					else:
 						bone.ik_min_y = rot.y
-						if self.use_reverse: bone.ik_max_y = -rot.y
+						if self.other_side == "SYMMETRY": bone.ik_max_y = -rot.y
+						elif self.other_side == "LIMIT_180": bone.ik_max_y = 3.14159
+						elif self.other_side == "LIMIT_0": bone.ik_max_y = 0
 				if self.use_z:
 					bone.use_ik_limit_z = True
+					rot.z = round(rot.z, 2)
 					if 0 <= rot.z:
 						bone.ik_max_z = rot.z
-						if self.use_reverse: bone.ik_min_z = -rot.z
+						if self.other_side == "SYMMETRY": bone.ik_min_z = -rot.z
+						elif self.other_side == "LIMIT_180": bone.ik_min_z = -3.14159
+						elif self.other_side == "LIMIT_0": bone.ik_min_z = 0
 					else:
 						bone.ik_min_z = rot.z
-						if self.use_reverse: bone.ik_max_z = -rot.z
+						if self.other_side == "SYMMETRY": bone.ik_max_z = -rot.z
+						elif self.other_side == "LIMIT_180": bone.ik_max_z = 3.14159
+						elif self.other_side == "LIMIT_0": bone.ik_max_z = 0
 			elif self.mode == 'CONST':
 				rot_const = None
 				for const in bone.constraints:
@@ -767,28 +815,43 @@ class SetIKRotationLimitByPose(bpy.types.Operator):
 				rot_const.owner_space = 'LOCAL'
 				if self.use_x:
 					rot_const.use_limit_x = True
+					rot.x = round(rot.x, 2)
 					if 0 <= rot.x:
 						rot_const.max_x = rot.x
-						if self.use_reverse: rot_const.min_x = -rot.x
+						if self.other_side == "SYMMETRY": rot_const.min_x = -rot.x
+						elif self.other_side == "LIMIT_180": rot_const.min_x = -3.14159
+						elif self.other_side == "LIMIT_0": rot_const.min_x = 0
 					else:
 						rot_const.min_x = rot.x
-						if self.use_reverse: rot_const.max_x = -rot.x
+						if self.other_side == "SYMMETRY": rot_const.max_x = -rot.x
+						elif self.other_side == "LIMIT_180": rot_const.max_x = 3.14159
+						elif self.other_side == "LIMIT_0": rot_const.max_x = 0
 				if self.use_y:
 					rot_const.use_limit_y = True
+					rot.y = round(rot.y, 2)
 					if 0 <= rot.y:
 						rot_const.max_y = rot.y
-						if self.use_reverse: rot_const.min_y = -rot.y
+						if self.other_side == "SYMMETRY": rot_const.min_y = -rot.y
+						elif self.other_side == "LIMIT_180": rot_const.min_y = -3.14159
+						elif self.other_side == "LIMIT_0": rot_const.min_y = 0
 					else:
 						rot_const.min_y = rot.y
-						if self.use_reverse: rot_const.max_y = -rot.y
+						if self.other_side == "SYMMETRY": rot_const.max_y = -rot.y
+						elif self.other_side == "LIMIT_180": rot_const.max_y = 3.14159
+						elif self.other_side == "LIMIT_0": rot_const.max_y = 0
 				if self.use_z:
 					rot_const.use_limit_z = True
+					rot.z = round(rot.z, 2)
 					if 0 <= rot.z:
 						rot_const.max_z = rot.z
-						if self.use_reverse: rot_const.min_z = -rot.z
+						if self.other_side == "SYMMETRY": rot_const.min_z = -rot.z
+						elif self.other_side == "LIMIT_180": rot_const.min_z = -3.14159
+						elif self.other_side == "LIMIT_0": rot_const.min_z = 0
 					else:
 						rot_const.min_z = rot.z
-						if self.use_reverse: rot_const.max_z = -rot.z
+						if self.other_side == "SYMMETRY": rot_const.max_z = -rot.z
+						elif self.other_side == "LIMIT_180": rot_const.max_z = 3.14159
+						elif self.other_side == "LIMIT_0": rot_const.max_z = 0
 		if self.is_clear_rot:
 			bpy.ops.pose.rot_clear()
 		for area in context.screen.areas:

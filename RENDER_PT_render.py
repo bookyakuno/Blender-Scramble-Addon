@@ -4,7 +4,6 @@
 import bpy
 from bpy.props import *
 import sys, subprocess
-from bpy.app.handlers import persistent
 
 ################
 # オペレーター #
@@ -49,6 +48,8 @@ class RenderBackground(bpy.types.Operator):
 		return {'FINISHED'}
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
+
+
 
 
 

@@ -19,12 +19,14 @@ class PaintSelectedVertexColor(bpy.types.Operator):
 	def execute(self, context):
 		activeObj = context.active_object
 		me = activeObj.data
+		if not me.vertex_colors.active:
+			me.vertex_colors.active = me.vertex_colors.new()
 		bpy.ops.object.mode_set(mode='OBJECT')
 		i = 0
 		for poly in me.polygons:
 			for vert in poly.vertices:
 				if (me.vertices[vert].select):
-					me.vertex_colors.active.data[i].color = self.color
+					me.vertex_colors.active.data[i].color = (self.color[0], self.color[1], self.color[2], 1.0)
 				i += 1
 		bpy.ops.object.mode_set(mode='EDIT')
 		return {'FINISHED'}
@@ -104,9 +106,7 @@ class ToggleMirrorModifier(bpy.types.Operator):
 					activeObj.modifiers.remove(mod)
 		else:
 			new_mod = activeObj.modifiers.new("Mirror", 'MIRROR')
-			new_mod.use_x = self.use_x
-			new_mod.use_y = self.use_y
-			new_mod.use_z = self.use_z
+			new_mod.use_axis = [self.use_x, self.use_y, self.use_z]
 			new_mod.use_mirror_merge = self.use_mirror_merge
 			new_mod.use_clip = self.use_clip
 			new_mod.use_mirror_vertex_groups = self.use_mirror_vertex_groups
@@ -137,6 +137,9 @@ class SelectedVertexGroupAverage(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 	def execute(self, context):
 		obj = context.active_object
+		if len(obj.vertex_groups) == 0:
+			self.report(type={'ERROR'}, message="This object has no vertex_group")
+			return {'CANCELLED'}		
 		if (obj.type == "MESH"):
 			pre_mode = obj.mode
 			bpy.ops.object.mode_set(mode='OBJECT')

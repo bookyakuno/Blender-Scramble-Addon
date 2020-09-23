@@ -2,6 +2,7 @@
 # "3D View" Area > "Mesh Editor" Mode > "Mesh" Menu > "Show/Hide" Menu
 
 import bpy
+import bmesh
 from bpy.props import *
 
 ################
@@ -68,12 +69,21 @@ class HideParts(bpy.types.Operator):
 	unselected : BoolProperty(name="Non-select Parts", default=False)
 
 	def execute(self, context):
+		for bol, mode in zip(context.tool_settings.mesh_select_mode, ["VERT","EDGE","FACE"]):
+			if bol:
+				mode_type = mode
 		isSelecteds = []
-		for vert in context.active_object.data.vertices:
+		mesh = bmesh.from_edit_mesh(context.active_object.data)
+		for vert in mesh.verts:
 			isSelecteds.append(vert.select)
-		bpy.ops.mesh.select_linked(limit=False)
+		bpy.ops.mesh.select_linked()
 		bpy.ops.mesh.hide(unselected=self.unselected)
 		bpy.ops.mesh.select_all(action='DESELECT')
+		if self.unselected:
+			for idx, vert in enumerate(mesh.verts):
+				vert.select = isSelecteds[idx]
+		bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
+		bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type=mode_type)
 		return {'FINISHED'}
 
 ################

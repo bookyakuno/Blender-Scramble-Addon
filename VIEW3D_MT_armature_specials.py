@@ -15,24 +15,28 @@ class CreateMirror(bpy.types.Operator):
 	bl_description = "Mirrored at any axes selected bone"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	is_connect : BoolProperty(name="Connection", default=True)
+	use_autoname : BoolProperty(name="Use Automatic R/L-naming", default=True)
+
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type == "ARMATURE"):
 			if (obj.mode == "EDIT"):
-				preCursorCo = context.space_data.cursor_location[:]
-				prePivotPoint = context.space_data.pivot_point
+				preCursorCo = context.scene.cursor.location[:]
+				prePivotPoint = context.scene.tool_settings.transform_pivot_point
 				preUseMirror = context.object.data.use_mirror_x
 
-				context.space_data.cursor_location = (0, 0, 0)
-				context.space_data.pivot_point = 'CURSOR'
+				context.scene.cursor.location = context.object.location
+				context.scene.tool_settings.transform_pivot_point = 'CURSOR'
 				context.object.data.use_mirror_x = True
 
 				selectedBones = context.selected_bones[:]
-				bpy.ops.armature.autoside_names(type='XAXIS')
-				bpy.ops.armature.duplicate()
+				if self.use_autoname:
+					bpy.ops.armature.autoside_names(type='XAXIS')
+				bpy.ops.armature.duplicate(do_flip_names=True)
 				axis = (True, False, False)
 				bpy.ops.transform.mirror(constraint_axis=axis)
-				bpy.ops.armature.flip_names()
+				#bpy.ops.armature.flip_names(do_strip_numbers=True)
 				newBones = []
 				for bone in context.selected_bones:
 					for pre in selectedBones:
@@ -51,9 +55,10 @@ class CreateMirror(bpy.types.Operator):
 					bone.select = True
 					bone.select_head = True
 					bone.select_tail = True
-
-				context.space_data.cursor_location = preCursorCo[:]
-				context.space_data.pivot_point = prePivotPoint
+					if self.is_connect:
+						bone.use_connect = True
+				context.scene.cursor.location = preCursorCo[:]
+				context.scene.tool_settings.transform_pivot_point = prePivotPoint
 				context.object.data.use_mirror_x = preUseMirror
 			else:
 				self.report(type={"ERROR"}, message="Please run in edit mode")
@@ -108,18 +113,26 @@ class RenameBoneRegularExpression(bpy.types.Operator):
 class RenameOppositeBone(bpy.types.Operator):
 	bl_idname = "armature.rename_opposite_bone"
 	bl_label = "Rename bone symmetry position"
-	bl_description = "Bone is located opposite X axis selection in bone \"1.R longs 1.L \' of so versus the"
+	bl_description = "Add '.L' or '.R' in the names of bones located on opposite side of X axis (and selected bones if needed)"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	threshold : FloatProperty(name="Position of Threshold", default=0.00001, min=0, soft_min=0, step=0.001, precision=5)
+	is_strip : BoolProperty(name="Remove dot-number", default=True)
 
 	def execute(self, context):
 		obj = context.active_object
 		if (obj.type == "ARMATURE"):
 			if (obj.mode == "EDIT"):
 				arm = obj.data
-				bpy.ops.armature.autoside_names(type='XAXIS')
 				selectedBones = context.selected_bones[:]
+				for b in selectedBones:
+					if b.name.split(".")[-1] in ["L", "R", "right", "left"]:
+						continue
+					elif b.name.split("_")[-1] in ["L", "R", "right", "left"]:
+						continue
+					else:
+						bpy.ops.armature.autoside_names(type='XAXIS')
+						break
 				bpy.ops.armature.select_all(action='DESELECT')
 				bpy.ops.object.mode_set(mode='OBJECT')
 				threshold = self.threshold
@@ -140,7 +153,7 @@ class RenameOppositeBone(bpy.types.Operator):
 												b.select_tail = True
 												break
 				bpy.ops.object.mode_set(mode='EDIT')
-				bpy.ops.armature.flip_names()
+				bpy.ops.armature.flip_names(do_strip_numbers=self.is_strip)
 			else:
 				self.report(type={"ERROR"}, message="Please run in edit mode")
 		else:
