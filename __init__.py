@@ -11,7 +11,7 @@ from bpy.props import *
 bl_info = {
 	"name" : "Scramble Addon",
 	"author" : "Saidenka, Bookyakuno, nikogoli",
-	"version" : (1, 0, 3),
+	"version" : (1, 0, 5),
 	"blender" : (2, 90, 0),
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",
@@ -415,20 +415,20 @@ def register():
 	bpy.types.RENDER_PT_context.append(RENDER_PT_render.menu)
 	SCENE_PT_rigid_body_world.register()
 	bpy.types.SCENE_PT_rigid_body_world.append(SCENE_PT_rigid_body_world.menu)
-	#TEXTURE_MT_specials.register()
-	#bpy.types.TEXTURE_MT_specials.append(TEXTURE_MT_specials.menu)
+	TEXTURE_MT_specials.register()
+	bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_MT_specials.menu)
 	#TEXTURE_PT_context_texture.register()#クラスなしのためregister()は未定義
 	#bpy.types.TEXTURE_PT_context_texture.append(TEXTURE_PT_context_texture.menu)
 	TEXTURE_PT_image.register()
-	bpy.types.TEXTURE_PT_image.append(TEXTURE_PT_image.menu)
+	bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_PT_image.menu)
 	TEXTURE_PT_mapping.register()
-	bpy.types.TEXTURE_PT_mapping.append(TEXTURE_PT_mapping.menu)
+	bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_PT_mapping.menu)
 	TEXT_MT_text.register()
 	bpy.types.TEXT_MT_text.append(TEXT_MT_text.menu)
 	USERPREF_HT_header.register()
-	bpy.types.USERPREF_HT_header.append(USERPREF_HT_header.menu)
-	#USERPREF_PT_file.register()
-	#bpy.types.USERPREF_PT_file_paths.append(USERPREF_PT_file.menu)
+	bpy.types.USERPREF_PT_navigation_bar.append(USERPREF_HT_header.menu)
+	USERPREF_PT_file.register()
+	bpy.types.USERPREF_PT_file_paths_applications.append(USERPREF_PT_file.menu)
 	VIEW3D_MT_armature_specials.register()
 	bpy.types.VIEW3D_MT_armature_context_menu.append(VIEW3D_MT_armature_specials.menu)
 	VIEW3D_MT_bone_options_toggle.register()
@@ -483,8 +483,8 @@ def register():
 	bpy.types.VIEW3D_MT_view_align_selected.append(VIEW3D_MT_view_align_selected.menu)
 	#VIEW3D_PT_imapaint_tools_missing.register()#クラスなしのためregister()は未定義
 	#bpy.types.VIEW3D_PT_imapaint_tools_missing.append(VIEW3D_PT_imapaint_tools_missing.menu)
-	VIEW3D_PT_slots_projectpaint.register()
-	bpy.types.VIEW3D_PT_slots_projectpaint.append(VIEW3D_PT_slots_projectpaint.menu)
+	#VIEW3D_PT_slots_projectpaint.register()
+	#bpy.types.VIEW3D_PT_slots_projectpaint.append(VIEW3D_PT_slots_projectpaint.menu)
 	VIEW3D_PT_tools_imagepaint_external.register()
 	bpy.types.IMAGE_MT_image.append(VIEW3D_PT_tools_imagepaint_external.menu)
 	#VIEW3D_PT_transform_orientations.register()#クラスなしのためregister()は未定義
@@ -593,25 +593,26 @@ def unregister():
 	PROPERTIES_HT_header.unregister()
 	bpy.types.PROPERTIES_HT_header.remove(PROPERTIES_HT_header.menu)
 	RENDER_PT_bake.unregister()
-	bpy.types.CYCLES_RENDER_PT_bake.remove(RENDER_PT_bake.menu)
+	if hasattr(bpy.types, "CYCLES_RENDER_PT_bake"): # script.reroad で再読込すると、CYCLES_RENDER_PT_bakeが見つからないというエラーが出るので、とりあえずエラー文をスルー
+		bpy.types.CYCLES_RENDER_PT_bake.remove(RENDER_PT_bake.menu)
 	RENDER_PT_render.unregister()
 	bpy.types.RENDER_PT_context.remove(RENDER_PT_render.menu)
 	SCENE_PT_rigid_body_world.unregister()
 	bpy.types.SCENE_PT_rigid_body_world.remove(SCENE_PT_rigid_body_world.menu)
-	#TEXTURE_MT_specials.unregister()
-	#bpy.types.TEXTURE_MT_specials.remove(TEXTURE_MT_specials.menu)
+	TEXTURE_MT_specials.unregister()
+	bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_MT_specials.menu)
 	#TEXTURE_PT_context_texture.unregister()#クラスなしのためunregister()は未定義
 	#bpy.types.TEXTURE_PT_context_texture.remove(TEXTURE_PT_context_texture.menu)
 	TEXTURE_PT_image.unregister()
-	bpy.types.TEXTURE_PT_image.remove(TEXTURE_PT_image.menu)
+	bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_PT_image.menu)
 	TEXTURE_PT_mapping.unregister()
-	bpy.types.TEXTURE_PT_mapping.remove(TEXTURE_PT_mapping.menu)
+	bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_PT_mapping.menu)
 	TEXT_MT_text.unregister()
 	bpy.types.TEXT_MT_text.remove(TEXT_MT_text.menu)
 	USERPREF_HT_header.unregister()
-	bpy.types.USERPREF_HT_header.remove(USERPREF_HT_header.menu)
-	#USERPREF_PT_file.unregister()
-	#bpy.types.USERPREF_PT_file_paths.remove(USERPREF_PT_file.menu)
+	bpy.types.USERPREF_PT_navigation_bar.remove(USERPREF_HT_header.menu)
+	USERPREF_PT_file.unregister()
+	bpy.types.USERPREF_PT_file_paths_applications.remove(USERPREF_PT_file.menu)
 	VIEW3D_MT_armature_specials.unregister()
 	bpy.types.VIEW3D_MT_armature_context_menu.remove(VIEW3D_MT_armature_specials.menu)
 	VIEW3D_MT_bone_options_toggle.unregister()
@@ -666,8 +667,8 @@ def unregister():
 	bpy.types.VIEW3D_MT_view_align_selected.remove(VIEW3D_MT_view_align_selected.menu)
 	#VIEW3D_PT_imapaint_tools_missing.unregister()#クラスなしのためunregister()は未定義
 	#bpy.types.VIEW3D_PT_imapaint_tools_missing.remove(VIEW3D_PT_imapaint_tools_missing.menu)
-	VIEW3D_PT_slots_projectpaint.unregister()
-	bpy.types.VIEW3D_PT_slots_projectpaint.remove(VIEW3D_PT_slots_projectpaint.menu)
+	#VIEW3D_PT_slots_projectpaint.unregister()
+	#bpy.types.VIEW3D_PT_slots_projectpaint.remove(VIEW3D_PT_slots_projectpaint.menu)
 	VIEW3D_PT_tools_imagepaint_external.unregister()
 	bpy.types.IMAGE_MT_image.remove(VIEW3D_PT_tools_imagepaint_external.menu)
 	#VIEW3D_PT_transform_orientations.unregister()#クラスなしのためunregister()は未定義
