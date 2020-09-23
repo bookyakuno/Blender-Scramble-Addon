@@ -11,7 +11,7 @@ from bpy.props import *
 bl_info = {
 	"name" : "Scramble Addon",
 	"author" : "Saidenka, Bookyakuno, nikogoli",
-	"version" : (1, 0, 3),
+	"version" : (1, 0, 5),
 	"blender" : (2, 90, 0),
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",
@@ -593,7 +593,8 @@ def unregister():
 	PROPERTIES_HT_header.unregister()
 	bpy.types.PROPERTIES_HT_header.remove(PROPERTIES_HT_header.menu)
 	RENDER_PT_bake.unregister()
-	bpy.types.CYCLES_RENDER_PT_bake.remove(RENDER_PT_bake.menu)
+	if hasattr(bpy.types, "CYCLES_RENDER_PT_bake"): # script.reroad で再読込すると、CYCLES_RENDER_PT_bakeが見つからないというエラーが出るので、とりあえずエラー文をスルー
+		bpy.types.CYCLES_RENDER_PT_bake.remove(RENDER_PT_bake.menu)
 	RENDER_PT_render.unregister()
 	bpy.types.RENDER_PT_context.remove(RENDER_PT_render.menu)
 	SCENE_PT_rigid_body_world.unregister()
