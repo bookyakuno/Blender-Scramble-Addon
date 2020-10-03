@@ -3,61 +3,11 @@
 
 import bpy, bmesh
 from bpy.props import *
+from . import DATA_PT_modifiers, OBJECT_PT_context_object
 
 ################
 # パイメニュー #
 ################
-
-class ApplyModifiersAndJoinObj(bpy.types.Operator):
-	bl_idname = "object.apply_modifiers_and_join_object"
-	bl_label = "Apply modifiers + join"
-	bl_description = "integration from object\'s modifiers to apply all"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	unapply_subsurf : BoolProperty(name="Except Subsurf", default=True)
-	unapply_armature : BoolProperty(name="Except Armature", default=True)
-	unapply_mirror : BoolProperty(name="Except Mirror", default=False)
-
-	@classmethod
-	def poll(cls, context):
-		if 2 <= len(context.selected_objects):
-			return True
-		return False
-
-	def execute(self, context):
-		pre_active_object = context.active_object
-		for obj in context.selected_objects:
-			bpy.context.view_layer.objects.active = obj
-			for mod in obj.modifiers[:]:
-				if self.unapply_subsurf and mod.type == 'SUBSURF':
-					continue
-				if self.unapply_armature and mod.type == 'ARMATURE':
-					continue
-				if self.unapply_mirror and mod.type == 'MIRROR':
-					continue
-				bpy.ops.object.modifier_apply(modifier=mod.name)
-		bpy.context.view_layer.objects.active = pre_active_object
-		bpy.ops.object.join()
-		return {'FINISHED'}
-
-class CopyObjectNameObj(bpy.types.Operator):
-	bl_idname = "object.copy_object_name_object"
-	bl_label = "Copy Object Name"
-	bl_description = "Copy to Clipboard object name"
-	bl_options = {'REGISTER'}
-	
-	@classmethod
-	def poll(cls, context):
-		if (not context.object):
-			return False
-		if (context.window_manager.clipboard == context.object.name):
-			return False
-		return True
-	def execute(self, context):
-		context.window_manager.clipboard = context.object.name
-		self.report(type={'INFO'}, message=context.object.name)
-		return {'FINISHED'}
-
 class CopyPieOperator(bpy.types.Operator):
 	bl_idname = "object.copy_pie_operator"
 	bl_label = "Copy"
@@ -74,7 +24,7 @@ class CopyPie(bpy.types.Menu):
 
 	def draw(self, context):
 		self.layout.menu_pie().operator("view3d.copybuffer", icon="COPY_ID")
-		self.layout.menu_pie().operator(CopyObjectName.bl_idname, icon="MONKEY")
+		self.layout.menu_pie().operator(OBJECT_PT_context_object.CopyObjectName.bl_idname, icon="MONKEY")
 
 class ObjectModePieOperator(bpy.types.Operator):
 	bl_idname = "object.object_mode_pie_operator"
@@ -212,15 +162,13 @@ class ShortcutMenu(bpy.types.Menu):
 
 	def draw(self, context):
 		self.layout.operator(DeleteUnmassage.bl_idname, icon="PLUGIN")
-		self.layout.operator(ApplyModifiersAndJoin.bl_idname, icon="PLUGIN")
+		self.layout.operator(DATA_PT_modifiers.ApplyModifiersAndJoin.bl_idname, icon="PLUGIN")
 
 ################
 # クラスの登録 #
 ################
 
 classes = [
-	ApplyModifiersAndJoinObj,
-	CopyObjectNameObj,
 	CopyPieOperator,
 	CopyPie,
 	ObjectModePieOperator,
