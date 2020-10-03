@@ -53,7 +53,6 @@ class CopyOtherUV(bpy.types.Operator):
 			if (me.vertices[me.loops[i].vertex_index].select):
 				active_uv.data[i].pin_uv = source_uv.data[i].pin_uv
 				active_uv.data[i].select = source_uv.data[i].select
-				active_uv.data[i].select_edge = source_uv.data[i].select_edge
 				active_uv.data[i].uv = source_uv.data[i].uv
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
