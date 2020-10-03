@@ -2,6 +2,7 @@
 # "3D View" Area > "View" Menu > "Align View" Menu > "Align View to Active" Menu
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,21 +13,31 @@ class Viewnumpad7AlignEX(bpy.types.Operator):
 	bl_label = "View Front"
 	bl_description = "watch face from selected surface normal direction"
 	bl_options = {'REGISTER', 'UNDO'}
+	items = [
+		("FRONT", "Front", "", 1),
+		("BACK", "Back", "", 2),
+		("LEFT", "Left", "", 3),
+		("RIGHT", "Right", "", 4),
+		("TOP", "Top", "", 5),
+		("BOTTOM", "Bottom", "", 6),
+	]
+
+	method : EnumProperty(name="View Method", items=items)
 	
 	def execute(self, context):
 		pre_smooth_view = context.preferences.view.smooth_view
 		context.preferences.view.smooth_view = 0
-		bpy.ops.view3d.viewnumpad(type='TOP', align_active=True)
+		bpy.ops.view3d.view_axis(type=self.method, align_active=True)
 		bpy.ops.view3d.view_selected_ex()
 		threshold = 0.01
 		angle = 0.001
 		while True:
-			bpy.ops.view3d.view_roll(angle=angle, type='ROLLANGLE')
+			bpy.ops.view3d.view_roll(angle=angle, type='ANGLE')
 			view_rotation = context.region_data.view_rotation.copy().to_euler()
 			if (-threshold <= view_rotation.y <= threshold):
 					break
 		if (view_rotation.x < 0):
-			bpy.ops.view3d.view_roll(angle=3.14159, type='ROLLANGLE')
+			bpy.ops.view3d.view_roll(angle=3.14159, type='ANGLE')
 		context.preferences.view.smooth_view = pre_smooth_view
 		return {'FINISHED'}
 
