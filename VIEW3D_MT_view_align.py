@@ -38,10 +38,10 @@ class ResetView(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
-		pre_cursor_location = context.space_data.cursor_location[:]
-		context.space_data.cursor_location = (0.0, 0.0, 0.0)
+		pre_cursor_location = context.scene.cursor.location[:]
+		context.scene.cursor.location = (0.0, 0.0, 0.0)
 		bpy.ops.view3d.view_center_cursor()
-		context.space_data.cursor_location = pre_cursor_location[:]
+		context.scene.cursor.location = pre_cursor_location[:]
 		return {'FINISHED'}
 
 class SelectAndView(bpy.types.Operator):
@@ -80,30 +80,24 @@ class SnapMeshView(bpy.types.Operator):
 	mouse_co : IntVectorProperty(name="Mouse Position", size=2)
 
 	def execute(self, context):
-		preGp = context.scene.grease_pencil
-		preGpSource = context.scene.tool_settings.grease_pencil_source
+		preAnno = context.scene.grease_pencil
 		preCursorCo = bpy.context.scene.cursor.location[:]
-		context.space_data.cursor_location = context.region_data.view_location[:]
-		context.scene.tool_settings.grease_pencil_source = 'SCENE'
-		if (preGp):
-			tempGp = preGp
-		else:
-			try:
-				tempGp = bpy.data.grease_pencil["temp"]
-			except KeyError:
-				tempGp = bpy.data.grease_pencil.new("temp")
-		context.scene.grease_pencil = tempGp
-		tempLayer = tempGp.layers.new("temp", set_active=True)
-		tempGp.draw_mode = 'SURFACE'
-		bpy.ops.gpencil.draw(mode='DRAW_POLY', stroke=[{"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":self.mouse_co, "pressure":1, "time":0, "size":0}, {"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":(0, 0), "pressure":1, "time":0, "size":0}])
+		context.scene.cursor.location = context.region_data.view_location[:]
+		try:
+			tempAnno = bpy.data.grease_pencils["temp"]
+		except KeyError:
+			tempAnno = bpy.data.grease_pencils.new("temp")
+		context.scene.grease_pencil = tempAnno
+		tempLayer = tempAnno.layers.new("temp", set_active=True)
+		context.scene.tool_settings.annotation_stroke_placement_view3d = 'SURFACE'
+		bpy.ops.gpencil.annotate(mode='DRAW_POLY', stroke=[{"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":self.mouse_co, "pressure":1, "time":0, "size":0}, {"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":(0, 0), "pressure":1, "time":0, "size":0}])
 		bpy.context.scene.cursor.location = tempLayer.frames[-1].strokes[-1].points[0].co
 		bpy.ops.view3d.view_center_cursor()
 		bpy.context.scene.cursor.location = preCursorCo
-		tempGp.layers.remove(tempLayer)
-		tempGp.user_clear()
-		bpy.data.grease_pencil.remove(tempGp)
-		context.scene.grease_pencil = preGp
-		context.scene.tool_settings.grease_pencil_source = preGpSource
+		tempAnno.layers.remove(tempLayer)
+		tempAnno.user_clear()
+		bpy.data.grease_pencils.remove(tempAnno)
+		context.scene.grease_pencil = preAnno
 		return {'FINISHED'}
 	def invoke(self, context, event):
 		self.mouse_co[0] = event.mouse_region_x
@@ -142,25 +136,19 @@ class SnapMeshViewAndCursor(bpy.types.Operator):
 	mouse_co : IntVectorProperty(name="Mouse Position", size=2)
 
 	def execute(self, context):
-		preGp = context.scene.grease_pencil
-		preGpSource = context.scene.tool_settings.grease_pencil_source
-		context.scene.tool_settings.grease_pencil_source = 'SCENE'
-		if (preGp):
-			tempGp = preGp
-		else:
-			try:
-				tempGp = bpy.data.grease_pencil["temp"]
-			except KeyError:
-				tempGp = bpy.data.grease_pencil.new("temp")
-		context.scene.grease_pencil = tempGp
-		tempLayer = tempGp.layers.new("temp", set_active=True)
-		tempGp.draw_mode = 'SURFACE'
-		bpy.ops.gpencil.draw(mode='DRAW_POLY', stroke=[{"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":self.mouse_co, "pressure":1, "time":0, "size":0}, {"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":(0, 0), "pressure":1, "time":0, "size":0}])
+		preAnno = context.scene.grease_pencil
+		try:
+			tempAnno = bpy.data.grease_pencils["temp"]
+		except KeyError:
+			tempAnno = bpy.data.grease_pencils.new("temp")
+		context.scene.grease_pencil = tempAnno
+		tempLayer = tempAnno.layers.new("temp", set_active=True)
+		context.scene.tool_settings.annotation_stroke_placement_view3d = 'SURFACE'
+		bpy.ops.gpencil.annotate(mode='DRAW_POLY', stroke=[{"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":self.mouse_co, "pressure":1, "time":0, "size":0}, {"name":"", "pen_flip":False, "is_start":True, "location":(0, 0, 0),"mouse":(0, 0), "pressure":1, "time":0, "size":0}])
 		bpy.context.scene.cursor.location = tempLayer.frames[-1].strokes[-1].points[0].co
 		bpy.ops.view3d.view_center_cursor()
-		tempGp.layers.remove(tempLayer)
-		context.scene.grease_pencil = preGp
-		context.scene.tool_settings.grease_pencil_source = preGpSource
+		tempAnno.layers.remove(tempLayer)
+		context.scene.grease_pencil = preAnno
 		return {'FINISHED'}
 	def invoke(self, context, event):
 		self.mouse_co[0] = event.mouse_region_x
