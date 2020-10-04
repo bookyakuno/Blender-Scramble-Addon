@@ -15,14 +15,15 @@ class VertexGroupTransferWeightObjmode(bpy.types.Operator):
 	bl_description = "From mesh during selection of other active forwarding weight paint"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isDeleteWeights : BoolProperty(name="Befere delete all weights", default=True)
+	toActive : BoolProperty(name="Selected to active", default=True)
+	isDeleteWeights : BoolProperty(name="Before delete all weights", default=True)
 	items = [
-		('WT_BY_INDEX', "Index of Vertex", "", 1),
-		('WT_BY_NEAREST_VERTEX', "Nearest Vertex", "", 2),
-		('WT_BY_NEAREST_FACE', "Recently Face", "", 3),
-		('WT_BY_NEAREST_VERTEX_IN_FACE', "In-Face Nearest Vertex", "", 4),
+		('TOPOLOGY', "Topology", "", 1),
+		('NEAREST', "Nearest Vertex", "", 2),
+		('POLY_NEAREST', "Nearest Face Vertex", "", 3),
+		('POLYINTERP_VNORPROJ', "Projected Face Interpolated", "", 4),
 		]
-	method : EnumProperty(items=items, name="Method", default="WT_BY_NEAREST_VERTEX")
+	method : EnumProperty(items=items, name="Method", default="NEAREST")
 
 	def execute(self, context):
 		if (self.isDeleteWeights):
@@ -30,7 +31,8 @@ class VertexGroupTransferWeightObjmode(bpy.types.Operator):
 				bpy.ops.object.vertex_group_remove(all=True)
 			except RuntimeError:
 				pass
-		bpy.ops.object.vertex_group_transfer_weight(group_select_mode='WT_REPLACE_ALL_VERTEX_GROUPS', method=self.method, replace_mode='WT_REPLACE_ALL_WEIGHTS')
+		bpy.ops.object.data_transfer(use_reverse_transfer=self.toActive, data_type='VGROUP_WEIGHTS', vert_mapping=self.method, layers_select_src='ALL', layers_select_dst='NAME', mix_mode='REPLACE')
+		#bpy.ops.object.vertex_group_transfer_weight(group_select_mode='WT_REPLACE_ALL_VERTEX_GROUPS', method=self.method, replace_mode='WT_REPLACE_ALL_WEIGHTS')
 		return {'FINISHED'}
 
 class ToggleSmooth(bpy.types.Operator):
@@ -116,7 +118,12 @@ class VertexGroupTransfer(bpy.types.Operator):
 				break
 		else:
 			vert_mapping = 'POLYINTERP_NEAREST'
-		bpy.ops.object.data_transfer(use_reverse_transfer=True, data_type='VGROUP_WEIGHTS', use_create=True, vert_mapping=vert_mapping, layers_select_src = 'ALL', layers_select_dst = 'NAME')
+		#use_reverse_transfer=True の場合、layers_select_dst と
+		#layers_select_src の値を逆にする必要があるという謎のバグ?あり
+		try:
+			bpy.ops.object.data_transfer(use_reverse_transfer=True, data_type='VGROUP_WEIGHTS', use_create=True, vert_mapping=vert_mapping,  layers_select_dst='ALL', layers_select_src='NAME')
+		except TypeError:
+			ops.object.data_transfer(use_reverse_transfer=True, data_type='VGROUP_WEIGHTS', use_create=True, vert_mapping=vert_mapping,  layers_select_src='ALL', layers_select_dst='NAME')
 		if (self.vertex_group_clean):
 			bpy.ops.object.vertex_group_clean(group_select_mode='ALL', limit=0, keep_single=False)
 		if (self.vertex_group_delete):
@@ -219,8 +226,8 @@ class CreateVertexToMetaball(bpy.types.Operator):
 					metas[-1].parent_vertices = (i, 0, 0)
 				bpy.ops.object.select_all(action='DESELECT')
 				for meta in metas:
-					context.scene.objects.link(meta)
-					meta.select = True
+					context.view_layer.active_layer_collection.collection.objects.link(meta)
+					meta.select_set(True)
 				bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 				metas[-1].parent_type = metas[-1].parent_type
 				base_obj = metas[0] #context.scene.objects[re.sub(r'\.\d+$', '', metas[0].name)]
@@ -241,15 +248,15 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if (not context.scene.grease_pencil):
+		obj = context.active_object
+		if (not obj.type == 'GPENCIL'):
 			return False
-		if (not context.scene.grease_pencil.layers.active):
+		if (not bpy.data.grease_pencils[obj.name].layers.active):
 			return False
 		return True
 	def execute(self, context):
-		if (not context.scene.grease_pencil.layers.active):
-			self.report(type={"ERROR"}, message="Grespencillayer does not exist")
-			return {"CANCELLED"}
+		obj = context.active_object
+		gpen = bpy.data.grease_pencils[obj.name]
 		pre_selectable_objects = context.selectable_objects
 		bpy.ops.gpencil.convert(type='CURVE', use_normalize_weights=False, use_link_strokes=False, use_timing_data=True)
 		for obj in context.selectable_objects:
@@ -272,12 +279,12 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode='OBJECT')
 		metas = []
 		for vert in pathObj.data.vertices:
-			bpy.ops.object.metaball_add(type='BALL', radius=self.radius, view_align=False, enter_editmode=False, location=vert.co)
+			bpy.ops.object.metaball_add(type='BALL', radius=self.radius, align='WORLD', enter_editmode=False, location=vert.co)
 			metas.append(bpy.context.view_layer.objects.active)
 			metas[-1].data.resolution = self.resolution
 		for obj in metas:
 			obj.select_set(True)
-		context.scene.objects.unlink(pathObj)
+		context.view_layer.active_layer_collection.collection.objects.unlink(pathObj)
 		return {'FINISHED'}
 
 class CreateMeshImitateArmature(bpy.types.Operator):
@@ -306,18 +313,18 @@ class CreateMeshImitateArmature(bpy.types.Operator):
 				continue
 			arm = bpy.data.armatures.new(obj.name+" Armature Imitate")
 			arm_obj = bpy.data.objects.new(obj.name+" Armature Imitate", arm)
-			context.scene.objects.link(arm_obj)
+			context.view_layer.active_layer_collection.collection.objects.link(arm_obj)
 			bpy.context.view_layer.objects.active = arm_obj
 			bpy.ops.object.mode_set(mode='EDIT')
 			bone_names = []
 			for vert in obj.data.vertices:
 				bone = arm.edit_bones.new(self.vert_bone_name+str(vert.index))
-				bone.head = obj.matrix_world * vert.co
-				bone.tail = bone.head + (obj.matrix_world * vert.normal * self.bone_length)
+				bone.head = obj.matrix_world @ vert.co
+				bone.tail = bone.head + (obj.matrix_world @ vert.normal * self.bone_length)
 				bone_names.append(bone.name)
 			bpy.ops.object.mode_set(mode='OBJECT')
 			for vert, name in zip(obj.data.vertices, bone_names):
-				vg = obj.vertex_groups.new(name)
+				vg = obj.vertex_groups.new(name=name)
 				vg.add([vert.index], 1.0, 'REPLACE')
 				const = arm_obj.pose.bones[name].constraints.new('COPY_LOCATION')
 				const.target = obj
@@ -341,8 +348,8 @@ class CreateMeshImitateArmature(bpy.types.Operator):
 					vert0 = obj.data.vertices[edge.vertices[0]]
 					vert1 = obj.data.vertices[edge.vertices[1]]
 					bone = arm.edit_bones.new(self.edge_bone_name+str(edge.index))
-					bone.head = obj.matrix_world * vert0.co
-					bone.tail = obj.matrix_world * vert1.co
+					bone.head = obj.matrix_world @ vert0.co
+					bone.tail = obj.matrix_world @ vert1.co
 					bone.layers = (False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False)
 					bone.parent = arm.edit_bones[self.vert_bone_name + str(vert0.index)]
 					edge_bone_names.append(bone.name)
@@ -389,9 +396,9 @@ class CreateVertexGroupsArmature(bpy.types.Operator):
 				continue
 			arm = bpy.data.armatures.new(self.armature_name)
 			arm_obj = bpy.data.objects.new(self.armature_name, arm)
-			bpy.context.collection.objects.link(arm_obj)
+			context.view_layer.active_layer_collection.collection.objects.link(arm_obj)
 			arm_obj.select_set(True)
-			bpy.bpy.context.view_layer.objects.active = arm_obj
+			bpy.context.view_layer.objects.active = arm_obj
 			me = obj.data
 			bpy.ops.object.mode_set(mode='EDIT')
 			for vert in me.vertices:
@@ -402,12 +409,12 @@ class CreateVertexGroupsArmature(bpy.types.Operator):
 						else:
 							bone_name = "Bone"
 						bone = arm.edit_bones.new(bone_name)
-						vert_co = obj.matrix_world * vert.co
-						vert_no = obj.matrix_world.to_quaternion() * vert.normal * self.bone_length
+						vert_co = obj.matrix_world @ vert.co
+						vert_no = obj.matrix_world.to_quaternion() @ vert.normal * self.bone_length
 						bone.head = vert_co
 						bone.tail = vert_co + vert_no
 			bpy.ops.object.mode_set(mode='OBJECT')
-		bpy.bpy.context.view_layer.objects.active = pre_active_obj
+		bpy.context.view_layer.objects.active = pre_active_obj
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
@@ -456,18 +463,16 @@ class CreateSolidifyEdge(bpy.types.Operator):
 			bpy.context.view_layer.objects.active = obj
 
 			mtl = bpy.data.materials.new(obj.name+"Lines")
-			mtl.use_shadeless = True
-			mtl.diffuse_color = self.color
+			mtl.diffuse_color = (self.color[0], self.color[1], self.color[2], 1.0)
 			mtl.use_nodes = True
-			mtl.use_transparency = True
 
 			for n in mtl.node_tree.nodes:
 				if (n.bl_idname == 'ShaderNodeMaterial'):
 					n.material = mtl
-			node = mtl.node_tree.nodes.new('ShaderNodeGeometry')
+			node = mtl.node_tree.nodes.new('ShaderNodeNewGeometry')
 			link_input = node.outputs[8]
 			for n in mtl.node_tree.nodes:
-				if (n.bl_idname == 'ShaderNodeOutput'):
+				if (n.bl_idname == 'ShaderNodeOutputMaterial'):
 					link_output = n.inputs[1]
 			mtl.node_tree.links.new(link_input, link_output)
 
@@ -487,7 +492,7 @@ class CreateSolidifyEdge(bpy.types.Operator):
 			if (not self.use_render):
 				mod.show_render = False
 		bpy.context.view_layer.objects.active = pre_active_obj
-		context.space_data.show_backface_culling = self.show_backface_culling
+		context.space_data.shading.show_backface_culling = self.show_backface_culling
 		return {'FINISHED'}
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
@@ -521,6 +526,7 @@ class SyncRenderHide(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	isAll : BoolProperty(name="All Objects", default=False)
+	use_col_state : BoolProperty(name="apply to hided collection", default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -528,17 +534,24 @@ class SyncRenderHide(bpy.types.Operator):
 			return True
 		return False
 	def execute(self, context):
-		objs = []
-		for obj in bpy.data.objects:
-			if (self.isAll):
-				objs.append(obj)
-			else:
-				for i in range(len(context.scene.layers)):
-					if (context.scene.layers[i] and obj.layers[i]):
-						objs.append(obj)
-						break
-		for obj in objs:
-			obj.hide_render = obj.hide
+		if (self.isAll):
+			for obj in bpy.data.objects:
+				obj.hide_render = obj.hide_get()
+		else:
+			master_col = context.view_layer.layer_collection
+			views = [c for c in master_col.children if not c.exclude and not c.hide_viewport]
+			hides = [c for c in master_col.children if not c.exclude and c.hide_viewport]
+			for col in views:
+				if len(col.children) != 0:
+					views = views + [c for c in col.children if not c.exclude and not c.hide_viewport]
+					hides = hides + [c for c in col.children if not c.exclude and c.hide_viewport]
+			for col in views:
+				for ob in col.collection.objects:
+					ob.hide_render = ob.hide_get()
+			if self.use_col_state:
+				for col in hides:
+					for ob in col.collection.objects:
+						ob.hide_render = True
 		return {'FINISHED'}
 
 ##########################
@@ -573,21 +586,35 @@ class SetUnselectHideSelect(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	reverse : BoolProperty(name="Set Unselect", default=True)
+	limit_view : BoolProperty(name="Exclude hided objects", default=True)
 
 	@classmethod
 	def poll(cls, context):
-		for obj in bpy.data.objects:
-			for i in range(len(context.scene.layers)):
-				if (obj.layers[i] and context.scene.layers[i]):
-					if (not obj.select):
-						return True
+		if len(context.selected_objects) > 0:
+			return True
 		return False
 	def execute(self, context):
-		for obj in bpy.data.objects:
-			for i in range(len(context.scene.layers)):
-				if (obj.layers[i] and context.scene.layers[i]):
-					if (not obj.select):
-						obj.hide_select = self.reverse
+		master_col = context.view_layer.layer_collection
+		views = [c for c in master_col.children if not c.exclude and not c.hide_viewport]
+		hides = [c for c in master_col.children if not c.exclude and c.hide_viewport]
+		for col in views:
+			if len(col.children) != 0:
+				views = views + [c for c in col.children if not c.exclude and not c.hide_viewport]
+				hides = hides + [c for c in col.children if not c.exclude and c.hide_viewport]
+		if (self.limit_view):
+			for col in views:
+				for ob in col.collection.objects:
+					if not ob.hide_get() and not ob.select_get():
+						ob.hide_select = self.reverse
+		else:
+			for col in views:
+				for ob in col.collection.objects:
+					if not ob.select_get():
+						ob.hide_select = self.reverse
+			for col in hides:
+				for ob in col.collection.objects:
+					if not ob.select_get():
+						ob.hide_select = self.reverse
 		return {'FINISHED'}
 
 class SetHideSelect(bpy.types.Operator):
@@ -607,7 +634,7 @@ class SetHideSelect(bpy.types.Operator):
 		for obj in context.selected_objects:
 			obj.hide_select = self.reverse
 			if (self.reverse):
-				obj.select = not self.reverse
+				obj.select_set(not self.reverse)
 		return {'FINISHED'}
 
 ################################
@@ -657,7 +684,9 @@ class EqualizeObjectNameAndDataName(bpy.types.Operator):
 ####################################
 # オペレーター(オブジェクトカラー) #
 ####################################
-
+#マテリアルの use_object_color オプションが削除されたため、
+# Object.color の値が実際の表示に反映されることはないと思われる
+"""
 class ApplyObjectColor(bpy.types.Operator):
 	bl_idname = "object.apply_object_color"
 	bl_label = "Enable object color + set color"
@@ -709,7 +738,7 @@ class ClearObjectColor(bpy.types.Operator):
 				if (slot.material):
 					slot.material.use_object_color = False
 		return {'FINISHED'}
-
+"""
 ####################
 # オペレーター(親) #
 ####################
@@ -755,14 +784,17 @@ class ParentSetApplyModifiers(bpy.types.Operator):
 		bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
 		active_obj.select_set(True)
 		old_me = active_obj.data
-		new_me = active_obj.to_mesh(context.scene, True, 'PREVIEW')
+		depsgraph = context.evaluated_depsgraph_get()
+		object_eval = active_obj.evaluated_get(depsgraph)
+		new_me = object_eval.to_mesh()
 		if (len(old_me.vertices) != len(new_me.vertices)):
 			self.report(type={'WARNING'}, message="May not count changes after applying modifier to wished result")
-		active_obj.data = new_me
-		for mod in active_obj.modifiers:
+		#active_obj.data = new_me
+		for mod in object_eval.modifiers:
 			if (mod.show_viewport):
 				mod.show_viewport = False
 		bpy.ops.object.parent_set(type=self.type)
+		object_eval.to_mesh_clear()
 		active_obj.data = old_me
 		for name in enable_modifiers:
 			active_obj.modifiers[name].show_viewport = True
@@ -806,7 +838,7 @@ class CreateRopeMesh(bpy.types.Operator):
 			pre_use_deform_bounds = activeObj.data.use_deform_bounds
 			bpy.ops.object.transform_apply_all()
 
-			bpy.ops.mesh.primitive_cylinder_add(vertices=self.vertices, radius=self.radius, depth=1, end_fill_type='NOTHING', view_align=False, enter_editmode=True, location=(0, 0, 0), rotation=(0, 1.5708, 0))
+			bpy.ops.mesh.primitive_cylinder_add(vertices=self.vertices, radius=self.radius, depth=1, end_fill_type='NOTHING', align='WORLD', enter_editmode=True, location=(0, 0, 0), rotation=(0, 1.5708, 0))
 			bpy.ops.mesh.select_all(action='DESELECT')
 			context.tool_settings.mesh_select_mode = [False, True, False]
 			bpy.ops.mesh.select_non_manifold()
@@ -821,6 +853,7 @@ class CreateRopeMesh(bpy.types.Operator):
 			activeObj.data.use_deform_bounds = True
 			activeObj.data.resolution_u = self.resolution_u
 			bpy.ops.object.modifier_apply(modifier=modi.name)
+			bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
 
 			activeObj.data.use_stretch = pre_use_stretch
 			activeObj.data.use_deform_bounds = pre_use_deform_bounds
@@ -855,7 +888,7 @@ class MoveBevelObject(bpy.types.Operator):
 	def execute(self, context):
 		bpy.ops.object.mode_set(mode='OBJECT')
 		selected_objects = context.selected_objects[:]
-		delete_objects = []
+		delete_objects = {}
 		for obj in selected_objects:
 			if (obj.type != 'CURVE'):
 				self.report(type={'WARNING'}, message=obj.name+" is not curve, ignored")
@@ -877,15 +910,12 @@ class MoveBevelObject(bpy.types.Operator):
 				if (obj.name == o.name):
 					break
 			else:
-				delete_objects.append(bevel_object)
+				delete_objects[bevel_object] = bevel_object.users_collection[0]
 			if (self.use_duplicate):
-				pre_layers = bevel_object.layers[:]
-				bevel_object.layers = obj.layers[:]
-				bevel_object.hide = False
+				bevel_object.hide_set(False)
 				bpy.ops.object.select_all(action='DESELECT')
 				bevel_object.select_set(True)
 				bpy.ops.object.duplicate()
-				bevel_object.layers = pre_layers[:]
 				bevel_object = context.selected_objects[0]
 				curve.bevel_object = bevel_object
 			if (self.use_2d):
@@ -894,34 +924,34 @@ class MoveBevelObject(bpy.types.Operator):
 			spline = curve.splines[0]
 			if (spline.type == 'NURBS'):
 				if (self.move_position == 'START'):
-					base_point = obj.matrix_world * spline.points[0].co
-					sub_point = obj.matrix_world * spline.points[1].co
+					base_point = obj.matrix_world @ spline.points[0].co
+					sub_point = obj.matrix_world @ spline.points[1].co
 					tilt = spline.points[0].tilt
 				elif (self.move_position == 'END'):
-					base_point = obj.matrix_world * spline.points[-1].co
-					sub_point = obj.matrix_world * spline.points[-2].co
+					base_point = obj.matrix_world @ spline.points[-1].co
+					sub_point = obj.matrix_world @ spline.points[-2].co
 					tilt = spline.points[-1].tilt
 				elif (self.move_position == 'CENTER'):
 					i = int(len(spline.points) / 2)
-					base_point = obj.matrix_world * spline.points[i].co
-					sub_point = obj.matrix_world * spline.points[i-1].co
+					base_point = obj.matrix_world @ spline.points[i].co
+					sub_point = obj.matrix_world @ spline.points[i-1].co
 					tilt = spline.points[i].tilt
 				else:
 					self.report(type={'ERROR'}, message="Option value is invalid")
 					return {'CANCELLED'}
 			elif (spline.type == 'BEZIER'):
 				if (self.move_position == 'START'):
-					base_point = obj.matrix_world * spline.bezier_points[0].co
-					sub_point = obj.matrix_world * spline.bezier_points[0].handle_left
+					base_point = obj.matrix_world @ spline.bezier_points[0].co
+					sub_point = obj.matrix_world @ spline.bezier_points[0].handle_left
 					tilt = spline.bezier_points[0].tilt
 				elif (self.move_position == 'END'):
-					base_point = obj.matrix_world * spline.bezier_points[-1].co
-					sub_point = obj.matrix_world * spline.bezier_points[-1].handle_left
+					base_point = obj.matrix_world @ spline.bezier_points[-1].co
+					sub_point = obj.matrix_world @ spline.bezier_points[-1].handle_left
 					tilt = spline.bezier_points[-1].tilt
 				elif (self.move_position == 'CENTER'):
-					i = int(len(spline.spline.bezier_points) / 2)
-					base_point = obj.matrix_world * spline.bezier_points[i].co
-					sub_point = obj.matrix_world * spline.bezier_points[i-1].handle_left
+					i = int(len(spline.bezier_points) / 2)
+					base_point = obj.matrix_world @ spline.bezier_points[i].co
+					sub_point = obj.matrix_world @ spline.bezier_points[i-1].handle_left
 					tilt = spline.bezier_points[i].tilt
 				else:
 					self.report(type={'ERROR'}, message="Option value is invalid")
@@ -944,14 +974,14 @@ class MoveBevelObject(bpy.types.Operator):
 			bevel_object.rotation_mode = 'XYZ'
 			bevel_object.rotation_euler = eul.copy()
 		if (self.delete_pre_bevel and self.use_duplicate):
-			for obj in delete_objects:
+			for obj in delete_objects.keys():
 				try:
-					context.scene.objects.unlink(obj)
+					delete_objects[obj].objects.unlink(obj)
 				except RuntimeError:
 					pass
 		bpy.ops.object.select_all(action='DESELECT')
 		for obj in selected_objects:
-			obj.select_set(True)
+			obj.data.bevel_object.select_set(True)
 		return {'FINISHED'}
 
 ################
@@ -991,7 +1021,7 @@ class ObjectNameMenu(bpy.types.Menu):
 	def draw(self, context):
 		self.layout.operator(RenameObjectRegularExpression.bl_idname, icon="PLUGIN")
 		self.layout.operator(EqualizeObjectNameAndDataName.bl_idname, icon="PLUGIN")
-
+"""
 class ObjectColorMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_object_color"
 	bl_label = "Object Color"
@@ -1000,7 +1030,7 @@ class ObjectColorMenu(bpy.types.Menu):
 	def draw(self, context):
 		self.layout.operator(ApplyObjectColor.bl_idname, icon="PLUGIN")
 		self.layout.operator(ClearObjectColor.bl_idname, icon="PLUGIN")
-
+"""
 class ParentMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_parent"
 	bl_label = "Parent/Child Relation"
@@ -1053,15 +1083,15 @@ classes = [
 	SetHideSelect,
 	RenameObjectRegularExpression,
 	EqualizeObjectNameAndDataName,
-	ApplyObjectColor,
-	ClearObjectColor,
+	#ApplyObjectColor,
+	#ClearObjectColor,
 	ParentSetApplyModifiers,
 	CreateRopeMesh,
 	MoveBevelObject,
 	RenderHideMenu,
 	HideSelectMenu,
 	ObjectNameMenu,
-	ObjectColorMenu,
+	#ObjectColorMenu,
 	ParentMenu,
 	CurveMenu,
 	SpecialsMenu
@@ -1096,7 +1126,7 @@ def menu(self, context):
 		self.layout.menu(HideSelectMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.menu(ObjectNameMenu.bl_idname, icon="PLUGIN")
-		self.layout.menu(ObjectColorMenu.bl_idname, icon="PLUGIN")
+		#self.layout.menu(ObjectColorMenu.bl_idname, icon="PLUGIN")
 		self.layout.menu(ParentMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.menu(CurveMenu.bl_idname, icon="PLUGIN")

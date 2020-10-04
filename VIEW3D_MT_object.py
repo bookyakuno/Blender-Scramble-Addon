@@ -3,11 +3,11 @@
 
 import bpy, bmesh
 from bpy.props import *
+from . import DATA_PT_modifiers, OBJECT_PT_context_object
 
 ################
 # パイメニュー #
 ################
-
 class CopyPieOperator(bpy.types.Operator):
 	bl_idname = "object.copy_pie_operator"
 	bl_label = "Copy"
@@ -24,7 +24,7 @@ class CopyPie(bpy.types.Menu):
 
 	def draw(self, context):
 		self.layout.menu_pie().operator("view3d.copybuffer", icon="COPY_ID")
-		self.layout.menu_pie().operator(CopyObjectName.bl_idname, icon="MONKEY")
+		self.layout.menu_pie().operator(OBJECT_PT_context_object.CopyObjectName.bl_idname, icon="MONKEY")
 
 class ObjectModePieOperator(bpy.types.Operator):
 	bl_idname = "object.object_mode_pie_operator"
@@ -162,7 +162,7 @@ class ShortcutMenu(bpy.types.Menu):
 
 	def draw(self, context):
 		self.layout.operator(DeleteUnmassage.bl_idname, icon="PLUGIN")
-		self.layout.operator(ApplyModifiersAndJoin.bl_idname, icon="PLUGIN")
+		self.layout.operator(DATA_PT_modifiers.ApplyModifiersAndJoin.bl_idname, icon="PLUGIN")
 
 ################
 # クラスの登録 #

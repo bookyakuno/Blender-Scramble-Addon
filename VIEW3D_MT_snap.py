@@ -61,6 +61,59 @@ class Move3DCursorFar(bpy.types.Operator):
 		bpy.context.scene.cursor.location = (24210, 102260, 38750)
 		return {'FINISHED'}
 
+
+class PieSnapGrid(bpy.types.Menu):
+	bl_idname = "VIEW3D_MT_snap_pie_grid"
+	bl_label = "Snap Menu (Grid)"
+
+	def draw(self, context):
+		layout = self.layout
+		pie = layout.menu_pie()
+		box = pie.split().column()
+		box.operator("view3d.snap_mesh_3d_cursor", text="Cursor to Grid", icon='CURSOR')
+		box.operator("view3d.snap_cursor_to_grid", text="Cursor to Grid", icon='CURSOR')
+
+
+class PieSnapMore(bpy.types.Menu):
+	bl_idname = "VIEW3D_MT_snap_pie_more"
+	bl_label = "Snap Menu (Scramble Addon)"
+
+	def draw(self, context):
+		layout = self.layout
+		pie = layout.menu_pie()
+		box = pie.split().column()
+		box.operator("view3d.move_3d_cursor_to_view_location", text="Cursor => View Positon", icon='CURSOR')
+		box.operator("view3d.move_3d_cursor_far", text="Hide 3D Cursor (move far)", icon='CURSOR')
+		box.operator("view3d.snap_mesh_3d_cursor", text="Cursor => Mesh surface", icon='CURSOR')
+
+
+class PieSnap(bpy.types.Menu):
+	bl_idname = "VIEW3D_MT_snap_pie_scramble"
+	bl_label = "Snap Pie Menu (new menu added)"
+
+	def draw(self, context):
+		layout = self.layout
+		pie = layout.menu_pie()
+		# 4 - LEFT
+		pie.menu("VIEW3D_MT_snap_pie_grid", text="Snap Menu (Grid)", icon='SNAP_GRID')
+		# 6 - RIGHT
+		pie.menu("VIEW3D_MT_snap_pie_more", text="Snap Menu (Scramble Addon)", icon='PLUGIN')
+		# 2 - BOTTOM
+		pie.operator("view3d.snap_cursor_to_selected", text="Cursor to Selected",
+					icon='CURSOR')
+		# 8 - TOP
+		pie.operator("view3d.snap_selected_to_cursor", text="Selection to Cursor",
+					icon='RESTRICT_SELECT_OFF').use_offset = False
+		# 7 - TOP - LEFT
+		pie.operator("view3d.snap_selected_to_cursor", text="Selection to Cursor (Keep Offset)", icon='RESTRICT_SELECT_OFF').use_offset = True
+		# 9 - TOP - RIGHT
+		pie.operator("view3d.snap_selected_to_active", text="Selection to Active", icon='RESTRICT_SELECT_OFF')
+		# 1 - BOTTOM - LEFT
+		pie.operator("view3d.snap_cursor_to_center", text="Cursor to World Origin", icon='CURSOR')
+		# 3 - BOTTOM - RIGHT
+		pie.operator("view3d.snap_cursor_to_active", text="Cursor to Active", icon='CURSOR')
+
+
 ################
 # クラスの登録 #
 ################
@@ -68,16 +121,43 @@ class Move3DCursorFar(bpy.types.Operator):
 classes = [
 	SnapMesh3DCursor,
 	Move3DCursorToViewLocation,
-	Move3DCursorFar
+	Move3DCursorFar,
+	PieSnapGrid,
+	PieSnapMore,
+	PieSnap
 ]
+
+#旧版のメニューを使用する場合は、Falseに書き換える
+use_piemenu = True
+
+kmap_info = []
 
 def register():
 	for cls in classes:
 		bpy.utils.register_class(cls)
+	wm = bpy.context.window_manager
+	if wm.keyconfigs.addon:
+		try:
+			km = wm.keyconfigs.addon.keymaps["3D View"]
+		except KeyError:
+			km = wm.keyconfigs.addon.keymaps.new(name='3D View')	
+		if use_piemenu:
+			kmi = km.keymap_items.new('wm.call_menu_pie', 'S', 'PRESS', shift=True)
+			kmi.properties.name = "VIEW3D_MT_snap_pie_scramble"
+		else:
+			kmi = km.keymap_items.new('wm.call_menu', 'S', 'PRESS', shift=True)
+			kmi.properties.name = "VIEW3D_MT_snap"
+		kmap_info.append((km, kmi))
 
 def unregister():
 	for cls in classes:
 		bpy.utils.unregister_class(cls)
+	wm = bpy.context.window_manager
+	kc = wm.keyconfigs.addon
+	if kc:
+		km, kmi = kmap_info[0]
+		km.keymap_items.remove(kmi)
+	kmap_info.clear()
 
 
 ################

@@ -57,10 +57,11 @@ class ProportionalPieOperator(bpy.types.Operator):
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
-		if (context.scene.tool_settings.proportional_edit == "DISABLED"):
+		if (not context.scene.tool_settings.use_proportional_edit):
+			#context.scene.tool_settings.use_proportional_edit = True
 			bpy.ops.wm.call_menu_pie(name=ProportionalPie.bl_idname)
 		else:
-			context.scene.tool_settings.proportional_edit = "DISABLED"
+			bpy.ops.wm.call_menu_pie(name=ProportionalPie.bl_idname)
 		return {'FINISHED'}
 class ProportionalPie(bpy.types.Menu): #
 	bl_idname = "VIEW3D_MT_edit_mesh_pie_proportional"
@@ -71,6 +72,7 @@ class ProportionalPie(bpy.types.Menu): #
 		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Enable", icon="PROP_ON").mode = "ENABLED"
 		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Projection (2D)", icon="PROP_ON").mode = "PROJECTED"
 		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Connection", icon="PROP_CON").mode = "CONNECTED"
+		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Disable", icon="PROP_OFF").mode = "DISABLED"
 class SetProportionalEdit(bpy.types.Operator): #
 	bl_idname = "mesh.set_proportional_edit"
 	bl_label = "Set proportional edit mode"
@@ -80,7 +82,21 @@ class SetProportionalEdit(bpy.types.Operator): #
 	mode : StringProperty(name="Mode", default="DISABLED")
 
 	def execute(self, context):
-		context.scene.tool_settings.proportional_edit = self.mode
+		settings = context.scene.tool_settings
+		if self.mode == "ENABLED":
+			settings.use_proportional_edit = True
+			settings.use_proportional_projected = False
+			settings.use_proportional_connected = False
+		elif self.mode == "PROJECTED":
+			settings.use_proportional_edit = True
+			settings.use_proportional_projected = not settings.use_proportional_projected
+		elif self.mode == "CONNECTED":
+			settings.use_proportional_edit = True
+			settings.use_proportional_connected = not settings.use_proportional_connected
+		else:
+			settings.use_proportional_edit = False
+			settings.use_proportional_projected = False
+			settings.use_proportional_connected = False
 		return {'FINISHED'}
 
 ################

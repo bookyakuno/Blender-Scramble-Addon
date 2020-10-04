@@ -416,6 +416,7 @@ class SelectAxisOver(bpy.types.Operator):
 				bone.select = True
 			if (offset * direction <= tLoc * direction + threshold):
 				bone.select = True
+		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
 ################################

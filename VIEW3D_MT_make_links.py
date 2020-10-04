@@ -42,7 +42,10 @@ class MakeLinkLayer(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.name != context.active_object.name):
-				obj.layers = context.active_object.layers
+				active_col_name = context.active_object.users_collection[0].name
+				active_col_idx  = bpy.data.collection.find(active_col_name)
+				bpy.ops.object.move_to_collection(collection_index=active_col_idx+1)
+				break
 		return {'FINISHED'}
 
 class MakeLinkDisplaySetting(bpy.types.Operator):
@@ -58,9 +61,9 @@ class MakeLinkDisplaySetting(bpy.types.Operator):
 	show_all_edges : BoolProperty(name="Show All Edges", default=True)
 	show_bounds : BoolProperty(name="Bound", default=True)
 	show_texture_space : BoolProperty(name="Texture Space", default=True)
-	show_x_ray : BoolProperty(name="X-ray", default=True)
+	show_in_front : BoolProperty(name="Front", default=True)
 	show_transparent : BoolProperty(name="Alpha", default=True)
-	draw_bounds_type : BoolProperty(name="Bound Type", default=True)
+	display_bounds_type : BoolProperty(name="Bound Type", default=True)
 	display_type : BoolProperty(name="Maximum Draw Type", default=True)
 	color : BoolProperty(name="Object Color", default=True)
 
@@ -86,12 +89,12 @@ class MakeLinkDisplaySetting(bpy.types.Operator):
 						obj.show_bounds = activeObj.show_bounds
 					if (self.show_texture_space):
 						obj.show_texture_space = activeObj.show_texture_space
-					if (self.show_x_ray):
-						obj.show_x_ray = activeObj.show_x_ray
+					if (self.show_in_front):
+						obj.show_in_front = activeObj.show_in_front
 					if (self.show_transparent):
 						obj.show_transparent = activeObj.show_transparent
-					if (self.draw_bounds_type):
-						obj.draw_bounds_type = activeObj.draw_bounds_type
+					if (self.display_bounds_type):
+						obj.display_bounds_type = activeObj.display_bounds_type
 					if (self.display_type):
 						obj.display_type = activeObj.display_type
 					if (self.color):
@@ -125,7 +128,7 @@ class MakeLinkUVNames(bpy.types.Operator):
 				target_objs.append(obj)
 		for obj in target_objs:
 			for uv in active_obj.data.uv_layers:
-				obj.data.uv_layers.new(uv.name)
+				obj.data.uv_layers.new(name=uv.name)
 		return {'FINISHED'}
 
 class MakeLinkArmaturePose(bpy.types.Operator):
@@ -133,6 +136,8 @@ class MakeLinkArmaturePose(bpy.types.Operator):
 	bl_label = "Link motion of armature"
 	bl_description = "By constraints on other selected armature mimic active armature movement"
 	bl_options = {'REGISTER', 'UNDO'}
+
+	influence : FloatProperty(name="Influence", default=1.0, max=1.0, min=0.0)
 
 	@classmethod
 	def poll(cls, context):
@@ -163,6 +168,7 @@ class MakeLinkArmaturePose(bpy.types.Operator):
 				const = consts.new('COPY_TRANSFORMS')
 				const.target = active_obj
 				const.subtarget = bone.name
+				const.influence = self.influence
 		return {'FINISHED'}
 
 ######################

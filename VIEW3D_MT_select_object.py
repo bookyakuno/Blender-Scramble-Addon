@@ -40,7 +40,7 @@ class SelectBoundBoxSize(bpy.types.Operator):
 		return False
 
 	def execute(self, context):
-		context.scene.update()
+		#context.scene.update()
 		max_volume = -1
 		min_volume = 999999999999999
 		min_obj = None
@@ -167,7 +167,7 @@ class SelectGroupedModifiers(bpy.types.Operator):
 		active_type = context.active_object.type
 		for obj in context.selectable_objects:
 			if (GetModifiersString(obj) == active_modifiers and active_type == obj.type):
-				obj.select= True
+				obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectGroupedSubsurfLevel(bpy.types.Operator):
@@ -193,7 +193,7 @@ class SelectGroupedSubsurfLevel(bpy.types.Operator):
 		active_type = context.active_object.type
 		for obj in context.selectable_objects:
 			if (GetSubsurfLevel(obj) == active_subsurf_level and active_type == obj.type):
-				obj.select= True
+				obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectGroupedArmatureTarget(bpy.types.Operator):
@@ -225,7 +225,7 @@ class SelectGroupedArmatureTarget(bpy.types.Operator):
 		active_type = context.active_object.type
 		for obj in context.selectable_objects:
 			if (len(GetArmatureTarget(obj).intersection(active_armature_targets)) == len(active_armature_targets) and active_type == obj.type):
-				obj.select= True
+				obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectGroupedSizeThan(bpy.types.Operator):
@@ -274,7 +274,7 @@ class SelectGroupedSizeThan(bpy.types.Operator):
 		if (not active_obj):
 			self.report(type={'ERROR'}, message="There is no active object")
 			return {'CANCELLED'}
-		context.scene.update()
+		#context.scene.update()
 		active_obj_size = GetSize(active_obj) * self.size_multi
 		for obj in context.selectable_objects:
 			if (self.select_type != 'ALL'):
@@ -400,13 +400,11 @@ class SelectGroupedEX(bpy.types.Menu):
 		column.operator("object.select_grouped", text="Parent").type = 'PARENT'
 		column.operator("object.select_grouped", text="Brother").type = 'SIBLINGS'
 		column.operator("object.select_grouped", text="Type").type = 'TYPE'
-		column.operator("object.select_grouped", text="Layer").type = 'LAYER'
-		column.operator("object.select_grouped", text="Group").type = 'GROUP'
+		column.operator("object.select_grouped", text="Collection").type = 'COLLECTION'
 		column.operator("object.select_grouped", text="Path").type = 'PASS'
-		column.operator("object.select_grouped", text="Color").type = 'COLOR'
-		column.operator("object.select_grouped", text="Property").type = 'PROPERTIES'
+		column.operator("object.select_grouped", text="Hook").type = 'HOOK'
 		column.operator("object.select_grouped", text="Keying Set").type = 'KEYINGSET'
-		column.operator("object.select_grouped", text="Lamp Type").type = 'LAMP_TYPE'
+		column.operator("object.select_grouped", text="Light Type").type = 'LIGHT_TYPE'
 		column.separator()
 		column.operator(SelectGroupedSizeThan.bl_idname, text="Bigger Than", icon='PLUGIN').mode = 'LARGER'
 		column.operator(SelectGroupedSizeThan.bl_idname, text="Smaller Than", icon='PLUGIN').mode = 'SMALLER'
