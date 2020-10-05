@@ -165,6 +165,7 @@ class SplineGreasePencil(bpy.types.Operator):
 
 	isRootReset : BoolProperty(name="Reset Root", default=False)
 	gpencil_name : StringProperty(name="Target GreasePencil", default="")
+	reverse : BoolProperty(name="Switch Direction", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -184,21 +185,56 @@ class SplineGreasePencil(bpy.types.Operator):
 		return False
 
 	def __init__(self):
-		self.gpencil_name = bpy.data.grease_pencils[0].name
+		for gp in bpy.data.grease_pencils:
+			if gp.is_annotation == False:
+				self.gpencil_name = gp.name
+				break
+		else:
+			self.gpencil_name = bpy.data.grease_pencils[0].name
+
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
-		self.layout.prop_search(self, "gpencil_name", bpy.data, "grease_pencils",text="Select GreasePencil", translate=True, icon='GP_SELECT_STROKES')
+		self.layout.prop_search(self, "gpencil_name", bpy.data, "grease_pencils",text="Target", translate=True, icon='GP_SELECT_STROKES')
+		names = [n for n in bpy.data.grease_pencils[self.gpencil_name].layers.keys()]
+		row = self.layout.row()
+		row.label(text="Target Layer: ")
+		row.label(text=f"{names[bpy.data.grease_pencils[self.gpencil_name].layers.active_index]}")
+		row = self.layout.row()
+		row.label(text="Change Target Layer")
+		row.prop(bpy.data.grease_pencils[self.gpencil_name].layers, "active_index", text="")
+		self.layout.separator(factor=0.4)
 		self.layout.prop(self, "isRootReset")
+		self.layout.prop(self, "reverse")
+
 
 	def execute(self, context):
 		activeObj = context.active_object
 		bpy.ops.object.mode_set(mode='OBJECT')
-		context.view_layer.objects.active = bpy.data.objects[self.gpencil_name]
-		bpy.ops.gpencil.convert(type='CURVE', use_timing_data=True)
+		gpen = bpy.data.grease_pencils[self.gpencil_name]
+		if not gpen.is_annotation:
+			try:
+				obj = bpy.data.objects[self.gpencil_name]
+			except KeyError:
+				self.report(type={'ERROR'}, message="Please make object's name equal to greasepencil's name")
+				return {'CANCELLED'}
+		else:
+			obj = bpy.data.objects.new(name=self.gpencil_name, object_data=gpen)
+			context.view_layer.active_layer_collection.collection.objects.link(obj)
+		context.view_layer.objects.active = obj
+		try:
+			bpy.ops.gpencil.convert(type='CURVE', use_timing_data=True)
+		except RuntimeError:
+				self.report(type={'ERROR'}, message="Converting GreasePencil failed. (Maybe, active Layer doesn\'t contain 'Line' data)")
+				return {'CANCELLED'}
 		for ob in context.selected_objects:
 			if ob.type == "CURVE":
 				curveObj = ob
+		if self.reverse:
+			context.view_layer.objects.active = curveObj
+			bpy.ops.object.mode_set(mode='EDIT')
+			bpy.ops.curve.switch_direction()
+			bpy.ops.object.mode_set(mode='OBJECT')
 		context.view_layer.objects.active = activeObj
 		bpy.ops.object.mode_set(mode='POSE')
 		tails = []
