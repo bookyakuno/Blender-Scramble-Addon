@@ -245,20 +245,53 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 	dissolve_verts_count : IntProperty(name="Density", default=3, min=1, max=100, soft_min=1, soft_max=100, step=1)
 	radius : FloatProperty(name="Metaball Size", default=0.05, min=0, max=1, soft_min=0, soft_max=1, step=0.2, precision=3)
 	resolution : FloatProperty(name="Metaball Resolution", default=0.05, min=0.001, max=1, soft_min=0.001, soft_max=1, step=0.2, precision=3)
+	gp_name : StringProperty(name="Target GreasePencil / Annotation", default="")
 
-	@classmethod
-	def poll(cls, context):
-		obj = context.active_object
-		if (not obj.type == 'GPENCIL'):
-			return False
-		if (not bpy.data.grease_pencils[obj.name].layers.active):
-			return False
-		return True
+	def __init__(self):
+		if bpy.context.active_object and bpy.context.active_object.type == 'GPENCIL':
+			self.gp_name = bpy.context.active_object.data.name
+		else:
+			for gp in bpy.data.grease_pencils:
+				if gp.is_annotation == True:
+					self.gp_name = gp.name
+					break
+			else:
+				self.gp_name = bpy.data.grease_pencils[0].name
+	def invoke(self, context, event):
+		if context.active_object and context.active_object.type == 'GPENCIL':
+			self.gp_name = context.active_object.data.name
+			self.execute(context)
+			return {'FINISHED'}
+		else:
+			return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop_search(self, "gp_name", bpy.data, "grease_pencils",text="Target", translate=True, icon='GP_SELECT_STROKES')
+		names = [n for n in bpy.data.grease_pencils[self.gp_name].layers.keys()]
+		row = self.layout.row()
+		row.label(text="Target Layer: ")
+		row.label(text=f"{names[bpy.data.grease_pencils[self.gp_name].layers.active_index]}")
+		row = self.layout.row()
+		row.label(text="Change Target Layer")
+		row.prop(bpy.data.grease_pencils[self.gp_name].layers, "active_index", text="")
+
 	def execute(self, context):
-		obj = context.active_object
-		gpen = bpy.data.grease_pencils[obj.name]
+		gpen = bpy.data.grease_pencils[self.gp_name]
+		if not gpen.is_annotation:
+			try:
+				obj = bpy.data.objects[self.gp_name]
+			except KeyError:
+				self.report(type={'ERROR'}, message="Please make object's name equal to greasepencil's name")
+				return {'CANCELLED'}
+		else:
+			obj = bpy.data.objects.new(name=self.gp_name, object_data=gpen)
+			context.view_layer.active_layer_collection.collection.objects.link(obj)
+		context.view_layer.objects.active = obj
 		pre_selectable_objects = context.selectable_objects
-		bpy.ops.gpencil.convert(type='CURVE', use_normalize_weights=False, use_link_strokes=False, use_timing_data=True)
+		try:
+			bpy.ops.gpencil.convert(type='CURVE', use_normalize_weights=False, use_link_strokes=False, use_timing_data=True)
+		except RuntimeError:
+				self.report(type={'ERROR'}, message="Converting GreasePencil failed. (Maybe, active Layer doesn\'t contain 'Line' data)")
+				return {'CANCELLED'}	
 		for obj in context.selectable_objects:
 			if (not obj in pre_selectable_objects):
 				curveObj = obj
