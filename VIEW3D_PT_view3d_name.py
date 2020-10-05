@@ -22,6 +22,11 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
+		if bpy.context.object:
+			obj = bpy.context.object
+			self.layout.prop(obj,"name")
+		else:
+			self.layout.label(text="",icon="NONE")
 		row = self.layout.row(align=True)
 		row.alignment = 'RIGHT'
 		row.label(text="To Clipboard", icon='COPYDOWN')
