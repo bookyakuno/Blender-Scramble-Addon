@@ -62,7 +62,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		col = self.layout.column(align=True)
-		col.label(text="Add Quick Edit", icon='PLUGIN')
+		col.label(text="=== Quick Menu for Editor ===", icon='NONE')
 		if (context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1):
 			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1)
 			name, ext = os.path.splitext(path)

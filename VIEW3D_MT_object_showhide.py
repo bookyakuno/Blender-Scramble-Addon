@@ -17,6 +17,21 @@ class hide_view_clear_unselect(bpy.types.Operator):
 
 	show_col : BoolProperty(name="show hided collections", default=False)
 
+	def flatten(self, layer_collection):
+		flat_view = []
+		flat_hide = []
+		for coll in layer_collection.children:
+			if not coll.exclude and not coll.hide_viewport:
+				if len(coll.children) > 0:
+					flat_view.append(coll)
+					flat_view += self.flatten(coll)[0]
+					flat_hide += self.flatten(coll)[1]
+				else:
+					flat_view.append(coll)
+			elif not coll.exclude and coll.hide_viewport:
+				flat_hide.append(coll)
+		return [flat_view, flat_hide]
+
 	def execute(self, context):
 		master_col = context.view_layer.layer_collection
 		if self.show_col:
@@ -24,8 +39,9 @@ class hide_view_clear_unselect(bpy.types.Operator):
 			hides = [c for c in master_col.children if not c.exclude and c.hide_viewport]
 			for col in views:
 				if len(col.children) != 0:
-					views = views + [c for c in col.children if not c.exclude and not c.hide_viewport]
-					hides = hides + [c for c in col.children if not c.exclude and c.hide_viewport]
+					f_view, f_hide = self.flatten(col)
+					views = views + f_view
+					hides = hides + f_hide
 			for col in hides:
 				col.hide_viewport = False
 		pre_selectable_objects = []
@@ -43,7 +59,22 @@ class InvertHide(bpy.types.Operator):
 	bl_description = "Flips object\'s view state and non-State"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	invert_nested_col : BoolProperty(name="Invert nested collections\' states", default=False)
+	invert_nested_col : BoolProperty(name="Include nested collections", default=False)
+
+	def flatten(self, layer_collection):
+		flat_view = []
+		flat_hide = []
+		for coll in layer_collection.children:
+			if not coll.exclude and not coll.hide_viewport:
+				if len(coll.children) > 0:
+					flat_view.append(coll)
+					flat_view += self.flatten(coll)[0]
+					flat_hide += self.flatten(coll)[1]
+				else:
+					flat_view.append(coll)
+			elif not coll.exclude and coll.hide_viewport:
+				flat_hide.append(coll)
+		return [flat_view, flat_hide]
 
 	def execute(self, context):
 		objs = []
@@ -54,22 +85,23 @@ class InvertHide(bpy.types.Operator):
 		collections = [c for c in master_col.children if not c.exclude and not c.hide_viewport]
 		for col in collections:
 			if len(col.children) != 0:
-				collections = collections + [c for c in col.children if not c.exclude and not c.hide_viewport]
+				f_view, f_hide = self.flatten(col)
+				collections = collections + f_view
 				if self.invert_nested_col:
-					hides = [c for c in col.children if not c.exclude and c.hide_viewport]
+					hide = hide + f_hide
 		for col in collections:
 			if col.has_objects():
 				objs = objs + [x for x in col.collection.objects]
 		for obj in objs:
 			obj.hide_set(not obj.hide_get())
 		if self.invert_nested_col:
-			for col in hides:
+			for col in hide:
 				col.hide_viewport = False
 		return {'FINISHED'}
 
 class InvertCollectionHide(bpy.types.Operator):
 	bl_idname = "object.invert_collection_hide"
-	bl_label = "Invert Show/Hide (object & collection)"
+	bl_label = "Invert Show/Hide (object & parent collection)"
 	bl_description = "Flips object\'s and collection\'s view state and non-State"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -80,10 +112,6 @@ class InvertCollectionHide(bpy.types.Operator):
 			obj.hide_set(not obj.hide_get())
 		views = [c for c in master_col.children if not c.exclude and not c.hide_viewport]
 		hides = [c for c in master_col.children if not c.exclude and c.hide_viewport]
-		for col in views:
-			if len(col.children) != 0:
-				views = views + [c for c in col.children if not c.exclude and not c.hide_viewport]
-				hides = hides + [c for c in col.children if not c.exclude and c.hide_viewport]
 		for col in views:
 			col.hide_viewport = True
 		for col in hides:
