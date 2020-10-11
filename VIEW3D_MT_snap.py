@@ -127,27 +127,12 @@ classes = [
 	PieSnap
 ]
 
-#旧版のメニューを使用する場合は、Falseに書き換える
-use_piemenu = True
-
 kmap_info = []
 
 def register():
 	for cls in classes:
 		bpy.utils.register_class(cls)
-	wm = bpy.context.window_manager
-	if wm.keyconfigs.addon:
-		try:
-			km = wm.keyconfigs.addon.keymaps["3D View"]
-		except KeyError:
-			km = wm.keyconfigs.addon.keymaps.new(name='3D View')	
-		if use_piemenu:
-			kmi = km.keymap_items.new('wm.call_menu_pie', 'S', 'PRESS', shift=True)
-			kmi.properties.name = "VIEW3D_MT_snap_pie_scramble"
-		else:
-			kmi = km.keymap_items.new('wm.call_menu', 'S', 'PRESS', shift=True)
-			kmi.properties.name = "VIEW3D_MT_snap"
-		kmap_info.append((km, kmi))
+
 
 def unregister():
 	for cls in classes:

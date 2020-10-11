@@ -33,9 +33,13 @@ class VIEW3D_PT_scramble_view3d_properties(bpy.types.Panel):
 class VIEW3D_PT_scramble_view3d_name(bpy.types.Panel):
 	bl_space_type = "VIEW_3D"
 	bl_region_type = "UI"
-	bl_category = "Scramble"
-	bl_label = "Item name"
+	bl_category = "Item"
+	bl_label = "Item"
 	bl_options = {'DEFAULT_CLOSED'}
+	@classmethod
+	def poll(cls, context):
+		return bpy.context.object
+
 	def draw(self, context):
 		VIEW3D_PT_view3d_name.menu(self, context)
 
@@ -53,8 +57,8 @@ class VIEW3D_PT_scramble_view3d_cursor(bpy.types.Panel):
 class VIEW3D_PT_scramble_view3d_orientation(bpy.types.Panel):
 	bl_space_type = "VIEW_3D"
 	bl_region_type = "UI"
-	bl_category = "Scramble"
-	bl_label = "Transform Orientation"
+	bl_category = "View"
+	bl_label = "Transform Orientations"
 	bl_options = {'DEFAULT_CLOSED'}
 	def draw(self, context):
 		VIEW3D_PT_transform_orientations.menu(self, context)
@@ -63,8 +67,8 @@ class VIEW3D_PT_scramble_view3d_orientation(bpy.types.Panel):
 class VIEW3D_PT_scramble_view3d_collrections(bpy.types.Panel):
 	bl_space_type = 'VIEW_3D'
 	bl_region_type = 'UI'
-	bl_category = "Scramble"
-	bl_label = "Collection Display Panel"
+	bl_category = "View"
+	bl_label = "Collections (Scramble Addon)"
 	bl_options = {'DEFAULT_CLOSED'}
 	def draw(self, context):
 		VIEW3D_PT_layers.menu(self, context)
@@ -75,9 +79,9 @@ class VIEW3D_PT_scramble_view3d_collrections(bpy.types.Panel):
 ################
 
 classes = [
-	VIEW3D_PT_scramble_view3d_properties,
+	# VIEW3D_PT_scramble_view3d_properties,
 	VIEW3D_PT_scramble_view3d_name,
-	VIEW3D_PT_scramble_view3d_cursor,
+	# VIEW3D_PT_scramble_view3d_cursor,
 	VIEW3D_PT_scramble_view3d_orientation,
 	VIEW3D_PT_scramble_view3d_collrections
 ]

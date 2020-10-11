@@ -11,7 +11,7 @@ from bpy.props import *
 class CollectionShowHide(bpy.types.Operator): #
 	bl_idname = "view3d.collection_show_hide"
 	bl_label = "Toggle Show/Hide Collections"
-	bl_description = "Shows or hides collection"
+	bl_description = "Shows or hides collection\nShift : Toggle Wireframe"
 	bl_options = {'REGISTER'}
 
 	name : StringProperty(name="Collection Name")
@@ -38,7 +38,7 @@ class CollectionShowHide(bpy.types.Operator): #
 							if col.name != name: col.hide_viewport = True
 					par = par.children[name]
 			except IndexError:
-				pass		
+				pass
 			coll = par.children[self.name]
 		if (self.exclusive):
 			coll.hide_viewport = False
@@ -145,7 +145,7 @@ def menu(self, context):
 					if coll[0].name == obj_par_collection:
 						row.label(icon='KEYTYPE_KEYFRAME_VEC')
 					else:
-						row.label(icon='HANDLETYPE_AUTO_VEC')				
+						row.label(icon='HANDLETYPE_AUTO_VEC')
 					op1 = row.operator(CollectionShowHide.bl_idname, text=f"{coll[0].name}", icon='NONE', emboss=False)
 					op1.name, op1.parent_names = [coll[0].name, coll[1]]
 					op1.exclusive, op1.wire = [True, False]
@@ -153,7 +153,6 @@ def menu(self, context):
 					op2.name, op2.parent_names = [coll[0].name, coll[1]]
 					op2.exclusive, op2.wire = [False, False]
 			self.layout.separator(factor=1.0)
-		self.layout.label(text="(shift: Toggle Wireframe)")
 
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
