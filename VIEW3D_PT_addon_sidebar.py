@@ -6,11 +6,8 @@ from . import VIEW3D_PT_layers, VIEW3D_PT_transform_orientations, VIEW3D_PT_view
 
 if 'bpy' in locals():
 	import importlib
-	importlib.reload(VIEW3D_PT_layers)
 	importlib.reload(VIEW3D_PT_transform_orientations)
-	importlib.reload(VIEW3D_PT_view3d_cursor)
 	importlib.reload(VIEW3D_PT_view3d_name)
-	importlib.reload(VIEW3D_PT_view3d_properties)
 
 ################
 # オペレーター #
@@ -19,15 +16,6 @@ if 'bpy' in locals():
 ##########
 # パネル #
 ##########
-
-class VIEW3D_PT_scramble_view3d_properties(bpy.types.Panel):
-	bl_space_type = "VIEW_3D"
-	bl_region_type = "UI"
-	bl_category = "Scramble"
-	bl_label = "Properties"
-	bl_options = {'DEFAULT_CLOSED'}
-	def draw(self, context):
-		VIEW3D_PT_view3d_properties.menu(self, context)
 
 
 class VIEW3D_PT_scramble_view3d_name(bpy.types.Panel):
@@ -44,16 +32,6 @@ class VIEW3D_PT_scramble_view3d_name(bpy.types.Panel):
 		VIEW3D_PT_view3d_name.menu(self, context)
 
 
-class VIEW3D_PT_scramble_view3d_cursor(bpy.types.Panel):
-	bl_space_type = "VIEW_3D"
-	bl_region_type = "UI"
-	bl_category = "Scramble"
-	bl_label = "Cursor"
-	bl_options = {'DEFAULT_CLOSED'}
-	def draw(self, context):
-		VIEW3D_PT_view3d_cursor.menu(self, context)
-
-
 class VIEW3D_PT_scramble_view3d_orientation(bpy.types.Panel):
 	bl_space_type = "VIEW_3D"
 	bl_region_type = "UI"
@@ -64,26 +42,13 @@ class VIEW3D_PT_scramble_view3d_orientation(bpy.types.Panel):
 		VIEW3D_PT_transform_orientations.menu(self, context)
 
 
-class VIEW3D_PT_scramble_view3d_collrections(bpy.types.Panel):
-	bl_space_type = 'VIEW_3D'
-	bl_region_type = 'UI'
-	bl_category = "View"
-	bl_label = "Collections (Scramble Addon)"
-	bl_options = {'DEFAULT_CLOSED'}
-	def draw(self, context):
-		VIEW3D_PT_layers.menu(self, context)
-
-
 ################
 # クラスの登録 #
 ################
 
 classes = [
-	# VIEW3D_PT_scramble_view3d_properties,
 	VIEW3D_PT_scramble_view3d_name,
-	# VIEW3D_PT_scramble_view3d_cursor,
 	VIEW3D_PT_scramble_view3d_orientation,
-	VIEW3D_PT_scramble_view3d_collrections
 ]
 
 def register():
