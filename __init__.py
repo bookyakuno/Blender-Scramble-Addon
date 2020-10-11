@@ -492,17 +492,18 @@ def register():
 	#=========
 	VIEW3D_PT_tools_imagepaint_external.register()
 	bpy.types.IMAGE_MT_image.append(VIEW3D_PT_tools_imagepaint_external.menu)
-	#=== VIEW3D_PT_addon_sidebarの中で使用するのでここではメニューを登録しない ===
-	VIEW3D_PT_layers.register()#menuなし
+	#VIEW3D_PT_layers.register()#クラスなし
+	bpy.types.VIEW3D_PT_collections.append(VIEW3D_PT_layers.menu)
+	#=== VIEW3D_PT_addon_sidebarの中で使用するので以下の2つはメニューを登録しない ===
 	#VIEW3D_PT_transform_orientations.register()#クラスなし
 	#bpy.types.VIEW3D_PT_transform_orientations.append(VIEW3D_PT_transform_orientations.menu)
-	# VIEW3D_PT_view3d_cursor.register()#クラスなし
-	bpy.types.VIEW3D_PT_view3d_cursor.append(VIEW3D_PT_view3d_cursor.menu)
 	#VIEW3D_PT_view3d_name.register()#クラスなし
-	#bpy.types.VIEW3D_PT_tools_object_options.append(VIEW3D_PT_view3d_name.menu)
+	#bpy.types.VIEW3D_PT_tools_object_options.append(VIEW3D_PT_view3d_name.menu)	
+	#========
+	#VIEW3D_PT_view3d_cursor.register()#クラスなし
+	bpy.types.VIEW3D_PT_view3d_cursor.append(VIEW3D_PT_view3d_cursor.menu)
 	VIEW3D_PT_view3d_properties.register()
 	bpy.types.VIEW3D_PT_view3d_properties.append(VIEW3D_PT_view3d_properties.menu)
-	#========
 	DATA_PT_shape_curve.register()
 	bpy.types.DATA_PT_shape_curve.append(DATA_PT_shape_curve.menu)
 	BONE_PT_constraints.register()
@@ -682,16 +683,18 @@ def unregister():
 	#========
 	VIEW3D_PT_tools_imagepaint_external.unregister()
 	bpy.types.IMAGE_MT_image.remove(VIEW3D_PT_tools_imagepaint_external.menu)
-	#=== VIEW3D_PT_addon_sidebarの中で使用するのでここではメニューを登録解除しない ===
-	VIEW3D_PT_layers.unregister()#menuなし
+	#VIEW3D_PT_layers.unregister()#クラスなし
+	bpy.types.VIEW3D_PT_collections.remove(VIEW3D_PT_layers.menu)
+	#=== VIEW3D_PT_addon_sidebarの中で使用するので以下の2つはメニューを登録解除しない ===
+	#VIEW3D_PT_transform_orientations.unregister()#クラスなし
 	#bpy.types.VIEW3D_PT_transform_orientations.remove(VIEW3D_PT_transform_orientations.menu)
-	# VIEW3D_PT_view3d_cursor.unregister()#クラスなし
-	bpy.types.VIEW3D_PT_view3d_cursor.remove(VIEW3D_PT_view3d_cursor.menu)
 	#VIEW3D_PT_view3d_name.unregister()#クラスなし
 	#bpy.types.VIEW3D_PT_tools_object_options.remove(VIEW3D_PT_view3d_name.menu)
+	#========
+	#VIEW3D_PT_view3d_cursor.unregister()#クラスなし
+	bpy.types.VIEW3D_PT_view3d_cursor.remove(VIEW3D_PT_view3d_cursor.menu)
 	VIEW3D_PT_view3d_properties.unregister()
 	bpy.types.VIEW3D_PT_view3d_properties.remove(VIEW3D_PT_view3d_properties.menu)
-	#========
 	DATA_PT_shape_curve.unregister()
 	bpy.types.DATA_PT_shape_curve.remove(DATA_PT_shape_curve.menu)
 	BONE_PT_constraints.unregister()
