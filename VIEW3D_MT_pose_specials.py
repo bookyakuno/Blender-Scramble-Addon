@@ -7,6 +7,7 @@ from bpy.props import *
 
 ################
 # オペレーター #
+_STORE_ITEMS = [] #保存用グローバル変数：EnumPropertyの動的なitems作成におけるバグへの対処用
 ################
 
 class CreateCustomShape(bpy.types.Operator):
@@ -161,11 +162,21 @@ class SplineGreasePencil(bpy.types.Operator):
 	bl_idname = "pose.spline_grease_pencil"
 	bl_label = "Fit chain of bones to grease pencil"
 	bl_description = "Select bones linked like chain of threading to grease pencil, pose"
+	bl_properties = "act_layer"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	isRootReset : BoolProperty(name="Reset Root", default=False)
 	gpencil_name : StringProperty(name="Target GreasePencil", default="")
 	reverse : BoolProperty(name="Switch Direction", default=False)
+
+	def item_callback(self, context):
+		_STORE_ITEMS.clear()
+		names = [n for n in bpy.data.grease_pencils[self.gpencil_name].layers.keys()]
+		for idx, name in enumerate(names):
+			_STORE_ITEMS.append((str(idx), name, "", idx))
+		print(_STORE_ITEMS[0])#作成したリストの要素がうまく認識されないバグ?への一応の対処
+		return _STORE_ITEMS
+	act_layer : EnumProperty(name="Layers", items=item_callback)
 
 	@classmethod
 	def poll(cls, context):
@@ -196,13 +207,9 @@ class SplineGreasePencil(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
 		self.layout.prop_search(self, "gpencil_name", bpy.data, "grease_pencils",text="Target", translate=True, icon='GP_SELECT_STROKES')
-		names = [n for n in bpy.data.grease_pencils[self.gpencil_name].layers.keys()]
 		row = self.layout.row()
-		row.label(text="Target Layer: ")
-		row.label(text=f"{names[bpy.data.grease_pencils[self.gpencil_name].layers.active_index]}")
-		row = self.layout.row()
-		row.label(text="Change Target Layer")
-		row.prop(bpy.data.grease_pencils[self.gpencil_name].layers, "active_index", text="")
+		row.label(text="Target Layer ")
+		row.props_enum(self, "act_layer")
 		self.layout.separator(factor=0.4)
 		self.layout.prop(self, "isRootReset")
 		self.layout.prop(self, "reverse")
@@ -222,6 +229,7 @@ class SplineGreasePencil(bpy.types.Operator):
 			obj = bpy.data.objects.new(name=self.gpencil_name, object_data=gpen)
 			context.view_layer.active_layer_collection.collection.objects.link(obj)
 		context.view_layer.objects.active = obj
+		bpy.ops.gpencil.layer_active(layer=int(self.act_layer))
 		try:
 			bpy.ops.gpencil.convert(type='CURVE', use_timing_data=True)
 		except RuntimeError:
