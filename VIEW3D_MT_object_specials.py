@@ -181,6 +181,7 @@ class VertexGroupAverageAll(bpy.types.Operator):
 
 ##########################
 # オペレーター(特殊処理) #
+_STORE_ITEMS = []#保存用グローバル変数：EnumPropertyの動的なitems作成におけるバグへの対処用
 ##########################
 
 class CreateVertexToMetaball(bpy.types.Operator):
@@ -240,12 +241,22 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 	bl_idname = "object.add_grease_pencil_path_metaballs"
 	bl_label = "Metaballs to GreasePencil"
 	bl_description = "metaballs align with active grease pencil"
+	bl_properties = "act_layer"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	dissolve_verts_count : IntProperty(name="Density", default=3, min=1, max=100, soft_min=1, soft_max=100, step=1)
 	radius : FloatProperty(name="Metaball Size", default=0.05, min=0, max=1, soft_min=0, soft_max=1, step=0.2, precision=3)
 	resolution : FloatProperty(name="Metaball Resolution", default=0.05, min=0.001, max=1, soft_min=0.001, soft_max=1, step=0.2, precision=3)
 	gp_name : StringProperty(name="Target GreasePencil / Annotation", default="")
+
+	def item_callback(self, context):
+		_STORE_ITEMS.clear()
+		names = [n for n in bpy.data.grease_pencils[self.gp_name].layers.keys()]
+		for idx, name in enumerate(names):
+			_STORE_ITEMS.append((str(idx), name, "", idx))
+		print(_STORE_ITEMS[0])#作成したリストの要素がうまく認識されないバグ?への一応の対処
+		return _STORE_ITEMS
+	act_layer : EnumProperty(name="Layers", items=item_callback)
 
 	def __init__(self):
 		if bpy.context.active_object and bpy.context.active_object.type == 'GPENCIL':
@@ -266,13 +277,9 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 			return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
 		self.layout.prop_search(self, "gp_name", bpy.data, "grease_pencils",text="Target", translate=True, icon='GP_SELECT_STROKES')
-		names = [n for n in bpy.data.grease_pencils[self.gp_name].layers.keys()]
 		row = self.layout.row()
-		row.label(text="Target Layer: ")
-		row.label(text=f"{names[bpy.data.grease_pencils[self.gp_name].layers.active_index]}")
-		row = self.layout.row()
-		row.label(text="Change Target Layer")
-		row.prop(bpy.data.grease_pencils[self.gp_name].layers, "active_index", text="")
+		row.label(text="Target Layer ")
+		row.props_enum(self, "act_layer")
 
 	def execute(self, context):
 		gpen = bpy.data.grease_pencils[self.gp_name]
@@ -286,6 +293,7 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 			obj = bpy.data.objects.new(name=self.gp_name, object_data=gpen)
 			context.view_layer.active_layer_collection.collection.objects.link(obj)
 		context.view_layer.objects.active = obj
+		bpy.ops.gpencil.layer_active(layer=int(self.act_layer))
 		pre_selectable_objects = context.selectable_objects
 		try:
 			bpy.ops.gpencil.convert(type='CURVE', use_normalize_weights=False, use_link_strokes=False, use_timing_data=True)
@@ -717,9 +725,8 @@ class EqualizeObjectNameAndDataName(bpy.types.Operator):
 ####################################
 # オペレーター(オブジェクトカラー) #
 ####################################
-#マテリアルの use_object_color オプションが削除されたため、
-# Object.color の値が実際の表示に反映されることはないと思われる
-"""
+
+
 class ApplyObjectColor(bpy.types.Operator):
 	bl_idname = "object.apply_object_color"
 	bl_label = "Enable object color + set color"
@@ -735,18 +742,18 @@ class ApplyObjectColor(bpy.types.Operator):
 			return True
 		return False
 	def execute(self, context):
-		for obj in context.selected_objects:
-			if (self.use_random):
-				col = mathutils.Color((0.0, 0.0, 1.0))
-				col.s = 1.0
-				col.v = 1.0
-				col.h = random.random()
-				obj.color = (col.r, col.g, col.b, 1)
-			else:
+		for ar in context.screen.areas:
+			if ar.type == "VIEW_3D":
+				area = ar
+		for sp in area.spaces:
+			if sp.type == "VIEW_3D":
+				space = sp
+		if (self.use_random):
+			space.shading.color_type = 'RANDOM'
+		else:
+			space.shading.color_type = 'OBJECT'
+			for obj in context.selected_objects:
 				obj.color = (self.color[0], self.color[1], self.color[2], 1)
-			for slot in obj.material_slots:
-				if (slot.material):
-					slot.material.use_object_color = True
 		return {'FINISHED'}
 
 class ClearObjectColor(bpy.types.Operator):
@@ -764,14 +771,20 @@ class ClearObjectColor(bpy.types.Operator):
 			return True
 		return False
 	def execute(self, context):
-		for obj in context.selected_objects:
-			if (self.set_color):
+		for ar in context.screen.areas:
+			if ar.type == "VIEW_3D":
+				area = ar
+		for sp in area.spaces:
+			if sp.type == "VIEW_3D":
+				space = sp
+		if not self.set_color:
+			space.shading.color_type = 'MATERIAL'
+		else:
+			space.shading.color_type = 'OBJECT'
+			for obj in context.selected_objects:
 				obj.color = (self.color[0], self.color[1], self.color[2], 1)
-			for slot in obj.material_slots:
-				if (slot.material):
-					slot.material.use_object_color = False
 		return {'FINISHED'}
-"""
+
 ####################
 # オペレーター(親) #
 ####################
@@ -1054,7 +1067,7 @@ class ObjectNameMenu(bpy.types.Menu):
 	def draw(self, context):
 		self.layout.operator(RenameObjectRegularExpression.bl_idname, icon="PLUGIN")
 		self.layout.operator(EqualizeObjectNameAndDataName.bl_idname, icon="PLUGIN")
-"""
+
 class ObjectColorMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_object_color"
 	bl_label = "Object Color"
@@ -1063,7 +1076,7 @@ class ObjectColorMenu(bpy.types.Menu):
 	def draw(self, context):
 		self.layout.operator(ApplyObjectColor.bl_idname, icon="PLUGIN")
 		self.layout.operator(ClearObjectColor.bl_idname, icon="PLUGIN")
-"""
+
 class ParentMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_parent"
 	bl_label = "Parent/Child Relation"
@@ -1116,15 +1129,15 @@ classes = [
 	SetHideSelect,
 	RenameObjectRegularExpression,
 	EqualizeObjectNameAndDataName,
-	#ApplyObjectColor,
-	#ClearObjectColor,
+	ApplyObjectColor,
+	ClearObjectColor,
 	ParentSetApplyModifiers,
 	CreateRopeMesh,
 	MoveBevelObject,
 	RenderHideMenu,
 	HideSelectMenu,
 	ObjectNameMenu,
-	#ObjectColorMenu,
+	ObjectColorMenu,
 	ParentMenu,
 	CurveMenu,
 	SpecialsMenu
@@ -1159,7 +1172,7 @@ def menu(self, context):
 		self.layout.menu(HideSelectMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.menu(ObjectNameMenu.bl_idname, icon="PLUGIN")
-		#self.layout.menu(ObjectColorMenu.bl_idname, icon="PLUGIN")
+		self.layout.menu(ObjectColorMenu.bl_idname, icon="PLUGIN")
 		self.layout.menu(ParentMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.menu(CurveMenu.bl_idname, icon="PLUGIN")
