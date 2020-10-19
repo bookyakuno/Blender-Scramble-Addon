@@ -11,7 +11,7 @@ from bpy.props import *
 class copy_transform_lock_settings(bpy.types.Operator):
 	bl_idname = "pose.copy_transform_lock_settings"
 	bl_label = "Copy Transform Locks Settings"
-	bl_description = "Copies of other selected bone lock setting active bone transform"
+	bl_description = "Copy active bone's lock of location / rotation / scale to other selected bones"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	lock_location_x : BoolProperty(name="Loc X", default=True)
@@ -22,9 +22,9 @@ class copy_transform_lock_settings(bpy.types.Operator):
 	lock_rotation_y : BoolProperty(name="Rot Y", default=True)
 	lock_rotation_z : BoolProperty(name="Rot Z", default=True)
 
-	lock_scale_x : BoolProperty(name="Scale X", default=True)
-	lock_scale_y : BoolProperty(name="Scale Y", default=True)
-	lock_scale_z : BoolProperty(name="Scale Z", default=True)
+	lock_scale_x : BoolProperty(name="Scale X ", default=True)
+	lock_scale_y : BoolProperty(name="Scale Y ", default=True)
+	lock_scale_z : BoolProperty(name="Scale Z ", default=True)
 
 	lock_rotations_4d : BoolProperty(name="Lock Rotation", default=True)
 	lock_rotation_w : BoolProperty(name="Rot W", default=True)
