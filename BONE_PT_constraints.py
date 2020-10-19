@@ -10,7 +10,7 @@ import bpy
 class quick_child_constraint(bpy.types.Operator):
 	bl_idname = "constraint.quick_child_constraint"
 	bl_label = "Quick child"
-	bl_description = "Add child constraint to the active bone setting the selected bone as parent"
+	bl_description = "Quickly add child constraint"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -42,8 +42,8 @@ class quick_child_constraint(bpy.types.Operator):
 
 class set_ik_chain_length(bpy.types.Operator):
 	bl_idname = "pose.set_ik_chain_length"
-	bl_label = "Set Chain Length of IK"
-	bl_description = "Set chain length of the active bone's IK so that the chain's end is the selected bone"
+	bl_label = "Set length of IK chain"
+	bl_description = "Chose second length of active bone IK chain to length to bones and set the"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -84,8 +84,8 @@ class set_ik_chain_length(bpy.types.Operator):
 
 class set_ik_pole_target(bpy.types.Operator):
 	bl_idname = "pose.set_ik_pole_target"
-	bl_label = "Set Pole Target of IK"
-	bl_description = "Set the selected bone as Pole Target of the active bone's IK"
+	bl_label = "Set pole target of IK"
+	bl_description = "Chose second Paul target of active bone IK bones sets"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -110,8 +110,8 @@ class set_ik_pole_target(bpy.types.Operator):
 
 class set_ik_pole_angle(bpy.types.Operator):
 	bl_idname = "pose.set_ik_pole_angle"
-	bl_label = "Set Pole Angle of IK"
-	bl_description = "Set pole angle of the selected bone so that its location is equal to the rest position's one"
+	bl_label = "Setting IK Paul angles"
+	bl_description = "Set auto-choice bone IK Paul angles"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod

@@ -10,8 +10,8 @@ from bpy.props import *
 
 class BoneGroupOnlyShow(bpy.types.Operator):
 	bl_idname = "pose.bone_group_only_show"
-	bl_label = "Show only bone in the bones group"
-	bl_description = "Show or hide ONLY the bones in the active Bone Group"
+	bl_label = "Show only bone in this bones group"
+	bl_description = "Group active on bones and bones of other hide"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	reverse : BoolProperty(name="Invert", default=False)
@@ -52,8 +52,8 @@ class BoneGroupOnlyShow(bpy.types.Operator):
 
 class BoneGroupShow(bpy.types.Operator):
 	bl_idname = "pose.bone_group_show"
-	bl_label = "Show bone in the bone group"
-	bl_description = "Show or hide the bones in the active Bone Group"
+	bl_label = "Show bone in bone group"
+	bl_description = "Active bone group show or hide"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	reverse : BoolProperty(name="Invert", default=False)
