@@ -89,6 +89,8 @@ class AppendActiveBoneName(bpy.types.Operator):
 class AppendNameMenu(bpy.types.Menu):
 	bl_idname = "BONE_MT_context_bone_append_name"
 	bl_label = "New Text"
+	bl_description = "Adds an axis suffix to the active bone's name"
+
 
 	def draw(self, context):
 		self.layout.operator(AppendActiveBoneName.bl_idname, text=".L").string = '.L'
