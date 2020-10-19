@@ -11,7 +11,7 @@ from bpy.props import *
 class copy_ik_settings(bpy.types.Operator):
 	bl_idname = "pose.copy_ik_settings"
 	bl_label = "Copy IK Setting"
-	bl_description = "Copies of other selected bone IK settings Active"
+	bl_description = "Copy active bone's IK settings to other selected bones"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	lock_ik_x : BoolProperty(name="Lock", default=True)
@@ -79,13 +79,13 @@ class copy_ik_settings(bpy.types.Operator):
 
 class reverse_ik_min_max(bpy.types.Operator):
 	bl_idname = "pose.reverse_ik_min_max"
-	bl_label = "Invert Minimum/maximum Angle"
-	bl_description = "Reverses minimum and maximum angle of IK setup this bone"
+	bl_label = "Reverse Minimum and maximum Angles"
+	bl_description = "Choose axes and reverse their minimum and maximum angles for IK Limit"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	is_x : BoolProperty(name="X Invert", default=False)
-	is_y : BoolProperty(name="Y Invert", default=False)
-	is_z : BoolProperty(name="Z Invert", default=False)
+	is_x : BoolProperty(name="Invert X axis", default=False)
+	is_y : BoolProperty(name="Invert Y axis", default=False)
+	is_z : BoolProperty(name="Invert Z axis", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -131,8 +131,8 @@ class reverse_ik_min_max(bpy.types.Operator):
 
 class copy_ik_axis_setting(bpy.types.Operator):
 	bl_idname = "pose.copy_ik_axis_setting"
-	bl_label = "Copy axis-setting to other axis"
-	bl_description = "Copy settings other axis from one axis"
+	bl_label = "Copy IK Settings to other axes"
+	bl_description = "Choose an axis and copy its IK settings to other axes"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -140,7 +140,7 @@ class copy_ik_axis_setting(bpy.types.Operator):
 		('y', "Y Axis", "", 2),
 		('z', "Z Axis", "", 3),
 		]
-	source_axis : EnumProperty(items=items, name="Source Axis")
+	source_axis : EnumProperty(items=items, name="Original Axis")
 	target_x : BoolProperty(name="To X", default=True)
 	target_y : BoolProperty(name="To Y", default=True)
 	target_z : BoolProperty(name="To Z", default=True)
@@ -213,7 +213,7 @@ class copy_ik_axis_setting(bpy.types.Operator):
 class reset_ik_settings(bpy.types.Operator):
 	bl_idname = "pose.reset_ik_settings"
 	bl_label = "Reset IK Settings"
-	bl_description = "Reset this bone IK settings"
+	bl_description = "Reset all of IK settings"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -289,6 +289,6 @@ def menu(self, context):
 		row.operator(copy_ik_axis_setting.bl_idname, icon='LINKED', text="Copy to other axes")
 		spl.operator(reset_ik_settings.bl_idname, icon='X', text="Reset")
 		if 2 <= len(context.selected_pose_bones):
-			self.layout.operator(copy_ik_settings.bl_idname, icon='COPY_ID', text="Copy IK Setting")
+			self.layout.operator(copy_ik_settings.bl_idname, icon='COPY_ID', text="Copy IK Setting to selected bones")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

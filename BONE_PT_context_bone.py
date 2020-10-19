@@ -12,8 +12,8 @@ from bpy.ops import *
 
 class CopyBoneName(bpy.types.Operator):
 	bl_idname = "object.copy_bone_name"
-	bl_label = "Bone name to Clipboard"
-	bl_description = "Bone Name to Clipboard"
+	bl_label = "Copy Bone name to Clipboard"
+	bl_description = "Copy the active bone's name to Clipboard"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -37,8 +37,8 @@ class CopyBoneName(bpy.types.Operator):
 
 class RenameMirrorActiveBone(bpy.types.Operator):
 	bl_idname = "pose.rename_mirror_active_bone"
-	bl_label = "Mirror Bone Name"
-	bl_description = "Flip active mirror bone name"
+	bl_label = "Flip Bone Name's Axis Suffix"
+	bl_description = "Flip the axis suffix of the active bone's name"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -54,17 +54,17 @@ class RenameMirrorActiveBone(bpy.types.Operator):
 		if (pre_name != bone.name):
 			self.report(type={'INFO'}, message=pre_name + " => " + bone.name)
 		else:
-			self.report(type={'ERROR'}, message="No name changed, failed")
+			self.report(type={'ERROR'}, message="Flipping the suffix failed")
 			return {'CANCELLED'}
 		return {'FINISHED'}
 
 class AppendActiveBoneName(bpy.types.Operator):
 	bl_idname = "pose.append_active_bone_name"
-	bl_label = "Add text bone name"
-	bl_description = "Adds string to active bone name"
+	bl_label = "Add Axis Suffix to Bone Name"
+	bl_description = "Add an axis suffix to the active bone's name"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	string : StringProperty(name="Add Text")
+	string : StringProperty(name="Axis suffix")
 
 	@classmethod
 	def poll(self, context):
@@ -88,7 +88,7 @@ class AppendActiveBoneName(bpy.types.Operator):
 
 class AppendNameMenu(bpy.types.Menu):
 	bl_idname = "BONE_MT_context_bone_append_name"
-	bl_label = "New Text"
+	bl_label = "Add Axis Suffix"
 	bl_description = "Adds an axis suffix to the active bone's name"
 
 	def draw(self, context):
@@ -145,7 +145,7 @@ def menu(self, context):
 		if (context.edit_bone or context.bone):
 			row = self.layout.row(align=True)
 			row.operator(CopyBoneName.bl_idname, icon='COPYDOWN', text="To Clipboard")
-			row.operator(RenameMirrorActiveBone.bl_idname, icon='MOD_MIRROR', text="Invert Mirror Name")
+			row.operator(RenameMirrorActiveBone.bl_idname, icon='MOD_MIRROR', text="Flip Axis Suffix")
 			row.menu(AppendNameMenu.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

@@ -11,7 +11,7 @@ from bpy.props import *
 class copy_bone_relations_settings(bpy.types.Operator):
 	bl_idname = "pose.copy_bone_relations_settings"
 	bl_label = "Copy Relations Settings"
-	bl_description = "Copies of other selected bone affinity of active bone"
+	bl_description = "Copy axtive bone's relations settings to other selected bones"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	layers : BoolProperty(name="Layer", default=True)
