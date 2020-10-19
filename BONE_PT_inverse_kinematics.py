@@ -42,15 +42,17 @@ class copy_ik_settings(bpy.types.Operator):
 
 	def draw(self, context):
 		for axis in ['x', 'y', 'z']:
-			self.layout.label(text="")#axis.upper()
+			self.layout.label(text=f"{axis.upper()}")
 			row = self.layout.row()
 			row.prop(self, 'lock_ik_'+axis)
 			row.prop(self, 'ik_stiffness_'+axis)
-			row = self.layout.row()
 			row.prop(self, 'use_ik_limit_'+axis)
+			row = self.layout.box().row()
+			row.label(text="Angles for Limit")		
 			row.prop(self, 'ik_min_'+axis)
 			row.prop(self, 'ik_max_'+axis)
-		self.layout.label(text="")
+			self.layout.separator(factor=0.3)
+		self.layout.separator(factor=0.7)
 		self.layout.prop(self, 'ik_stretch')
 
 	def invoke(self, context, event):
@@ -176,8 +178,9 @@ class copy_ik_axis_setting(bpy.types.Operator):
 		row = self.layout.row()
 		row.prop(self, 'lock_ik')
 		row.prop(self, 'ik_stiffness')
-		row = self.layout.row()
 		row.prop(self, 'use_ik_limit')
+		row = self.layout.box().row()
+		row.label(text="Angles for Limit")		
 		row.prop(self, 'ik_min')
 		row.prop(self, 'ik_max')
 
@@ -280,10 +283,11 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		row = self.layout.row(align=True)
-		row.operator(reverse_ik_min_max.bl_idname, icon='ARROW_LEFTRIGHT', text="Invert Angle Limit")
-		row.operator(copy_ik_axis_setting.bl_idname, icon='LINKED', text="Axis Config Copy")
-		row.operator(reset_ik_settings.bl_idname, icon='X', text="")
+		spl = self.layout.split(factor=0.8)
+		row = spl.row(align=True)
+		row.operator(reverse_ik_min_max.bl_idname, icon='ARROW_LEFTRIGHT', text="Reverse min & max")
+		row.operator(copy_ik_axis_setting.bl_idname, icon='LINKED', text="Copy to other axes")
+		spl.operator(reset_ik_settings.bl_idname, icon='X', text="Reset")
 		if 2 <= len(context.selected_pose_bones):
 			self.layout.operator(copy_ik_settings.bl_idname, icon='COPY_ID', text="Copy IK Setting")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
