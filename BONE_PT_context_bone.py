@@ -4,6 +4,7 @@
 import bpy
 import re
 from bpy.props import *
+from bpy.ops import *
 
 ################
 # オペレーター #
@@ -40,82 +41,18 @@ class RenameMirrorActiveBone(bpy.types.Operator):
 	bl_description = "Flip active mirror bone name"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	def CheckIsMirror(name):
-		if (re.search(r'[\._][lLrR]$', name)):
-			return True
-		if (re.search(r'[\._][lLrR]\.\d\d\d$', name)):
-			return True
-		if (re.search(r'[\._]right$', name.lower())):
-			return True
-		if (re.search(r'[\._]left$', name.lower())):
-			return True
-		if (re.search(r'[\._]right\.\d\d\d$', name.lower())):
-			return True
-		if (re.search(r'[\._]left\.\d\d\d$', name.lower())):
-			return True
-		return False
-
-	@classmethod
-	def poll(self, context):
-		if (context.active_bone):
-			return self.CheckIsMirror(context.active_bone.name)
-		if (context.active_pose_bone):
-			return self.CheckIsMirror(context.active_pose_bone.name)
-		return False
-
 	def execute(self, context):
 		if (context.active_bone):
 			bone = context.active_bone
 		if (context.active_pose_bone):
 			bone = context.active_pose_bone
 		pre_name = bone.name
-		new_name = pre_name
-		for i in range(1):
-			if (bone.name[-1] == 'l'):
-				new_name = bone.name[:-1] + 'r'
-				break
-			if (bone.name[-1] == 'L'):
-				new_name = bone.name[:-1] + 'R'
-				break
-			if (bone.name[-1] == 'r'):
-				new_name = bone.name[:-1] + 'l'
-				break
-			if (bone.name[-1] == 'R'):
-				new_name = bone.name[:-1] + 'L'
-				break
-
-			if (re.search(r'[\._][l]\.\d\d\d$', bone.name)):
-				new_name = bone.name[:-5] + 'r' + bone.name[-4:]
-				break
-			if (re.search(r'[\._][L]\.\d\d\d$', bone.name)):
-				new_name = bone.name[:-5] + 'R' + bone.name[-4:]
-				break
-			if (re.search(r'[\._][r]\.\d\d\d$', bone.name)):
-				new_name = bone.name[:-5] + 'l' + bone.name[-4:]
-				break
-			if (re.search(r'[\._][R]\.\d\d\d$', bone.name)):
-				new_name = bone.name[:-5] + 'L' + bone.name[-4:]
-				break
-
-			if (re.search(r'[\._]right$', bone.name.lower())):
-				new_name = bone.name[:-5] + 'left'
-				break
-			if (re.search(r'[\._]left$', bone.name.lower())):
-				new_name = bone.name[:-4] + 'right'
-				break
-
-			if (re.search(r'[\._]right\.\d\d\d$', bone.name.lower())):
-				new_name = bone.name[:-9] + 'left' + bone.name[-4:]
-				break
-			if (re.search(r'[\._]left\.\d\d\d$', bone.name.lower())):
-				new_name = bone.name[:-8] + 'right' + bone.name[-4:]
-				break
-		bone.name = new_name
+		if context.active_object.mode == "EDIT":
+			bpy.ops.armature.flip_names(do_strip_numbers=False)
+		elif context.active_object.mode == "POSE":
+			bpy.ops.pose.flip_names(do_strip_numbers=False)
 		if (pre_name != bone.name):
-			if (new_name == bone.name):
-				self.report(type={'INFO'}, message=pre_name + " => " + bone.name)
-			else:
-				self.report(type={'WARNING'}, message=pre_name + " => " + bone.name)
+			self.report(type={'INFO'}, message=pre_name + " => " + bone.name)
 		else:
 			self.report(type={'ERROR'}, message="No name changed, failed")
 			return {'CANCELLED'}
