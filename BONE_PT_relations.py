@@ -47,14 +47,14 @@ class copy_bone_relations_settings(bpy.types.Operator):
 		row = self.layout.row()
 		col = row.column()
 		col.prop(self, 'layers')
-		col.prop(self, 'bone_group')
-		col.prop(self, 'use_relative_parent')
-		col = row.column()
 		col.prop(self, 'parent')
+		col.prop(self, 'use_relative_parent')
+		col.prop(self, 'bone_group')
+		col = row.column()
 		col.prop(self, 'use_connect')
+		col.prop(self, 'use_local_location')
 		col.prop(self, 'use_inherit_rotation')
 		col.prop(self, 'use_inherit_scale')
-		col.prop(self, 'use_local_location')
 
 	def execute(self, context):
 		bone_names = []
