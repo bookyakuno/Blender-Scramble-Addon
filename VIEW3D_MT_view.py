@@ -202,123 +202,298 @@ class SetViewportShade(bpy.types.Operator): #
 		context.space_data.shading.type = self.mode
 		return {'FINISHED'}
 
-class LayerPieOperator(bpy.types.Operator):
-	bl_idname = "view3d.layer_pie_operator"
-	bl_label = "Layer Pie Menu"
-	bl_description = "Is pie menu toggle layer visibility"
-	bl_options = {'REGISTER', 'UNDO'}
+class CollectionDisplayOperator(bpy.types.Operator):
+	bl_idname = "view3d.collection_display_operator"
+	bl_label = "Collection Display Menu"
+	bl_description = "Toggle collection visibility"
+	bl_options = {'REGISTER'}
 
-	def execute(self, context):
-		bpy.ops.wm.call_menu_pie(name=LayerPie.bl_idname)
-		return {'FINISHED'}
-class LayerPie(bpy.types.Menu):
-	bl_idname = "VIEW3D_MT_object_pie_layer"
-	bl_label = "Layer Pie Menu"
-	bl_description = "Is pie menu toggle layer visibility"
+	align : EnumProperty(name="Align", items=[("HORIZONTAL", "Horizontal", "", 1), ("VERTICAL", "Vertical", "", 2)])
 
-	def flatten(self, layer_collection, parent_name=""):
+	def invoke(self, context, event):
+		if self.align == 'HORIZONTAL':
+			WIDTH = len(context.view_layer.layer_collection.children)*200
+		elif self.align == 'VERTICAL':
+			WIDTH = 360
+		return context.window_manager.invoke_props_dialog(self, width=WIDTH)
+	def flatten(self, layer_collection):
 		flat = []
 		for coll in layer_collection.children:
 			if len(coll.children) > 0:
-				flat.append((coll, f"{parent_name},{layer_collection.name}"))
-				flat += self.flatten(coll, f"{parent_name},{layer_collection.name}")
+				flat.append(coll)
+				flat += self.flatten(coll)
 			else:
-				flat.append((coll, f"{parent_name},{layer_collection.name}"))
+				flat.append(coll)
+				flat.append(None)
 		return flat
+	def GetIcon(self, layer_collection, TYPE=None):
+		if not TYPE:
+			if layer_collection.hide_viewport:
+				return "HIDE_ON"
+			else:
+				return "HIDE_OFF"
+		elif TYPE == 'WIRE':
+			for obj in layer_collection.collection.objects[:5]:
+				if (obj.display_type != 'WIRE'):
+					return "SHADING_TEXTURE"
+			else:
+				return 'SHADING_WIRE'
+		elif TYPE == 'OBJ_ACTIVE':
+			for obj in layer_collection.collection.objects[:5]:
+				if (obj.hide_get() == False):
+					return 'KEYTYPE_KEYFRAME_VEC'
+			else:
+				return 'KEYTYPE_JITTER_VEC'
+		elif TYPE == 'OBJ_OTHER':
+			for obj in layer_collection.collection.objects[:5]:
+				if (obj.hide_get() == False):
+					return 'HANDLETYPE_AUTO_VEC'
+			else:
+				return 'HANDLETYPE_VECTOR_VEC'		
+	def make_collec_dic(self, layer_collection, dictionary, idx=1):
+		for coll in layer_collection.children:
+			dictionary[coll.name] = {"self":coll, "idx":idx}
+			idx += 1
+			if len(coll.children) > 0:
+				dictionary = self.make_collec_dic(coll, dictionary, idx)
+		return dictionary
 
 	def draw(self, context):
-		box = self.layout.box()
-		column = box.column()
-		row = column.row()
-		row.label(text="Toggle collection show/hide (shift: Wireframe, ctrl:Hide others)", icon='PLUGIN')
-		row = column.row()
+		dic = {}
+		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)
+		if context.view_layer.objects.active:
+			obj_par_collection = context.view_layer.objects.active.users_collection[0].name
+		else:
+			obj_par_collection = ""
+		row = self.layout.row().split(factor=0.7)
+		row.label(text="Show/Hide objects | Hide others | Show/Hide collection | Texture/Wireframe", icon='NONE')
+		row.operator(CollectionShowHide.bl_idname, text="Show All", icon='NONE').is_all = "SHOW"
+		row.operator(CollectionShowHide.bl_idname, text="Hide All", icon='NONE').is_all = "HIDE"
+		if self.align == 'HORIZONTAL': root = self.layout.row()
+		elif self.align == 'VERTICAL': root = self.layout.box()
 		for col in context.view_layer.layer_collection.children:
-			column = row.column()
-			operator = column.operator(LayerPieRun.bl_idname, text=f"{col.name}", icon=self.GetIcon(col))
-			operator.name = col.name
-			operator.parent_names = ""
+			if self.align == 'HORIZONTAL':
+				branch= root.box().column()
+				item = branch.row()
+			elif self.align == 'VERTICAL':
+				branch = root.box()
+				item = branch.row()
+			if col.name == obj_par_collection:
+				item.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(col, TYPE='OBJ_ACTIVE') ).name = col.name
+			else:
+				item.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(col, TYPE='OBJ_OTHER')).name = col.name
+			item.operator("object.hide_collection", text=f"{col.name}", icon='NONE', emboss=False).collection_index = collec_dic[col.name]["idx"]
+			op =item.operator(CollectionShowHide.bl_idname, text="", icon=self.GetIcon(col), emboss=False)
+			op.name, op.is_all = [col.name, 'SINGLE']
+			item.operator(CollectionWireFrame.bl_idname, text="", icon=self.GetIcon(col, TYPE="WIRE"), emboss=False).name = col.name
 			flatten_nest = self.flatten(col)
 			for coll in flatten_nest:
-				operator = column.operator(LayerPieRun.bl_idname, text=f"{coll[0].name}", icon=self.GetIcon(coll[0]))
-				operator.name = coll[0].name
-				operator.parent_names = coll[1]
-	def GetIcon(self, layer_collection):
-		if layer_collection.hide_viewport:
-			return "HIDE_ON"
-		for obj in layer_collection.collection.objects[:5]:
-			if (obj.display_type != 'WIRE'):
-				return "HIDE_OFF"
-		else:
-			return 'SHADING_WIRE'
-class LayerPieRun(bpy.types.Operator): #
-	bl_idname = "view3d.layer_pie_run"
-	bl_label = "Layer Pie Menu"
-	bl_description = "Shows or hides collection"
+				if coll == None:
+					branch.separator(factor=0.3)
+				else:
+					item2 = branch.row()
+					if coll.name == obj_par_collection:
+						item2.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(coll, TYPE='OBJ_ACTIVE')).name = coll.name
+					else:
+						item2.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(coll, TYPE='OBJ_OTHER')).name = coll.name
+					item2.operator("object.hide_collection", text=f"{coll.name}", icon='NONE', emboss=False).collection_index = collec_dic[coll.name]["idx"]
+					op = item2.operator(CollectionShowHide.bl_idname, text="", icon=self.GetIcon(coll), emboss=False)
+					op.name, op.is_all = [coll.name, 'SINGLE']
+					item2.operator(CollectionWireFrame.bl_idname, text="", icon=self.GetIcon(coll, TYPE="WIRE"), emboss=False).name = coll.name
+			branch.separator(factor=1.0)
+		spl = self.layout.split(factor=0.5).prop(self, "align")
+	def execute(self, context):
+		return {"FINISHED"}
+
+class CollectionPieOperator(bpy.types.Operator):
+	bl_idname = "view3d.collection_pie_operator"
+	bl_label = "Collection Pie Menu"
+	bl_description = "Toggle collection visibility"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	name : StringProperty(name="Collection Name")
-	parent_names : StringProperty(name="Parent-Collections\' Names")
-	exclusive : BoolProperty(name="Hide Others", default=False)
-	wire : BoolProperty(name="Wireframe", default=False)
-	#unhalf : BoolProperty(name="Half-Unselect", default=False)
-
 	def execute(self, context):
-		par_names = [x for x in self.parent_names.split(",") if not len(x) == 0]
-		if not par_names:
-			coll = context.view_layer.layer_collection.children[self.name]
-			if (self.exclusive):
-				for col in context.view_layer.layer_collection.children:
-					if col.name != self.name: col.hide_viewport = True
-		else:
-			par = context.view_layer.layer_collection.children[par_names[0]]
-			if (self.exclusive):
-				for col in context.view_layer.layer_collection.children:
-					if col.name != par_names[0]: col.hide_viewport = True
-			try:
-				for name in par_names[1:]:
-					if (self.exclusive):
-						for col in par.children:
-							if col.name != name: col.hide_viewport = True
-					par = par.children[name]
-			except IndexError:
-				pass		
-			coll = par.children[self.name]
-		if (self.exclusive):
-			coll.hide_viewport = False
-			return {'FINISHED'}
-		if (self.wire):
-			for obj in coll.collection.objects:
-				obj.show_all_edges = True
-				if obj.display_type != 'WIRE':
-					obj.display_type = 'WIRE'
-				else:
-					obj.display_type = 'TEXTURED'
-		#elif (not self.unhalf):
-		#	context.scene.layers[nr] = True
-		#	for obj in context.blend_data.objects:
-		#		if (obj.layers[nr]):
-		#			obj.display_type = 'TEXTURED'
-		else:
-			coll.hide_viewport = not coll.hide_viewport
+		bpy.ops.wm.call_menu_pie(name=CollectionPie.bl_idname)
 		return {'FINISHED'}
-	def invoke(self, context, event):
-		if (event.ctrl):
-			self.exclusive = True
-			self.wire = False
-			#self.unhalf = False
-		elif (event.shift):
-			self.exclusive = False
-			self.wire = True
-			#self.unhalf = False
-		elif (event.alt):
-			self.exclusive = False
-			self.wire = False
-			#self.unhalf = True
+class CollectionPie(bpy.types.Menu):
+	bl_idname = "VIEW3D_MT_object_pie_collection"
+	bl_label = "Collection Display Menu"
+	bl_description = "Toggle collection Show/Hide/Wireframe"
+
+	def flatten(self, layer_collection):
+		flat = []
+		for coll in layer_collection.children:
+			if len(coll.children) > 0:
+				flat.append(coll)
+				flat += self.flatten(coll)
+			else:
+				flat.append(coll)
+				flat.append(None)
+		return flat
+
+	def GetIcon(self, layer_collection, TYPE=None):
+		if not TYPE:
+			if layer_collection.hide_viewport:
+				return "HIDE_ON"
+			else:
+				return "HIDE_OFF"
+		elif TYPE == 'WIRE':
+			for obj in layer_collection.collection.objects[:5]:
+				if (obj.display_type != 'WIRE'):
+					return "SHADING_TEXTURE"
+			else:
+				return 'SHADING_WIRE'
+		elif TYPE == 'OBJ_ACTIVE':
+			for obj in layer_collection.collection.objects[:5]:
+				if (obj.hide_get() == False):
+					return 'KEYTYPE_KEYFRAME_VEC'
+			else:
+				return 'KEYTYPE_JITTER_VEC'
+		elif TYPE == 'OBJ_OTHER':
+			for obj in layer_collection.collection.objects[:5]:
+				if (obj.hide_get() == False):
+					return 'HANDLETYPE_AUTO_VEC'
+			else:
+				return 'HANDLETYPE_VECTOR_VEC'		
+
+	def make_collec_dic(self, layer_collection, dictionary, idx=1):
+		for coll in layer_collection.children:
+			dictionary[coll.name] = {"self":coll, "idx":idx}
+			idx += 1
+			if len(coll.children) > 0:
+				dictionary = self.make_collec_dic(coll, dictionary, idx)
+		return dictionary
+
+	def draw(self, context):
+		dic = {}
+		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)
+		if context.view_layer.objects.active:
+			obj_par_collection = context.view_layer.objects.active.users_collection[0].name
 		else:
-			self.exclusive = False
-			self.wire = False
-			#self.unhalf = False
-		return self.execute(context)
+			obj_par_collection = ""
+		box = self.layout.box()
+		row = box.row().split(factor=0.7)
+		row.label(text="Show/Hide objects | Hide others | Show/Hide collection | Texture/Wireframe", icon='NONE')
+		row.operator(CollectionShowHide.bl_idname, text="Show All", icon='NONE').is_all = "SHOW"
+		row.operator(CollectionShowHide.bl_idname, text="Hide All", icon='NONE').is_all = "HIDE"
+		row = box.row()
+		for col in context.view_layer.layer_collection.children:
+			column = row.box().column()
+			item = column.row()
+			if col.name == obj_par_collection:
+				item.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(col, TYPE='OBJ_ACTIVE') ).name = col.name
+			else:
+				item.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(col, TYPE='OBJ_OTHER')).name = col.name
+			item.operator("object.hide_collection", text=f"{col.name}", icon='NONE').collection_index = collec_dic[col.name]["idx"]
+			op = item.operator(CollectionShowHide.bl_idname, text="", icon=self.GetIcon(col))
+			op.name, op.is_all = [col.name, 'SINGLE']
+			item.operator(CollectionWireFrame.bl_idname, text="", icon=self.GetIcon(col, TYPE="WIRE")).name = col.name
+			flatten_nest = self.flatten(col)
+			for coll in flatten_nest:
+				if coll == None:
+					column.separator(factor=0.3)
+				else:
+					item2 = column.row()
+					if coll.name == obj_par_collection:
+						item2.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(coll, TYPE='OBJ_ACTIVE')).name = coll.name
+					else:
+						item2.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(coll, TYPE='OBJ_OTHER')).name = coll.name
+					item2.operator("object.hide_collection", text=f"{coll.name}", icon='NONE').collection_index = collec_dic[coll.name]["idx"]
+					op = item2.operator(CollectionShowHide.bl_idname, text="", icon=self.GetIcon(coll))
+					op.name, op.is_all = [coll.name, 'SINGLE']
+
+					item2.operator(CollectionWireFrame.bl_idname, text="", icon=self.GetIcon(coll, TYPE="WIRE")).name = coll.name
+			column.separator(factor=1.0)
+
+class CollectionShowHide(bpy.types.Operator):
+	bl_idname = "view3d.collection_show_hide"
+	bl_label = "Toggle Collection Show/Hide"
+	bl_description = "Shows or hides the collection"
+	bl_options = {'REGISTER'}
+
+	name : StringProperty(name="Collection Name")
+	items = [
+		("SINGLE", "Single target", "", 1),
+		("SHOW", "Show all", "", 2),
+		("HIDE", "Hide all", "", 3)
+	]
+	is_all : EnumProperty(name="Show/hide all collections", items=items)
+
+	def make_collec_dic(self, layer_collection, dictionary, idx=1):
+		for coll in layer_collection.children:
+			dictionary[coll.name] = {"self":coll, "idx":idx}
+			idx += 1
+			if len(coll.children) > 0:
+				dictionary = self.make_collec_dic(coll, dictionary, idx)
+		return dictionary
+	def execute(self, context):
+		dic = {}
+		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)
+		if self.is_all == "SINGLE":
+			target = collec_dic[self.name]["self"]
+			target.hide_viewport = not target.hide_viewport
+		elif self.is_all == "SHOW":
+			for key in collec_dic.keys():
+				collec_dic[key]["self"].hide_viewport = False
+		elif self.is_all == "HIDE":
+			for key in collec_dic.keys():
+				collec_dic[key]["self"].hide_viewport = True
+		return {'FINISHED'}
+class CollectionWireFrame(bpy.types.Operator):
+	bl_idname = "view3d.collection_show_as_wireframe"
+	bl_label = "Toggle Texture/Wireframe"
+	bl_description = "Shows the objects as wire edges or textured"
+	bl_options = {'REGISTER'}
+
+	name : StringProperty(name="Collection Name")
+
+	def make_collec_dic(self, layer_collection, dictionary, idx=1):
+		for coll in layer_collection.children:
+			dictionary[coll.name] = {"self":coll, "idx":idx}
+			idx += 1
+			if len(coll.children) > 0:
+				dictionary = self.make_collec_dic(coll, dictionary, idx)
+		return dictionary
+	def execute(self, context):		
+		dic = {}
+		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)
+		target = collec_dic[self.name]["self"]
+		for obj in target.collection.objects:
+			obj.show_all_edges = True
+			if obj.display_type != 'WIRE':
+				obj.display_type = 'WIRE'
+			else:
+				obj.display_type = 'TEXTURED'
+		return {'FINISHED'}
+class CollectionObjectsShowHide(bpy.types.Operator):
+	bl_idname = "view3d.collection_objects_show_hide"
+	bl_label = "Toggle Show/Hide of contained objects"
+	bl_description = "Show or hide all objects in the selected collection"
+	bl_options = {'REGISTER'}
+
+	name : StringProperty(name="Collection Name")
+
+	def make_collec_dic(self, layer_collection, dictionary, idx=1):
+		for coll in layer_collection.children:
+			dictionary[coll.name] = {"self":coll, "idx":idx}
+			idx += 1
+			if len(coll.children) > 0:
+				dictionary = self.make_collec_dic(coll, dictionary, idx)
+		return dictionary
+	def execute(self, context):		
+		dic = {}
+		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)
+		target = collec_dic[self.name]["self"]
+		for obj in target.collection.objects[:5]:
+			if obj.hide_get() == False:
+				is_show = False
+				break
+		else:
+			is_show = True
+		if is_show:
+			for obj in target.collection.objects: obj.hide_set(False)
+		else:
+			for obj in target.collection.objects: obj.hide_set(True)
+		return {'FINISHED'}
 
 class PanelPieOperator(bpy.types.Operator):
 	bl_idname = "view3d.panel_pie_operator"
@@ -398,7 +573,8 @@ class PieMenu(bpy.types.Menu):
 	def draw(self, context):
 		self.layout.operator(ViewNumpadPieOperator.bl_idname, icon='PLUGIN')
 		self.layout.operator(ViewportShadePieOperator.bl_idname, icon='PLUGIN')
-		self.layout.operator(LayerPieOperator.bl_idname, text="Collection", icon='PLUGIN')
+		self.layout.operator(CollectionDisplayOperator.bl_idname, text="Collection", icon='PLUGIN')
+		#self.layout.operator(CollectionPieOperator.bl_idname, text="Collection", icon='PLUGIN')
 		self.layout.operator(PanelPieOperator.bl_idname, text="Panel Switch", icon='PLUGIN')
 
 ################
@@ -416,9 +592,12 @@ classes = [
 	ViewportShadePieOperator,
 	ViewportShadePie,
 	SetViewportShade,
-	LayerPieOperator,
-	LayerPie,
-	LayerPieRun,
+	#CollectionPieOperator,
+	CollectionDisplayOperator,
+	#CollectionPie,
+	CollectionShowHide,
+	CollectionWireFrame,
+	CollectionObjectsShowHide,
 	PanelPieOperator,
 	PanelPie,
 	RunPanelPie,

@@ -23,7 +23,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		split = self.layout.split()
-		split.label("")
+		split.label(text="")
 		split.operator('pose.create_custom_shape', icon='PARTICLE_PATH')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
