@@ -114,7 +114,7 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		row = self.layout.row()
+		row = self.layout.split(factor=0.35)
 		sub = row.row(align=True)
 		sub.operator(BoneGroupShow.bl_idname, icon='RESTRICT_VIEW_OFF', text="Show").reverse = False
 		sub.operator(BoneGroupShow.bl_idname, icon='RESTRICT_VIEW_ON', text="Hide").reverse = True
