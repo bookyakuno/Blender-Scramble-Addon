@@ -114,12 +114,12 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		row = self.layout.split(factor=0.35)
+		row = self.layout.row()
 		sub = row.row(align=True)
 		sub.operator(BoneGroupShow.bl_idname, icon='RESTRICT_VIEW_OFF', text="Show").reverse = False
 		sub.operator(BoneGroupShow.bl_idname, icon='RESTRICT_VIEW_ON', text="Hide").reverse = True
 		sub = row.row(align=True)
-		sub.operator(BoneGroupOnlyShow.bl_idname, icon='RESTRICT_VIEW_OFF', text="Show Only Active").reverse = False
-		sub.operator(BoneGroupOnlyShow.bl_idname, icon='RESTRICT_VIEW_ON', text="Hide Only Active").reverse = True
+		sub.operator(BoneGroupOnlyShow.bl_idname, icon='RESTRICT_VIEW_OFF', text="Only Show").reverse = False
+		sub.operator(BoneGroupOnlyShow.bl_idname, icon='RESTRICT_VIEW_ON', text="Only Hide").reverse = True
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
