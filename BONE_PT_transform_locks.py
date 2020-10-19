@@ -48,9 +48,11 @@ class copy_transform_lock_settings(bpy.types.Operator):
 			row.prop(self, 'lock_location_' + axis)
 			row.prop(self, 'lock_rotation_' + axis)
 			row.prop(self, 'lock_scale_' + axis)
-		row = self.layout.row()
-		row.prop(self, 'lock_rotations_4d')
-		row.prop(self, 'lock_rotation_w')
+		if context.active_pose_bone.rotation_mode in ['QUATERNION', 'AXIS_ANGLE']:
+			self.layout.separator(factor=0.3)
+			row = self.layout.split(factor=0.35)
+			row.prop(self, 'lock_rotation_w')
+			row.prop(self, 'lock_rotations_4d', text="Four component rotations")
 
 	def execute(self, context):
 		active_pose_bone = context.active_pose_bone
@@ -64,10 +66,11 @@ class copy_transform_lock_settings(bpy.types.Operator):
 					pose_bone.lock_rotation[i] = active_pose_bone.lock_rotation[i]
 				if getattr(self, 'lock_scale_' + axis):
 					pose_bone.lock_scale[i] = active_pose_bone.lock_scale[i]
-			if self.lock_rotations_4d:
-				pose_bone.lock_rotations_4d = active_pose_bone.lock_rotations_4d
-			if self.lock_rotation_w:
-				pose_bone.lock_rotation_w = active_pose_bone.lock_rotation_w
+			if active_pose_bone.rotation_mode in ['QUATERNION', 'AXIS_ANGLE']:
+				if self.lock_rotations_4d:
+					pose_bone.lock_rotations_4d = active_pose_bone.lock_rotations_4d
+				if self.lock_rotation_w:
+					pose_bone.lock_rotation_w = active_pose_bone.lock_rotation_w
 		return {'FINISHED'}
 
 ################
