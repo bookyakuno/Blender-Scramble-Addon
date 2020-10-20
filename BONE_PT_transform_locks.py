@@ -11,7 +11,7 @@ from bpy.props import *
 class copy_transform_lock_settings(bpy.types.Operator):
 	bl_idname = "pose.copy_transform_lock_settings"
 	bl_label = "Copy Transform Locks Settings"
-	bl_description = "Copies of other selected bone lock setting active bone transform"
+	bl_description = "Copy active bone's lock of location / rotation / scale to other selected bones"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	lock_location_x : BoolProperty(name="Loc X", default=True)
@@ -22,9 +22,9 @@ class copy_transform_lock_settings(bpy.types.Operator):
 	lock_rotation_y : BoolProperty(name="Rot Y", default=True)
 	lock_rotation_z : BoolProperty(name="Rot Z", default=True)
 
-	lock_scale_x : BoolProperty(name="Scale X", default=True)
-	lock_scale_y : BoolProperty(name="Scale Y", default=True)
-	lock_scale_z : BoolProperty(name="Scale Z", default=True)
+	lock_scale_x : BoolProperty(name="Scale X ", default=True)
+	lock_scale_y : BoolProperty(name="Scale Y ", default=True)
+	lock_scale_z : BoolProperty(name="Scale Z ", default=True)
 
 	lock_rotations_4d : BoolProperty(name="Lock Rotation", default=True)
 	lock_rotation_w : BoolProperty(name="Rot W", default=True)
@@ -48,9 +48,11 @@ class copy_transform_lock_settings(bpy.types.Operator):
 			row.prop(self, 'lock_location_' + axis)
 			row.prop(self, 'lock_rotation_' + axis)
 			row.prop(self, 'lock_scale_' + axis)
-		row = self.layout.row()
-		row.prop(self, 'lock_rotations_4d')
-		row.prop(self, 'lock_rotation_w')
+		if context.active_pose_bone.rotation_mode in ['QUATERNION', 'AXIS_ANGLE']:
+			self.layout.separator(factor=0.3)
+			row = self.layout.split(factor=0.35)
+			row.prop(self, 'lock_rotation_w')
+			row.prop(self, 'lock_rotations_4d', text="Four component rotations")
 
 	def execute(self, context):
 		active_pose_bone = context.active_pose_bone
@@ -64,10 +66,11 @@ class copy_transform_lock_settings(bpy.types.Operator):
 					pose_bone.lock_rotation[i] = active_pose_bone.lock_rotation[i]
 				if getattr(self, 'lock_scale_' + axis):
 					pose_bone.lock_scale[i] = active_pose_bone.lock_scale[i]
-			if self.lock_rotations_4d:
-				pose_bone.lock_rotations_4d = active_pose_bone.lock_rotations_4d
-			if self.lock_rotation_w:
-				pose_bone.lock_rotation_w = active_pose_bone.lock_rotation_w
+			if active_pose_bone.rotation_mode in ['QUATERNION', 'AXIS_ANGLE']:
+				if self.lock_rotations_4d:
+					pose_bone.lock_rotations_4d = active_pose_bone.lock_rotations_4d
+				if self.lock_rotation_w:
+					pose_bone.lock_rotation_w = active_pose_bone.lock_rotation_w
 		return {'FINISHED'}
 
 ################

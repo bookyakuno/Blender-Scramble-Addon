@@ -11,7 +11,7 @@ from bpy.props import *
 class CopyBoneTransform(bpy.types.Operator):
 	bl_idname = "pose.copy_bone_transform"
 	bl_label = "Copy Bone Transform"
-	bl_description = "Copy selected bones of other active bone deformation information"
+	bl_description = "Copy active bone's location / rotation / scale to other selected bones"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	copy_location : BoolProperty(name="Location", default=True)
