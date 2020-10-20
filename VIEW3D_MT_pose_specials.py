@@ -214,7 +214,7 @@ class SplineAnnotation(bpy.types.Operator):
 
 	def execute(self, context):
 		# 利用するGPデータを設定
-		if not self.use_gp_object:
+		if self.use_gp_object:
 			if len(bpy.context.selected_objects) == 1:
 				self.report({'INFO'}, "Select the GP object second")
 				return{'FINISHED'}
