@@ -165,11 +165,11 @@ class SplineAnnotation(bpy.types.Operator):
 	bl_properties = "act_layer"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	use_gp_object : BoolProperty(name="Use GP Object")
+	use_gp_object : BoolProperty(name="Use GP Object",description="Select the GP object second")
 	isRootReset : BoolProperty(name="Reset Root", default=True)
 	gpencil_name : StringProperty(name="Target GreasePencil", default="")
 	reverse : BoolProperty(name="Switch Direction", default=False)
-	remove_gp : BoolProperty(name="Remove GreasePencil", default=True)
+	remove_gp : BoolProperty(name="Remove Stroke", default=True)
 
 	def item_callback(self, context):
 		_STORE_ITEMS.clear()
