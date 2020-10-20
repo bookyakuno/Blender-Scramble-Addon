@@ -10,8 +10,8 @@ from bpy.props import *
 
 class BoneGroupOnlyShow(bpy.types.Operator):
 	bl_idname = "pose.bone_group_only_show"
-	bl_label = "Show only bone in this bones group"
-	bl_description = "Group active on bones and bones of other hide"
+	bl_label = "Show only bone in the bones group"
+	bl_description = "Show or hide ONLY the bones in the active Bone Group"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	reverse : BoolProperty(name="Invert", default=False)
@@ -52,8 +52,8 @@ class BoneGroupOnlyShow(bpy.types.Operator):
 
 class BoneGroupShow(bpy.types.Operator):
 	bl_idname = "pose.bone_group_show"
-	bl_label = "Show bone in bone group"
-	bl_description = "Active bone group show or hide"
+	bl_label = "Show bone in the bone group"
+	bl_description = "Show or hide the bones in the active Bone Group"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	reverse : BoolProperty(name="Invert", default=False)
@@ -114,12 +114,12 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		row = self.layout.row()
+		row = self.layout.split(factor=0.35)
 		sub = row.row(align=True)
 		sub.operator(BoneGroupShow.bl_idname, icon='RESTRICT_VIEW_OFF', text="Show").reverse = False
 		sub.operator(BoneGroupShow.bl_idname, icon='RESTRICT_VIEW_ON', text="Hide").reverse = True
 		sub = row.row(align=True)
-		sub.operator(BoneGroupOnlyShow.bl_idname, icon='RESTRICT_VIEW_OFF', text="Only Show").reverse = False
-		sub.operator(BoneGroupOnlyShow.bl_idname, icon='RESTRICT_VIEW_ON', text="Only Hide").reverse = True
+		sub.operator(BoneGroupOnlyShow.bl_idname, icon='RESTRICT_VIEW_OFF', text="Show Only Active").reverse = False
+		sub.operator(BoneGroupOnlyShow.bl_idname, icon='RESTRICT_VIEW_ON', text="Hide Only Active").reverse = True
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
