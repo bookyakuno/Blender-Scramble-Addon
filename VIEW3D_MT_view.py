@@ -156,6 +156,7 @@ class ViewNumpadPieOperator(bpy.types.Operator):
 	def execute(self, context):
 		bpy.ops.wm.call_menu_pie(name=ViewNumpadPie.bl_idname)
 		return {'FINISHED'}
+
 class ViewNumpadPie(bpy.types.Menu): #
 	bl_idname = "VIEW3D_MT_view_pie_view_numpad"
 	bl_label = "Preset View"
@@ -180,6 +181,7 @@ class ViewportShadePieOperator(bpy.types.Operator):
 	def execute(self, context):
 		bpy.ops.wm.call_menu_pie(name=ViewportShadePie.bl_idname)
 		return {'FINISHED'}
+
 class ViewportShadePie(bpy.types.Menu): #
 	bl_idname = "VIEW3D_MT_view_pie_viewport_shade"
 	bl_label = "Shading Switch"
@@ -190,6 +192,7 @@ class ViewportShadePie(bpy.types.Menu): #
 		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Solid", icon="SHADING_SOLID").mode = "SOLID"
 		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Wire Frame", icon="SHADING_WIRE").mode = "WIREFRAME"
 		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Material", icon="MATERIAL").mode = "MATERIAL"
+
 class SetViewportShade(bpy.types.Operator): #
 	bl_idname = "view3d.set_viewport_shade"
 	bl_label = "Shading Switch"
@@ -249,7 +252,7 @@ class CollectionDisplayOperator(bpy.types.Operator):
 				if (obj.hide_get() == False):
 					return 'HANDLETYPE_AUTO_VEC'
 			else:
-				return 'HANDLETYPE_VECTOR_VEC'		
+				return 'HANDLETYPE_VECTOR_VEC'
 	def make_collec_dic(self, layer_collection, dictionary, idx=1):
 		for coll in layer_collection.children:
 			dictionary[coll.name] = {"self":coll, "idx":idx}
@@ -314,6 +317,7 @@ class CollectionPieOperator(bpy.types.Operator):
 	def execute(self, context):
 		bpy.ops.wm.call_menu_pie(name=CollectionPie.bl_idname)
 		return {'FINISHED'}
+
 class CollectionPie(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_pie_collection"
 	bl_label = "Collection Display Menu"
@@ -353,7 +357,7 @@ class CollectionPie(bpy.types.Menu):
 				if (obj.hide_get() == False):
 					return 'HANDLETYPE_AUTO_VEC'
 			else:
-				return 'HANDLETYPE_VECTOR_VEC'		
+				return 'HANDLETYPE_VECTOR_VEC'
 
 	def make_collec_dic(self, layer_collection, dictionary, idx=1):
 		for coll in layer_collection.children:
@@ -438,6 +442,7 @@ class CollectionShowHide(bpy.types.Operator):
 			for key in collec_dic.keys():
 				collec_dic[key]["self"].hide_viewport = True
 		return {'FINISHED'}
+
 class CollectionWireFrame(bpy.types.Operator):
 	bl_idname = "view3d.collection_show_as_wireframe"
 	bl_label = "Toggle Texture/Wireframe"
@@ -453,7 +458,7 @@ class CollectionWireFrame(bpy.types.Operator):
 			if len(coll.children) > 0:
 				dictionary = self.make_collec_dic(coll, dictionary, idx)
 		return dictionary
-	def execute(self, context):		
+	def execute(self, context):
 		dic = {}
 		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)
 		target = collec_dic[self.name]["self"]
@@ -464,6 +469,7 @@ class CollectionWireFrame(bpy.types.Operator):
 			else:
 				obj.display_type = 'TEXTURED'
 		return {'FINISHED'}
+
 class CollectionObjectsShowHide(bpy.types.Operator):
 	bl_idname = "view3d.collection_objects_show_hide"
 	bl_label = "Toggle Show/Hide of contained objects"
@@ -479,7 +485,7 @@ class CollectionObjectsShowHide(bpy.types.Operator):
 			if len(coll.children) > 0:
 				dictionary = self.make_collec_dic(coll, dictionary, idx)
 		return dictionary
-	def execute(self, context):		
+	def execute(self, context):
 		dic = {}
 		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)
 		target = collec_dic[self.name]["self"]
@@ -504,6 +510,7 @@ class PanelPieOperator(bpy.types.Operator):
 	def execute(self, context):
 		bpy.ops.wm.call_menu_pie(name=PanelPie.bl_idname)
 		return {'FINISHED'}
+
 class PanelPie(bpy.types.Menu): #
 	bl_idname = "VIEW3D_MT_view_pie_panel"
 	bl_label = "Switch panel pie menu"
@@ -518,6 +525,7 @@ class PanelPie(bpy.types.Menu): #
 		op.properties, op.toolshelf = True, True
 		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Hide", icon='RESTRICT_VIEW_ON')
 		op.properties, op.toolshelf = False, False
+
 class RunPanelPie(bpy.types.Operator): #
 	bl_idname = "view3d.run_panel_pie"
 	bl_label = "Switch panel pie menu"
@@ -574,7 +582,7 @@ class PieMenu(bpy.types.Menu):
 		self.layout.operator(ViewNumpadPieOperator.bl_idname, icon='PLUGIN')
 		self.layout.operator(ViewportShadePieOperator.bl_idname, icon='PLUGIN')
 		self.layout.operator(CollectionDisplayOperator.bl_idname, text="Collection", icon='PLUGIN')
-		#self.layout.operator(CollectionPieOperator.bl_idname, text="Collection", icon='PLUGIN')
+		# self.layout.operator(CollectionPieOperator.bl_idname, text="Collection", icon='PLUGIN')
 		self.layout.operator(PanelPieOperator.bl_idname, text="Panel Switch", icon='PLUGIN')
 
 ################
