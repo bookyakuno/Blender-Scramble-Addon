@@ -11,7 +11,7 @@ from bpy.props import *
 bl_info = {
 	"name" : "Scramble Addon",
 	"author" : "Saidenka, Bookyakuno, nikogoli",
-	"version" : (1, 0, 6),
+	"version" : (1, 0, 7),
 	"blender" : (2, 90, 0),
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",
@@ -498,7 +498,7 @@ def register():
 	#VIEW3D_PT_transform_orientations.register()#クラスなし
 	#bpy.types.VIEW3D_PT_transform_orientations.append(VIEW3D_PT_transform_orientations.menu)
 	#VIEW3D_PT_view3d_name.register()#クラスなし
-	#bpy.types.VIEW3D_PT_tools_object_options.append(VIEW3D_PT_view3d_name.menu)	
+	#bpy.types.VIEW3D_PT_tools_object_options.append(VIEW3D_PT_view3d_name.menu)
 	#========
 	#VIEW3D_PT_view3d_cursor.register()#クラスなし
 	bpy.types.VIEW3D_PT_view3d_cursor.append(VIEW3D_PT_view3d_cursor.menu)

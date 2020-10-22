@@ -158,16 +158,18 @@ class CopyBoneName(bpy.types.Operator):
 			context.window_manager.clipboard = context.active_pose_bone.name
 		return {'FINISHED'}
 
-class SplineGreasePencil(bpy.types.Operator):
-	bl_idname = "pose.spline_grease_pencil"
-	bl_label = "Fit chain of bones to grease pencil"
-	bl_description = "Select bones linked like chain of threading to grease pencil, pose"
+class SplineAnnotation(bpy.types.Operator):
+	bl_idname = "pose.spline_annotation"
+	bl_label = "Fit chain of bones to Annotation"
+	bl_description = "Select bones linked like chain of threading to Annotation, pose"
 	bl_properties = "act_layer"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isRootReset : BoolProperty(name="Reset Root", default=False)
+	use_gp_object : BoolProperty(name="Use GP Object",description="Select the GP object second")
+	isRootReset : BoolProperty(name="Reset Root", default=True)
 	gpencil_name : StringProperty(name="Target GreasePencil", default="")
 	reverse : BoolProperty(name="Switch Direction", default=False)
+	remove_gp : BoolProperty(name="Remove Stroke", default=True)
 
 	def item_callback(self, context):
 		_STORE_ITEMS.clear()
@@ -182,6 +184,9 @@ class SplineGreasePencil(bpy.types.Operator):
 	def poll(cls, context):
 		activeObj = context.active_object
 		if activeObj.mode == 'POSE':
+			if not context.selected_pose_bones:
+				return False
+
 			i = 0
 			for bone in context.selected_pose_bones:
 				for bone2 in context.selected_pose_bones:
@@ -189,63 +194,71 @@ class SplineGreasePencil(bpy.types.Operator):
 						if bone.parent.name == bone2.name:
 							i += 1
 							break
+
 			if i+1 < len(context.selected_pose_bones):
 				return False
 			if len(bpy.data.grease_pencils):
 				return True
 		return False
 
-	def __init__(self):
-		for gp in bpy.data.grease_pencils:
-			if gp.is_annotation == False:
-				self.gpencil_name = gp.name
-				break
-		else:
-			self.gpencil_name = bpy.data.grease_pencils[0].name
 
-	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
-		self.layout.prop_search(self, "gpencil_name", bpy.data, "grease_pencils",text="Target", translate=True, icon='GP_SELECT_STROKES')
-		row = self.layout.row()
-		row.label(text="Target Layer ")
-		row.props_enum(self, "act_layer")
-		self.layout.separator(factor=0.4)
-		self.layout.prop(self, "isRootReset")
-		self.layout.prop(self, "reverse")
+		layout = self.layout
+		sc = bpy.context.scene
+		layout.prop(self, "use_gp_object")
+		layout.separator(factor=0.4)
+		layout.prop(self, "isRootReset")
+		layout.prop(self, "reverse")
+		layout.prop(self, "remove_gp")
 
 
 	def execute(self, context):
+		# 利用するGPデータを設定
+		if self.use_gp_object:
+			if len(bpy.context.selected_objects) == 1:
+				self.report({'INFO'}, "Select the GP object second")
+				return{'FINISHED'}
+			second_obj = bpy.context.selected_objects[1]
+			if second_obj.type == "GPENCIL":
+				self.gpencil_name = second_obj.data.name
+			else:
+				self.report({'INFO'}, "Not GP object")
+				return{'FINISHED'}
+		else:
+			self.gpencil_name = bpy.context.annotation_data_owner.grease_pencil.name
+
+
 		activeObj = context.active_object
 		bpy.ops.object.mode_set(mode='OBJECT')
 		gpen = bpy.data.grease_pencils[self.gpencil_name]
-		if not gpen.is_annotation:
-			try:
-				obj = bpy.data.objects[self.gpencil_name]
-			except KeyError:
-				self.report(type={'ERROR'}, message="Please make object's name equal to greasepencil's name")
-				return {'CANCELLED'}
-		else:
-			obj = bpy.data.objects.new(name=self.gpencil_name, object_data=gpen)
-			context.view_layer.active_layer_collection.collection.objects.link(obj)
-		context.view_layer.objects.active = obj
-		bpy.ops.gpencil.layer_active(layer=int(self.act_layer))
+
+		new_obj = bpy.data.objects.new(name=self.gpencil_name, object_data=gpen)
+		context.view_layer.active_layer_collection.collection.objects.link(new_obj)
+
+		context.view_layer.objects.active = new_obj
+
+		# グリースペンシルをカーブに変換
 		try:
 			bpy.ops.gpencil.convert(type='CURVE', use_timing_data=True)
 		except RuntimeError:
 				self.report(type={'ERROR'}, message="Converting GreasePencil failed. (Maybe, active Layer doesn\'t contain 'Line' data)")
 				return {'CANCELLED'}
+
 		for ob in context.selected_objects:
 			if ob.type == "CURVE":
 				curveObj = ob
+
 		if self.reverse:
 			context.view_layer.objects.active = curveObj
 			bpy.ops.object.mode_set(mode='EDIT')
 			bpy.ops.curve.switch_direction()
 			bpy.ops.object.mode_set(mode='OBJECT')
+
 		context.view_layer.objects.active = activeObj
 		bpy.ops.object.mode_set(mode='POSE')
 		tails = []
+
+		# ボーンをカーブに沿わせる
 		for bone in context.selected_pose_bones:
 			if len(bone.children) == 0:
 				const = bone.constraints.new('SPLINE_IK')
@@ -254,6 +267,7 @@ class SplineGreasePencil(bpy.types.Operator):
 				const.y_scale_mode = "NONE"
 				const.chain_count = len(context.selected_pose_bones)
 				tails.append((bone, const))
+
 			for child in bone.children:
 				for bone2 in context.selected_pose_bones:
 					if child.name == bone2.name:
@@ -266,11 +280,24 @@ class SplineGreasePencil(bpy.types.Operator):
 					const.chain_count = len(context.selected_pose_bones)
 					tails.append((bone, const))
 					break
+
 		bpy.ops.pose.visual_transform_apply()
+
 		for bone, const in tails:
 			bone.constraints.remove(const)
+
 		bpy.ops.pose.scale_clear()
-		context.view_layer.active_layer_collection.collection.objects.unlink(curveObj)
+
+		# 削除
+		if self.remove_gp:
+			if self.use_gp_object:
+				bpy.data.objects.remove(second_obj)
+			else:
+				bpy.ops.gpencil.layer_annotation_remove()
+
+		bpy.data.objects.remove(curveObj)
+		bpy.data.objects.remove(new_obj)
+
 		if self.isRootReset:
 			bpy.ops.pose.loc_clear()
 		return {'FINISHED'}
@@ -350,7 +377,7 @@ class SetSlowParentBone(bpy.types.Operator):
 			bpy.ops.object.mode_set(mode='OBJECT')
 			bpy.ops.object.empty_add(type='SPHERE', radius=self.radius*0.5)
 			empty_child = context.active_object
-			empty_child.name = bone.parent.name+" child"			
+			empty_child.name = bone.parent.name+" child"
 			obj.select_set(True)
 			bpy.context.view_layer.objects.active = obj
 			bpy.ops.object.mode_set(mode='POSE')
@@ -785,7 +812,7 @@ class SetIKRotationLimitByPose(bpy.types.Operator):
 		('LIMIT_180', "Set 180d as Limit", "", 2),
 		('LIMIT_0', "Set 0d as Limit", "", 3)
 		]
-	other_side : EnumProperty(items=method_items, name="Other-side\'s Limitation")	
+	other_side : EnumProperty(items=method_items, name="Other-side\'s Limitation")
 	use_x : BoolProperty(name="X Axis Limit", default=True)
 	use_y : BoolProperty(name="Y Axis Limit", default=True)
 	use_z : BoolProperty(name="Z Axis Limit", default=True)
@@ -929,7 +956,7 @@ class SpecialsMenu(bpy.types.Menu):
 	bl_description = "Special manage menu"
 
 	def draw(self, context):
-		self.layout.operator(SplineGreasePencil.bl_idname, icon="PLUGIN")
+		self.layout.operator(SplineAnnotation.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.operator(CreateCustomShape.bl_idname, icon="PLUGIN")
 		self.layout.operator(CreateWeightCopyMesh.bl_idname, icon="PLUGIN")
@@ -937,6 +964,9 @@ class SpecialsMenu(bpy.types.Menu):
 		self.layout.operator(SetRigidBodyBone.bl_idname, icon="PLUGIN")
 		self.layout.operator(SetIKRotationLimitByPose.bl_idname, icon="PLUGIN")
 
+
+def gp_object_poll(self, object):
+    return object.type == 'GPENCIL'
 ################
 # クラスの登録 #
 ################
@@ -945,7 +975,7 @@ classes = [
 	CreateCustomShape,
 	CreateWeightCopyMesh,
 	CopyBoneName,
-	SplineGreasePencil,
+	SplineAnnotation,
 	RenameBoneRegularExpression,
 	SetSlowParentBone,
 	RenameBoneNameEnd,
@@ -963,10 +993,16 @@ def register():
 	for cls in classes:
 		bpy.utils.register_class(cls)
 
+	bpy.types.Scene.scramble_addon_gp_object = bpy.props.PointerProperty(
+	type=bpy.types.Object,
+	poll=gp_object_poll
+	)
+
 def unregister():
 	for cls in classes:
 		bpy.utils.unregister_class(cls)
 
+	del bpy.types.Scene.scramble_addon_gp_object
 
 ################
 # メニュー追加 #
