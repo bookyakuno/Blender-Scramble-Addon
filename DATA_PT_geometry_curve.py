@@ -11,19 +11,19 @@ from bpy.props import *
 class copy_geometry_settings(bpy.types.Operator):
 	bl_idname = "curve.copy_geometry_settings"
 	bl_label = "Copy Geometry Settings"
-	bl_description = "Copy selection curve of other settings panel geometry of curve object is active"
+	bl_description = "Copy active curve's geometry settings to other selected curves"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	offset : BoolProperty(name="Offset", default=True)
 	extrude : BoolProperty(name="Extrude", default=True)
 	bevel_depth : BoolProperty(name="Depth", default=True)
 	bevel_resolution : BoolProperty(name="Resolution", default=True)
-	taper_object : BoolProperty(name="Taper", default=True)
-	bevel_object : BoolProperty(name="Bevel", default=True)
-	bevel_factor_mapping_start : BoolProperty(name="Start Method", default=True)
-	bevel_factor_start : BoolProperty(name="Start", default=True)
-	bevel_factor_mapping_end : BoolProperty(name="End Method", default=True)
-	bevel_factor_end : BoolProperty(name="End", default=True)
+	taper_object : BoolProperty(name="Taper object", default=True)
+	bevel_object : BoolProperty(name="Bevel object", default=True)
+	bevel_factor_mapping_start : BoolProperty(name="Mapping Method(Start)", default=True)
+	bevel_factor_mapping_end : BoolProperty(name="Mapping Method(End)", default=True)
+	bevel_factor_start : BoolProperty(name="Bevel Start", default=True)
+	bevel_factor_end : BoolProperty(name="Bevel End", default=True)
 	use_map_taper : BoolProperty(name="Map Taper", default=True)
 	use_fill_caps : BoolProperty(name="Fill Caps", default=True)
 
@@ -139,7 +139,7 @@ class copy_geometry_settings(bpy.types.Operator):
 class ActivateTaperObject(bpy.types.Operator):
 	bl_idname = "curve.activate_taper_object"
 	bl_label = "Activate taper object"
-	bl_description = "curve is specified as tapered object"
+	bl_description = "Activate the taper object of this curve"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -174,8 +174,8 @@ class ActivateTaperObject(bpy.types.Operator):
 
 class ActivateBevelObject(bpy.types.Operator):
 	bl_idname = "curve.activate_bevel_object"
-	bl_label = "Activate Bevel Object"
-	bl_description = "curve is specified as beveled objects"
+	bl_label = "Activate bevel object"
+	bl_description = "Activate the bevel object of this curve"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -210,8 +210,8 @@ class ActivateBevelObject(bpy.types.Operator):
 
 class ActivateTaperParentObject(bpy.types.Operator):
 	bl_idname = "curve.activate_taper_parent_object"
-	bl_label = "Used as taper curve to activate"
-	bl_description = "Activates curve as tapered object using this curve"
+	bl_label = "Activate Taper-parent of this curve"
+	bl_description = "Activate the curve that uses this curve as Taper Object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -256,8 +256,8 @@ class ActivateTaperParentObject(bpy.types.Operator):
 
 class ActivateBevelParentObject(bpy.types.Operator):
 	bl_idname = "curve.activate_bevel_parent_object"
-	bl_label = "Activate bevel curve object"
-	bl_description = "Activates curve as beveled objects using this curve"
+	bl_label = "Activate Bevel-parent of this curve"
+	bl_description = "Activate the curve that uses this curve as Bevel Object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -365,11 +365,11 @@ def menu(self, context):
 		if any(flag):
 			row = self.layout.split(factor=0.5)
 			if flag[0]:
-				row.operator(activate_taper_parent_object.bl_idname, icon='PARTICLE_PATH', text="Active Parent Taper")
+				row.operator(ActivateTaperParentObject.bl_idname, icon='PARTICLE_PATH', text="Activate Taper-parent")
 			else:
 				row.label(text="")
 			if flag[1]:
-				row.operator(activate_bevel_parent_object.bl_idname, icon='OUTLINER_OB_SURFACE', text="Active Parent Bevel")
+				row.operator(ActivateBevelParentObject.bl_idname, icon='OUTLINER_OB_SURFACE', text="Activate Bevel-parent")
 			else:
 				row.label(text="")
 
