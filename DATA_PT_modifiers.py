@@ -3,6 +3,7 @@
 
 import bpy
 from bpy.props import *
+from bpy.ops import *
 
 ################
 # オペレーター #
@@ -156,6 +157,13 @@ class ApplyModifiersAndJoin(bpy.types.Operator):
 			return True
 		return False
 
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, 'unapply_subsurf')
+		self.layout.prop(self, 'unapply_armature')
+		self.layout.prop(self, 'unapply_mirror')
+
 	def execute(self, context):
 		pre_active_object = context.active_object
 		for obj in context.selected_objects:
@@ -289,9 +297,17 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.set_render_subsurf_level"
 	bl_label = "Set number of subdivision when rendering"
 	bl_description = "Sets number of subdivisions during rendering of selected object subsurfmodifaia"
+	bl_property = "level_enum"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	level : IntProperty(name="Number of Divisions", default=2, min=0, max=6)
+	level : IntProperty(name="Number of Divisions", default=6, min=0, max=10)
+	is_more: BoolProperty(name="more", default=False)
+
+	items = [
+		("1", "1", "", 1), ("2", "2", "", 2), ("3", "3", "", 3),
+		("4", "4", "", 4), ("5", "5", "", 5)
+		]
+	level_enum : EnumProperty(items=items, name="preset_level")
 
 	@classmethod
 	def poll(cls, context):
@@ -301,12 +317,29 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 					return True
 		return False
 
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self, width=350)
+	def draw(self, context):
+		sp = self.layout.split(factor=0.75)
+		row = sp.split(factor=0.8)
+		row.row().prop(self, 'level_enum', expand=True)
+		row.prop(self, 'is_more')
+		row = sp.row()
+		row.prop(self, 'level', text="")
+		row.enabled = self.is_more
+
 	def execute(self, context):
+		if self.is_more:
+			level = self.level
+		else:
+			level = int(self.level_enum)
 		for obj in context.selected_objects:
 			if obj.type in ['MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE']:
 				for modi in obj.modifiers:
 					if modi.type == 'SUBSURF':
-						modi.render_levels = self.level
+						modi.render_levels = level
+						modi.show_expanded = False
+						modi.show_expanded = True
 		return {'FINISHED'}
 
 class EqualizeSubsurfLevel(bpy.types.Operator):
@@ -329,6 +362,11 @@ class EqualizeSubsurfLevel(bpy.types.Operator):
 					return True
 		return False
 
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, 'mode', expand=True)
+
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if obj.type in ['MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE']:
@@ -338,6 +376,8 @@ class EqualizeSubsurfLevel(bpy.types.Operator):
 							modi.render_levels = modi.levels
 						else:
 							modi.levels = modi.render_levels
+						modi.show_expanded = False
+						modi.show_expanded = True
 		return {'FINISHED'}
 
 class SetSubsurfOptimalDisplay(bpy.types.Operator):
@@ -346,37 +386,43 @@ class SetSubsurfOptimalDisplay(bpy.types.Operator):
 	bl_description = "Sets optimization of subsurfmodifaia of selected object"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	mode : BoolProperty(name="Optimized View")
+	items = [('1', "Enable", "", 1),('0', "Disable", "", 2)]
+	is_use : EnumProperty(items=items, name="Optimized View")
 
-	# @classmethod
-	# def poll(cls, context):
-	# 	for obj in context.selected_objects:
-	# 		for mod in obj.modifiers:
-	# 			if mod.type == 'SUBSURF':
-	# 				return True
-	# 	return False
-	#
+	@classmethod
+	def poll(cls, context):
+		for obj in context.selected_objects:
+			for mod in obj.modifiers:
+				if mod.type == 'SUBSURF':
+					return True
+		return False
+
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, 'is_use', expand=True)
+	
 	def execute(self, context):
-		# for obj in context.selected_objects:
-		# 	if obj.type in ['MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE']:
-		# 		for modi in obj.modifiers:
-		# 			if modi.type == 'SUBSURF':
-		# 				modi.show_only_control_edges = self.mode
+		for obj in context.selected_objects:
+			if obj.type in ['MESH', 'CURVE', 'FONT', 'META', 'SURFACE']:
+				for modi in obj.modifiers:
+					if modi.type == 'SUBSURF':
+						modi.show_only_control_edges = int(self.is_use)
+		"""
 		sel = bpy.context.selected_objects
 		act_obj = bpy.context.active_object
-		if act_obj.type == 'MESH' or act_obj.type == 'CURVE' or act_obj.type == 'FONT' or act_obj.type == 'META' or act_obj.type == 'SURFACE':
+		if act_obj.type in ['MESH', 'CURVE', 'FONT', 'META', 'SURFACE']:
 			for mod in act_obj.modifiers:
 				if mod.type == 'SUBSURF':
 					optimal = not(mod.show_only_control_edges)
 					break
 			else: optimal = False
 			for obj in sel:
-				if obj.type == 'MESH' or obj.type == 'CURVE' or obj.type == 'FONT' or obj.type == 'META' or obj.type == 'SURFACE':
+				if obj.type in ['MESH', 'CURVE', 'FONT', 'META', 'SURFACE']:
 					for mod in obj.modifiers:
 						if mod.type == 'SUBSURF':
 							mod.show_only_control_edges = optimal
-
-
+		"""
 		return {'FINISHED'}
 
 class DeleteSubsurf(bpy.types.Operator):
@@ -440,7 +486,8 @@ class SetArmatureDeformPreserveVolume(bpy.types.Operator):
 	bl_description = "Armtuamodifaia selected objects keep volume together off and on the"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	use_deform_preserve_volume : BoolProperty(name="Use Preserve Volume", default=True)
+	items = [('1', "Enable", "", 1),('0', "Disable", "", 2)]
+	is_use : EnumProperty(items=items, name="Preserve Volume")
 
 	@classmethod
 	def poll(cls, context):
@@ -450,11 +497,16 @@ class SetArmatureDeformPreserveVolume(bpy.types.Operator):
 					return True
 		return False
 
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, 'is_use', expand=True)
+
 	def execute(self, context):
 		for obj in context.selected_objects:
 			for mod in obj.modifiers:
 				if mod.type == 'ARMATURE':
-					mod.use_deform_preserve_volume = self.use_deform_preserve_volume
+					mod.use_deform_preserve_volume = int(self.is_use)
 		return {'FINISHED'}
 
 ########################
@@ -480,24 +532,14 @@ class QuickCurveDeform(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if not context.object:
-			return False
-		if context.object.type != 'MESH':
-			return False
-		if len(context.selected_objects) != 2:
-			return False
-		for obj in context.selected_objects:
-			if obj.type == 'CURVE':
-				return True
+		if len(context.selected_objects) == 2:
+			return True
 		return False
 
 	def execute(self, context):
 		mesh_obj = context.active_object
 		if mesh_obj.type != 'MESH':
-			self.report(type={'ERROR'}, message="Please run mesh object is active")
-			return {'CANCELLED'}
-		if len(context.selected_objects) != 2:
-			self.report(type={'ERROR'}, message="By selecting only two meshes, curves, please run")
+			self.report(type={'ERROR'}, message="Please run when mesh object is active")
 			return {'CANCELLED'}
 		for obj in context.selected_objects:
 			if mesh_obj.name != obj.name:
@@ -544,24 +586,14 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if (not context.object):
-			return False
-		if (context.object.type != 'MESH'):
-			return False
-		if (len(context.selected_objects) != 2):
-			return False
-		for obj in context.selected_objects:
-			if (obj.type == 'CURVE'):
-				return True
+		if len(context.selected_objects) == 2:
+			return True
 		return False
 
 	def execute(self, context):
 		mesh_obj = context.active_object
 		if (mesh_obj.type != 'MESH'):
-			self.report(type={'ERROR'}, message="Please run mesh object is active")
-			return {'CANCELLED'}
-		if (len(context.selected_objects) != 2):
-			self.report(type={'ERROR'}, message="By selecting only two meshes, curves, please run")
+			self.report(type={'ERROR'}, message="Please run when mesh object is active")
 			return {'CANCELLED'}
 		for obj in context.selected_objects:
 			if (mesh_obj.name != obj.name):
@@ -736,5 +768,13 @@ def menu(self, context):
 				row.operator(ToggleAllShowExpanded.bl_idname, icon='FULLSCREEN_ENTER', text="Expand/Close")
 				row.operator(SyncShowModifiers.bl_idname, icon='LINKED', text="Use Sync")
 		self.layout.menu(ModifierMenu.bl_idname, icon='PLUGIN')
+		#self.layout.menu(ModifierMenu.bl_idname, icon='PLUGIN')
+		sp = self.layout.split(factor=0.9)
+		row = sp.row()
+		row.menu(SubsurfMenu.bl_idname, text="Subsurf")
+		row.menu(ArmatureMenu.bl_idname, text="Armature")
+		row.menu(BooleanMenu.bl_idname, text="Boolean")
+		row.menu(CurveMenu.bl_idname, text="Curve")
+		sp.operator(ApplyModifiersAndJoin.bl_idname, text="Join")
 	if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
