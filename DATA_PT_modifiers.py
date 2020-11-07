@@ -11,8 +11,8 @@ from bpy.ops import *
 
 class ApplyAllModifiers(bpy.types.Operator):
 	bl_idname = "object.apply_all_modifiers"
-	bl_label = "Apply All Modifiers"
-	bl_description = "Applies to all modifiers of selected object"
+	bl_label = "Apply all modifiers"
+	bl_description = "Apply all the selected objects' modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -30,8 +30,8 @@ class ApplyAllModifiers(bpy.types.Operator):
 
 class DeleteAllModifiers(bpy.types.Operator):
 	bl_idname = "object.delete_all_modifiers"
-	bl_label = "Remove All Modifiers"
-	bl_description = "Remove all modifiers of selected object"
+	bl_label = "Remove all modifiers"
+	bl_description = "Remove all the selected objects' modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -50,8 +50,8 @@ class DeleteAllModifiers(bpy.types.Operator):
 
 class ToggleApplyModifiersView(bpy.types.Operator):
 	bl_idname = "object.toggle_apply_modifiers_view"
-	bl_label = "Switch Modifiers Apply/Unapply to View"
-	bl_description = "Shows or hides application to view all modifiers of selected object"
+	bl_label = "Toggle show/hide of all modifiers in viewport"
+	bl_description = "Toggle display states in viewport of all the selected objects' modifiers"
 	bl_options = {'REGISTER'}
 
 	@classmethod
@@ -71,20 +71,20 @@ class ToggleApplyModifiersView(bpy.types.Operator):
 			for mod in obj.modifiers:
 				mod.show_viewport = is_apply
 		if is_apply:
-			self.report(type={"INFO"}, message="Applied modifiers to view")
+			self.report(type={"INFO"}, message="Show all modifiers in viewport")
 		else:
-			self.report(type={"INFO"}, message="Unregistered modifiers apply to view")
+			self.report(type={"INFO"}, message="Hide all modifiers in viewport")
 		return {'FINISHED'}
 
 class SyncShowModifiers(bpy.types.Operator):
 	bl_idname = "object.sync_show_modifiers"
-	bl_label = "Sync Modifiers Use"
-	bl_description = "synchronized modifier used when rendering selection / view"
+	bl_label = "Match display states in viewport and rendering"
+	bl_description = "Match display states in viewport of all the selected objects' modifiers to the states during rendering, or vice verse"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
-		("1", "Rendering => View", "", 1),
-		("0", "View => Rendering", "", 2),
+		("1", "Match to Rendering", "", 1),
+		("0", "Match to Viewport", "", 2),
 		]
 	mode : EnumProperty(items=items, name="Calculate", default="0")
 
@@ -97,6 +97,8 @@ class SyncShowModifiers(bpy.types.Operator):
 
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, 'mode', expand=True)
 
 	def execute(self, context):
 		for obj in context.selected_objects:
@@ -109,8 +111,8 @@ class SyncShowModifiers(bpy.types.Operator):
 
 class ToggleAllShowExpanded(bpy.types.Operator):
 	bl_idname = "wm.toggle_all_show_expanded"
-	bl_label = "Toggle all modifiers expand/close"
-	bl_description = "Expand / collapse all modifiers of active objects to switch (toggle)"
+	bl_label = "Toggle expand/close of all modifiers"
+	bl_description = "Toggle all modifier panels' expansion-states of the active object"
 	bl_options = {'REGISTER'}
 
 	@classmethod
@@ -143,13 +145,13 @@ class ToggleAllShowExpanded(bpy.types.Operator):
 
 class ApplyModifiersAndJoin(bpy.types.Operator):
 	bl_idname = "object.apply_modifiers_and_join"
-	bl_label = "Apply modifiers + join"
-	bl_description = "integration from object\'s modifiers to apply all"
+	bl_label = "Apply Modifiers and Join Objects"
+	bl_description = "Apply all the selected objects' modifiers, and join them into the active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	unapply_subsurf : BoolProperty(name="Except Subsurf", default=True)
-	unapply_armature : BoolProperty(name="Except Armature", default=True)
-	unapply_mirror : BoolProperty(name="Except Mirror", default=False)
+	unapply_subsurf : BoolProperty(name="Not Apply Subdivision Surface", default=True)
+	unapply_armature : BoolProperty(name="Not Apply Armature", default=True)
+	unapply_mirror : BoolProperty(name="Not Apply Mirror", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -182,8 +184,8 @@ class ApplyModifiersAndJoin(bpy.types.Operator):
 
 class AutoRenameModifiers(bpy.types.Operator):
 	bl_idname = "object.auto_rename_modifiers"
-	bl_label = "Auto rename modifier names"
-	bl_description = "Rename selected object modifier name refers to, for example,"
+	bl_label = "Auto-rename all modifiers' names"
+	bl_description = "Set the names of all the selected objects' modifiers to the names of their target objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -230,7 +232,7 @@ class AutoRenameModifiers(bpy.types.Operator):
 class AddBoolean(bpy.types.Operator):
 	bl_idname = "object.add_boolean"
 	bl_label = "Add Boolean"
-	bl_description = "Additional Boolean selected objects to an active object"
+	bl_description = "Add to the active object Boolean modifiers that refer to each of the other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -258,8 +260,8 @@ class AddBoolean(bpy.types.Operator):
 
 class ApplyBoolean(bpy.types.Operator):
 	bl_idname = "object.apply_boolean"
-	bl_label = "Apply Boolean"
-	bl_description = "Apply to Boolean objects and other active objects"
+	bl_label = "Add and Apply Boolean"
+	bl_description = "Add and apply to the active object Boolean modifiers that refer to each of the other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -295,8 +297,8 @@ class ApplyBoolean(bpy.types.Operator):
 
 class SetRenderSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.set_render_subsurf_level"
-	bl_label = "Set number of subdivision when rendering"
-	bl_description = "Sets number of subdivisions during rendering of selected object subsurfmodifaia"
+	bl_label = "Set number of subdivisions when rendering"
+	bl_description = "Set 'number of subdivisions when rendering' property of the selected objects' Subdivision Surface modifiers"
 	bl_property = "level_enum"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -344,13 +346,13 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 
 class EqualizeSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.equalize_subsurf_level"
-	bl_label = "Sync subsurf level preview or rendering"
-	bl_description = "Set in same subdivision of subsurfmodifaia of selected object when you preview and rendering time"
+	bl_label = "Match number of subdivisions in viewport and rendering"
+	bl_description = "Match number of subdivisions in viewport to that during rendering, or vice verse, in each selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
-		('ToRender', "Preview => Rendering", "", 1),
-		('ToPreview', "Rendering => Preview", "", 2),
+		('ToRender', "Match to Rendering", "", 1),
+		('ToPreview', "Match to Preview", "", 2),
 		]
 	mode : EnumProperty(items=items, name="How to set up")
 
@@ -382,8 +384,8 @@ class EqualizeSubsurfLevel(bpy.types.Operator):
 
 class SetSubsurfOptimalDisplay(bpy.types.Operator):
 	bl_idname = "object.set_subsurf_optimal_display"
-	bl_label = "Set Optimization"
-	bl_description = "Sets optimization of subsurfmodifaia of selected object"
+	bl_label = "Set Optimal Display"
+	bl_description = "Set 'Optimal Display' property of the selected objects' Subdivision Surface modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [('1', "Enable", "", 1),('0', "Disable", "", 2)]
@@ -427,8 +429,8 @@ class SetSubsurfOptimalDisplay(bpy.types.Operator):
 
 class DeleteSubsurf(bpy.types.Operator):
 	bl_idname = "object.delete_subsurf"
-	bl_label = "Delete Subsurfs selected objects"
-	bl_description = "Removes selected object subsurfmodifaia"
+	bl_label = "Delete Subdivision Surface"
+	bl_description = "Remove Subdivision Surface modifiers from the selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -449,8 +451,8 @@ class DeleteSubsurf(bpy.types.Operator):
 
 class AddSubsurf(bpy.types.Operator):
 	bl_idname = "object.add_subsurf"
-	bl_label = "Add Subsurfs selected objects"
-	bl_description = "Add subsurfmodifaia to selected object"
+	bl_label = "Add Subdivision Surface"
+	bl_description = "Add Subdivision Surface modifiers to the selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	subdivision_type : EnumProperty(items=[("CATMULL_CLARK", "Catmulclark", "", 1), ("SIMPLE", "Simple", "", 2)], name="Subdivision Method")
@@ -482,8 +484,8 @@ class AddSubsurf(bpy.types.Operator):
 
 class SetArmatureDeformPreserveVolume(bpy.types.Operator):
 	bl_idname = "object.set_armature_deform_preserve_volume"
-	bl_label = "Set armature \"Preserve Volume\""
-	bl_description = "Armtuamodifaia selected objects keep volume together off and on the"
+	bl_label = "Set 'Preserve Volume' property"
+	bl_description = "Set 'Preserve Volume' property of the selected objects' Armature modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [('1', "Enable", "", 1),('0', "Disable", "", 2)]
@@ -515,8 +517,8 @@ class SetArmatureDeformPreserveVolume(bpy.types.Operator):
 
 class QuickCurveDeform(bpy.types.Operator):
 	bl_idname = "object.quick_curve_deform"
-	bl_label = "Quick Curve Transform"
-	bl_description = "Quickly apply curve modifier"
+	bl_label = "Add Curve"
+	bl_description = "Add to the active object Curve modifier that refers to the selected curve object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -547,7 +549,7 @@ class QuickCurveDeform(bpy.types.Operator):
 					curve_obj = obj
 					break
 		else:
-			self.report(type={'ERROR'}, message="Curve objects run in selected state")
+			self.report(type={'ERROR'}, message="Please run selecting curve object")
 			return {'CANCELLED'}
 		curve = curve_obj.data
 		pre_use_stretch = curve.use_stretch
@@ -568,8 +570,8 @@ class QuickCurveDeform(bpy.types.Operator):
 
 class QuickArrayAndCurveDeform(bpy.types.Operator):
 	bl_idname = "object.quick_array_and_curve_deform"
-	bl_label = "Quick Array + Curve Transform"
-	bl_description = "Quickly apply curve modifier with modifiers array replication"
+	bl_label = "Add Array and Curve"
+	bl_description = "Add to the active object Array modifier and Curve modifier that refers to the selected curve object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -601,7 +603,7 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 					curve_obj = obj
 					break
 		else:
-			self.report(type={'ERROR'}, message="Curve objects run in selected state")
+			self.report(type={'ERROR'}, message="Please run selecting curve object")
 			return {'CANCELLED'}
 		curve = curve_obj.data
 		pre_use_stretch = curve.use_stretch
@@ -648,8 +650,8 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 
 class ModifierMenu(bpy.types.Menu):
 	bl_idname = "DATA_MT_modifiers_specials"
-	bl_label = "Modifier Actions"
-	bl_description = "Modifiers"
+	bl_label = "Modifier manipulation"
+	bl_description = "Manipulate Subsurf / Armature / Boolean / Curve Modifiers"
 
 	def draw(self, context):
 		self.layout.menu(SubsurfMenu.bl_idname, icon='PLUGIN')
@@ -662,7 +664,7 @@ class ModifierMenu(bpy.types.Menu):
 class SubsurfMenu(bpy.types.Menu):
 	bl_idname = "DATA_MT_modifiers_subsurf"
 	bl_label = "Subsurf"
-	bl_description = "Subsurface Operations"
+	bl_description = "Manipulate Subdivision Surface modifier"
 
 	def draw(self, context):
 		self.layout.operator(AddSubsurf.bl_idname, icon='PLUGIN')
@@ -675,21 +677,21 @@ class SubsurfMenu(bpy.types.Menu):
 class BooleanMenu(bpy.types.Menu):
 	bl_idname = "DATA_MT_modifiers_boolean"
 	bl_label = "Boolean"
-	bl_description = "Boolean Operations"
+	bl_description = "Manipulate Boolean modifier"
 
 	def draw(self, context):
-		self.layout.operator(AddBoolean.bl_idname, icon='PLUGIN', text="Boolean Add (Intersect)").mode = "INTERSECT"
-		self.layout.operator(AddBoolean.bl_idname, icon='PLUGIN', text="Boolean Add (Union)").mode = "UNION"
-		self.layout.operator(AddBoolean.bl_idname, icon='PLUGIN', text="Boolean Add (Difference)").mode = "DIFFERENCE"
+		self.layout.operator(AddBoolean.bl_idname, icon='PLUGIN', text="Add Boolean (Intersect)").mode = "INTERSECT"
+		self.layout.operator(AddBoolean.bl_idname, icon='PLUGIN', text="Add Boolean (Union)").mode = "UNION"
+		self.layout.operator(AddBoolean.bl_idname, icon='PLUGIN', text="Add Boolean (Difference)").mode = "DIFFERENCE"
 		self.layout.separator()
-		self.layout.operator(ApplyBoolean.bl_idname, icon='PLUGIN', text="Boolean Apply (Intersect)").mode = "INTERSECT"
-		self.layout.operator(ApplyBoolean.bl_idname, icon='PLUGIN', text="Boolean Apply (Union)").mode = "UNION"
-		self.layout.operator(ApplyBoolean.bl_idname, icon='PLUGIN', text="Boolean Apply (Difference)").mode = "DIFFERENCE"
+		self.layout.operator(ApplyBoolean.bl_idname, icon='PLUGIN', text="Add and Apply Boolean (Intersect)").mode = "INTERSECT"
+		self.layout.operator(ApplyBoolean.bl_idname, icon='PLUGIN', text="Add and Apply Boolean (Union)").mode = "UNION"
+		self.layout.operator(ApplyBoolean.bl_idname, icon='PLUGIN', text="Add and Apply Boolean (Difference)").mode = "DIFFERENCE"
 
 class ArmatureMenu(bpy.types.Menu):
 	bl_idname = "DATA_MT_modifiers_armature"
 	bl_label = "Armature"
-	bl_description = "Armatures"
+	bl_description = "Manipulate Armature modifier"
 
 	def draw(self, context):
 		self.layout.operator(SetArmatureDeformPreserveVolume.bl_idname, icon='PLUGIN')
@@ -697,7 +699,7 @@ class ArmatureMenu(bpy.types.Menu):
 class CurveMenu(bpy.types.Menu):
 	bl_idname = "DATA_MT_modifiers_curve"
 	bl_label = "Curve"
-	bl_description = "Curve Operators"
+	bl_description = "Manipulate Curve modifier"
 
 	def draw(self, context):
 		self.layout.operator(QuickCurveDeform.bl_idname, icon='PLUGIN')
@@ -764,10 +766,9 @@ def menu(self, context):
 				row.operator(ApplyAllModifiers.bl_idname, icon='IMPORT', text="Apply All")
 				row.operator(DeleteAllModifiers.bl_idname, icon='X', text="Delete All")
 				row = col.row(align=True)
-				row.operator(ToggleApplyModifiersView.bl_idname, icon='RESTRICT_VIEW_OFF', text="View")
-				row.operator(ToggleAllShowExpanded.bl_idname, icon='FULLSCREEN_ENTER', text="Expand/Close")
-				row.operator(SyncShowModifiers.bl_idname, icon='LINKED', text="Use Sync")
-		self.layout.menu(ModifierMenu.bl_idname, icon='PLUGIN')
+				row.operator(ToggleApplyModifiersView.bl_idname, icon='RESTRICT_VIEW_OFF', text="Show / Hide")
+				row.operator(ToggleAllShowExpanded.bl_idname, icon='FULLSCREEN_ENTER', text="Expand / Close")
+				row.operator(SyncShowModifiers.bl_idname, icon='LINKED', text="Match Display State")
 		#self.layout.menu(ModifierMenu.bl_idname, icon='PLUGIN')
 		sp = self.layout.split(factor=0.9)
 		row = sp.row()
