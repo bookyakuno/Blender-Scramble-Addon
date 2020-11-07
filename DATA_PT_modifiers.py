@@ -307,7 +307,7 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 		("1", "1", "", 1), ("2", "2", "", 2), ("3", "3", "", 3),
 		("4", "4", "", 4), ("5", "5", "", 5)
 		]
-	level_enum : EnumProperty(items=items, name="preset_level")
+	level_enum : EnumProperty(items=items, name="preset_level", default="2")
 
 	@classmethod
 	def poll(cls, context):
