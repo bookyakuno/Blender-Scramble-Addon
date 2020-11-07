@@ -99,7 +99,7 @@ class copy_geometry_settings(bpy.types.Operator):
 		row = box.row()
 		row.prop(self, 'bevel_factor_start')
 		row.prop(self, 'bevel_factor_end')
-		row = box.row()		
+		row = box.row()
 		row.prop(self, 'bevel_factor_mapping_start')
 		row.prop(self, 'bevel_factor_mapping_end')
 
