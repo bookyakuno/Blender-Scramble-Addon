@@ -74,8 +74,9 @@ class ShowGroupLayers(bpy.types.Operator):
 		bpy.ops.pose.select_all(action='DESELECT')
 		bpy.ops.pose.group_select()
 		for b in context.selected_pose_bones:
-			arr = np.array(b.bone.layers[:], dtype=np.float16)
-			bone_layers.append(arr)
+			if b.bone.layers not in bone_layers:
+				arr = np.array(b.bone.layers[:], dtype=np.float16)
+				bone_layers.append(arr)
 		summation = np.array([False]*32, dtype=np.float16)
 		for i in range(len(bone_layers)):
 			summation = summation + bone_layers[i]
@@ -98,6 +99,13 @@ class ShowLayersforGroups(bpy.types.Operator):
 	bl_label = "Show selected bone group's layers"
 	bl_description = "Show layers containing the selected pose group"
 	bl_options = {'REGISTER'}
+
+	@classmethod
+	def poll(cls, context):
+		if (context.object):
+			if len(context.active_object.pose.bone_groups) > 0:
+				return True
+		return False
 
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
