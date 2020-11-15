@@ -10,8 +10,8 @@ from bpy.props import *
 
 class RenameSpecificNameUV(bpy.types.Operator):
 	bl_idname = "object.rename_specific_name_uv"
-	bl_label = "Altogether Rename UV"
-	bl_description = "Renames selected objects within designated UV together"
+	bl_label = "Rename specific UVs Together"
+	bl_description = "Rename the selected objects' UV Maps with specific name to the designated one"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	source_name : StringProperty(name="Rename UV Name", default="Past UV")
@@ -26,7 +26,7 @@ class RenameSpecificNameUV(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type != 'MESH'):
-				self.report(type={'WARNING'}, message=obj.name+" mesh object, ignore")
+				self.report(type={'WARNING'}, message=obj.name+" is ignored because it is not mesh")
 				continue
 			me = obj.data
 			for uv in me.uv_layers[:]:
@@ -39,8 +39,8 @@ class RenameSpecificNameUV(bpy.types.Operator):
 
 class DeleteSpecificNameUV(bpy.types.Operator):
 	bl_idname = "object.delete_specific_name_uv"
-	bl_label = "Delete UVs specify name"
-	bl_description = "Removes selection from UV same name as specified"
+	bl_label = "Delete specific UVs together"
+	bl_description = "Removes the selected objects' UV Maps with specific name"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	name : StringProperty(name="Remove UV Name", default="UV")
@@ -53,7 +53,7 @@ class DeleteSpecificNameUV(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type != 'MESH'):
-				self.report(type={'WARNING'}, message=obj.name+" mesh object, ignore")
+				self.report(type={'WARNING'}, message=obj.name+" is ignored because it is not mesh")
 				continue
 			me = obj.data
 			for uv in me.uv_layers:
@@ -256,8 +256,8 @@ class MoveActiveUV(bpy.types.Operator):
 
 class UVMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_uv"
-	bl_label = "UV Operations"
-	bl_description = "UV Operations"
+	bl_label = "Bulk Manipulation"
+	bl_description = "Manipulate selected objects' UV Maps together"
 
 	def draw(self, context):
 		self.layout.operator(RenameSpecificNameUV.bl_idname, icon="PLUGIN")
