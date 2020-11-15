@@ -11,7 +11,7 @@ from bpy.props import *
 class MoveActiveVertexColor(bpy.types.Operator):
 	bl_idname = "object.move_active_vertex_color"
 	bl_label = "Move Vertex Color"
-	bl_description = "Move vertex color of active objects, sorts"
+	bl_description = "Move up or down the active vertex color layer"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -63,7 +63,7 @@ class MoveActiveVertexColor(bpy.types.Operator):
 class VertexColorSet(bpy.types.Operator):
 	bl_idname = "object.vertex_color_set"
 	bl_label = "Fill Vertex Color"
-	bl_description = "Vertex color of active object with specified color fills"
+	bl_description = "Fill the active vertex color layer with the specified color"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	color : FloatVectorProperty(name="Vertex Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=3, precision=10, subtype='COLOR_GAMMA')
@@ -93,8 +93,8 @@ class VertexColorSet(bpy.types.Operator):
 
 class AddVertexColorSelectedObject(bpy.types.Operator):
 	bl_idname = "object.add_vertex_color_selected_object"
-	bl_label = "Altogether add vertex colors"
-	bl_description = "Specify color and name all selected mesh object, adds vertex color"
+	bl_label = "Add Vertex Colors Together"
+	bl_description = "Add vertex colors with specified color and name to the selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	name : StringProperty(name="Vertex Color Name", default="Col")
@@ -128,8 +128,8 @@ class AddVertexColorSelectedObject(bpy.types.Operator):
 
 class SubMenu(bpy.types.Menu):
 	bl_idname = "DATA_MT_vertex_colors_sub_menu"
-	bl_label = "Vertex Color Operation"
-	bl_description = "Vertex color operators menu"
+	bl_label = "Bulk Manipulation"
+	bl_description = "Manipulate selected objects' vertex colors together"
 
 	def draw(self, context):
 		self.layout.operator(AddVertexColorSelectedObject.bl_idname, icon='PLUGIN')
