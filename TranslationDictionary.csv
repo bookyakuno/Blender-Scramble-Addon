@@ -1273,7 +1273,7 @@
 "アクティブなカーブのシェイプ設定を、他の選択カーブにコピーします","Copy active curve's shape settings to other selected curves"
 "シェイプキーの名前をオブジェクト名と同じにします","Same as object name name of shape key"
 "全てのボーンレイヤーを表示します","Show all bone layers"
-"選択されたボーングループを含むレイヤーを表示","Show layers containing the selected pose group"
+"選択されたボーングループを含むレイヤーを表示します","Show layers containing the selected pose group"
 "選択オブジェクト内の指定UVをまとめて改名します","Renames selected objects within designated UV together"
 " はメッシュオブジェクトではありません、無視します"," mesh object, ignore"
 "指定した名前と同じ名のUVを、選択オブジェクトから削除します","Removes selection from UV same name as specified"
