@@ -31,16 +31,7 @@ class MoveActiveVertexColor(bpy.types.Operator):
 
 	def execute(self, context):
 		obj = context.active_object
-		if (not obj):
-			self.report(type={'ERROR'}, message="There is no active object")
-			return {'CANCELLED'}
-		if (obj.type != 'MESH'):
-			self.report(type={'ERROR'}, message="This is not mesh object")
-			return {'CANCELLED'}
 		me = obj.data
-		if (len(me.vertex_colors) <= 1):
-			self.report(type={'ERROR'}, message="Vertex color is less than one")
-			return {'CANCELLED'}
 		if (self.mode == 'UP'):
 			if (me.vertex_colors.active_index <= 0):
 				return {'CANCELLED'}
@@ -87,18 +78,6 @@ class VertexColorSet(bpy.types.Operator):
 		return False
 
 	def invoke(self, context, event):
-		obj = context.active_object
-		if (not obj):
-			self.report(type={'ERROR'}, message="There is no active object")
-			return {'CANCELLED'}
-		if (obj.type != 'MESH'):
-			self.report(type={'ERROR'}, message="This is not mesh object")
-			return {'CANCELLED'}
-		me = obj.data
-		active_col = me.vertex_colors.active
-		if (not active_col):
-			self.report(type={'ERROR'}, message="Vertex color not exist")
-			return {'CANCELLED'}
 		return context.window_manager.invoke_props_dialog(self)
 
 	def execute(self, context):
@@ -196,7 +175,8 @@ def menu(self, context):
 				sub = row.row(align=True)
 				sub.operator(MoveActiveVertexColor.bl_idname, icon='TRIA_UP', text="").mode = 'UP'
 				sub.operator(MoveActiveVertexColor.bl_idname, icon='TRIA_DOWN', text="").mode = 'DOWN'
-				row.operator(VertexColorSet.bl_idname, icon='BRUSH_DATA', text="Paint Out")
-		row.menu(SubMenu.bl_idname, icon='PLUGIN')
+				row.operator(VertexColorSet.bl_idname, icon='BRUSH_DATA', text="Fill Vertices")
+				row.operator(AddVertexColorSelectedObject.bl_idname, icon='PLUGIN', text="Add Together")
+		#row.menu(SubMenu.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
