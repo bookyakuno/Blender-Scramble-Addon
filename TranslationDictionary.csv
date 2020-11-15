@@ -1282,7 +1282,7 @@
 "アクティブなUVの名前を変更します(テクスチャのUV指定もそれに伴って変更します)","Renames active UV (UV texture also changes accordingly)"
 "アクティブなオブジェクトのマテリアルで未使用なUVを全削除します(他の部分に使われているUVは消してしまいます)","Active object material (UV is used in other parts disappear) delete unused UV coordinates to all"
 "アクティブなオブジェクトのUVのうち、選択されていないものを削除します","Remove Unselected UV Maps of the active object"
-"アクティブなオブジェクトのUVを上下に移動します","Move the UV up or down of the active object"
+"アクティブなUVを上下に移動します","Move up or down the active UV Map"
 "アクティブな頂点カラーレイヤーを上下に移動します","Move up or down the active vertex color layer"
 "これはメッシュオブジェクトではありません","This is not mesh object"
 "アクティブな頂点カラーレイヤーを指定色で塗り潰します","Fill the active vertex color layer with the specified color"
