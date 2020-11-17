@@ -10,8 +10,8 @@ from bpy.props import *
 
 class DeleteUnmessage(bpy.types.Operator):
 	bl_idname = "action.delete_unmessage"
-	bl_label = "Delete KeyFrames (Non-Confirm)"
-	bl_description = "Delete without checking all selected keyframes"
+	bl_label = "Delete KeyFrames (without confirming)"
+	bl_description = "Remove all selected keyframes without displaying the confirmation message"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -20,8 +20,8 @@ class DeleteUnmessage(bpy.types.Operator):
 
 class CreanEX(bpy.types.Operator):
 	bl_idname = "action.crean_ex"
-	bl_label = "Cleaning up all keyframes"
-	bl_description = "Remove keyframe duplicates for all actions"
+	bl_label = "Delete Value-overlapping keyframes"
+	bl_description = "Remove Value-overlapping keyframes of the displayed objects' actions"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	keep_fcurves : BoolProperty(name="Except One Key", default=False)
