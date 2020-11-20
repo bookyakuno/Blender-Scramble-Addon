@@ -283,9 +283,6 @@ class BlurImage(bpy.types.Operator):
 
 	def execute(self, context):
 		img = context.edit_image
-		if (not img):
-			self.report(type={'ERROR'}, message="Active image not found")
-			return {'CANCELLED'}
 		w, h, c = img.size[0], img.size[1], img.channels
 		ps = numpy.array(img.pixels)
 		lengthes = []
@@ -340,9 +337,6 @@ class ReverseWidthImage(bpy.types.Operator):
 
 	def execute(self, context):
 		img = context.edit_image
-		if (not img):
-			self.report(type={'ERROR'}, message="Active image not found")
-			return {'CANCELLED'}
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
 		pixels = numpy.array(img.pixels).reshape(img_height, img_width, img_channel)
 		#for i in range(img_height):
@@ -370,9 +364,6 @@ class ReverseHeightImage(bpy.types.Operator):
 
 	def execute(self, context):
 		img = context.edit_image
-		if (not img):
-			self.report(type={'ERROR'}, message="Active image not found")
-			return {'CANCELLED'}
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
 		pixels = numpy.array(img.pixels).reshape(img_height, img_width, img_channel)
 		pixels = pixels[::-1]
@@ -426,9 +417,6 @@ class Rotate180Image(bpy.types.Operator):
 
 	def execute(self, context):
 		img = context.edit_image
-		if (not img):
-			self.report(type={'ERROR'}, message="Active image not found")
-			return {'CANCELLED'}
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
 		pixels = numpy.array(img.pixels).reshape(img_height, img_width, img_channel)
 		pixels[:,:] = pixels[:,::-1]
@@ -485,12 +473,6 @@ class ExternalEditEX(bpy.types.Operator):
 
 	def execute(self, context):
 		img = context.edit_image
-		if (not img):
-			self.report(type={'ERROR'}, message="Image Not Found")
-			return {'CANCELLED'}
-		if (img.filepath == ""):
-			self.report(type={'ERROR'}, message="Cannot find image path")
-			return {'CANCELLED'}
 		path = bpy.path.abspath(img.filepath)
 		pre_path = context.preferences.filepaths.image_editor
 		if (self.index == 1):
@@ -683,6 +665,13 @@ class Tiles(bpy.types.Operator):
 
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, count):
+		row = self.layout.split(factor=0.3)
+		sp = row.split(factor=0.2)
+		sp.label(text="")
+		sp.label(text="Number of Tiles")
+		row.prop(self, "count", text="")
+		row.label(text=f" * {self.count} = {self.count * self.count}")
 
 	def execute(self, context):
 		img = context.edit_image
@@ -843,7 +832,7 @@ class Clipping(bpy.types.Operator):
 	def invoke(self, context, event):
 		img = context.edit_image
 		self.width, self.height = img.size[0], img.size[1]
-		return context.window_manager.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_dialog(self, width=400)
 
 	def execute(self, context):
 		img = context.edit_image
