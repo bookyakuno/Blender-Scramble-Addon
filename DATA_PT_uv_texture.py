@@ -10,8 +10,8 @@ from bpy.props import *
 
 class RenameSpecificNameUV(bpy.types.Operator):
 	bl_idname = "object.rename_specific_name_uv"
-	bl_label = "Altogether Rename UV"
-	bl_description = "Renames selected objects within designated UV together"
+	bl_label = "Rename specific UVs Together"
+	bl_description = "Rename the selected objects' UV Maps with specific name to the designated one"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	source_name : StringProperty(name="Rename UV Name", default="Past UV")
@@ -26,7 +26,7 @@ class RenameSpecificNameUV(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type != 'MESH'):
-				self.report(type={'WARNING'}, message=obj.name+" mesh object, ignore")
+				self.report(type={'WARNING'}, message=obj.name+" is ignored because it is not mesh")
 				continue
 			me = obj.data
 			for uv in me.uv_layers[:]:
@@ -39,8 +39,8 @@ class RenameSpecificNameUV(bpy.types.Operator):
 
 class DeleteSpecificNameUV(bpy.types.Operator):
 	bl_idname = "object.delete_specific_name_uv"
-	bl_label = "Delete UVs specify name"
-	bl_description = "Removes selection from UV same name as specified"
+	bl_label = "Delete specific UVs together"
+	bl_description = "Removes the selected objects' UV Maps with specific name"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	name : StringProperty(name="Remove UV Name", default="UV")
@@ -53,7 +53,7 @@ class DeleteSpecificNameUV(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type != 'MESH'):
-				self.report(type={'WARNING'}, message=obj.name+" mesh object, ignore")
+				self.report(type={'WARNING'}, message=obj.name+" is ignored because it is not mesh")
 				continue
 			me = obj.data
 			for uv in me.uv_layers:
@@ -62,7 +62,7 @@ class DeleteSpecificNameUV(bpy.types.Operator):
 		return {'FINISHED'}
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-
+"""
 class RenameUV(bpy.types.Operator):
 	bl_idname = "object.rename_uv"
 	bl_label = "Rename UV"
@@ -155,6 +155,35 @@ class DeleteEmptyUV(bpy.types.Operator):
 			else:
 				self.report(type={"WARNING"}, message=obj.name+" is not mesh object")
 		return {'FINISHED'}
+"""
+class RemoveUnselectedUV(bpy.types.Operator):
+	bl_idname = "object.remove_unselected_uv"
+	bl_label = "Remove Unselected UV"
+	bl_description = "Remove Unselected UV Maps"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	@classmethod
+	def poll(cls, context):
+		obj = context.active_object
+		if (not obj):
+			return False
+		if (obj.type != 'MESH'):
+			return False
+		me = obj.data
+		if (len(me.uv_layers) == 0):
+			return False
+		return True
+
+	def execute(self, context):
+		me = context.active_object.data
+		#uv_layersにおいて、要素が削除されるとactiveが更新され頂点グループなどがuv_layersに追加されるバグ？があるので、name要素を指定してuv_layersへの参照を切る		
+		pre_uv_name = me.uv_layers.active.name
+		uv_names = [a.name for a in me.uv_layers]
+		for uv in uv_names:
+			if uv != pre_uv_name:
+				me.uv_layers.remove(me.uv_layers[uv])
+		me.uv_layers.active = me.uv_layers[pre_uv_name]
+		return {'FINISHED'}
 
 class MoveActiveUV(bpy.types.Operator):
 	bl_idname = "object.move_active_uv"
@@ -227,12 +256,10 @@ class MoveActiveUV(bpy.types.Operator):
 
 class UVMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_uv"
-	bl_label = "UV Operations"
-	bl_description = "UV Operations"
+	bl_label = "Bulk Manipulation"
+	bl_description = "Manipulate selected objects' UV Maps together"
 
 	def draw(self, context):
-		self.layout.operator(DeleteEmptyUV.bl_idname, icon="PLUGIN")
-		self.layout.separator()
 		self.layout.operator(RenameSpecificNameUV.bl_idname, icon="PLUGIN")
 		self.layout.operator(DeleteSpecificNameUV.bl_idname, icon="PLUGIN")
 
@@ -243,8 +270,9 @@ class UVMenu(bpy.types.Menu):
 classes = [
 	RenameSpecificNameUV,
 	DeleteSpecificNameUV,
-	RenameUV,
-	DeleteEmptyUV,
+	#RenameUV,
+	#DeleteEmptyUV,
+	RemoveUnselectedUV,
 	MoveActiveUV,
 	UVMenu
 ]
@@ -279,7 +307,8 @@ def menu(self, context):
 				sub = row.row(align=True)
 				sub.operator(MoveActiveUV.bl_idname, icon='TRIA_UP', text="").mode = 'UP'
 				sub.operator(MoveActiveUV.bl_idname, icon='TRIA_DOWN', text="").mode = 'DOWN'
-				row.operator(RenameUV.bl_idname, icon="PLUGIN")
+				#row.operator(RenameUV.bl_idname, icon="PLUGIN")
+				row.operator(RemoveUnselectedUV.bl_idname, icon="PLUGIN")
 				row.menu(UVMenu.bl_idname, icon="PLUGIN")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

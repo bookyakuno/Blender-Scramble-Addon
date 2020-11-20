@@ -10,8 +10,8 @@ from bpy.props import *
 
 class MoveActivePose(bpy.types.Operator):
 	bl_idname = "poselib.move_active_pose"
-	bl_label = "Pose Library Sort"
-	bl_description = "Sorts by posing for an active pose library"
+	bl_label = "Move Pose"
+	bl_description = "Move the pose up or down in the active Pose Library"
 	bl_options = {'REGISTER'}
 
 	is_up : BoolProperty(name="To Up", default=False)
@@ -51,8 +51,8 @@ class MoveActivePose(bpy.types.Operator):
 
 class MoveActivePoseMost(bpy.types.Operator):
 	bl_idname = "poselib.move_active_pose_most"
-	bl_label = "To top/bottom pose of library"
-	bl_description = "Active pose of pose library moves to top/bottom"
+	bl_label = "Move Pose to Top / Bottom"
+	bl_description = "Move the pose to top or bottom of the active pose library"
 	bl_options = {'REGISTER'}
 
 	is_top : BoolProperty(name="To Top", default=False)
@@ -113,9 +113,12 @@ def menu(self, context):
 		if (context.object):
 			if (context.object.pose_library):
 				if (len(context.object.pose_library.pose_markers)):
-					row = self.layout.row(align=True)
+					sp = self.layout.split(factor=0.15)
+					row = sp.row()
+					row.alignment = 'CENTER'
 					row.operator(MoveActivePose.bl_idname, icon='TRIA_UP', text="").is_up = True
 					row.operator(MoveActivePose.bl_idname, icon='TRIA_DOWN', text="").is_up = False
+					row = sp.row()
 					row.operator(MoveActivePoseMost.bl_idname, icon='TRIA_UP_BAR', text="To Top").is_top = True
 					row.operator(MoveActivePoseMost.bl_idname, icon='TRIA_DOWN_BAR', text="To Bottom").is_top = False
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):

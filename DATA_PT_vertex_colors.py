@@ -11,7 +11,7 @@ from bpy.props import *
 class MoveActiveVertexColor(bpy.types.Operator):
 	bl_idname = "object.move_active_vertex_color"
 	bl_label = "Move Vertex Color"
-	bl_description = "Move vertex color of active objects, sorts"
+	bl_description = "Move up or down the active vertex color layer"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -31,16 +31,7 @@ class MoveActiveVertexColor(bpy.types.Operator):
 
 	def execute(self, context):
 		obj = context.active_object
-		if (not obj):
-			self.report(type={'ERROR'}, message="There is no active object")
-			return {'CANCELLED'}
-		if (obj.type != 'MESH'):
-			self.report(type={'ERROR'}, message="This is not mesh object")
-			return {'CANCELLED'}
 		me = obj.data
-		if (len(me.vertex_colors) <= 1):
-			self.report(type={'ERROR'}, message="Vertex color is less than one")
-			return {'CANCELLED'}
 		if (self.mode == 'UP'):
 			if (me.vertex_colors.active_index <= 0):
 				return {'CANCELLED'}
@@ -72,7 +63,7 @@ class MoveActiveVertexColor(bpy.types.Operator):
 class VertexColorSet(bpy.types.Operator):
 	bl_idname = "object.vertex_color_set"
 	bl_label = "Fill Vertex Color"
-	bl_description = "Vertex color of active object with specified color fills"
+	bl_description = "Fill the active vertex color layer with the specified color"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	color : FloatVectorProperty(name="Vertex Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=3, precision=10, subtype='COLOR_GAMMA')
@@ -87,18 +78,6 @@ class VertexColorSet(bpy.types.Operator):
 		return False
 
 	def invoke(self, context, event):
-		obj = context.active_object
-		if (not obj):
-			self.report(type={'ERROR'}, message="There is no active object")
-			return {'CANCELLED'}
-		if (obj.type != 'MESH'):
-			self.report(type={'ERROR'}, message="This is not mesh object")
-			return {'CANCELLED'}
-		me = obj.data
-		active_col = me.vertex_colors.active
-		if (not active_col):
-			self.report(type={'ERROR'}, message="Vertex color not exist")
-			return {'CANCELLED'}
 		return context.window_manager.invoke_props_dialog(self)
 
 	def execute(self, context):
@@ -114,8 +93,8 @@ class VertexColorSet(bpy.types.Operator):
 
 class AddVertexColorSelectedObject(bpy.types.Operator):
 	bl_idname = "object.add_vertex_color_selected_object"
-	bl_label = "Altogether add vertex colors"
-	bl_description = "Specify color and name all selected mesh object, adds vertex color"
+	bl_label = "Add Vertex Colors Together"
+	bl_description = "Add vertex colors with specified color and name to the selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	name : StringProperty(name="Vertex Color Name", default="Col")
@@ -149,8 +128,8 @@ class AddVertexColorSelectedObject(bpy.types.Operator):
 
 class SubMenu(bpy.types.Menu):
 	bl_idname = "DATA_MT_vertex_colors_sub_menu"
-	bl_label = "Vertex Color Operation"
-	bl_description = "Vertex color operators menu"
+	bl_label = "Bulk Manipulation"
+	bl_description = "Manipulate selected objects' vertex colors together"
 
 	def draw(self, context):
 		self.layout.operator(AddVertexColorSelectedObject.bl_idname, icon='PLUGIN')
@@ -196,7 +175,8 @@ def menu(self, context):
 				sub = row.row(align=True)
 				sub.operator(MoveActiveVertexColor.bl_idname, icon='TRIA_UP', text="").mode = 'UP'
 				sub.operator(MoveActiveVertexColor.bl_idname, icon='TRIA_DOWN', text="").mode = 'DOWN'
-				row.operator(VertexColorSet.bl_idname, icon='BRUSH_DATA', text="Paint Out")
-		row.menu(SubMenu.bl_idname, icon='PLUGIN')
+				row.operator(VertexColorSet.bl_idname, icon='BRUSH_DATA', text="Fill Vertices")
+				row.operator(AddVertexColorSelectedObject.bl_idname, icon='PLUGIN', text="Add Together")
+		#row.menu(SubMenu.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
