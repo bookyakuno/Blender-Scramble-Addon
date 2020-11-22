@@ -14,18 +14,18 @@ class ConvertMesh(bpy.types.Operator):
 	bl_description = "Converts new mesh to UV active"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	@classmethod
+	def poll(cls, context):
+		if (not context.object):
+			return False
+		if (context.object.type != 'MESH'):
+			return False
+		if (not context.object.data.uv_layers.active):
+			return False
+		return True
 	def execute(self, context):
 		obj = context.object
-		if (not obj):
-			self.report(type={'ERROR'}, message="An active object is not found")
-			return {'CANCELLED'}
-		if (obj.type != 'MESH'):
-			self.report(type={'ERROR'}, message="This is not mesh object")
-			return {'CANCELLED'}
 		me = obj.data
-		if (not me.uv_layers.active):
-			self.report(type={'ERROR'}, message="UV cannot be found")
-			return {'CANCELLED'}
 		bpy.ops.object.mode_set(mode='OBJECT')
 		bpy.ops.object.select_all(action='DESELECT')
 
