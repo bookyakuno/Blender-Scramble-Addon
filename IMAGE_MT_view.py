@@ -28,19 +28,7 @@ class Reset2DCursor(bpy.types.Operator):
 	mode : EnumProperty(items=items, name="Location", default="LD")
 
 	def execute(self, context):
-		if (bpy.context.edit_image):
-			x, y = (1.0, 1.0)
-		else:
-			x = 1.0
-			y = 1.0
-
-		area = None
-		for area in bpy.context.screen.areas:
-			if area.type == 'IMAGE_EDITOR':
-				area
-		if not area:
-			self.report({'INFO'}, "Not found Image Editor !!")
-			return{'FINISHED'}
+		x, y = (1.0, 1.0)
 		if (self.mode == "C"):
 			bpy.ops.uv.cursor_set(location=(x/2, y/2))
 		elif (self.mode == "U"):
@@ -59,6 +47,41 @@ class Reset2DCursor(bpy.types.Operator):
 			bpy.ops.uv.cursor_set(location=(0, y/2))
 		elif (self.mode == "LU"):
 			bpy.ops.uv.cursor_set(location=(0, y))
+		return {'FINISHED'}
+
+class Reset2DCursorForPanel(bpy.types.Operator):
+	bl_idname = "image.reset_2d_cursor_for_panel"
+	bl_label = "Set 2DCursor Position"
+	bl_description = "Move 2D cursor to a designated position"
+
+	@classmethod
+	def poll(cls, context):
+		for a in bpy.context.screen.areas:
+			if a.type == 'IMAGE_EDITOR':
+				area = a
+		if area.spaces[0].mode != 'UV':
+			return False
+		return True
+	def invoke(self, context, event):
+		wm = context.window_manager
+		return wm.invoke_popup(self)
+
+	def draw(self, context):
+		row = self.layout.split(factor=0.33)
+		col = row.column()
+		col.operator(Reset2DCursor.bl_idname, text="Top Left").mode = 'LU'
+		col.operator(Reset2DCursor.bl_idname, text="Left").mode = 'L'
+		col.operator(Reset2DCursor.bl_idname, text="Down Left").mode = 'LD'
+		col = row.column()
+		col.operator(Reset2DCursor.bl_idname, text="Up").mode = 'U'
+		col.operator(Reset2DCursor.bl_idname, text="Center").mode = 'C'
+		col.operator(Reset2DCursor.bl_idname, text="Down").mode = 'D'
+		col = row.column()
+		col.operator(Reset2DCursor.bl_idname, text="Top Right").mode = 'RU'
+		col.operator(Reset2DCursor.bl_idname, text="Right").mode = 'R'
+		col.operator(Reset2DCursor.bl_idname, text="Down Right").mode = 'RD'
+
+	def execute(self, context):
 		return {'FINISHED'}
 
 class TogglePanelsA(bpy.types.Operator):
@@ -144,7 +167,6 @@ class panel_pie_operator(bpy.types.Operator):
 class PanelPie(bpy.types.Menu): #
 	bl_idname = "IMAGE_MT_view_pie_panel"
 	bl_label = "Switch panel pie menu"
-	bl_description = "Toggle panel pie menu"
 
 	def draw(self, context):
 		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Toolbar", icon='TRIA_LEFT')
@@ -198,24 +220,6 @@ class ShortcutsMenu(bpy.types.Menu):
 		self.layout.separator()
 		self.layout.operator(panel_pie_operator.bl_idname, icon='PLUGIN')
 
-class Reset2DCursorMenu(bpy.types.Menu):
-	bl_idname = "IMAGE_MT_view_reset_2d_cursor"
-	bl_label = "Reset Cursor Position"
-	bl_description = "Reset Cursor Position"
-
-	def draw(self, context):
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Up").mode = 'U'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Right").mode = 'R'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Down").mode = 'D'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Left").mode = 'L'
-		self.layout.separator()
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Top Right").mode = 'RU'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Down Right").mode = 'RD'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Down Left").mode = 'LD'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Top Left").mode = 'LU'
-		self.layout.separator()
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Center").mode = 'C'
-
 ################
 # クラスの登録 #
 ################
@@ -229,7 +233,7 @@ classes = [
 	PanelPie,
 	run_panel_pie,
 	ShortcutsMenu,
-	Reset2DCursorMenu
+	Reset2DCursorForPanel
 ]
 
 def register():
@@ -257,7 +261,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.menu(Reset2DCursorMenu.bl_idname, icon='PLUGIN')
+		self.layout.operator(Reset2DCursorForPanel.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.menu(ShortcutsMenu.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
