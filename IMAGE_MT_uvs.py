@@ -10,8 +10,8 @@ from bpy.props import *
 
 class ConvertMesh(bpy.types.Operator):
 	bl_idname = "uv.convert_mesh"
-	bl_label = "Convert UV to mesh"
-	bl_description = "Converts new mesh to UV active"
+	bl_label = "Convert UV to Plane Mesh"
+	bl_description = "Convert the active UV to a plane mesh object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -114,10 +114,10 @@ class ConvertMesh(bpy.types.Operator):
 class scale_uv_parts(bpy.types.Operator):
 	bl_idname = "uv.scale_uv_parts"
 	bl_label = "Resize UV Islands"
-	bl_description = "UV island into central position and resize"
+	bl_description = "Resize UV island using their median points as scaling pivots"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	scale : FloatProperty(name="Size", default=0.9, min=0, max=10, soft_min=0, soft_max=10, step=3, precision=2)
+	scale : FloatProperty(name="Scale Factor", default=0.9, min=0, max=10, soft_min=0, soft_max=10, step=3, precision=2)
 	items = [
 		('MEDIAN', "Median Point", "", 1),
 		('CENTER', "Bounding Box Center", "", 2),

@@ -10,8 +10,8 @@ from bpy.props import *
 
 class Reset2DCursor(bpy.types.Operator):
 	bl_idname = "image.reset_2d_cursor"
-	bl_label = "Reset Cursor Position"
-	bl_description = "Move 2D cursor in lower left"
+	bl_label = "Set 2DCursor Position"
+	bl_description = "Move 2D cursor to a designated position"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -86,8 +86,8 @@ class Reset2DCursorForPanel(bpy.types.Operator):
 
 class TogglePanelsA(bpy.types.Operator):
 	bl_idname = "image.toggle_panels_a"
-	bl_label = "Toggle Panel (mode A)"
-	bl_description = "sidebar/toolbar \"both display\" / \"both hide\" toggle"
+	bl_label = "Toggle Panel : 'BOTH'"
+	bl_description = "Show BOTH of Sidebar and Toolbar <=> Hide BOTH of them"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -111,8 +111,8 @@ class TogglePanelsA(bpy.types.Operator):
 
 class TogglePanelsB(bpy.types.Operator):
 	bl_idname = "image.toggle_panels_b"
-	bl_label = "Toggle Panel (mode B)"
-	bl_description = "\"Panel both hide\" => show only toolbar => show only sidebar => \"Panel both display\" for toggle"
+	bl_label = "Toggle Panel : 'IN-TURN'"
+	bl_description = "Hide BOTH of sidebar and toolbar => Show ONLY toolbar => Show ONLY sidebar => Show BOTH"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -134,8 +134,8 @@ class TogglePanelsB(bpy.types.Operator):
 
 class TogglePanelsC(bpy.types.Operator):
 	bl_idname = "image.toggle_panels_c"
-	bl_label = "Toggle Panel (mode C)"
-	bl_description = "\"Panel both hide\" => \"show only tool shelf => show only properties. toggle"
+	bl_label = "Toggle Panel : 'ONE-SIDE'"
+	bl_description = "Hide BOTH of sidebar and toolbar => Show ONLY toolbar  => Show ONLY sidebar"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -157,8 +157,8 @@ class TogglePanelsC(bpy.types.Operator):
 
 class panel_pie_operator(bpy.types.Operator):
 	bl_idname = "image.panel_pie_operator"
-	bl_label = "Switch panel pie menu"
-	bl_description = "Toggle panel pie menu"
+	bl_label = "Pie menu : Sidebar/Toolbar"
+	bl_description = "Toggle sidebar and toolbar's display states"
 	bl_options = {'MACRO'}
 
 	def execute(self, context):
@@ -166,25 +166,25 @@ class panel_pie_operator(bpy.types.Operator):
 		return {'FINISHED'}
 class PanelPie(bpy.types.Menu): #
 	bl_idname = "IMAGE_MT_view_pie_panel"
-	bl_label = "Switch panel pie menu"
+	bl_label = "Pie menu : Sidebar/Toolbar"
 
 	def draw(self, context):
 		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Toolbar", icon='TRIA_LEFT')
 		op.properties, op.toolshelf = False, True
 		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Sidebar", icon='TRIA_RIGHT')
 		op.properties, op.toolshelf = True, False
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Double Sided", icon='ARROW_LEFTRIGHT')
+		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Both Show", icon='ARROW_LEFTRIGHT')
 		op.properties, op.toolshelf = True, True
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Hide", icon='RESTRICT_VIEW_ON')
+		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Both Hide", icon='RESTRICT_VIEW_ON')
 		op.properties, op.toolshelf = False, False
 class run_panel_pie(bpy.types.Operator): #
 	bl_idname = "image.run_panel_pie"
-	bl_label = "Switch panel pie menu"
-	bl_description = "Toggle panel pie menu"
+	bl_label = "Toggle Panels' Display"
+	bl_description = "Toggle sidebar and toolbar's display states"
 	bl_options = {'MACRO'}
 
-	properties : BoolProperty(name="Property")
-	toolshelf : BoolProperty(name="Tool Shelf")
+	properties : BoolProperty(name="Sidebar")
+	toolshelf : BoolProperty(name="Toolbar")
 
 	def execute(self, context):
 		properties = self.properties
@@ -210,8 +210,8 @@ class run_panel_pie(bpy.types.Operator): #
 
 class ShortcutsMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_view_shortcuts"
-	bl_label = "By Shortcuts"
-	bl_description = "Registering shortcut feature that might come in handy"
+	bl_label = "Toggle Display (For Shortcut)"
+	bl_description = "Functions to toggle display states or so that can be used easily by assigning shortcut"
 
 	def draw(self, context):
 		self.layout.operator(TogglePanelsA.bl_idname, icon='PLUGIN')

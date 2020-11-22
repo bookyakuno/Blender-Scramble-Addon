@@ -11,8 +11,8 @@ from bpy.props import *
 
 class SelectSeamEdge(bpy.types.Operator):
 	bl_idname = "uv.select_seam_edge"
-	bl_label = "Select Vertex Isolated"
-	bl_description = "Select vertices are isolated by seam"
+	bl_label = "Select ALL Separated Vertices"
+	bl_description = "Select all vertices linked to seam edges and separated when unwrapping"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	def execute(self, context):
