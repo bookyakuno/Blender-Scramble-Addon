@@ -16,12 +16,12 @@ class Reset2DCursor(bpy.types.Operator):
 
 	items = [
 		("C", "Center", "", 1),
-		("U", "Up", "", 2),
+		("U", "Top", "", 2),
 		("RU", "Top Right", "", 3),
 		("R", "Right", "", 4),
-		("RD", "Down Right", "", 5),
-		("D", "Down", "", 6),
-		("LD", "Down Left", "", 7),
+		("RD", "Bottom Right", "", 5),
+		("D", "Bottom", "", 6),
+		("LD", "Bottom Left", "", 7),
 		("L", "Left", "", 8),
 		("LU", "Top Left", "", 9),
 		]
@@ -71,15 +71,15 @@ class Reset2DCursorForPanel(bpy.types.Operator):
 		col = row.column()
 		col.operator(Reset2DCursor.bl_idname, text="Top Left").mode = 'LU'
 		col.operator(Reset2DCursor.bl_idname, text="Left").mode = 'L'
-		col.operator(Reset2DCursor.bl_idname, text="Down Left").mode = 'LD'
+		col.operator(Reset2DCursor.bl_idname, text="Bottom Left").mode = 'LD'
 		col = row.column()
-		col.operator(Reset2DCursor.bl_idname, text="Up").mode = 'U'
+		col.operator(Reset2DCursor.bl_idname, text="Top").mode = 'U'
 		col.operator(Reset2DCursor.bl_idname, text="Center").mode = 'C'
-		col.operator(Reset2DCursor.bl_idname, text="Down").mode = 'D'
+		col.operator(Reset2DCursor.bl_idname, text="Bottom").mode = 'D'
 		col = row.column()
 		col.operator(Reset2DCursor.bl_idname, text="Top Right").mode = 'RU'
 		col.operator(Reset2DCursor.bl_idname, text="Right").mode = 'R'
-		col.operator(Reset2DCursor.bl_idname, text="Down Right").mode = 'RD'
+		col.operator(Reset2DCursor.bl_idname, text="Bottom Right").mode = 'RD'
 
 	def execute(self, context):
 		return {'FINISHED'}
