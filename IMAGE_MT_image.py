@@ -161,7 +161,7 @@ class FillTransparency(bpy.types.Operator):
 	bl_description = "transparent parts of image are active in specified color fills"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	color : FloatVectorProperty(name="Fill Color", default=(1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
+	color : FloatVectorProperty(name="Fill Color",  default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
 
 	@classmethod
 	def poll(cls, context):
@@ -188,7 +188,7 @@ class FillTransparency(bpy.types.Operator):
 		pixels[:,:,0]= (pixels[:,:,0] * alphas) + (color[0] * unalphas)
 		pixels[:,:,1]= (pixels[:,:,1] * alphas) + (color[1] * unalphas)
 		pixels[:,:,2]= (pixels[:,:,2] * alphas) + (color[2] * unalphas)
-		pixels[:,:,3] = 1.0
+		pixels[:,:,3] = alphas + color[3] * unalphas
 		img.pixels = pixels.flatten()
 		img.gl_free()
 		for area in context.screen.areas:
@@ -667,7 +667,7 @@ class Tiles(bpy.types.Operator):
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, count):
-		row = self.layout.split(factor=0.3)
+		row = self.layout.split(factor=0.4)
 		sp = row.split(factor=0.2)
 		sp.label(text="")
 		sp.label(text="Number of Tiles")
