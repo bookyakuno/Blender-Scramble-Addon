@@ -46,12 +46,22 @@ class ShowGroupLayers(bpy.types.Operator):
 	group_name : StringProperty(name="Bone Group", default="")
 	extend : BoolProperty(name="Extend Selection", default=False)
 
+
+	@classmethod
+	def poll(cls, context):
+		if (context.object):
+			if (context.object.type == 'ARMATURE'):
+				if (context.mode == 'POSE'):
+					return True
+		return False
+
 	def invoke(self, context, event):
 		if (event.shift):
 			self.extend = True
 		else:
 			self.extend = False
 		return self.execute(context)
+
 	def update_group_idx(self, context, idx, method):
 		if method == "NEW":
 			g_idx = "0"*12
@@ -61,9 +71,9 @@ class ShowGroupLayers(bpy.types.Operator):
 			g_idx = g_idx[:idx] + "1" + g_idx[idx+1:]
 		elif method == "SUBTRACT":
 			g_idx = context.active_object.scramble_sk_prop.bone_group_idx
-			g_idx = g_idx[:idx] + "0" + g_idx[idx+1:]	
+			g_idx = g_idx[:idx] + "0" + g_idx[idx+1:]
 		context.active_object.scramble_sk_prop.bone_group_idx = g_idx
-		
+
 	def execute(self, context):
 		pre_LAYERS = np.array(context.object.data.layers, dtype=np.float16)
 		target = context.active_object.pose.bone_groups[self.group_name]
@@ -119,7 +129,7 @@ class ShowLayersforGroups(bpy.types.Operator):
 			else: icon = 'NONE'
 			row.operator(ShowGroupLayers.bl_idname, text=f"{g.name}", icon=icon).group_name = g.name
 
-	def execute(self, context):	
+	def execute(self, context):
 		return {'FINISHED'}
 
 class ScrambleSkeltonPropGroup(bpy.types.PropertyGroup):
@@ -172,24 +182,29 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
+		layout = self.layout
 		obj = context.active_object
-		row = self.layout.row(align=True)
+		row = layout.row(align=True)
 		row.prop(obj.scramble_sk_prop, 'use_panel', icon="TRIA_DOWN" if obj.scramble_sk_prop.use_panel else "TRIA_RIGHT", icon_only=True, emboss=False)
 		sp = row.split(factor=0.6)
-		rowitem = sp.row()
-		rowitem.operator(ShowLayersforGroups.bl_idname, icon='POSE_HLT', text="Show for Bone Group")	
-		if obj.scramble_sk_prop.use_panel: rowitem.enabled = False
-		else: rowitem.enabled = True
+		row = sp.row(align=True)
+		row.alignment="LEFT"
+		row.prop(obj.scramble_sk_prop, 'use_panel',text="Show for Bone Group",emboss=False)
 		sp.operator(ShowAllBoneLayers.bl_idname, icon='RESTRICT_VIEW_OFF', text="Show All Layers")
 		if obj.scramble_sk_prop.use_panel:
-			box = self.layout.box()
-			row = box.row()
-			for idx, g in enumerate(context.active_object.pose.bone_groups):
-				if idx != 0 and idx % 3 == 0:
-					row = box.row()
-				if context.active_object.scramble_sk_prop.bone_group_idx[idx] == "1":
-					icon = 'KEYTYPE_MOVING_HOLD_VEC'
-				else: icon = 'NONE'
-				row.operator(ShowGroupLayers.bl_idname, text=f"{g.name}", icon=icon).group_name = g.name
+			box = layout.box()
+			if not len(context.active_object.pose.bone_groups):
+				box.label(text="No Bone groups",icon="NONE")
+			else:
+				row = box.row()
+				for idx, g in enumerate(context.active_object.pose.bone_groups):
+					if idx != 0 and idx % 3 == 0:
+						row = box.row()
+					if context.active_object.scramble_sk_prop.bone_group_idx[idx] == "1":
+						icon = 'KEYTYPE_MOVING_HOLD_VEC'
+					else: icon = 'BLANK1'
+					row.operator(ShowGroupLayers.bl_idname, text=f"{g.name}", icon=icon,translate=False).group_name = g.name
+
+
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
-		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
+		layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
