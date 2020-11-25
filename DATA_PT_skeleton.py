@@ -104,33 +104,7 @@ class ShowGroupLayers(bpy.types.Operator):
 		bpy.ops.pose.select_all(action='DESELECT')
 		return {'FINISHED'}
 
-class ShowLayersforGroups(bpy.types.Operator):
-	bl_idname = "pose.show_layers_for_groups"
-	bl_label = "Show selected bone group's layers"
-	bl_description = "Show layers containing the selected pose group"
-	bl_options = {'REGISTER'}
 
-	@classmethod
-	def poll(cls, context):
-		if (context.object):
-			if len(context.active_object.pose.bone_groups) > 0:
-				return True
-		return False
-
-	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
-	def draw(self, context):
-		row = self.layout.row()
-		for idx, g in enumerate(context.active_object.pose.bone_groups):
-			if idx != 0 and idx % 3 == 0:
-				row = self.layout.row()
-			if context.active_object.scramble_sk_prop.bone_group_idx[idx] == "1":
-				icon = 'KEYTYPE_MOVING_HOLD_VEC'
-			else: icon = 'NONE'
-			row.operator(ShowGroupLayers.bl_idname, text=f"{g.name}", icon=icon).group_name = g.name
-
-	def execute(self, context):
-		return {'FINISHED'}
 
 class ScrambleSkeltonPropGroup(bpy.types.PropertyGroup):
 	use_panel : bpy.props.BoolProperty(
@@ -152,7 +126,6 @@ class ScrambleSkeltonPropGroup(bpy.types.PropertyGroup):
 classes = [
 	ShowAllBoneLayers,
 	ShowGroupLayers,
-	ShowLayersforGroups,
 	ScrambleSkeltonPropGroup
 ]
 
