@@ -171,36 +171,40 @@ class RenameDataBlocks(bpy.types.Operator):
 	def draw(self, context):
 		data_names = ['objects', 'meshes', 'curves', 'metaballs', 'fonts', 'armatures', 'lattices', 'cameras', 'lamps', 'speakers', 'materials', 'textures', 'images', 'actions', 'brushes', 'grease_pencil', 'groups', 'libraries', 'linestyles', 'masks', 'movieclips', 'node_groups', 'palettes', 'particles', 'scenes', 'screens', 'scripts', 'shape_keys', 'sounds', 'texts', 'window_managers', 'worlds']
 		self.layout.label(text="Check Rename Data")
+		box = self.layout.box()
 		for i, data_name in enumerate(data_names):
-			if (i % 2 == 0):
-				row = self.layout.row()
+			if (i % 3 == 0):
+				row = box.row()
 			row.prop(self, data_name)
-		self.layout.label(text="Object")
-		row = self.layout.row()
+		box2 = self.layout.box()
+		row = box2.row()
+		row.label(text="Object")
 		row.prop(self, 'modifiers')
 		row.prop(self, 'constraints')
-		self.layout.label(text="Mesh")
-		row = self.layout.row()
+		box3 = self.layout.box()
+		box3.label(text="Mesh")
+		row = box3.row()
 		row.prop(self, 'vertex_groups')
 		row.prop(self, 'uvs')
-		row = self.layout.row()
 		row.prop(self, 'vertex_colors')
-		self.layout.label(text="Armature")
-		row = self.layout.row()
+		box4 = self.layout.box()
+		row = box4.row()		
+		row.label(text="Armature")
 		row.prop(self, 'bones')
 		row.prop(self, 'bone_constraints')
-		self.layout.label(text="Renaming Setting")
-		row = self.layout.row()
+		self.layout.label(text="Rename Settings")
+		box5 = self.layout.box()
+		row = box5.row()
 		row.prop(self, 'prefix')
 		row.prop(self, 'suffix')
-		row = self.layout.row()
+		row = box5.row()
 		row.prop(self, 'source')
 		row.prop(self, 'replace')
-		row = self.layout.row()
+		row = box5.row()
 		row.prop(self, 'selected_only')
 		row.prop(self, 'show_log')
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_dialog(self, width=600)
 	def rename(self, name):
 		new_name = self.prefix + name.replace(self.source, self.replace) + self.suffix
 		if (self.show_log):
@@ -397,17 +401,23 @@ class AllOnShowAllEdges(bpy.types.Operator):
 	bl_description = "Show all sides of all objects (can be off) turn display settings"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isOn : BoolProperty(name="On", default=True)
+	item = [('1',"Enabled", "", 1), ('0',"Disabled", "", 2)]
+	isOn : EnumProperty(name="Method", items=item)
 
 	@classmethod
 	def poll(cls, context):
 		if (len(bpy.data.objects)):
 			return True
 		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, 'isOn', expand=True)
 
 	def execute(self, context):
+		print(bool(int(self.isOn)))
 		for obj in bpy.data.objects:
-			obj.show_all_edges = self.isOn
+			obj.show_all_edges = bool(int(self.isOn))
 		return {'FINISHED'}
 
 class AllSetDrawType(bpy.types.Operator):
@@ -444,6 +454,8 @@ class AllSetDrawType(bpy.types.Operator):
 		if (len(bpy.data.objects)):
 			return True
 		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
 
 	def execute(self, context):
 		for obj in bpy.data.objects:
@@ -464,6 +476,8 @@ class AllRenameObjectData(bpy.types.Operator):
 		if (len(bpy.data.objects)):
 			return True
 		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
 
 	def execute(self, context):
 		if (self.isSelected):
@@ -571,12 +585,21 @@ class AllSetMaterialFreestyleColor(bpy.types.Operator):
 		if (len(bpy.data.materials)):
 			return True
 		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self, width=300)
+	def draw(self, context):
+		sp = self.layout.split(factor=0.2)
+		row = sp.row()
+		row.label(text="")
+		row.prop(self, 'isOnlySelected', text="")
+		sp.label(text="Copy to Only Selected Objects' Materials")
+		row = self.layout.box().split(factor=0.4)
+		row.label(text="Settings to copy")
+		row.prop(self, 'isColor')
+		row.prop(self, 'isAlpha')
 
 	def execute(self, context):
 		activeMat = context.active_object.active_material
-		if (not activeMat):
-			self.report(type={"ERROR"}, message="None Active Material")
-			return {"CANCELLED"}
 		mats = []
 		if (self.isOnlySelected):
 			for obj in context.selected_objects:
@@ -607,7 +630,12 @@ class AllSetMaterialFreestyleColorByDiffuse(bpy.types.Operator):
 	bl_description = "All material (only selected objects are allowed) for FreeStyle line color of material diffuse color + blend to replace"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isOnlySelected : BoolProperty(name="Selected Object Only", default=False)
+	isOnlySelected : BoolProperty(name="Apply to Only Selected Objects' Materials", default=False)
+	methods = [
+		("DIFFUSE", "Diffuse Color in viewport", "", 1),
+		("BLEND", "Diffuse Color Mixed with Other Color", "", 2)
+		]
+	color_method = EnumProperty(items=methods, name="FreeStyle Line Color")
 	blendColor : FloatVectorProperty(name="Blend Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype="COLOR")
 	items = [
 		("MIX", "Mix", "", 1),
@@ -622,6 +650,28 @@ class AllSetMaterialFreestyleColorByDiffuse(bpy.types.Operator):
 		if (len(bpy.data.materials)):
 			return True
 		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self, width=330)
+	def draw(self, context):
+		sp = self.layout.split(factor=0.2)
+		row = sp.row()
+		row.label(text="")
+		row.prop(self, 'isOnlySelected', text="")
+		sp.label(text="Apply to Only Selected Objects' Materials")
+		self.layout.props_enum(self, 'color_method')
+		if self.color_method == 'BLEND':
+			box = self.layout.box()
+			row = box.row()
+			row.label(text="Blend Color")
+			row.prop(self, 'blendColor', text="")
+			row = box.row()
+			row.label(text="Blend Mode")
+			row.prop(self, 'blendMode', text="")
+			row = box.row()
+			row.label(text="Blend Strength")
+			row.prop(self, 'blendValue', text="")
+		else:
+			box = self.layout.box()
 
 	def execute(self, context):
 		mats = []
@@ -648,39 +698,71 @@ class AllSetMaterialFreestyleColorByDiffuse(bpy.types.Operator):
 				c = ( (c[0]*(1-v))+(1-((1-c[0])*(1-b[0]))*v), (c[1]*(1-v))+(1-((1-c[1])*(1-b[1]))*v), (c[2]*(1-v))+(1-((1-c[2])*(1-b[2]))*v), c[3] )
 			mat.line_color = c
 		return {'FINISHED'}
-"""
+
 class AllSetMaterialObjectColor(bpy.types.Operator):
 	bl_idname = "material.all_set_material_object_color"
 	bl_label = "Enable object colors all material"
 	bl_description = "Sets color of all material objects or off the"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	use_object_color : BoolProperty(name="On/Off", default=True)
-	only_selected : BoolProperty(name="Selected Object Only", default=False)
+	item = [
+		("1", "Enabled", "", 1),
+		("0", "Disabled", "", 2)
+		]
+	use_object_color : EnumProperty(name="On/Off", items=item)
+	set_color : BoolProperty(name="Set Color", default=True)	
+	only_selected : BoolProperty(name="Apply to Only Selected Objects' Materials", default=False)
+	color : FloatVectorProperty(name="Color",default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
 
 	@classmethod
 	def poll(cls, context):
 		if (len(bpy.data.materials)):
 			return True
 		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, 'use_object_color', expand=True)
+		if int(self.use_object_color):
+			sp = self.layout.split(factor=0.2)
+			sp.label(text="")
+			sp.prop(self, 'set_color')
+		if self.set_color:
+			box = self.layout.box()
+			sp = box.split(factor=0.1)
+			row = sp.row()
+			row.label(text="")
+			row.prop(self, 'only_selected', text="")
+			sp.label(text="Apply to Only Selected Objects' Materials")
+			row = box.row()
+			row.label(text="Diffuse Color")
+			row.prop(self, 'color', text="")
+		else:
+			box = self.layout.box()	
 
 	def execute(self, context):
-		mats = []
-		if (self.only_selected):
-			for obj in context.selected_objects:
-				for slot in obj.material_slots:
-					if (slot.material):
-						for mat in mats:
-							if (mat.name == mslot.material.name):
-								break
-						else:
-							mats.append(slot.material)
+		for ar in context.screen.areas:
+			if ar.type == "VIEW_3D":
+				area = ar
+		space = area.spaces[0]
+		if int(self.use_object_color):
+			space.shading.color_type = 'MATERIAL'
 		else:
-			mats = bpy.data.materials[:]
-		for mat in mats:
-			mat.use_object_color = self.use_object_color
+			space.shading.color_type = 'OBJECT'
+		if self.set_color:
+			mats = []
+			if (self.only_selected):
+				for obj in context.selected_objects:
+					for slot in obj.material_slots:
+						if (slot.material):
+							mats.append(slot.material)
+				mats = set(mats)
+			else:
+				mats = bpy.data.materials[:]
+			for mat in mats:
+				mat.diffuse_color = self.color
 		return {'FINISHED'}
-"""
+
 ############################
 # オペレーター(テクスチャ) #
 ############################
@@ -738,9 +820,6 @@ class AllRenameTextureFileName(bpy.types.Operator):
 	def execute(self, context):
 		for tex in  bpy.data.textures:
 			if (tex.type == "IMAGE"):
-				if (not tex.image):
-					self.report(type={'WARNING'}, message=tex.name+"of image is not specified")
-					continue
 				if (tex.image.filepath_raw != ""):
 					name = bpy.path.basename(tex.image.filepath_raw)
 					if (not self.isExt):
@@ -812,6 +891,30 @@ class AllSetPhysicsFrames(bpy.types.Operator):
 
 	isParticle : BoolProperty(name="Particle", default=False)
 
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		box = self.layout.box()
+		sp = box.split(factor=0.55)
+		row = sp.row()
+		row.label(text="Start Frame")
+		row.label(text=f":  {context.scene.frame_start} + {self.startOffset}")
+		sp.prop(self, 'startOffset')
+		sp = box.split(factor=0.55)
+		row = sp.row()
+		row.label(text="End Frame")
+		row.label(text=f":  {context.scene.frame_end} + {self.endOffset}")
+		sp.prop(self, 'endOffset')
+		box = self.layout.box()
+		row = box.row()
+		row.prop(self, 'isRigidBody')
+		row.prop(self, 'isCloth')
+		row.prop(self, 'isSoftBody')
+		row = box.row()
+		row.prop(self, 'isFluid')
+		row.prop(self, 'isDynamicPaint')
+		row.prop(self, 'isParticle')
+
 	def execute(self, context):
 		start = context.scene.frame_start + self.startOffset
 		end = context.scene.frame_end + self.endOffset
@@ -865,9 +968,12 @@ class EntireProcessMenu(bpy.types.Menu):
 		self.layout.separator()
 		self.layout.menu(EntireProcessObjectMenu.bl_idname, icon='PLUGIN')
 		self.layout.menu(EntireProcessMaterialMenu.bl_idname, icon='PLUGIN')
-		self.layout.menu(EntireProcessTextureMenu.bl_idname, icon='PLUGIN')
-		self.layout.menu(EntireProcessImageMenu.bl_idname, icon='PLUGIN')
-		self.layout.menu(EntireProcessPhysicsMenu.bl_idname, icon='PLUGIN')
+		#self.layout.menu(EntireProcessTextureMenu.bl_idname, icon='PLUGIN')
+		self.layout.operator(AllRenameTextureFileName.bl_idname, icon='PLUGIN')
+		#self.layout.menu(EntireProcessImageMenu.bl_idname, icon='PLUGIN')
+		self.layout.operator('image.all_rename_image_file_name', icon='PLUGIN')
+		#self.layout.menu(EntireProcessPhysicsMenu.bl_idname, icon='PLUGIN')
+		self.layout.operator(AllSetPhysicsFrames.bl_idname, icon='PLUGIN')
 
 class EntireProcessObjectMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_entire_process_object"
@@ -889,7 +995,7 @@ class EntireProcessMaterialMenu(bpy.types.Menu):
 		#self.layout.operator(AllSetMaterialColorRamp.bl_idname, icon='PLUGIN')
 		self.layout.operator(AllSetMaterialFreestyleColor.bl_idname, icon='PLUGIN')
 		self.layout.operator(AllSetMaterialFreestyleColorByDiffuse.bl_idname, icon='PLUGIN')
-		#self.layout.operator(AllSetMaterialObjectColor.bl_idname, icon='PLUGIN')
+		self.layout.operator(AllSetMaterialObjectColor.bl_idname, icon='PLUGIN')
 
 class EntireProcessTextureMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_entire_process_texture"
@@ -934,7 +1040,7 @@ classes = [
 	#AllSetMaterialColorRamp,
 	AllSetMaterialFreestyleColor,
 	AllSetMaterialFreestyleColorByDiffuse,
-	#AllSetMaterialObjectColor,
+	AllSetMaterialObjectColor,
 	#AllSetBumpMethod,
 	AllRenameTextureFileName,
 	#FixEmptyTextureUVLayer,
@@ -979,8 +1085,6 @@ def menu(self, context):
 		self.layout.operator('wm.save_userpref', icon='PLUGIN')
 		self.layout.separator()
 		self.layout.operator(RestartBlender.bl_idname, icon='PLUGIN')
-		self.layout.separator()
-		self.layout.separator()
 		self.layout.separator()
 		self.layout.menu(EntireProcessMenu.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
