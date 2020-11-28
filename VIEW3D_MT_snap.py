@@ -127,8 +127,6 @@ classes = [
 	PieSnap
 ]
 
-kmap_info = []
-
 def register():
 	for cls in classes:
 		bpy.utils.register_class(cls)
@@ -137,12 +135,6 @@ def register():
 def unregister():
 	for cls in classes:
 		bpy.utils.unregister_class(cls)
-	wm = bpy.context.window_manager
-	kc = wm.keyconfigs.addon
-	if kc:
-		km, kmi = kmap_info[0]
-		km.keymap_items.remove(kmi)
-	kmap_info.clear()
 
 
 ################
