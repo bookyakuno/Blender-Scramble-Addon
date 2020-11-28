@@ -1126,7 +1126,7 @@
 "物理演算の開始/終了フレームを一括設定","Set start/end frame of physics"
 "「最近使ったファイル」をテキストで開く","Open Text \"Recent Files\""
 "テクスチャ名を使用する画像ファイル名に","Image File name to Texture Name"
-"「追加項目のオン/オフ」の表示切り替え","Toggle \"On/Off Additional Items\""
+"「追加項目のオン/オフ」の表示切り替え","Toggle 'On/Off Additional Items'"
 "バックアップをこのバージョンに関連付け","Backup Files with This Blender Version"
 "頂点グループがある頂点位置にボーン作成","Create bone to vertices of vertex groups"
 "同じマテリアル構造のオブジェクトを選択","Select objects of same material structure"

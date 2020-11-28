@@ -937,7 +937,7 @@ class UpdateScrambleAddon(bpy.types.Operator):
 
 class ToggleDisabledMenu(bpy.types.Operator):
 	bl_idname = "wm.toggle_disabled_menu"
-	bl_label = "Toggle \"On/Off Additional Items\""
+	bl_label = "Toggle 'On/Off Additional Items'"
 	bl_description = "Show or hide turn on/off additional items button at end of menu by ScrambleAddon"
 	bl_options = {'REGISTER', 'UNDO'}
 
