@@ -44,18 +44,20 @@ class ToggleThreadsMode(bpy.types.Operator):
 	threads : IntProperty(name="Number of Threads", default=1, min=1, max=16, soft_min=1, soft_max=16, step=1)
 
 	def execute(self, context):
-		if (context.scene.render.threads_mode == 'AUTO'):
-			context.scene.render.threads_mode = 'FIXED'
+		if (context.scene.render.threads_mode == 'FIXED'):
 			context.scene.render.threads = self.threads
-		else:
-			context.scene.render.threads_mode = 'AUTO'
 		return {'FINISHED'}
 	def invoke(self, context, event):
-		if (context.scene.render.threads_mode == 'AUTO'):
-			self.threads = context.scene.render.threads
-			return context.window_manager.invoke_props_dialog(self)
-		else:
-			return self.execute(context)
+		self.threads = context.scene.render.threads
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(context.scene.render, 'threads_mode', expand=True)
+		if context.scene.render.threads_mode == 'FIXED':
+			sp = self.layout.split(factor=0.55)
+			row = sp.row()
+			row.label(text="")
+			row.label(text="Number of Threads")
+			sp.prop(self, 'threads', text="")
 
 class SetAllSubsurfRenderLevels(bpy.types.Operator):
 	bl_idname = "render.set_all_subsurf_render_levels"
@@ -107,6 +109,52 @@ class SyncAllSubsurfRenderLevels(bpy.types.Operator):
 		return {'FINISHED'}
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		box = self.layout.box()
+		row = box.split(factor=0.65)
+		row.label(text="'When Rendering' = 'In Viewport' + ")
+		row.prop(self, 'level_offset', text="")
+
+class SimplifyRenderPanel(bpy.types.Operator):
+	bl_idname = "render.siplify_render_panel"
+	bl_label = "Change 'Simpify' Settings"
+	bl_description = "Change render's 'simpify' settings"
+
+	item = [('0',"Disabled", "", 1), ('1',"Enabled", "", 2)]
+	is_use : EnumProperty(name="Method", items=item)
+
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self, width=375)
+	def draw(self, context):
+		self.layout.prop(self, 'is_use', expand=True)
+		box1 = self.layout.box()
+		if int(self.is_use):
+			row = box1.split(factor=0.2)			
+			row.label(text="Vierport")
+			row.label(text="Upper Limit of Subdivisions")
+			row.prop(context.scene.render, "simplify_subdivision", text="")
+			row = box1.split(factor=0.61)
+			row_row = row.split(factor=0.15)
+			row_row.label(text="")
+			row_row.label(text="Ratio of Displayed Child Particles")
+			row.prop(context.scene.render, "simplify_child_particles", text="")
+			box2 = self.layout.box()
+			row = box2.split(factor=0.2)
+			row.label(text="Rendering")
+			row.label(text="Upper Limit of Subdivisions")
+			row.prop(context.scene.render, "simplify_subdivision_render", text="")
+			row = box2.split(factor=0.61)
+			row_row = row.split(factor=0.15)
+			row_row.label(text="")
+			row_row.label(text="Ratio of Displayed Child Particles")
+			row.prop(context.scene.render, "simplify_child_particles_render", text="")
+		#self.layout.prop(context.scene.render, "simplify_shadow_samples", icon="PLUGIN")
+		#self.layout.prop(context.scene.render, "simplify_ao_sss", icon="PLUGIN")
+		#self.layout.prop(context.scene.render, "use_simplify_triangulate", icon="PLUGIN")
+
+	def execute(self, context):
+		context.scene.render.use_simplify = int(self.is_use)
+		return {'FINISHED'}
 
 ################
 # サブメニュー #
@@ -135,20 +183,6 @@ class RenderResolutionPercentageMenu(bpy.types.Menu):
 		self.layout.operator(SetRenderResolutionPercentage.bl_idname, text="150% ("+str(int(x*1.5))+"x"+str(int(y*1.5))+")", icon="PLUGIN").size = 150
 		self.layout.operator(SetRenderResolutionPercentage.bl_idname, text="200% ("+str(int(x*2.0))+"x"+str(int(y*2.0))+")", icon="PLUGIN").size = 200
 		self.layout.operator(SetRenderResolutionPercentage.bl_idname, text="300% ("+str(int(x*3.0))+"x"+str(int(y*3.0))+")", icon="PLUGIN").size = 300
-
-class SimplifyRenderMenu(bpy.types.Menu):
-	bl_idname = "INFO_MT_render_simplify"
-	bl_label = "Simplification of Render"
-	bl_description = "Simplify Rendering Settings"
-
-	def draw(self, context):
-		self.layout.prop(context.scene.render, "use_simplify", icon="PLUGIN")
-		self.layout.separator()
-		self.layout.prop(context.scene.render, "simplify_subdivision", icon="PLUGIN")
-		#self.layout.prop(context.scene.render, "simplify_shadow_samples", icon="PLUGIN")
-		self.layout.prop(context.scene.render, "simplify_child_particles", icon="PLUGIN")
-		#self.layout.prop(context.scene.render, "simplify_ao_sss", icon="PLUGIN")
-		#self.layout.prop(context.scene.render, "use_simplify_triangulate", icon="PLUGIN")
 
 class SlotsRenderMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_slots"
@@ -210,7 +244,7 @@ classes = [
 	SetAllSubsurfRenderLevels,
 	SyncAllSubsurfRenderLevels,
 	RenderResolutionPercentageMenu,
-	SimplifyRenderMenu,
+	SimplifyRenderPanel,
 	SlotsRenderMenu,
 	#ShadeingMenu,
 	SubsurfMenu
@@ -277,7 +311,7 @@ def menu(self, context):
 		#self.layout.prop_menu_enum(context.scene.render, 'antialiasing_samples', text="Anti-aliasing Samples", icon="PLUGIN")
 		#self.layout.prop(context.scene.world.light_settings, 'samples', text="AO Samples", icon="PLUGIN")
 		self.layout.separator()
-		self.layout.menu(SimplifyRenderMenu.bl_idname, icon="PLUGIN")
+		self.layout.operator(SimplifyRenderPanel.bl_idname, icon="PLUGIN")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
