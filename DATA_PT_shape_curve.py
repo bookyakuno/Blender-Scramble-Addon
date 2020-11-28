@@ -11,19 +11,19 @@ from bpy.props import *
 class copy_curve_shape_setting(bpy.types.Operator):
 	bl_idname = "curve.copy_curve_shape_setting"
 	bl_label = "Copy Shape Settings"
-	bl_description = "Copy selected curve other active curve shape settings"
+	bl_description = "Copy active curve's shape settings to other selected curves"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	dimensions : BoolProperty(name="2D/3D", default=True)
+	dimensions : BoolProperty(name="Curve type (2D/3D)", default=True)
 	resolution_u : BoolProperty(name="Preview U", default=True)
 	render_resolution_u : BoolProperty(name="Render U", default=True)
-	fill_mode : BoolProperty(name="Fill Method", default=True)
+	fill_mode : BoolProperty(name="Fill Mode", default=True)
 	use_fill_deform : BoolProperty(name="Fill Deformed", default=True)
-	twist_mode : BoolProperty(name="Twist Method", default=True)
+	twist_mode : BoolProperty(name="Twist Mode", default=True)
 	use_radius : BoolProperty(name="Radius", default=True)
 	use_stretch : BoolProperty(name="Stretch", default=True)
 	twist_smooth : BoolProperty(name="Smooth", default=True)
-	use_deform_bounds : BoolProperty(name="Fix Border", default=True)
+	use_deform_bounds : BoolProperty(name="Bounds Clamp", default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -40,27 +40,28 @@ class copy_curve_shape_setting(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def draw(self, context):
-		self.layout.label(text="Shape")
-		self.layout.prop(self, 'dimensions')
+		row = self.layout.box().row()
+		row.label(text="Shape")
+		row.prop(self, 'dimensions')
 		row = self.layout.row()
-		row.label(text="Resolution:")
-		row.label(text="Fill:")
-		row = self.layout.row()
-		row.prop(self, 'resolution_u')
-		row.prop(self, 'fill_mode')
-		row = self.layout.row()
-		row.prop(self, 'render_resolution_u')
-		row.prop(self, 'use_fill_deform')
-		row = self.layout.row()
-		row.label(text="Twisting:")
-		row.label(text="Path / Curve-Deform:")
-		row = self.layout.row()
-		row.prop(self, 'twist_mode')
-		row.prop(self, 'use_radius')
-		row.prop(self, 'use_stretch')
-		row = self.layout.row()
-		row.prop(self, 'twist_smooth')
-		row.prop(self, 'use_deform_bounds')
+		column = row.column().box()
+		column.label(text="Resolution:")
+		column.prop(self, 'resolution_u')
+		column.prop(self, 'render_resolution_u')
+		column = row.column().box()
+		column.label(text="Twisting:")
+		column.prop(self, 'twist_mode')
+		column.prop(self, 'twist_smooth')
+		row = self.layout.split(factor=0.4)
+		column = row.column().box()
+		column.label(text="Fill:")
+		column.prop(self, 'fill_mode')
+		column.prop(self, 'use_fill_deform')
+		column = row.column().box()
+		column.label(text="Options for Path/Curve-Deform:")
+		column.prop(self, 'use_radius')
+		column.prop(self, 'use_stretch')
+		column.prop(self, 'use_deform_bounds')
 
 	def execute(self, context):
 		active_ob = context.active_object

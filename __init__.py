@@ -355,8 +355,8 @@ def register():
 	bpy.types.DATA_PT_modifiers.append(DATA_PT_modifiers.menu)
 	DATA_PT_pose_library.register()
 	bpy.types.DATA_PT_pose_library.append(DATA_PT_pose_library.menu)
-	DATA_PT_shape_keys.register()
-	bpy.types.DATA_PT_shape_keys.prepend(DATA_PT_shape_keys.menu_prepend)
+	#DATA_PT_shape_keys.register()#廃止
+	#bpy.types.DATA_PT_shape_keys.prepend(DATA_PT_shape_keys.menu_prepend)
 	DATA_PT_skeleton.register()
 	bpy.types.DATA_PT_skeleton.append(DATA_PT_skeleton.menu)
 	DATA_PT_uv_texture.register()
@@ -545,8 +545,8 @@ def unregister():
 	bpy.types.DATA_PT_modifiers.remove(DATA_PT_modifiers.menu)
 	DATA_PT_pose_library.unregister()
 	bpy.types.DATA_PT_pose_library.remove(DATA_PT_pose_library.menu)
-	DATA_PT_shape_keys.unregister()
-	bpy.types.DATA_PT_shape_keys.remove(DATA_PT_shape_keys.menu_prepend)
+	#DATA_PT_shape_keys.unregister()#廃止
+	#bpy.types.DATA_PT_shape_keys.remove(DATA_PT_shape_keys.menu_prepend)
 	DATA_PT_skeleton.unregister()
 	bpy.types.DATA_PT_skeleton.remove(DATA_PT_skeleton.menu)
 	DATA_PT_uv_texture.unregister()
