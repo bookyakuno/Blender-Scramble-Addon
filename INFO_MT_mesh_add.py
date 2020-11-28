@@ -92,13 +92,16 @@ class CreateVertexGroupSplits(bpy.types.Operator):
 		return False
 
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_dialog(self, width=300)
+	def draw(self, context):
+		sp = self.layout.split(factor=0.7)
+		sp.label(text="Threshold Weight of Included Vertices")
+		sp.prop(self, 'threshold', text="")
+		self.layout.prop(self, 'delete_source')
 
 	def execute(self, context):
 		for obj in context.selected_objects:
 			obj.select_set(False)
-			if (obj.type != 'MESH'):
-				continue
 			me = obj.data
 			bm = bmesh.new()
 			bm.from_mesh(me)
