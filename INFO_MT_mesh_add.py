@@ -11,8 +11,8 @@ from bpy.props import *
 
 class AddSphereOnlySquare(bpy.types.Operator):
 	bl_idname = "mesh.add_sphere_only_square"
-	bl_label = "Square Polygon Sphere"
-	bl_description = "Add sphere mesh is composed only of quadrilateral polygon"
+	bl_label = "Squared-Polygon Sphere"
+	bl_description = "Add a sphere mesh composed of only quadrilateral polygons"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	level : IntProperty(name="Number of Subdivisions", default=2, step=1, min=1, max=6, soft_min=1, soft_max=6)
@@ -52,8 +52,8 @@ class AddSphereOnlySquare(bpy.types.Operator):
 
 class AddVertexOnlyObject(bpy.types.Operator):
 	bl_idname = "mesh.add_vertex_only_object"
-	bl_label = "Only Vertex"
-	bl_description = "Only 1 vertex meshes 3D adds to position of cursor"
+	bl_label = "Only One Vertex"
+	bl_description = "Add a mesh composed of only one vertex at the 3D cursor's location"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -75,12 +75,12 @@ class AddVertexOnlyObject(bpy.types.Operator):
 
 class CreateVertexGroupSplits(bpy.types.Operator):
 	bl_idname = "mesh.create_vertex_group_splits"
-	bl_label = "Isolate by vertex groups"
-	bl_description = "Create separate each part of vertex groups applied mesh group"
+	bl_label = "Separated Copy"
+	bl_description = "Add the active mesh's copy separated into parts based on its vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	threshold : FloatProperty(name="Enabled Threshold", default=0.5, min=0, max=1, soft_min=0, soft_max=1, step=3, precision=2)
-	delete_source : BoolProperty(name="Delete Source", default=False)
+	threshold : FloatProperty(name="Threshold Weight for Inclusion in Group", default=0.5, min=0, max=1, soft_min=0, soft_max=1, step=3, precision=2)
+	delete_source : BoolProperty(name="Delete Original Object", default=False)
 
 	@classmethod
 	def poll(cls, context):
