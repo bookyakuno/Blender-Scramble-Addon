@@ -1,7 +1,7 @@
 # アドオンを読み込む時に最初にこのファイルが読み込まれます
 '''
-original author   ：Saidenka
-update Blender2.8x：Bookyakuno, nikogoli
+Original Author ： Saidenka
+Update Blender2.8x, Current Support ： Bookyakuno, nikogoli
 '''
 
 import os, csv, codecs
@@ -11,7 +11,7 @@ from bpy.props import *
 bl_info = {
 	"name" : "Scramble Addon",
 	"author" : "Saidenka, Bookyakuno, nikogoli",
-	"version" : (1, 0, 7),
+	"version" : (1, 0, 8),
 	"blender" : (2, 90, 0),
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",

@@ -403,7 +403,7 @@ class SetSubsurfOptimalDisplay(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
 		self.layout.prop(self, 'is_use', expand=True)
-	
+
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if obj.type in ['MESH', 'CURVE', 'FONT', 'META', 'SURFACE']:
@@ -769,13 +769,20 @@ def menu(self, context):
 				row.operator(ToggleApplyModifiersView.bl_idname, icon='RESTRICT_VIEW_OFF', text="Show / Hide")
 				row.operator(ToggleAllShowExpanded.bl_idname, icon='FULLSCREEN_ENTER', text="Expand / Close")
 				row.operator(SyncShowModifiers.bl_idname, icon='LINKED', text="Match Display State")
-		#self.layout.menu(ModifierMenu.bl_idname, icon='PLUGIN')
+
 		sp = self.layout.split(factor=0.9)
-		row = sp.row()
-		row.menu(SubsurfMenu.bl_idname, text="Subsurf")
-		row.menu(ArmatureMenu.bl_idname, text="Armature")
-		row.menu(BooleanMenu.bl_idname, text="Boolean")
-		row.menu(CurveMenu.bl_idname, text="Curve")
+		row = sp.row(align=True)
+		row_sub = row.row(align=True)
+		row_sub.menu(SubsurfMenu.bl_idname, text="Subsurf",icon="MOD_SUBSURF")
+		row_sub = row.row(align=True)
+		row_sub.active = len([m for m in bpy.context.object.modifiers if m.type == "ARMATURE"])
+		row_sub.menu(ArmatureMenu.bl_idname, text="Armature",icon="OUTLINER_DATA_ARMATURE")
+		row_sub = row.row(align=True)
+		row_sub.active = (len(bpy.context.selected_objects) >= 2)
+		row_sub.menu(BooleanMenu.bl_idname, text="Boolean",icon="MOD_BOOLEAN")
+		row_sub = row.row(align=True)
+		row_sub.active = bool(bool(len(bpy.context.selected_objects) >= 2) and bool([o for o in bpy.context.selected_objects if o.type == "CURVE"]))
+		row_sub.menu(CurveMenu.bl_idname, text="Curve",icon="CURVE_DATA")
 		sp.operator(ApplyModifiersAndJoin.bl_idname, text="Join")
 	if (bpy.context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
