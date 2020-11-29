@@ -11,19 +11,19 @@ from bpy.props import *
 class copy_geometry_settings(bpy.types.Operator):
 	bl_idname = "curve.copy_geometry_settings"
 	bl_label = "Copy Geometry Settings"
-	bl_description = "Copy selection curve of other settings panel geometry of curve object is active"
+	bl_description = "Copy active curve's geometry settings to other selected curves"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	offset : BoolProperty(name="Offset", default=True)
 	extrude : BoolProperty(name="Extrude", default=True)
 	bevel_depth : BoolProperty(name="Depth", default=True)
 	bevel_resolution : BoolProperty(name="Resolution", default=True)
-	taper_object : BoolProperty(name="Taper", default=True)
-	bevel_object : BoolProperty(name="Bevel", default=True)
-	bevel_factor_mapping_start : BoolProperty(name="Start Method", default=True)
-	bevel_factor_start : BoolProperty(name="Start", default=True)
-	bevel_factor_mapping_end : BoolProperty(name="End Method", default=True)
-	bevel_factor_end : BoolProperty(name="End", default=True)
+	taper_object : BoolProperty(name="Taper object", default=True)
+	bevel_object : BoolProperty(name="Bevel object", default=True)
+	bevel_factor_mapping_start : BoolProperty(name="Mapping Method(Start)", default=True)
+	bevel_factor_mapping_end : BoolProperty(name="Mapping Method(End)", default=True)
+	bevel_factor_start : BoolProperty(name="Bevel Start", default=True)
+	bevel_factor_end : BoolProperty(name="Bevel End", default=True)
 	use_map_taper : BoolProperty(name="Map Taper", default=True)
 	use_fill_caps : BoolProperty(name="Fill Caps", default=True)
 
@@ -80,30 +80,28 @@ class copy_geometry_settings(bpy.types.Operator):
 
 	def draw(self, context):
 		row = self.layout.row()
-		row.label(text="Modification:")
-		row.label(text="Bevel:")
-		row = self.layout.row()
-		row.prop(self, 'offset')
+		column = row.column().box()
+		column.label(text="Modification:")
+		column.prop(self, 'offset')
+		column.prop(self, 'extrude')
+		column = row.column().box()
+		column.label(text="Taper:")
+		column.prop(self, 'taper_object')
+		column.prop(self, 'use_map_taper')
+		box = self.layout.box()
+		box.label(text="Bevel:")
+		row = box.row()
 		row.prop(self, 'bevel_depth')
-		row = self.layout.row()
-		row.prop(self, 'extrude')
 		row.prop(self, 'bevel_resolution')
-		row = self.layout.row()
-		row.label(text="Objects:")
-		row = self.layout.row()
-		row.prop(self, 'taper_object')
+		row = box.row()
 		row.prop(self, 'bevel_object')
-		row = self.layout.row()
-		row.label(text="Bevel Factor:")
-		row = self.layout.row()
-		row.prop(self, 'bevel_factor_mapping_start')
-		row.prop(self, 'bevel_factor_start')
-		row = self.layout.row()
-		row.prop(self, 'bevel_factor_mapping_end')
-		row.prop(self, 'bevel_factor_end')
-		row = self.layout.row()
-		row.prop(self, 'use_map_taper')
 		row.prop(self, 'use_fill_caps')
+		row = box.row()
+		row.prop(self, 'bevel_factor_start')
+		row.prop(self, 'bevel_factor_end')
+		row = box.row()
+		row.prop(self, 'bevel_factor_mapping_start')
+		row.prop(self, 'bevel_factor_mapping_end')
 
 	def execute(self, context):
 		active_ob = context.active_object
@@ -141,7 +139,7 @@ class copy_geometry_settings(bpy.types.Operator):
 class ActivateTaperObject(bpy.types.Operator):
 	bl_idname = "curve.activate_taper_object"
 	bl_label = "Activate taper object"
-	bl_description = "curve is specified as tapered object"
+	bl_description = "Activate the taper object of this curve"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -152,20 +150,32 @@ class ActivateTaperObject(bpy.types.Operator):
 				return True
 		return False
 
+	def make_collec_dic(self, layer_collection, dictionary):
+		for coll in layer_collection.children:
+			dictionary[coll.name] = {"self":coll, "parent":layer_collection}
+			if len(coll.children) > 0:
+				dictionary = self.make_collec_dic(coll, dictionary)
+		return dictionary
+
 	def execute(self, context):
 		ob = context.active_object.data.taper_object
 		ob.hide_set(False)
 		ob.select_set(True)
 		context.active_object.select_set(False)
+		dic = {}
+		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)		
 		bpy.context.view_layer.objects.active = ob
-		for c in ob.users_collection:
-			bpy.context.view_layer.layer_collection.children[c.name].hide_viewport = False
+		if ob.users_collection[0] != context.view_layer.layer_collection.collection:
+			coll_name = ob.users_collection[0].name
+			while coll_name != context.view_layer.layer_collection.name:
+				collec_dic[coll_name]['self'].hide_viewport = False
+				coll_name = collec_dic[coll_name]['parent'].name
 		return {'FINISHED'}
 
 class ActivateBevelObject(bpy.types.Operator):
 	bl_idname = "curve.activate_bevel_object"
-	bl_label = "Activate Bevel Object"
-	bl_description = "curve is specified as beveled objects"
+	bl_label = "Activate bevel object"
+	bl_description = "Activate the bevel object of this curve"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -176,20 +186,32 @@ class ActivateBevelObject(bpy.types.Operator):
 				return True
 		return False
 
+	def make_collec_dic(self, layer_collection, dictionary):
+		for coll in layer_collection.children:
+			dictionary[coll.name] = {"self":coll, "parent":layer_collection}
+			if len(coll.children) > 0:
+				dictionary = self.make_collec_dic(coll, dictionary)
+		return dictionary
+
 	def execute(self, context):
 		ob = context.active_object.data.bevel_object
 		ob.hide_set(False)
 		ob.select_set(True)
 		context.active_object.select_set(False)
+		dic = {}
+		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)		
 		bpy.context.view_layer.objects.active = ob
-		for c in ob.users_collection:
-			bpy.context.view_layer.layer_collection.children[c.name].hide_viewport = False
+		if ob.users_collection[0] != context.view_layer.layer_collection.collection:
+			coll_name = ob.users_collection[0].name
+			while coll_name != context.view_layer.layer_collection.name:
+				collec_dic[coll_name]['self'].hide_viewport = False
+				coll_name = collec_dic[coll_name]['parent'].name
 		return {'FINISHED'}
 
-class activate_taper_parent_object(bpy.types.Operator):
+class ActivateTaperParentObject(bpy.types.Operator):
 	bl_idname = "curve.activate_taper_parent_object"
-	bl_label = "Used as taper curve to activate"
-	bl_description = "Activates curve as tapered object using this curve"
+	bl_label = "Activate Taper-parent of this curve"
+	bl_description = "Activate the curve that uses this curve as Taper Object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -201,7 +223,16 @@ class activate_taper_parent_object(bpy.types.Operator):
 				return True
 		return False
 
+	def make_collec_dic(self, layer_collection, dictionary):
+		for coll in layer_collection.children:
+			dictionary[coll.name] = {"self":coll, "parent":layer_collection}
+			if len(coll.children) > 0:
+				dictionary = self.make_collec_dic(coll, dictionary)
+		return dictionary
+
 	def execute(self, context):
+		dic = {}
+		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)	
 		count = 0
 		active_ob = context.active_object
 		for ob in bpy.data.objects:
@@ -213,17 +244,20 @@ class activate_taper_parent_object(bpy.types.Operator):
 					ob.select_set(True)
 					active_ob.select_set(False)
 					bpy.context.view_layer.objects.active = ob
-					for c in ob.users_collection:
-						bpy.context.view_layer.layer_collection.children[c.name].hide_viewport = False
+					if ob.users_collection[0] != context.view_layer.layer_collection.collection:
+						coll_name = ob.users_collection[0].name
+						while coll_name != context.view_layer.layer_collection.name:
+							collec_dic[coll_name]['self'].hide_viewport = False
+							coll_name = collec_dic[coll_name]['parent'].name
 					count += 1
 		if 2 <= count:
 			self.report(type={'WARNING'}, message="Found more than one")
 		return {'FINISHED'}
 
-class activate_bevel_parent_object(bpy.types.Operator):
+class ActivateBevelParentObject(bpy.types.Operator):
 	bl_idname = "curve.activate_bevel_parent_object"
-	bl_label = "Activate bevel curve object"
-	bl_description = "Activates curve as beveled objects using this curve"
+	bl_label = "Activate Bevel-parent of this curve"
+	bl_description = "Activate the curve that uses this curve as Bevel Object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -234,8 +268,17 @@ class activate_bevel_parent_object(bpy.types.Operator):
 			if target_name == ob.name:
 				return True
 		return False
+		
+	def make_collec_dic(self, layer_collection, dictionary):
+		for coll in layer_collection.children:
+			dictionary[coll.name] = {"self":coll, "parent":layer_collection}
+			if len(coll.children) > 0:
+				dictionary = self.make_collec_dic(coll, dictionary)
+		return dictionary
 
 	def execute(self, context):
+		dic = {}
+		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)	
 		count = 0
 		active_ob = context.active_object
 		for ob in bpy.data.objects:
@@ -247,8 +290,11 @@ class activate_bevel_parent_object(bpy.types.Operator):
 					ob.select_set(True)
 					active_ob.select_set(False)
 					bpy.context.view_layer.objects.active = ob
-					for c in ob.users_collection:
-						bpy.context.view_layer.layer_collection.children[c.name].hide_viewport = False
+					if ob.users_collection[0] != context.view_layer.layer_collection.collection:
+						coll_name = ob.users_collection[0].name
+						while coll_name != context.view_layer.layer_collection.name:
+							collec_dic[coll_name]['self'].hide_viewport = False
+							coll_name = collec_dic[coll_name]['parent'].name
 					count += 1
 		if 2 <= count:
 			self.report(type={'WARNING'}, message="Found more than one")
@@ -262,8 +308,8 @@ classes = [
 	copy_geometry_settings,
 	ActivateTaperObject,
 	ActivateBevelObject,
-	activate_taper_parent_object,
-	activate_bevel_parent_object
+	ActivateTaperParentObject,
+	ActivateBevelParentObject
 ]
 
 def register():
@@ -291,21 +337,19 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		if context.active_object:
-			data = context.active_object.data
-			if data.bevel_object or data.taper_object:
-				row = self.layout.split(factor=0.5)
-				if data.taper_object:
-					sub = row.row(align=True)
-					sub.operator(ActivateTaperObject.bl_idname, icon='PARTICLE_PATH', text="")
-					sub.prop(data.taper_object.data, 'resolution_u')
-				else:
-					row.label(text="")
-				if data.bevel_object:
-					sub = row.row(align=True)
-					sub.operator(ActivateBevelObject.bl_idname, icon='OUTLINER_OB_SURFACE', text="")
-					sub.prop(data.bevel_object.data, 'resolution_u')
-				else:
-					row.label(text="")
+			data = context.active_object.data				
+			if data.taper_object:
+				row = self.layout.split(factor=0.45)
+				row.operator(ActivateTaperObject.bl_idname, icon='PARTICLE_PATH')
+				spl = row.split(factor=0.6)
+				spl.label(text="Taper object's Resolution U")
+				spl.prop(data.taper_object.data, 'resolution_u', text="")
+			if data.bevel_object:
+				row = self.layout.split(factor=0.45)
+				row.operator(ActivateBevelObject.bl_idname, icon='OUTLINER_OB_SURFACE')
+				spl = row.split(factor=0.6)
+				spl.label(text="Bevel object's Resolution U")
+				spl.prop(data.bevel_object.data, 'resolution_u', text="")
 
 		flag = [False, False]
 		ob = context.active_object
@@ -321,11 +365,11 @@ def menu(self, context):
 		if any(flag):
 			row = self.layout.split(factor=0.5)
 			if flag[0]:
-				row.operator(activate_taper_parent_object.bl_idname, icon='PARTICLE_PATH', text="Active Parent Taper")
+				row.operator(ActivateTaperParentObject.bl_idname, icon='PARTICLE_PATH', text="Activate Taper-parent")
 			else:
 				row.label(text="")
 			if flag[1]:
-				row.operator(activate_bevel_parent_object.bl_idname, icon='OUTLINER_OB_SURFACE', text="Active Parent Bevel")
+				row.operator(ActivateBevelParentObject.bl_idname, icon='OUTLINER_OB_SURFACE', text="Activate Bevel-parent")
 			else:
 				row.label(text="")
 

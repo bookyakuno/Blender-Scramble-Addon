@@ -1,7 +1,7 @@
 # アドオンを読み込む時に最初にこのファイルが読み込まれます
 '''
-original author   ：Saidenka
-update Blender2.8x：Bookyakuno, nikogoli
+Original Author ： Saidenka
+Update Blender2.8x, Current Support ： Bookyakuno, nikogoli
 '''
 
 import os, csv, codecs
@@ -11,7 +11,7 @@ from bpy.props import *
 bl_info = {
 	"name" : "Scramble Addon",
 	"author" : "Saidenka, Bookyakuno, nikogoli",
-	"version" : (1, 0, 7),
+	"version" : (1, 0, 8),
 	"blender" : (2, 90, 0),
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",
@@ -355,8 +355,8 @@ def register():
 	bpy.types.DATA_PT_modifiers.append(DATA_PT_modifiers.menu)
 	DATA_PT_pose_library.register()
 	bpy.types.DATA_PT_pose_library.append(DATA_PT_pose_library.menu)
-	DATA_PT_shape_keys.register()
-	bpy.types.DATA_PT_shape_keys.prepend(DATA_PT_shape_keys.menu_prepend)
+	#DATA_PT_shape_keys.register()#廃止
+	#bpy.types.DATA_PT_shape_keys.prepend(DATA_PT_shape_keys.menu_prepend)
 	DATA_PT_skeleton.register()
 	bpy.types.DATA_PT_skeleton.append(DATA_PT_skeleton.menu)
 	DATA_PT_uv_texture.register()
@@ -545,8 +545,8 @@ def unregister():
 	bpy.types.DATA_PT_modifiers.remove(DATA_PT_modifiers.menu)
 	DATA_PT_pose_library.unregister()
 	bpy.types.DATA_PT_pose_library.remove(DATA_PT_pose_library.menu)
-	DATA_PT_shape_keys.unregister()
-	bpy.types.DATA_PT_shape_keys.remove(DATA_PT_shape_keys.menu_prepend)
+	#DATA_PT_shape_keys.unregister()#廃止
+	#bpy.types.DATA_PT_shape_keys.remove(DATA_PT_shape_keys.menu_prepend)
 	DATA_PT_skeleton.unregister()
 	bpy.types.DATA_PT_skeleton.remove(DATA_PT_skeleton.menu)
 	DATA_PT_uv_texture.unregister()
