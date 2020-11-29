@@ -10,28 +10,27 @@ from bpy.props import *
 
 class PieMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_window_pie"
-	bl_label = "Area Pie Menu (for short-cut)"
-	bl_description = "Window Pie Menus"
+	bl_label = "Switch Editors (For Shortcut)"
+	bl_description = "Functions to switch editors that can be used easily by assigning shortcut"
 
 	def draw(self, context):
 		self.layout.operator(AreaTypePieOperator.bl_idname, icon="PLUGIN")
 
 class AreaTypePieOperator(bpy.types.Operator):
 	bl_idname = "wm.area_type_pie_operator"
-	bl_label = "Editor Type"
-	bl_description = "This is pie menu of editor type change"
+	bl_label = "Pie menu : Editor Type"
+	bl_description = "Switch editor types of this area"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
 		if context.area.type == 'TOPBAR':
-			self.report(type={'ERROR'}, message="This is 'Topbar'. Please use in other areas (by using shortcut)")
+			self.report(type={'ERROR'}, message="Cannot use in 'Topbar'. Please use in other areas (by using shortcut)")
 			return {'CANCELLED'}
 		bpy.ops.wm.call_menu_pie(name=AreaTypePie.bl_idname)
 		return {'FINISHED'}
 class AreaTypePie(bpy.types.Menu): #
 	bl_idname = "INFO_MT_window_pie_area_type"
-	bl_label = "Editor Type"
-	bl_description = "This is pie menu of editor type change"
+	bl_label = "Pie menu : Editor Type"
 
 	def draw(self, context):
 		#Left
@@ -59,8 +58,8 @@ class AreaTypePie(bpy.types.Menu): #
 
 class AreaTypePieAnim(bpy.types.Menu):
 	bl_idname = "INFO_MT_window_pie_area_type_anim"
-	bl_label = "Editor Type (Animation)"
-	bl_description = "Is pie menu change editor type (animation related)"
+	bl_label = "Pie menu : Editor Type (Animation)"
+	bl_description = "Switch editor types of this area to animation-related editors"
 
 	def draw(self, context):
 		#Left
@@ -86,8 +85,8 @@ class AreaTypePieAnim(bpy.types.Menu):
 		op.type, op.mode = ["GRAPH_EDITOR", "DRIVERS"]
 class AreaTypePieOther(bpy.types.Menu):
 	bl_idname = "INFO_MT_window_pie_area_type_other"
-	bl_label = "Editor Type (other)"
-	bl_description = "Is pie menu change editor type (other)"
+	bl_label = "Pie menu : Editor Type (Scripting/Data)"
+	bl_description = "Switch editor types of this area to scripting/data-related editors"
 
 	def draw(self, context):
 		#Left
@@ -109,7 +108,7 @@ class AreaTypePieOther(bpy.types.Menu):
 class SetAreaType(bpy.types.Operator): #
 	bl_idname = "wm.set_area_type"
 	bl_label = "Change Editor Type"
-	bl_description = "Change Editor Type"
+	bl_description = "Switch editor types of this area"
 	bl_options = {'REGISTER'}
 
 	type : StringProperty(name="Area Type")
@@ -129,8 +128,8 @@ class SetAreaType(bpy.types.Operator): #
 
 class ToggleJapaneseInterface(bpy.types.Operator):
 	bl_idname = "wm.toggle_japanese_interface"
-	bl_label = "Switch UI English/Japanese"
-	bl_description = "Switch interface English, Japan,"
+	bl_label = "Switch UI Language (English/Japanese)"
+	bl_description = "Switch interface language between English and Japanese"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):

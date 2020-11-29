@@ -37,7 +37,7 @@ class SetRenderSlot(bpy.types.Operator):
 
 class ToggleThreadsMode(bpy.types.Operator):
 	bl_idname = "render.toggle_threads_mode"
-	bl_label = "Switch Use Threads"
+	bl_label = "Change Number of Threads"
 	bl_description = "Toggles thread number of CPUS used to render"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -61,8 +61,8 @@ class ToggleThreadsMode(bpy.types.Operator):
 
 class SetAllSubsurfRenderLevels(bpy.types.Operator):
 	bl_idname = "render.set_all_subsurf_render_levels"
-	bl_label = "Set Subsurf levels during rendering"
-	bl_description = "Together sets granularity of Subsurf applied during rendering"
+	bl_label = "Set Subsurfs' Subdivisions when Rendering"
+	bl_description = "Set all subsurfs' numbers of subdivisions when rendering together"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -70,7 +70,7 @@ class SetAllSubsurfRenderLevels(bpy.types.Operator):
 		('RELATIVE', "Relative Value", "", 2),
 		]
 	mode : EnumProperty(items=items, name="Setting Mode")
-	levels : IntProperty(name="Level of Subsurf", default=2, min=-20, max=20, soft_min=-20, soft_max=20, step=1)
+	levels : IntProperty(name="Number of Subdivisions", default=2, min=-20, max=20, soft_min=-20, soft_max=20, step=1)
 
 	def execute(self, context):
 		for obj in bpy.data.objects:
@@ -91,11 +91,11 @@ class SetAllSubsurfRenderLevels(bpy.types.Operator):
 
 class SyncAllSubsurfRenderLevels(bpy.types.Operator):
 	bl_idname = "render.sync_all_subsurf_render_levels"
-	bl_label = "Sync preview value when rendering Subsurf levels"
-	bl_description = "Granularity of Subsurf apply when rendering entire object sets level in preview"
+	bl_label = "Set Subdivisions Based on Number in Viewport"
+	bl_description = "Set the number of subdivisions when rendering based on the number in viewport"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	level_offset : IntProperty(name="Subdivision-level Offset", default=0, min=-20, max=20, soft_min=-20, soft_max=20, step=1)
+	level_offset : IntProperty(name="Offset", default=0, min=-20, max=20, soft_min=-20, soft_max=20, step=1)
 
 	def execute(self, context):
 		for obj in bpy.data.objects:
@@ -184,8 +184,8 @@ class SimplifyRenderPanel(bpy.types.Operator):
 
 class RenderResolutionPercentageMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_resolution_percentage"
-	bl_label = "Render Size (%)"
-	bl_description = "Set to be rendered settings resolution percentage?"
+	bl_label = "Set Rendering Image's Size (%)"
+	bl_description = "Set rendering's size as a percentage of the resolution settings"
 
 	def draw(self, context):
 		x = bpy.context.scene.render.resolution_x
@@ -208,8 +208,8 @@ class RenderResolutionPercentageMenu(bpy.types.Menu):
 
 class SlotsRenderMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_slots"
-	bl_label = "Render Slots"
-	bl_description = "Change slot to save rendering results"
+	bl_label = "Set Render Slot"
+	bl_description = "Change the render slot"
 
 	def draw(self, context):
 		for i in range(max([len(im.render_slots) for im in bpy.data.images])):
@@ -229,31 +229,31 @@ class ShadeingMenu(bpy.types.Menu):
 """
 class SubsurfMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_subsurf"
-	bl_label = "All Subsurf Levels"
-	bl_description = "Setting Subsurf subdivision level of all objects at once"
+	bl_label = "Set Subsurfs' Subdivisions when Rendering"
+	bl_description = "Set all subsurfs' numbers of subdivisions when rendering together"
 
 	def draw(self, context):
-		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivision + 1", icon="PLUGIN")
+		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="+1 Subdivisions", icon="PLUGIN")
 		operator.mode = 'RELATIVE'
 		operator.levels = 1
-		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivision - 1", icon="PLUGIN")
+		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text=" -1  Subdivisions", icon="PLUGIN")
 		operator.mode = 'RELATIVE'
 		operator.levels = -1
 		self.layout.separator()
-		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivision = 0", icon="PLUGIN")
+		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivisions: 0", icon="PLUGIN")
 		operator.mode = 'ABSOLUTE'
 		operator.levels = 0
-		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivision = 1", icon="PLUGIN")
+		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivisions: 1", icon="PLUGIN")
 		operator.mode = 'ABSOLUTE'
 		operator.levels = 1
-		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivision = 2", icon="PLUGIN")
+		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivisions: 2", icon="PLUGIN")
 		operator.mode = 'ABSOLUTE'
 		operator.levels = 2
-		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivision = 3", icon="PLUGIN")
+		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="Subdivisions: 3", icon="PLUGIN")
 		operator.mode = 'ABSOLUTE'
 		operator.levels = 3
 		self.layout.separator()
-		self.layout.operator(SyncAllSubsurfRenderLevels.bl_idname, text="Sync Viewport Value", icon="PLUGIN")
+		self.layout.operator(SyncAllSubsurfRenderLevels.bl_idname, icon="PLUGIN")
 
 ################
 # クラスの登録 #
@@ -299,12 +299,13 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.prop(context.scene.render, 'resolution_x', text="Resolution X", icon="PLUGIN")
 		self.layout.prop(context.scene.render, 'resolution_y', text="Resolution Y", icon="PLUGIN")
-		self.layout.menu(RenderResolutionPercentageMenu.bl_idname, text="RenderSize (Now:"+str(context.scene.render.resolution_percentage)+"%)", icon="PLUGIN")
+		self.layout.prop(context.scene.render, 'resolution_percentage', text="Rendering Image's Size", icon="PLUGIN")
+		self.layout.menu(RenderResolutionPercentageMenu.bl_idname, icon="PLUGIN")
 		for img in bpy.data.images:
 			if (img.type == 'RENDER_RESULT'):
-				self.layout.menu(SlotsRenderMenu.bl_idname, text="RenderSlot (Now: slot"+str(img.render_slots.active_index+1)+")", icon="PLUGIN")
+				self.layout.menu(SlotsRenderMenu.bl_idname, text=f"Set RenderSlot (Now: slot {str(img.render_slots.active_index+1)})", icon="PLUGIN")
 				break
-		self.layout.prop_menu_enum(context.scene.render.image_settings, 'file_format', text="File Format", icon="PLUGIN")
+		self.layout.prop_menu_enum(context.scene.render.image_settings, 'file_format', text="Set File Format", icon="PLUGIN")
 		self.layout.separator()
 		self.layout.prop(context.scene, 'frame_start', text="Start Frame", icon="PLUGIN")
 		self.layout.prop(context.scene, 'frame_end', text="End Frame", icon="PLUGIN")
@@ -317,17 +318,16 @@ def menu(self, context):
 		elif context.scene.render.engine == "BLENDER_EEVEE":
 			self.layout.prop(context.scene.eevee, 'use_gtao', text="Use AO", icon="PLUGIN")
 			self.layout.prop(context.scene.eevee, 'use_bloom', text="Use Bloom", icon="PLUGIN")
-			self.layout.prop(context.scene.eevee, 'use_shadow_high_bitdepth', text="Use 32bit shadows", icon="PLUGIN")
-			self.layout.prop(context.scene.eevee, 'use_soft_shadows', text="Create soft shadows", icon="PLUGIN")
+			self.layout.prop(context.scene.eevee, 'use_shadow_high_bitdepth', text="Use High Bitdepth Shadows", icon="PLUGIN")
+			self.layout.prop(context.scene.eevee, 'use_soft_shadows', text="Use Soft Shadows", icon="PLUGIN")
 		self.layout.prop(context.scene.render, 'use_freestyle', text="Use FreeStyle", icon="PLUGIN")
 		#self.layout.menu(ShadeingMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		if context.scene.render.engine == "CYCLES":
-			text = ToggleThreadsMode.bl_label
 			if (context.scene.render.threads_mode == 'AUTO'):
-				text = text + " (Now Auto-sensing)"
+				text = f"{ToggleThreadsMode.bl_label} (Now: Auto-detect)"
 			else:
-				text = text + " (Current constant value:" + str(context.scene.render.threads) + ")"
+				text = f"{ToggleThreadsMode.bl_label} (Now: Fixed)"
 			self.layout.operator(ToggleThreadsMode.bl_idname, text=text, icon="PLUGIN")
 		self.layout.menu(SubsurfMenu.bl_idname, icon="PLUGIN")
 		#self.layout.prop_menu_enum(context.scene.render, 'antialiasing_samples', text="Anti-aliasing Samples", icon="PLUGIN")
