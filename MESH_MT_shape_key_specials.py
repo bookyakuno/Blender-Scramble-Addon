@@ -17,7 +17,7 @@ class CopyShape(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
-		if (ob):
+		if (ob) and ob.mode == 'OBJECT':
 			if ob.type in {'MESH','CURVE'}:
 				if (ob.active_shape_key):
 					return True
@@ -60,6 +60,62 @@ class InsertKeyframeAllShapes(bpy.types.Operator):
 	def execute(self, context):
 		for shape in context.active_object.data.shape_keys.key_blocks:
 			shape.keyframe_insert(data_path="value")
+		for area in context.screen.areas:
+			area.tag_redraw()
+		return {'FINISHED'}
+
+class InsertKeyframeWithInverval(bpy.types.Operator):
+	bl_idname = "mesh.insert_keyframe_with_interval"
+	bl_label = "Insert Keyframes with Fixed Interval"
+	bl_description = "Insert zero-and- positive-value keyframes for each shape keys with designated interval"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	interval : IntProperty(name="Interval", default=20, min=0)
+	set_max : BoolProperty(name="Use Current Value instead of '1'", default=False)
+	item =[("CURRENT", "Current Frame", "", 1), ("STEP", "End of Previous Transformation", "", 2)]
+	method = EnumProperty(name="Zero-Value Keyframes", items=item)
+
+	@classmethod
+	def poll(cls, context):
+		ob = context.active_object
+		if (ob):
+			if ob.type in {'MESH','CURVE'}:
+				if (ob.active_shape_key):
+					return True
+		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self, width=350)
+	def draw(self, context):
+		row = self.layout.split(factor=0.45)
+		rowrow = row.split(factor=0.9).split(factor=0.4)
+		rowrow.label(text="Interval")
+		rowrow.prop(self, 'interval', text="")
+		row.prop(self, 'set_max')
+		sp = self.layout.split(factor=0.45)
+		sp.label(text="Zero-Value Keyframes")
+		sp.prop(self, 'method', text="")
+
+	def execute(self, context):
+		keybrocks = context.active_object.data.shape_keys.key_blocks
+		start = context.scene.frame_current
+		end_frames = [start + t*self.interval for t in range(1, len(keybrocks)+1)]
+		if self.set_max:
+			valuse = [s.value for s in keybrocks]
+		else:
+			valuse = [1] * len(keybrocks)
+		if self.method == 'CURRENT':
+			start_frames = [start] * len(keybrocks)
+		elif self.method == 'STEP':
+			start_frames = [start] + end_frames[:-1]
+		print(start_frames)
+		for idx, shape in enumerate(keybrocks):
+			context.scene.frame_current = start_frames[idx]
+			shape.value = 0
+			shape.keyframe_insert(data_path="value")
+			context.scene.frame_current = end_frames[idx]
+			shape.value = valuse[idx]
+			shape.keyframe_insert(data_path="value")
+		context.scene.frame_current = start
 		for area in context.screen.areas:
 			area.tag_redraw()
 		return {'FINISHED'}
@@ -113,7 +169,7 @@ class ShapeKeyApplyRemoveAll(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
-		if (ob):
+		if (ob) and ob.mode == 'OBJECT':
 			if ob.type in {'MESH','CURVE'}:
 				if (ob.data.shape_keys):
 					if (2 <= len(ob.data.shape_keys.key_blocks)):
@@ -126,6 +182,36 @@ class ShapeKeyApplyRemoveAll(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode='EDIT', toggle=False)
 		bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
 		bpy.ops.object.shape_key_remove(all=True)
+		return {'FINISHED'}
+
+class ShapeKeyApplyInverseBase(bpy.types.Operator):
+	bl_idname = "object.shape_key_apply_inverse_base"
+	bl_label = "Transform to Current Shape (Switch to Base)"
+	bl_description = "Transform mesh to the current shape and remove all shape keys"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	@classmethod
+	def poll(cls, context):
+		ob = context.active_object
+		if ob and ob.mode == 'OBJECT':
+			if ob.type in {'MESH','CURVE'}:
+				if (ob.data.shape_keys):
+					if (2 <= len(ob.data.shape_keys.key_blocks)):
+						return True
+		return False
+
+	def execute(self, context):
+		obj = context.active_object
+		me = obj.data
+		name = f"{me.shape_keys.key_blocks[0].name}_original"
+		obj.active_shape_key_index = 0
+		bpy.ops.mesh.copy_shape()
+		me.shape_keys.key_blocks[-1].name = name
+		bpy.ops.object.shape_key_add(from_mix=True)
+		bpy.ops.object.shape_key_move(type='UP')
+		obj.active_shape_key_index = 0
+		while len(me.shape_keys.key_blocks) > 2:
+			bpy.ops.object.shape_key_remove()
 		return {'FINISHED'}
 
 class AddLinkDriverShapeKeys(bpy.types.Operator):
@@ -216,9 +302,11 @@ class mute_all_shape_keys(bpy.types.Operator):
 classes = [
 	CopyShape,
 	InsertKeyframeAllShapes,
+	InsertKeyframeWithInverval,
 	SelectShapeTop,
 	SelectShapeBottom,
 	ShapeKeyApplyRemoveAll,
+	ShapeKeyApplyInverseBase,
 	AddLinkDriverShapeKeys,
 	mute_all_shape_keys
 ]
@@ -251,13 +339,15 @@ def menu(self, context):
 		self.layout.operator(SelectShapeTop.bl_idname, icon='PLUGIN')
 		self.layout.operator(SelectShapeBottom.bl_idname, icon='PLUGIN')
 		self.layout.separator()
-		self.layout.operator(mute_all_shape_keys.bl_idname, icon='PLUGIN', text="All Disable").mode = 'DISABLE'
-		self.layout.operator(mute_all_shape_keys.bl_idname, icon='PLUGIN', text="All Enable").mode = 'ENABLE'
+		self.layout.operator(mute_all_shape_keys.bl_idname, icon='PLUGIN', text="Disable All").mode = 'DISABLE'
+		self.layout.operator(mute_all_shape_keys.bl_idname, icon='PLUGIN', text="Enable All").mode = 'ENABLE'
 		self.layout.separator()
 		self.layout.operator(CopyShape.bl_idname, icon='PLUGIN')
 		self.layout.operator(ShapeKeyApplyRemoveAll.bl_idname, icon='PLUGIN')
+		self.layout.operator(ShapeKeyApplyInverseBase.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.operator(InsertKeyframeAllShapes.bl_idname, icon='PLUGIN')
+		self.layout.operator(InsertKeyframeWithInverval.bl_idname, icon='PLUGIN')
 		self.layout.operator(AddLinkDriverShapeKeys.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
