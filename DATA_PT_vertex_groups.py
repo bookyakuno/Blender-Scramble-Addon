@@ -68,6 +68,60 @@ class RemoveSpecifiedStringVertexGroups(bpy.types.Operator):
 		sp.label(text="Remove groups which names contain :")
 		sp.prop(self, 'string', text="")
 
+class SelectActiveGroupOnly(bpy.types.Operator):
+	bl_idname = "mesh.select_active_vertex_group_only"
+	bl_label = "Active Only"
+	bl_description = "Select vertices in the active group only"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	@classmethod
+	def poll(cls, context):
+		ob = context.active_object
+		if (ob):
+			if (ob.type == 'MESH'):
+				if (2 <= len(ob.vertex_groups)):
+					return True
+		return False
+
+	def execute(self, context):
+		bpy.ops.mesh.select_all(action='DESELECT')
+		bpy.ops.object.vertex_group_select()
+		return {'FINISHED'}
+
+class CleanVertexforMenu(bpy.types.Operator):
+	bl_idname = "mesh.clean_vaertex_for_panel"
+	bl_label = "Remove Low-Weight Vertices"
+	bl_description = "Removes vertices which weights are below a limit from the active vertex group"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	item = [("ACTIVE", "Active Group", "", 1),("ALL", "All Groups", "", 1)]
+	mode : EnumProperty(name="Target", items=item)
+	limit : IntProperty(name="Lower Limit", default=0, max=1, min=0, description="Remove vertices which weight is below or equal this limit")
+	keep_single : BoolProperty(name="At Least One Weight for Each Vertices", default=False)
+
+	@classmethod
+	def poll(cls, context):
+		ob = context.active_object
+		if (ob):
+			if (ob.type == 'MESH'):
+				if (len(ob.vertex_groups)):
+					return True
+		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		for p in ['mode', 'limit']:
+			row = self.layout.row()
+			row.use_property_split = True
+			row.prop(self, p)
+		row = self.layout.split(factor=0.2)
+		row.label(text="")
+		row.prop(self, 'keep_single')
+
+	def execute(self, context):
+		bpy.object.vertex_group_clean(group_select_mode=self.mode, limit=self.limit, keep_single=self.keep_single)
+		return {'FINISHED'}
+
 ################
 # サブメニュー #
 ################
@@ -88,6 +142,8 @@ class RemoveVertexGroupMenu(bpy.types.Menu):
 		operator = self.layout.operator('object.vertex_group_normalize_all', icon='PLUGIN')
 		operator.group_select_mode = 'ALL'
 		operator.lock_active = False
+		self.layout.separator()	
+		self.layout.operator(CleanVertexforMenu.bl_idname, icon='PLUGIN')
 
 ################
 # クラスの登録 #
@@ -96,6 +152,8 @@ class RemoveVertexGroupMenu(bpy.types.Menu):
 classes = [
 	RemoveEmptyVertexGroups,
 	RemoveSpecifiedStringVertexGroups,
+	SelectActiveGroupOnly,
+	CleanVertexforMenu,
 	RemoveVertexGroupMenu
 ]
 
@@ -129,14 +187,23 @@ def menu(self, context):
 		except AttributeError as e:
 			is_active = False
 		row = self.layout.row()
+		rowrow = row.row(align=True)
+		op = rowrow.operator('object.vertex_group_sort', text="", icon='SORTALPHA')
+		op.sort_type = 'NAME'		
+		op = rowrow.operator('object.vertex_group_sort', text="", icon='BONE_DATA')
+		op.sort_type = 'BONE_HIERARCHY'
 		if context.active_object and context.active_object.mode == 'EDIT':
 			sp = row.split(factor=0.87)
+			spsp = sp.split(factor=0.57)
+			spsp.operator('object.vertex_group_assign_new', text="With Selected Vetices", icon='PLUS')
+			spsp.operator(SelectActiveGroupOnly.bl_idname, icon='VERTEXSEL')
 			spsp = sp.row()
 			spsp.menu(RemoveVertexGroupMenu.bl_idname, text="", icon='CANCEL')
 			spsp.active = is_active
 		else:
 			sp = row.split(factor=0.6)
 			sp.menu(RemoveVertexGroupMenu.bl_idname, icon='CANCEL')
+			sp.operator('mesh.copy_mirror_vertex_groups', text="Add Mirrored", icon='MOD_MIRROR')# MESH_MT_group_specials で定義
 			sp.active = is_active
 
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
