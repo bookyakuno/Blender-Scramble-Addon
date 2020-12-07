@@ -72,8 +72,8 @@ class InsertKeyframeWithInverval(bpy.types.Operator):
 
 	interval : IntProperty(name="Interval", default=20, min=0)
 	set_max : BoolProperty(name="Use Current Value instead of '1'", default=False)
-	item =[("CURRENT", "Current Frame", "", 1), ("STEP", "End of Previous Transformation", "", 2)]
-	method = EnumProperty(name="Zero-Value Keyframes", items=item)
+	item = [("CURRENT", "Current Frame", "", 1), ("STEP", "End of Previous Transformation", "", 2)]
+	method : EnumProperty(name="Zero-Value Keyframes", items=item)
 
 	@classmethod
 	def poll(cls, context):
