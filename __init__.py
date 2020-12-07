@@ -53,6 +53,7 @@ if "bpy" in locals():
 	"MATERIAL_PT_context_material",
 	"MESH_MT_shape_key_specials",
 	"MESH_MT_vertex_group_specials",
+	"DATA_PT_vertex_groups",
 	"NODE_MT_node",
 	"NODE_MT_view",
 	"OBJECT_PT_context_object",
@@ -149,6 +150,7 @@ else:
 	MATERIAL_PT_context_material,
 	MESH_MT_shape_key_specials,
 	MESH_MT_vertex_group_specials,
+	DATA_PT_vertex_groups,
 	NODE_MT_node,
 	NODE_MT_view,
 	OBJECT_PT_context_object,
@@ -363,6 +365,8 @@ def register():
 	bpy.types.DATA_PT_uv_texture.append(DATA_PT_uv_texture.menu)
 	DATA_PT_vertex_colors.register()
 	bpy.types.DATA_PT_vertex_colors.append(DATA_PT_vertex_colors.menu)
+	DATA_PT_vertex_groups.register()
+	bpy.types.DATA_PT_vertex_groups.append(DATA_PT_vertex_groups.menu)
 	DOPESHEET_MT_key.register()
 	bpy.types.DOPESHEET_MT_key.append(DOPESHEET_MT_key.menu)
 	IMAGE_MT_image.register()
@@ -553,6 +557,8 @@ def unregister():
 	bpy.types.DATA_PT_uv_texture.remove(DATA_PT_uv_texture.menu)
 	DATA_PT_vertex_colors.unregister()
 	bpy.types.DATA_PT_vertex_colors.remove(DATA_PT_vertex_colors.menu)
+	DATA_PT_vertex_groups.unregister()
+	bpy.types.DATA_PT_vertex_groups.remove(DATA_PT_vertex_groups.menu)
 	DOPESHEET_MT_key.unregister()
 	bpy.types.DOPESHEET_MT_key.remove(DOPESHEET_MT_key.menu)
 	IMAGE_MT_image.unregister()

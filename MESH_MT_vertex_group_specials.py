@@ -9,35 +9,6 @@ from bpy.props import *
 # オペレーター #
 ################
 
-class RemoveEmptyVertexGroups(bpy.types.Operator):
-	bl_idname = "mesh.remove_empty_vertex_groups"
-	bl_label = "Delete empty vertex groups"
-	bl_description = "Remove weights assigned to mesh vertex groups"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	@classmethod
-	def poll(cls, context):
-		ob = context.active_object
-		if (ob):
-			if (ob.type == 'MESH'):
-				if (len(ob.vertex_groups)):
-					return True
-		return False
-
-	def execute(self, context):
-		obj = context.active_object
-		if (obj.type == "MESH"):
-			for vg in obj.vertex_groups:
-				for vert in obj.data.vertices:
-					try:
-						if (vg.weight(vert.index) > 0.0):
-							break
-					except RuntimeError:
-						pass
-				else:
-					obj.vertex_groups.remove(vg)
-		return {'FINISHED'}
-
 class AddOppositeVertexGroups(bpy.types.Operator):
 	bl_idname = "mesh.add_opposite_vertex_groups"
 	bl_label = "Add empty mirroring vertex group"
@@ -99,6 +70,7 @@ class SelectVertexGroupsTop(bpy.types.Operator):
 	def execute(self, context):
 		context.active_object.vertex_groups.active_index = 0
 		return {'FINISHED'}
+
 class SelectVertexGroupsBottom(bpy.types.Operator):
 	bl_idname = "mesh.select_vertex_groups_bottom"
 	bl_label = "Select Bottom"
@@ -158,13 +130,7 @@ class MoveVertexGroupBottom(bpy.types.Operator):
 			bpy.ops.object.vertex_group_move(direction='DOWN')
 		return {'FINISHED'}
 
-class RemoveSpecifiedStringVertexGroups(bpy.types.Operator):
-	bl_idname = "mesh.remove_specified_string_vertex_groups"
-	bl_label = "Delete vertex groups contain specific text"
-	bl_description = "Removes all vertex group names contains specified string"
 	bl_options = {'REGISTER', 'UNDO'}
-
-	string : StringProperty(name="Part of name deleteing", default="")
 
 	@classmethod
 	def poll(cls, context):
@@ -177,32 +143,18 @@ class RemoveSpecifiedStringVertexGroups(bpy.types.Operator):
 
 	def execute(self, context):
 		obj = context.active_object
-		count = 0
-		if (obj.type == "MESH"):
-			for vg in obj.vertex_groups[:]:
-				if (self.string in vg.name):
-					obj.vertex_groups.remove(vg)
-					count += 1
-			self.report(type={'INFO'}, message=str(count)+" removed vertex groups")
-		else:
-			self.report(type={'ERROR'}, message="Try run on mesh object")
-			return {'CANCELLED'}
 		return {'FINISHED'}
-	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
 
 ################
 # クラスの登録 #
 ################
 
 classes = [
-	RemoveEmptyVertexGroups,
 	AddOppositeVertexGroups,
 	SelectVertexGroupsTop,
 	SelectVertexGroupsBottom,
 	MoveVertexGroupTop,
 	MoveVertexGroupBottom,
-	RemoveSpecifiedStringVertexGroups
 ]
 
 def register():
@@ -230,24 +182,14 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
+		self.layout.operator(AddOppositeVertexGroups.bl_idname, icon='PLUGIN')
+		self.layout.separator()
 		self.layout.operator(SelectVertexGroupsTop.bl_idname, icon='PLUGIN')
 		self.layout.operator(SelectVertexGroupsBottom.bl_idname, icon='PLUGIN')
 		self.layout.separator()
-		self.layout.operator(MoveVertexGroupTop.bl_idname, icon='PLUGIN')
-		self.layout.operator(MoveVertexGroupBottom.bl_idname, icon='PLUGIN')
-		self.layout.separator()
-		operator = self.layout.operator('object.vertex_group_normalize_all', icon='PLUGIN')
-		operator.group_select_mode = 'ALL'
-		operator.lock_active = False
-		operator = self.layout.operator('object.vertex_group_clean', icon='PLUGIN')
-		operator.group_select_mode = 'ALL'
-		operator.limit = 0
-		operator.keep_single = False
-		self.layout.separator()
-		self.layout.operator(RemoveSpecifiedStringVertexGroups.bl_idname, icon='PLUGIN')
-		self.layout.operator(RemoveEmptyVertexGroups.bl_idname, icon='PLUGIN')
-		self.layout.separator()
-		self.layout.operator(AddOppositeVertexGroups.bl_idname, icon='PLUGIN')
+		self.layout.operator(MoveVertexGroupTop.bl_idname, icon='TRIA_UP_BAR')
+		self.layout.operator(MoveVertexGroupBottom.bl_idname, icon='TRIA_DOWN_BAR')
+
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
