@@ -26,30 +26,22 @@ class AddOppositeVertexGroups(bpy.types.Operator):
 
 	def execute(self, context):
 		obj = context.active_object
-		if (obj.type == "MESH"):
-			vgs = obj.vertex_groups[:]
-			for vg in vgs:
-				oldName = vg.name
-				newName = re.sub(r'([_\.-])L$', r'\1R', vg.name)
-				if (oldName == newName):
-					newName = re.sub(r'([_\.-])R$', r'\1L', vg.name)
-					if (oldName == newName):
-						newName = re.sub(r'([_\.-])l$', r'\1r', vg.name)
-						if (oldName == newName):
-							newName = re.sub(r'([_\.-])r$', r'\1l', vg.name)
-							if (oldName == newName):
-								newName = re.sub(r'[lL][eE][fF][tT]$', r'Right', vg.name)
-								if (oldName == newName):
-									newName = re.sub(r'[rR][iI][gG][hH][tT]$', r'Left', vg.name)
-									if (oldName == newName):
-										newName = re.sub(r'^[lL][eE][fF][tT]', r'Right', vg.name)
-										if (oldName == newName):
-											newName = re.sub(r'^[rR][iI][gG][hH][tT]', r'Left', vg.name)
-				for v in vgs:
-					if (newName.lower() == v.name.lower()):
-						break
-				else:
-					obj.vertex_groups.new(name=newName)
+		vgs = obj.vertex_groups[:]
+		for vg in vgs:
+			oldName = vg.name
+			if oldName[-4:] in ['Left', 'left'] and oldName[-5] in ['.', '_', '-'] :
+				newName = oldName[:-4] + oldName[-4:].replace('Left', 'Right').replace('left', 'right')
+			elif oldName[-5:] in ['Right', 'right'] and oldName[-6] in ['.', '_', '-'] :
+				newName = oldName[:-5] + oldName[-5:].replace('Right', 'Left').replace('right', 'left')
+			elif oldName[-1] in ['L', 'l'] and oldName[-2] in ['.', '_', '-'] :
+				newName = oldName[:-1] + oldName[-1].replace('L', 'R').replace('l', 'r')
+			elif oldName[-1] in ['R', 'r'] and oldName[-2] in ['.', '_', '-'] :
+				newName = oldName[:-1] + oldName[-1].replace('R', 'L').replace('r', 'l')
+			for v in vgs:
+				if (newName.lower() == v.name.lower()):
+					break
+			else:
+				obj.vertex_groups.new(name=newName)
 		return {'FINISHED'}
 
 class SelectVertexGroupsTop(bpy.types.Operator):
@@ -130,6 +122,10 @@ class MoveVertexGroupBottom(bpy.types.Operator):
 			bpy.ops.object.vertex_group_move(direction='DOWN')
 		return {'FINISHED'}
 
+class CopyMirrorVertexGroups(bpy.types.Operator):
+	bl_idname = "mesh.copy_mirror_vertex_groups"
+	bl_label = "Add Mirrored Vertex Group"
+	bl_description = "For the active vertex group, add its copy with flipped weight and name"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -143,6 +139,32 @@ class MoveVertexGroupBottom(bpy.types.Operator):
 
 	def execute(self, context):
 		obj = context.active_object
+		source_group = obj.vertex_groups.active
+		oldName = source_group.name
+		if oldName[-4:] in ['Left', 'left'] and oldName[-5] in ['.', '_', '-'] :
+			newName = oldName[:-4] + oldName[-4:].replace('Left', 'Right').replace('left', 'right')
+		elif oldName[-5:] in ['Right', 'right'] and oldName[-6] in ['.', '_', '-'] :
+			newName = oldName[:-5] + oldName[-5:].replace('Right', 'Left').replace('right', 'left')
+		elif oldName[-1] in ['L', 'l'] and oldName[-2] in ['.', '_', '-'] :
+			newName = oldName[:-1] + oldName[-1].replace('L', 'R').replace('l', 'r')
+		elif oldName[-1] in ['R', 'r'] and oldName[-2] in ['.', '_', '-'] :
+			newName = oldName[:-1] + oldName[-1].replace('R', 'L').replace('r', 'l')
+		vert_dic = {}
+		for vert in obj.data.vertices:
+			try:
+				vert_dic[vert.index] = source_group.weight(vert.index)
+			except RuntimeError:
+				pass
+		bpy.ops.object.vertex_group_copy()
+		bpy.ops.object.vertex_group_mirror(all_groups=True, use_topology=False)
+		obj.vertex_groups.active.name = newName
+		obj.vertex_groups.active = source_group
+		bpy.ops.object.vertex_group_clean()
+		for vert in obj.data.vertices:
+			try:
+				source_group.add([vert.index], vert_dic[vert.index], 'REPLACE')
+			except KeyError:
+				source_group.remove([vert.index])
 		return {'FINISHED'}
 
 ################
@@ -155,6 +177,7 @@ classes = [
 	SelectVertexGroupsBottom,
 	MoveVertexGroupTop,
 	MoveVertexGroupBottom,
+	CopyMirrorVertexGroups,
 ]
 
 def register():
@@ -182,6 +205,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
+		self.layout.operator(CopyMirrorVertexGroups.bl_idname, icon='MOD_MIRROR')
 		self.layout.operator(AddOppositeVertexGroups.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.operator(SelectVertexGroupsTop.bl_idname, icon='PLUGIN')
