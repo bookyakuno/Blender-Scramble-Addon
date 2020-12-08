@@ -10,8 +10,8 @@ from bpy.props import *
 
 class CopyAllMaterialNode(bpy.types.Operator):
 	bl_idname = "node.copy_all_material_node"
-	bl_label = "Copy to other material shader node"
-	bl_description = "Copies of other material shader nodes are displayed"
+	bl_label = "Copy Node Tree to Other Materials"
+	bl_description = "Copy all of active material's nodes to other material"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	isOnlySelected : BoolProperty(name="Selected Object Only", default=True)
