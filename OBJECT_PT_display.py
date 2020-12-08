@@ -11,7 +11,7 @@ from bpy.props import *
 class CopyDisplaySetting(bpy.types.Operator):
 	bl_idname = "object.copy_display_setting"
 	bl_label = "Copy Display Setting"
-	bl_description = "Copy selected objects of other display settings"
+	bl_description = "Copy active object's display settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	copy_show_name : BoolProperty(name="Name", default=True)
