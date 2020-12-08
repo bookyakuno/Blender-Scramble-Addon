@@ -11,8 +11,8 @@ from bpy.props import *
 
 class AddOppositeVertexGroups(bpy.types.Operator):
 	bl_idname = "mesh.add_opposite_vertex_groups"
-	bl_label = "Add empty mirroring vertex group"
-	bl_description = ". L... R, add an empty pair of bones according to mandate rule in Miller\'s new born"
+	bl_label = "Add Group with Left-Right-Flipped name"
+	bl_description = "For each vertex group with left-right suffixes, add an empty group with the suffix"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -47,7 +47,7 @@ class AddOppositeVertexGroups(bpy.types.Operator):
 class SelectVertexGroupsTop(bpy.types.Operator):
 	bl_idname = "mesh.select_vertex_groups_top"
 	bl_label = "Select Top"
-	bl_description = "Select item at top of vertex groups"
+	bl_description = "Select the top vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -66,7 +66,7 @@ class SelectVertexGroupsTop(bpy.types.Operator):
 class SelectVertexGroupsBottom(bpy.types.Operator):
 	bl_idname = "mesh.select_vertex_groups_bottom"
 	bl_label = "Select Bottom"
-	bl_description = "Select item at bottom of vertex groups"
+	bl_description = "Select the bottom vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -84,8 +84,8 @@ class SelectVertexGroupsBottom(bpy.types.Operator):
 
 class MoveVertexGroupTop(bpy.types.Operator):
 	bl_idname = "mesh.move_vertex_group_top"
-	bl_label = "To Top"
-	bl_description = "Move to top active vertex groups"
+	bl_label = "Move to Top"
+	bl_description = "Move the active vertex groups to top"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -104,7 +104,7 @@ class MoveVertexGroupTop(bpy.types.Operator):
 
 class MoveVertexGroupBottom(bpy.types.Operator):
 	bl_idname = "mesh.move_vertex_group_bottom"
-	bl_label = "To Bottom"
+	bl_label = "Move to Bottom"
 	bl_description = "Move to bottom vertex group active"
 	bl_options = {'REGISTER', 'UNDO'}
 

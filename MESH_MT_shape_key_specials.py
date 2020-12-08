@@ -44,8 +44,8 @@ class CopyShape(bpy.types.Operator):
 
 class InsertKeyframeAllShapes(bpy.types.Operator):
 	bl_idname = "mesh.insert_keyframe_all_shapes"
-	bl_label = "Insert keyframes to all shapes"
-	bl_description = "Inserts keyframe for all shapes on current frame"
+	bl_label = "Insert Keyframes for All Shapes"
+	bl_description = "Insert keyframe for all shapes' values on the current frame"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -123,7 +123,7 @@ class InsertKeyframeWithInverval(bpy.types.Operator):
 class SelectShapeTop(bpy.types.Operator):
 	bl_idname = "object.select_shape_top"
 	bl_label = "Select Top"
-	bl_description = "Select top shape key"
+	bl_description = "Select the top shape key"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -143,7 +143,7 @@ class SelectShapeTop(bpy.types.Operator):
 class SelectShapeBottom(bpy.types.Operator):
 	bl_idname = "object.select_shape_bottom"
 	bl_label = "Select Bottom"
-	bl_description = "Select bottom shape key"
+	bl_description = "Select the bottom shape key"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -162,8 +162,8 @@ class SelectShapeBottom(bpy.types.Operator):
 
 class ShapeKeyApplyRemoveAll(bpy.types.Operator):
 	bl_idname = "object.shape_key_apply_remove_all"
-	bl_label = "Remove all shapes and hold current configuration"
-	bl_description = "Remove all shape key while maintaining shape of current mesh"
+	bl_label = "Transform to Current Shape (Remove all keys)"
+	bl_description = "Transform mesh to the current shape and remove all shape keys"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -216,11 +216,11 @@ class ShapeKeyApplyInverseBase(bpy.types.Operator):
 
 class AddLinkDriverShapeKeys(bpy.types.Operator):
 	bl_idname = "object.add_link_driver_shape_keys"
-	bl_label = "Link shape keys same name by driver"
-	bl_description = "Behavior of selection of other shape key drivers link active object"
+	bl_label = "Link Shape Keys with Same Name by Driver"
+	bl_description = "Add drivers to selected objects' shape keys, and make them follow the active object's shape keys with same name"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	add_shape_key : BoolProperty(name="Add Missing Shapes", default=True)
+	add_shape_key : BoolProperty(name="Add Missing Shapes to Active Object", default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -266,8 +266,8 @@ class AddLinkDriverShapeKeys(bpy.types.Operator):
 
 class mute_all_shape_keys(bpy.types.Operator):
 	bl_idname = "object.mute_all_shape_keys"
-	bl_label = "Disable/Enable All Shapes"
-	bl_description = "All shape key to disable or enable the"
+	bl_label = "Disable / Enable All Shapes"
+	bl_description = "Enable or disable all shape keys"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
