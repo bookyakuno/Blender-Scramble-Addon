@@ -14,7 +14,7 @@ class CopyAllMaterialNode(bpy.types.Operator):
 	bl_description = "Copy all of active material's nodes to other material"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isOnlySelected : BoolProperty(name="Selected Object Only", default=True)
+	isOnlySelected : BoolProperty(name="Selected Objects' Material Only", default=True)
 	isOnlyUseNode : BoolProperty(name="Material Using Nodes Only", default=True)
 	isReplace : BoolProperty(name="Replace Node Tree", default=False)
 
@@ -80,10 +80,16 @@ class CopyAllMaterialNode(bpy.types.Operator):
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
-		for p in ['isOnlySelected', 'isOnlyUseNode', "isReplace"]:
-			sp = self.layout.split(factor=0.2)
-			sp.label(text="")
-			sp.prop(self, p)
+		box = self.layout.box()
+		sp = box.split(factor=0.2)
+		sp.label(text="Target")
+		sp.prop(self, 'isOnlySelected')
+		sp = box.split(factor=0.2)
+		sp.label(text="")
+		sp.prop(self, 'isOnlyUseNode')
+		sp = self.layout.split(factor=0.2)
+		sp.label(text="")
+		sp.prop(self, 'isReplace')
 
 ################
 # クラスの登録 #
