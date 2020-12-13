@@ -38,7 +38,7 @@ class RemoveEmptyVertexGroups(bpy.types.Operator):
 class RemoveSpecifiedStringVertexGroups(bpy.types.Operator):
 	bl_idname = "mesh.remove_specified_string_vertex_groups"
 	bl_label = "Remove Groups with Specific Name"
-	bl_description = "Removes all vertex groups that contain a designated text"
+	bl_description = "Remove all vertex groups that contain a designated text"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	string : StringProperty(name="Remove groups which names contain :", default="")
@@ -91,7 +91,7 @@ class SelectActiveGroupOnly(bpy.types.Operator):
 class CleanVertexforMenu(bpy.types.Operator):
 	bl_idname = "mesh.clean_vaertex_for_panel"
 	bl_label = "Remove Low-Weight Vertices"
-	bl_description = "Removes vertices which weights are below a limit from the active vertex group"
+	bl_description = "Remove vertices which weights are below a limit from the active vertex group"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	item = [("ACTIVE", "Active Group", "", 1),("ALL", "All Groups", "", 1)]
@@ -134,7 +134,7 @@ class RemoveVertexGroupMenu(bpy.types.Menu):
 	def draw(self, context):
 		self.layout.operator(RemoveSpecifiedStringVertexGroups.bl_idname, icon='PLUGIN')
 		self.layout.operator(RemoveEmptyVertexGroups.bl_idname, icon='PLUGIN')
-		self.layout.separator()		
+		self.layout.separator()
 		operator = self.layout.operator('object.vertex_group_clean', icon='PLUGIN', text="Remove Zero-Weight Vertices from All Groups")
 		operator.group_select_mode = 'ALL'
 		operator.limit = 0
@@ -142,7 +142,7 @@ class RemoveVertexGroupMenu(bpy.types.Menu):
 		operator = self.layout.operator('object.vertex_group_normalize_all', icon='PLUGIN')
 		operator.group_select_mode = 'ALL'
 		operator.lock_active = False
-		self.layout.separator()	
+		self.layout.separator()
 		self.layout.operator(CleanVertexforMenu.bl_idname, icon='PLUGIN')
 
 ################
@@ -197,7 +197,7 @@ def menu(self, context):
 			spsp = sp.split(factor=0.57)
 			spsp.operator('object.vertex_group_assign_new', text="With Selected Vetices", icon='PLUS')
 			spsp.operator(SelectActiveGroupOnly.bl_idname, icon='VERTEXSEL')
-			spsp = sp.row()
+			spsp = sp.split(factor=1)
 			spsp.menu(RemoveVertexGroupMenu.bl_idname, text="", icon='CANCEL')
 			spsp.active = is_active
 		else:

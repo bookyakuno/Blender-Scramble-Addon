@@ -105,7 +105,7 @@ class MoveVertexGroupTop(bpy.types.Operator):
 class MoveVertexGroupBottom(bpy.types.Operator):
 	bl_idname = "mesh.move_vertex_group_bottom"
 	bl_label = "Move to Bottom"
-	bl_description = "Move to bottom vertex group active"
+	bl_description = "Move the active vertex groups to bottom"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
