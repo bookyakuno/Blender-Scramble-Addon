@@ -1401,7 +1401,7 @@
 "アクティブなシェイプキーよりも上に位置するベースキー以外のシェイプキーを統合し、新しいシェイプキーを作成します","Merge non-basis shape keys above the active key into a new one"
 "選択された各オブジェクトのシェイプキーにドライバーを追加し、アクティブなオブジェクトが持つ同名のシェイプキーの値に追随させます","Add drivers to selected objects' shape keys, and make them follow the active object's shape keys with same name"
 "全てのシェイプキーを無効化、もしくは有効化します","Enable or disable all shape keys"
-"全ての頂点のウェイトが0である頂点グループを削除します","Remove vertex groups in which all vertices' assigned weights are zero"
+"グループ内の全ての頂点のウェイトが0である頂点グループを削除します","Remove vertex groups in which all vertices' assigned weights are zero"
 "左右を示す接尾辞を持つ各頂点グループについて、接尾辞を反転した名前の空の頂点グループを追加します","For each vertex group with left-right suffixes, add an empty group with the flipped suffix"
 "一番上の頂点グループを選択します","Select the top vertex groups"
 "一番下の頂点グループを選択します","Select the bottom vertex groups"
