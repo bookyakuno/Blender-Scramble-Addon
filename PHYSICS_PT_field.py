@@ -13,15 +13,6 @@ class forcefield_copy(bpy.types.Operator):
 	bl_description = "Copy selection of other force field for active object"
 	bl_options = {'REGISTER'}
 	
-	@classmethod
-	def poll(cls, context):
-		active_ob = context.object
-		if active_ob:
-			if active_ob.field:
-				if 2 <= len(context.selected_objects):
-					return True
-		return False
-	
 	def execute(self, context):
 		active_ob = context.object
 		source = active_ob.field
