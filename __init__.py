@@ -421,14 +421,14 @@ def register():
 	bpy.types.RENDER_PT_context.append(RENDER_PT_render.menu)
 	SCENE_PT_rigid_body_world.register()
 	bpy.types.SCENE_PT_rigid_body_world.append(SCENE_PT_rigid_body_world.menu)
-	TEXTURE_MT_specials.register()
-	bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_MT_specials.menu)
+	#TEXTURE_MT_specials.register()#TEXTURE_PT_image に統合
+	#bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_MT_specials.menu)
 	#TEXTURE_PT_context_texture.register()#クラスなしのためregister()は未定義
 	#bpy.types.TEXTURE_PT_context_texture.append(TEXTURE_PT_context_texture.menu)
 	TEXTURE_PT_image.register()
 	bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_PT_image.menu)
-	TEXTURE_PT_mapping.register()
-	bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_PT_mapping.menu)
+	#TEXTURE_PT_mapping.register()#TEXTURE_PT_image に統合
+	#bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_PT_mapping.menu)
 	TEXT_MT_text.register()
 	bpy.types.TEXT_MT_text.append(TEXT_MT_text.menu)
 	USERPREF_HT_header.register()
@@ -614,14 +614,14 @@ def unregister():
 	bpy.types.RENDER_PT_context.remove(RENDER_PT_render.menu)
 	SCENE_PT_rigid_body_world.unregister()
 	bpy.types.SCENE_PT_rigid_body_world.remove(SCENE_PT_rigid_body_world.menu)
-	TEXTURE_MT_specials.unregister()
-	bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_MT_specials.menu)
+	#TEXTURE_MT_specials.unregister()#TEXTURE_PT_image に統合
+	#bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_MT_specials.menu)
 	#TEXTURE_PT_context_texture.unregister()#クラスなしのためunregister()は未定義
 	#bpy.types.TEXTURE_PT_context_texture.remove(TEXTURE_PT_context_texture.menu)
 	TEXTURE_PT_image.unregister()
 	bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_PT_image.menu)
-	TEXTURE_PT_mapping.unregister()
-	bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_PT_mapping.menu)
+	#TEXTURE_PT_mapping.unregister()#TEXTURE_PT_image に統合
+	#bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_PT_mapping.menu)
 	TEXT_MT_text.unregister()
 	bpy.types.TEXT_MT_text.remove(TEXT_MT_text.menu)
 	USERPREF_HT_header.unregister()
