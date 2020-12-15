@@ -15,8 +15,6 @@ class MakeLinkSoftbodySettings(bpy.types.Operator):
 	
 	@classmethod
 	def poll(cls, context):
-		if (len(context.selected_objects) < 2):
-			return False
 		for mod in context.object.modifiers:
 			if (mod.type == 'SOFT_BODY'):
 				break
