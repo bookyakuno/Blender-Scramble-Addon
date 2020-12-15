@@ -63,6 +63,7 @@ class ClearConstraintLimits(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	mode : StringProperty(name="Mode", default='', options={'SKIP_SAVE', 'HIDDEN'})
+	skip_invoke : BoolProperty(name="Skip invoke_dialog", default=False, options={'SKIP_SAVE', 'HIDDEN'})
 
 	is_lin_x : BoolProperty(name="X Move", default=True, options={'SKIP_SAVE'})
 	is_lin_y : BoolProperty(name="Y Move", default=True, options={'SKIP_SAVE'})
@@ -72,24 +73,22 @@ class ClearConstraintLimits(bpy.types.Operator):
 	is_ang_y : BoolProperty(name="Y Rot", default=True, options={'SKIP_SAVE'})
 	is_ang_z : BoolProperty(name="Z Rot", default=True, options={'SKIP_SAVE'})
 
-	@classmethod
-	def poll(cls, context):
-		if context.active_object:
-			if context.active_object.rigid_body_constraint:
-				return True
-		return False
-
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
+		if self.skip_invoke:
+			return self.execute(context)
+		else:
+			return context.window_manager.invoke_props_dialog(self)
 
 	def draw(self, context):
-		self.layout.label(text="Clear Move Limit")
-		row = self.layout.row()
+		box = self.layout.box()
+		box.label(text="Settings to Initialize")
+		row = box.row()
+		row.label(text="Linear")
 		row.prop(self, 'is_lin_x', text="X")
 		row.prop(self, 'is_lin_y', text="Y")
 		row.prop(self, 'is_lin_z', text="Z")
-		self.layout.label(text="Clear Rotate Limit")
-		row = self.layout.row()
+		row = box.row()
+		row.label(text="Angular")
 		row.prop(self, 'is_ang_x', text="X")
 		row.prop(self, 'is_ang_y', text="Y")
 		row.prop(self, 'is_ang_z', text="Z")
@@ -123,24 +122,19 @@ class ReverseConstraintLimits(bpy.types.Operator):
 	is_ang_y : BoolProperty(name="Y Rot", default=False, options={'SKIP_SAVE'})
 	is_ang_z : BoolProperty(name="Z Rot", default=False, options={'SKIP_SAVE'})
 
-	@classmethod
-	def poll(cls, context):
-		if context.active_object:
-			if context.active_object.rigid_body_constraint:
-				return True
-		return False
-
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def draw(self, context):
-		self.layout.label(text="Invert Move Limit")
-		row = self.layout.row()
+		box = self.layout.box()
+		box.label(text="Settings to Reverse")
+		row = box.row()
+		row.label(text="Linear")
 		row.prop(self, 'is_lin_x', text="X")
 		row.prop(self, 'is_lin_y', text="Y")
 		row.prop(self, 'is_lin_z', text="Z")
-		self.layout.label(text="Invert Rotate Limit")
-		row = self.layout.row()
+		row = box.row()
+		row.label(text="Angular")
 		row.prop(self, 'is_ang_x', text="X")
 		row.prop(self, 'is_ang_y', text="Y")
 		row.prop(self, 'is_ang_z', text="Z")
@@ -197,23 +191,25 @@ def menu(self, context):
 		if context.active_object:
 			if context.active_object.rigid_body_constraint:
 				if context.active_object.rigid_body_constraint.type in ['GENERIC', 'GENERIC_SPRING']:
-					row = self.layout.row(align=True)
-					row.operator(ClearConstraintLimits.bl_idname, icon='X', text="Limit Clear")
-					row.operator(ReverseConstraintLimits.bl_idname, icon='ARROW_LEFTRIGHT', text="Limit Reverse")
+					row = self.layout.box().row(align=True)
+					row.label(text="Limits Settings")
+					row.operator(ClearConstraintLimits.bl_idname, icon='RECOVER_LAST', text="Initialize")
+					row.operator(ReverseConstraintLimits.bl_idname, icon='ARROW_LEFTRIGHT', text="Reverse")
 				elif context.active_object.rigid_body_constraint.type == 'FIXED':
-					row = self.layout.row(align=True)
-					row.operator(ClearConstraintLimits.bl_idname, icon='IPO_LINEAR', text="Initialize Generic").mode = 'GENERIC'
-					row.operator(ClearConstraintLimits.bl_idname, icon='DRIVER', text="Initialize Generic Spring").mode = 'GENERIC_SPRING'
-		row = self.layout.row(align=True)
-		op = row.operator('wm.context_set_string', icon='SCENE_DATA', text="")
-		op.data_path = 'space_data.context'
-		op.value = 'SCENE'
-		row.operator(CopyConstraintSetting.bl_idname, icon='LINKED')
+					row = self.layout.box().split(factor=0.25, align=True)
+					row.label(text="Set Type")
+					op1 = row.operator(ClearConstraintLimits.bl_idname, icon='IPO_LINEAR', text="Generic")
+					op1.mode, op1.skip_invoke = ['GENERIC', True]
+					op2 = row.operator(ClearConstraintLimits.bl_idname, icon='DRIVER', text="Generic Spring")
+					op2.mode, op2.skip_invoke = ['GENERIC_SPRING', True]
+		row = self.layout.split(factor=0.4)
+		row.use_property_split = False
+		row.operator(CopyConstraintSetting.bl_idname, icon='LINKED', text="Copy Setting")
 		if context.scene.rigidbody_world:
 			if context.scene.rigidbody_world.point_cache:
-				row = self.layout.row(align=True)
-				row.prop(context.scene.rigidbody_world.point_cache, 'frame_start')
-				row.prop(context.scene.rigidbody_world.point_cache, 'frame_end')
-				row.operator('rigidbody.sync_frames', icon='LINKED', text="")
+				row_item = row.row(align=True)
+				row_item.prop(context.scene.rigidbody_world.point_cache, 'frame_start')
+				row_item.prop(context.scene.rigidbody_world.point_cache, 'frame_end')
+				row_item.operator('rigidbody.sync_frames', icon='LINKED', text="")# SCENE_PT_rigid_body_world.py で定義
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
