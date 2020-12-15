@@ -467,13 +467,12 @@ class ExternalEditEX(bpy.types.Operator):
 	def poll(cls, context):
 		if (not context.edit_image):
 			return False
+		if (context.edit_image.filepath == ""):
+			return False
 		return True
 
 	def execute(self, context):
 		img = context.edit_image
-		if img.filepath == "":
-			self.report(type={'ERROR'}, message="Please save the image as an external file such as ~.png")
-			return {'CANCELLED'}
 		path = bpy.path.abspath(img.filepath)
 		pre_path = context.preferences.filepaths.image_editor
 		if (self.index == 1):
@@ -895,6 +894,7 @@ class Clipping(bpy.types.Operator):
 class TransformMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_transform"
 	bl_label = "Transform"
+	bl_description = "Image Transform Menu"
 
 	def draw(self, context):
 		self.layout.operator(ReverseWidthImage.bl_idname, icon='PLUGIN')
@@ -928,9 +928,9 @@ class FillMenu(bpy.types.Menu):
 	bl_label = "Paint"
 
 	def draw(self, context):
-		self.layout.operator(FillOverrideColor.bl_idname, icon='PLUGIN')
-		self.layout.operator(FillColor.bl_idname, icon='PLUGIN')
-		self.layout.operator(FillTransparency.bl_idname, icon='PLUGIN')
+		self.layout.operator(FillOverrideColor.bl_idname, icon='PLUGIN', text="Override")
+		self.layout.operator(FillColor.bl_idname, icon='PLUGIN', text="Paint Out")
+		self.layout.operator(FillTransparency.bl_idname, icon='PLUGIN', text="Fill Transparent")
 
 class NewMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_new"
@@ -945,26 +945,26 @@ class ColorMenu(bpy.types.Menu):
 	bl_label = "Color"
 
 	def draw(self, context):
-		self.layout.operator(Normalize.bl_idname, icon='PLUGIN')
-		self.layout.operator(Decolorization.bl_idname, icon='PLUGIN')
+		self.layout.operator(Normalize.bl_idname, icon='PLUGIN', text="Normalize")
+		self.layout.operator(Decolorization.bl_idname, icon='PLUGIN', text="Decolorization")
 
 class EditMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_edit"
 	bl_label = "Edit"
 
 	def draw(self, context):
-		self.layout.operator(Duplicate.bl_idname, icon='PLUGIN')
-		self.layout.operator(Clipping.bl_idname, icon='PLUGIN')
-		self.layout.operator(Resize.bl_idname, icon='PLUGIN')
-		self.layout.operator(Tiles.bl_idname, icon='PLUGIN')
+		self.layout.operator(Duplicate.bl_idname, icon='PLUGIN', text="Copy")
+		self.layout.operator(Clipping.bl_idname, icon='PLUGIN', text="Change Size")
+		self.layout.operator(Resize.bl_idname, icon='PLUGIN', text="Scale")
+		self.layout.operator(Tiles.bl_idname, icon='PLUGIN', text="Tile")
 
 class FilterMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_filter"
 	bl_label = "Filter"
 
 	def draw(self, context):
-		self.layout.operator(ResizeBlur.bl_idname, icon='PLUGIN')
-		self.layout.operator(BlurImage.bl_idname, icon='PLUGIN')
+		self.layout.operator(ResizeBlur.bl_idname, icon='PLUGIN', text="Blur (high Speed)")
+		self.layout.operator(BlurImage.bl_idname, icon='PLUGIN', text="Blur (slow)")
 
 ################
 # クラスの登録 #
