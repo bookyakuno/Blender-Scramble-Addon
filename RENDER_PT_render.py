@@ -32,6 +32,7 @@ class RenderBackground(bpy.types.Operator):
 		return True
 	def invoke(self, context, event):
 		self.thread = context.scene.render.threads
+		self.engine_mode = context.scene.render.engine
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
 		self.layout.prop(self, 'engine_mode', expand=True)
