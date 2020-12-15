@@ -635,7 +635,7 @@ class AllSetMaterialFreestyleColorByDiffuse(bpy.types.Operator):
 		("DIFFUSE", "Diffuse Color in viewport", "", 1),
 		("BLEND", "Diffuse Color Mixed with Other Color", "", 2)
 		]
-	color_method = EnumProperty(items=methods, name="FreeStyle Line Color")
+	color_method : EnumProperty(items=methods, name="FreeStyle Line Color")
 	blendColor : FloatVectorProperty(name="Blend Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype="COLOR")
 	items = [
 		("MIX", "Mix", "", 1),
