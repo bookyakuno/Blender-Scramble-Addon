@@ -16,11 +16,13 @@ class RenderBackground(bpy.types.Operator):
 	bl_options = {'REGISTER'}
 
 	is_quit : BoolProperty(name="Quit Blender", default=False)
-	items = [
+	file_items = [
 		('IMAGE', "Image", "", 1),
 		('ANIME', "Animation", "", 2),
 		]
-	mode : EnumProperty(items=items, name="Setting Mode", default='IMAGE')
+	file_mode : EnumProperty(items=file_items, name="Type", default='IMAGE')
+	engine_items = [('BLENDER_EEVEE', "Eevee", "", 1),('CYCLES', "Cycles", "", 2)]
+	engine_mode : EnumProperty(items=engine_items, name="Engine", default='BLENDER_EEVEE')
 	thread : IntProperty(name="Number of Threads", default=0, min=1, max=16, soft_min=1, soft_max=16)
 
 	@classmethod
@@ -28,28 +30,26 @@ class RenderBackground(bpy.types.Operator):
 		if (bpy.data.filepath == ""):
 			return False
 		return True
+	def invoke(self, context, event):
+		self.thread = context.scene.render.threads
+		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
-		layout = self.layout
-		row = layout.row(align=True)
-		row.scale_y = 1.2
-		row.prop(self,"mode",expand=True)
-		layout.prop(self,"thread")
-		layout.separator()
-		layout.prop(self,"is_quit")
-		return {'FINISHED'}
+		self.layout.prop(self, 'engine_mode', expand=True)
+		self.layout.prop(self, 'file_mode', expand=True)
+		for p in ['thread', 'is_quit']:
+			row = self.layout.row()
+			row.use_property_split = True
+			row.prop(self, p) 
+
 	def execute(self, context):
 		blend_path = bpy.data.filepath
-		if (self.mode == 'IMAGE'):
-			subprocess.Popen([sys.argv[0], '-b', blend_path, '-f', str(context.scene.frame_current), '-t', str(self.thread)])
-		elif (self.mode == 'ANIME'):
-			subprocess.Popen([sys.argv[0], '-b', blend_path, '-a', '-t', str(self.thread)])
+		if (self.file_mode == 'IMAGE'):
+			subprocess.Popen([sys.argv[0], '-b', blend_path, '-E', self.engine_mode, '-f', str(context.scene.frame_current), '-t', str(self.thread)])
+		elif (self.file_mode == 'ANIME'):
+			subprocess.Popen([sys.argv[0], '-b', blend_path, '-a', '-E', self.engine_mode, '-t', str(self.thread)])
 		if (self.is_quit):
 			bpy.ops.wm.quit_blender()
 		return {'FINISHED'}
-	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
-
-
 
 
 
