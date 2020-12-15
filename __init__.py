@@ -489,9 +489,9 @@ def register():
 	#bpy.types.VIEW3D_PT_imapaint_tools_missing.append(VIEW3D_PT_imapaint_tools_missing.menu)
 	#VIEW3D_PT_slots_projectpaint.register()
 	#bpy.types.VIEW3D_PT_slots_projectpaint.append(VIEW3D_PT_slots_projectpaint.menu)
-	#VIEW3D_PT_tools_imagepaint_external.register()#VIEW3D_MT_viewに移動
-	#bpy.types.IMAGE_MT_image.append(VIEW3D_PT_tools_imagepaint_external.menu)
 	#=========
+	VIEW3D_PT_tools_imagepaint_external.register()
+	bpy.types.IMAGE_MT_image.append(VIEW3D_PT_tools_imagepaint_external.menu)
 	#VIEW3D_PT_layers.register()#クラスなし
 	bpy.types.VIEW3D_PT_collections.append(VIEW3D_PT_layers.menu)
 	#=== VIEW3D_PT_addon_sidebarの中で使用するので以下の2つはメニューを登録しない ===
@@ -680,9 +680,9 @@ def unregister():
 	#bpy.types.VIEW3D_PT_imapaint_tools_missing.remove(VIEW3D_PT_imapaint_tools_missing.menu)
 	#VIEW3D_PT_slots_projectpaint.unregister()
 	#bpy.types.VIEW3D_PT_slots_projectpaint.remove(VIEW3D_PT_slots_projectpaint.menu)
-	#VIEW3D_PT_tools_imagepaint_external.unregister()#VIEW3D_MT_viewに移動
-	#bpy.types.IMAGE_MT_image.remove(VIEW3D_PT_tools_imagepaint_external.menu)	
 	#========
+	VIEW3D_PT_tools_imagepaint_external.unregister()
+	bpy.types.IMAGE_MT_image.remove(VIEW3D_PT_tools_imagepaint_external.menu)
 	#VIEW3D_PT_layers.unregister()#クラスなし
 	bpy.types.VIEW3D_PT_collections.remove(VIEW3D_PT_layers.menu)
 	#=== VIEW3D_PT_addon_sidebarの中で使用するので以下の2つはメニューを登録解除しない ===

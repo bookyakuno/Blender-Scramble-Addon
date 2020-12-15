@@ -143,26 +143,6 @@ class ToggleViewportShadeA(bpy.types.Operator):
 			context.space_data.shading.type = self.FirstItem
 		return {'FINISHED'}
 
-class ProjectEditEX(bpy.types.Operator):
-	bl_idname = "image.project_edit_ex"
-	bl_label = "Edit Viewport-image with Editors"
-	bl_description = "Take a screenshot of the view-port and edit it in the external image editor referenced at User Preference"
-	bl_options = {'REGISTER'}
-
-	index : IntProperty(name="Number of Use", default=1, min=1, max=3, soft_min=1, soft_max=3)
-
-	def execute(self, context):
-		pre_path = context.preferences.filepaths.image_editor
-		if (self.index == 1):
-			context.preferences.filepaths.image_editor = context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1
-		elif (self.index == 2):
-			context.preferences.filepaths.image_editor = context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2
-		elif (self.index == 3):
-			context.preferences.filepaths.image_editor = context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3
-		bpy.ops.image.project_edit()
-		context.preferences.filepaths.image_editor = pre_path
-		return {'FINISHED'}
-
 ################
 # パイメニュー #
 ################
@@ -615,7 +595,6 @@ classes = [
 	TogglePanelsB,
 	TogglePanelsC,
 	ToggleViewportShadeA,
-	ProjectEditEX,
 	ViewNumpadPieOperator,
 	ViewNumpadPie,
 	ViewportShadePieOperator,
@@ -661,20 +640,6 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.menu(ShortcutsMenu.bl_idname, icon='PLUGIN')
 		self.layout.menu(PieMenu.bl_idname, icon='PLUGIN')
-		col = self.layout.column()
-		col.label(text="=== Edit Screenshot with Editors ===", icon='NONE')
-		if (context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1):
-			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1)
-			name, ext = os.path.splitext(path)
-			col.operator(ProjectEditEX.bl_idname, icon="PLUGIN", text=name).index = 1
-		if (context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2):
-			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2)
-			name, ext = os.path.splitext(path)
-			col.operator(ProjectEditEX.bl_idname, icon="PLUGIN", text=name).index = 2
-		if (context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3):
-			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3)
-			name, ext = os.path.splitext(path)
-			col.operator(ProjectEditEX.bl_idname, icon="PLUGIN", text=name).index = 3
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
