@@ -10,15 +10,15 @@ from bpy.props import *
 
 class NewBakeImage(bpy.types.Operator):
 	bl_idname = "image.new_bake_image"
-	bl_label = "New image for bake"
-	bl_description = "New images used to bake quickly, is available"
+	bl_label = "Crate New Image for Bake"
+	bl_description = "Create a new image to use for bake"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	name : StringProperty(name="Name", default="Bake")
 	width : IntProperty(name="Width", default=1024, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL')
 	height : IntProperty(name="Height", default=1024, min=1, max=8192, soft_min=1, soft_max=8192, step=1, subtype='PIXEL')
-	alpha : BoolProperty(name="Alpha", default=True)
-	float : BoolProperty(name="32-bit Float", default=False)
+	alpha : BoolProperty(name="Use alpha", default=True)
+	float : BoolProperty(name="Use floating point color", default=False)
 	show_image : BoolProperty(name="Show Image", default=True)
 
 	@classmethod

@@ -9,8 +9,8 @@ import bpy
 
 class copy_dynamic_paint(bpy.types.Operator):
 	bl_idname = "dpaint.copy_dynamic_paint"
-	bl_label = "Copy Dynamic Paint Settings"
-	bl_description = "Dynamic paint on an active object copies to other selected objects"
+	bl_label = "Copy Dynamic Paint Setting"
+	bl_description = "Copy active object's Dynamic paint settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	@classmethod

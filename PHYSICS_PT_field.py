@@ -9,8 +9,8 @@ import bpy
 
 class forcefield_copy(bpy.types.Operator):
 	bl_idname = "object.forcefield_copy"
-	bl_label = "Copy ForceField Settings"
-	bl_description = "Copy selection of other force field for active object"
+	bl_label = "Copy Force Field Setting"
+	bl_description = "Copy active object's Force Field settings to  other selected objects"
 	bl_options = {'REGISTER'}
 	
 	def execute(self, context):

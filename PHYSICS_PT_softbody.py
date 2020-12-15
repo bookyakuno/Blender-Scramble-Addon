@@ -9,8 +9,8 @@ import bpy
 
 class MakeLinkSoftbodySettings(bpy.types.Operator):
 	bl_idname = "object.make_link_softbody_settings"
-	bl_label = "Copy Soft Body Settings"
-	bl_description = "Sets active object soft copies to other selected objects"
+	bl_label = "Copy Soft Body Setting"
+	bl_description = "Copy active object's Soft Body settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	@classmethod

@@ -11,8 +11,8 @@ import sys, subprocess
 
 class RenderBackground(bpy.types.Operator):
 	bl_idname = "render.render_background"
-	bl_label = "Background Rendering"
-	bl_description = "Renders current blend file from command line"
+	bl_label = "Render from Command Line"
+	bl_description = "Render the current blend file from command line"
 	bl_options = {'REGISTER'}
 
 	is_quit : BoolProperty(name="Quit Blender", default=False)

@@ -10,11 +10,11 @@ from bpy.props import *
 
 class CopyConstraintSetting(bpy.types.Operator):
 	bl_idname = "rigidbody.copy_constraint_setting"
-	bl_label = "Copy rigidbody constraints settings"
-	bl_description = "Copies selected objects for other rigid constraints on active object"
+	bl_label = "Copy Rigid Body Constraint Setting"
+	bl_description = "Copy active object's Rigid Body Constraint settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	copy_target_objects : BoolProperty(name="Copy Object Targeted", default=False)
+	copy_target_objects : BoolProperty(name="Copy Targeted Objects", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -58,8 +58,8 @@ class CopyConstraintSetting(bpy.types.Operator):
 
 class ClearConstraintLimits(bpy.types.Operator):
 	bl_idname = "rigidbody.clear_constraint_limits"
-	bl_label = "Reset rigid body constraint limits"
-	bl_description = "Initializes rigid constraints of active object limit settings group"
+	bl_label = "Reset Rigid Body Constraint's Limit Setting"
+	bl_description = "Initialize 'Limits' settings of the active object's rigid body constraint"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	mode : StringProperty(name="Mode", default='', options={'SKIP_SAVE', 'HIDDEN'})
@@ -110,8 +110,8 @@ class ClearConstraintLimits(bpy.types.Operator):
 
 class ReverseConstraintLimits(bpy.types.Operator):
 	bl_idname = "rigidbody.reverse_constraint_limits"
-	bl_label = "Invert rigidbody constraints limits"
-	bl_description = "Minimum limit settings of rigid constraints of active object and reverses maximum"
+	bl_label = "Reverse Rigid Body Constraint's Limit Setting"
+	bl_description = "Reverse Minimum abd Maximum values in the 'Limits' settings of the active object's rigid body constraint"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	is_lin_x : BoolProperty(name="X Move", default=False, options={'SKIP_SAVE'})

@@ -10,8 +10,8 @@ from bpy.props import *
 
 class WorldReset(bpy.types.Operator):
 	bl_idname = "rigidbody.world_reset"
-	bl_label = "Recreate RigidBody World"
-	bl_description = "Keep setting, recreate rigid world"
+	bl_label = "Re-create Rigid Body World"
+	bl_description = "Re-create rigid body world with same settings"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -44,8 +44,8 @@ class WorldReset(bpy.types.Operator):
 
 class SyncFrames(bpy.types.Operator):
 	bl_idname = "rigidbody.sync_frames"
-	bl_label = "Set start/end frames rigid body world"
-	bl_description = "Start / end frame rigid world of sets to start / end frame rendering"
+	bl_label = "Match Rigid Body World's Start/End to Rendering's ones"
+	bl_description = "Change rigid body world's start / end frames to the rendering's start / end frames"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	startOffset : IntProperty(name="Start Offset", default=0, step=1)

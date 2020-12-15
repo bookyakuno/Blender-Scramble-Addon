@@ -9,8 +9,8 @@ import bpy
 
 class CopySetting(bpy.types.Operator):
 	bl_idname = "rigidbody.copy_setting"
-	bl_label = "Copy rigid body setting"
-	bl_description = "Copy selected objects of other rigid set of active objects"
+	bl_label = "Copy Rigid Body Setting"
+	bl_description = "Copy active object's Rigid Body settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	@classmethod
@@ -74,16 +74,14 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		row = self.layout.row(align=True)
-		op = row.operator('wm.context_set_string', icon='SCENE_DATA', text="")
-		op.data_path = 'space_data.context'
-		op.value = 'SCENE'
-		row.operator(CopySetting.bl_idname, icon='LINKED')
+		row = self.layout.split(factor=0.4)
+		row.use_property_split = False
+		row.operator(CopySetting.bl_idname, icon='LINKED', text="Copy Setting")
 		if context.scene.rigidbody_world:
 			if context.scene.rigidbody_world.point_cache:
-				row = self.layout.row(align=True)
-				row.prop(context.scene.rigidbody_world.point_cache, 'frame_start')
-				row.prop(context.scene.rigidbody_world.point_cache, 'frame_end')
-				row.operator('rigidbody.sync_frames', icon='LINKED', text="")
+				row_item = row.row(align=True)
+				row_item.prop(context.scene.rigidbody_world.point_cache, 'frame_start')
+				row_item.prop(context.scene.rigidbody_world.point_cache, 'frame_end')
+				row_item.operator('rigidbody.sync_frames', icon='LINKED', text="")# SCENE_PT_rigid_body_world.py で定義
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
