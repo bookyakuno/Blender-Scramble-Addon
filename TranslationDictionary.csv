@@ -1427,7 +1427,7 @@
 "アクティブなオブジェクトのリジッドボディコンストレイントの設定を、他の選択オブジェクトにコピーします","Copy active object's Rigid Body Constraint settings to other selected objects"
 "アクティブなオブジェクトのリジッドボディコンストレイントの、リミットの設定を初期化します","Initialize 'Limits' settings of the active object's rigid body constraint"
 "アクティブなオブジェクトのリジッドボディコンストレイントの、リミットの設定における最小と最大の値を反転させます","Reverse Minimum abd Maximum values in the 'Limits' settings of the active object's rigid body constraint"
-"アクティブオブジェクトのソフトボディの設定を、他の選択オブジェクトにコピーします","Sets active object soft copies to other selected objects"
+"アクティブオブジェクトのソフトボディの設定を、他の選択オブジェクトにコピーします","Copy active object's Soft Body settings to other selected objects"
 "ベイクに使うための新規画像を作成します","Create a new image to use for bake"
 "コマンドラインから現在のblendファイルのレンダリングを行います","Render the current blend file from command line"
 "同じ設定を使い、リジッドボディワールドを作り直します","Re-create rigid body world with same settings"
