@@ -13,8 +13,8 @@ from bpy_extras.io_utils import ImportHelper
 
 class ShowTextureImage(bpy.types.Operator):
 	bl_idname = "texture.show_texture_image"
-	bl_label = "Texture images show in image editor"
-	bl_description = "Image is used in active texture shows image editor"
+	bl_label = "Show Texture in Image Editor"
+	bl_description = "Show the active slot's image in image editor"
 	bl_options = {'REGISTER'}
 
 	@classmethod
@@ -50,8 +50,8 @@ class ShowTextureImage(bpy.types.Operator):
 
 class AddExternalImage(bpy.types.Operator, ImportHelper):
 	bl_idname = "texture.add_external_image"
-	bl_label = "Add External Image"
-	bl_description = "Add an external image file for texture paint"
+	bl_label = "Use External Image File"
+	bl_description = "Add an external image file as base color in texture paint slots"
 	bl_options = {'REGISTER'}
 
 	filter_glob : StringProperty( default='*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.bmp', options={'HIDDEN'} )
@@ -82,8 +82,8 @@ class AddExternalImage(bpy.types.Operator, ImportHelper):
 
 class StartTexturePaint(bpy.types.Operator):
 	bl_idname = "texture.start_texture_paint"
-	bl_label = "Add an image as base-color for texture paint"
-	bl_description = "Add an image as base-color in texture paint slots"
+	bl_label = "Add Image as Base Color"
+	bl_description = "Add an image as base color in texture paint slots"
 	bl_options = {'REGISTER'}
 
 	image_counts : IntProperty(name="Number of images", default=0)
@@ -137,8 +137,8 @@ _STORE_ITEMS = [] #保存用グローバル変数：EnumPropertyの動的なitem
 
 class RenameTextureFileName(bpy.types.Operator):
 	bl_idname = "texture.rename_texture_file_name"
-	bl_label = "Image File name to Texture Name"
-	bl_description = "rename this image file's name to the name of source file"
+	bl_label = "Match Texture Name to Image File Name"
+	bl_description = "Change the name of active slot's texture to its linked image file's name"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	isExt : BoolProperty(name="Include Extension", default=True)
@@ -172,8 +172,8 @@ class RenameTextureFileName(bpy.types.Operator):
 
 class RemoveAllTextureSlots(bpy.types.Operator):
 	bl_idname = "texture.remove_all_texture_slots"
-	bl_label = "Clear all texture slots"
-	bl_description = "Empties all active material texture slots"
+	bl_label = "Remove All Texture Slots"
+	bl_description = "Remove all texture slots"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -204,8 +204,8 @@ class RemoveAllTextureSlots(bpy.types.Operator):
 
 class RemoveTextureSlot(bpy.types.Operator):
 	bl_idname = "texture.remove_texture_slot"
-	bl_label = "Remove this texture slot"
-	bl_description = "Remove this image from active material texture slots"
+	bl_label = "Remove Active Texture Slot"
+	bl_description = "Remove active texture slot"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -235,10 +235,10 @@ class RemoveTextureSlot(bpy.types.Operator):
 		context.scene.tool_settings.image_paint.mode = 'MATERIAL'
 		return {'FINISHED'}
 
-	bl_idname = "texture.slot_move_top"
-	bl_label = "To Top"
-	bl_description = "Move active texture slot at top"
 class MoveActiveSlotMost(bpy.types.Operator):
+	bl_idname = "texture.move_active_slot_most"
+	bl_label = "Move Texture to Top / Bottom"
+	bl_description = "Move active texture slot to top or bottom"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	is_top : BoolProperty(name="Top", default=True)
@@ -294,10 +294,10 @@ class MoveActiveSlotMost(bpy.types.Operator):
 			mat.paint_active_slot = len(image_names)-1
 		return {'FINISHED'}
 
-	bl_idname = "texture.slot_move_up"
-	bl_label = "Move Up"
-	bl_description = "Move up active texture slot"
 class MoveActiveSlot(bpy.types.Operator):
+	bl_idname = "texture.move_active_slot"
+	bl_label = "Move Texture Slot"
+	bl_description = "Move up or down active texture slot"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	is_up : BoolProperty(name="Up", default=True)
@@ -346,8 +346,8 @@ class MoveActiveSlot(bpy.types.Operator):
 
 class RemoveUnlinkedSlots(bpy.types.Operator):
 	bl_idname = "texture.remove_unlinkeed_slots"
-	bl_label = "Remove Unlinked Texture slots"
-	bl_description = "Removes all images that has no links with other shader."
+	bl_label = "Remove Unused Texture Slots"
+	bl_description = "Removes slots which  images have no links with other shader"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -380,8 +380,8 @@ class RemoveUnlinkedSlots(bpy.types.Operator):
 
 class RemoveFollowingSlots(bpy.types.Operator):
 	bl_idname = "texture.remove_following_slots"
-	bl_label = "Delete Below Here"
-	bl_description = "Remove all active texture slot below"
+	bl_label = "Remove Slots Below Active"
+	bl_description = "Remove all texture slots below active one"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -415,9 +415,9 @@ class RemoveFollowingSlots(bpy.types.Operator):
 
 class CopyPasteTextureSlot(bpy.types.Operator):
 	bl_idname = "texture.texture_slot_copy_paste"
-	bl_label = "Copy & Paste this texture slot"
-	bl_description = "Copy & paste this texture slot to other material of this object"
-	bl_property = "material_list"
+	bl_label = "Copy Active Slot to Other Material"
+	bl_description = "Copy active slot's image to active object's other material"
+	bl_property = "selected_mat"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def item_callback(self, context):
@@ -504,8 +504,8 @@ class CopyPasteTextureSlot(bpy.types.Operator):
 
 class SpecialMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_slots_projectpaint_specials"
-	bl_label = "Special menu for texture slots"
-	bl_description = "Special menu for texture slots"
+	bl_label = "Manipulate Texture Slots"
+	bl_description = "Functions to manipulate texture slots"
 
 	def draw(self, context):
 			self.layout.operator(CopyPasteTextureSlot.bl_idname, icon='COPYDOWN')			

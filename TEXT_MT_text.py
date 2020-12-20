@@ -11,11 +11,11 @@ import os, subprocess
 
 class ExternalEdit(bpy.types.Operator):
 	bl_idname = "text.external_edit"
-	bl_label = "Edit with external editor"
-	bl_description = "Open text in an external editor you set on files page of custom"
+	bl_label = "Edit with External Editors"
+	bl_description = "Open current text in text editors referenced at User Preference"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	index : IntProperty(name="Number of Use", default=1, min=1, max=3, soft_min=1, soft_max=3)
+	index : IntProperty(name="Index", default=1, min=1, max=3, soft_min=1, soft_max=3)
 
 	@classmethod
 	def poll(cls, context):
