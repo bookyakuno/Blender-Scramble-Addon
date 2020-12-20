@@ -88,10 +88,11 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		row = self.layout.row(align=True)
-		row.operator("render.render", text="Render", icon='RENDER_STILL')
+		row.operator("render.render", text="Image", icon='RENDER_STILL')
 		row.operator("render.render", text="Animation", icon='RENDER_ANIMATION').animation = True
-		row = self.layout.split()
-		row.label(text="Display:")
+		row = self.layout.split(factor=0.1)
+		row.label(text="")
+		row.label(text="Display Method for Result")
 		row = row.row(align=True)
 		row.prop(context.preferences.view, "render_display_type", text="")
 		row.prop(bpy.context.scene.render, "use_lock_interface", icon_only=True)
