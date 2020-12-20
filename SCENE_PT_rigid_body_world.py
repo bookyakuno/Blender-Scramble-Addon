@@ -59,7 +59,7 @@ class SyncFrames(bpy.types.Operator):
 		return False
 
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_dialog(self, width=310)
 	def draw(self, context):
 		box = self.layout.box()
 		sp = box.split(factor=0.55)

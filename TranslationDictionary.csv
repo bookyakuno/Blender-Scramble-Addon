@@ -1183,7 +1183,7 @@
 "全てのマテリアルのディフューズ色を設定","Set All Materials' Diffuse Colors"
 "全てのテクスチャ名を画像ファイル名に揃える","Match All Texture Names to Image File Names"
 "同名のシェイプキーをドライバーでリンク","Link Shape Keys with Same Name by Driver"
-"リジッドボディワールドの開始/終了フレームをレンダリングに揃える","Match Rigid Body World's Start/End to Rendering's ones"
+"リジッドボディワールドの開始/終了をレンダリングに揃える","Match Rigid Body World's Start/End to Rendering's ones"
 "展開しているキー割り当てのカテゴリを移動","Move shortcut expanded to other categories"
 "同じサブサーフレベルのオブジェクトを選択","Select same subsurf level object"
 "プレビューとレンダリングの細分化数を揃える","Match number of subdivisions in viewport and rendering"
