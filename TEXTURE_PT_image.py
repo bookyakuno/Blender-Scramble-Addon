@@ -74,7 +74,7 @@ class AddExternalImage(bpy.types.Operator, ImportHelper):
 			texture_node.location = [old_texture_node.location[0]-20, old_texture_node.location[1]-20]
 		else:
 			texture_node.location = [texture_node.location[0]-300, texture_node.location[1]+300]
-		texture_node.image = bpy.data.images[filename]		
+		texture_node.image = bpy.data.images[filename]
 		mat.node_tree.links.new(texture_node.outputs[0], bsdf_node.inputs[0])
 		context.scene.tool_settings.image_paint.mode = 'MATERIAL'
 		mat.paint_active_slot = len(mat.texture_paint_images)-1
@@ -108,7 +108,7 @@ class StartTexturePaint(bpy.types.Operator):
 		self.layout.prop_search(self, "image_name", bpy.data, "images",text="Select Image", text_ctxt="", translate=True, icon='IMAGE')
 		self.layout.operator(AddExternalImage.bl_idname, icon='FILEBROWSER')
 
-	def execute(self, context):	
+	def execute(self, context):
 		mat = context.object.active_material
 		mat.use_nodes = True
 		texture_node = mat.node_tree.nodes.new('ShaderNodeTexImage')
@@ -429,7 +429,7 @@ class CopyPasteTextureSlot(bpy.types.Operator):
 		return _STORE_ITEMS
 
 	selected_mat : EnumProperty(name="Material", items=item_callback)
-	
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
@@ -508,7 +508,7 @@ class SpecialMenu(bpy.types.Menu):
 	bl_description = "Functions to manipulate texture slots"
 
 	def draw(self, context):
-			self.layout.operator(CopyPasteTextureSlot.bl_idname, icon='COPYDOWN')			
+			self.layout.operator(CopyPasteTextureSlot.bl_idname, icon='COPYDOWN')
 			self.layout.separator()
 			self.layout.operator(RemoveFollowingSlots.bl_idname, icon='PLUGIN')
 			self.layout.operator(RemoveAllTextureSlots.bl_idname, icon="CANCEL")
@@ -580,8 +580,8 @@ def menu(self, context):
 			# 以下は旧 TEXTURE_PT_mappting の機能(に相当するもの)
 			sp.prop_search(context.object.data.uv_layers, "active", context.object.data, "uv_layers",text="UV", icon='PLUGIN')
 		if (context.scene.tool_settings.image_paint.mode == 'IMAGE'):
-			sp = self.layout.split(factor=0.45)
-			sp.operator(ShowTextureImage.bl_idname, icon='IMAGE', text="Show in Image Editor")
+			sp = self.layout.split(factor=0.55)
 			sp.operator(StartTexturePaint.bl_idname, icon='OUTLINER_OB_IMAGE')
+			sp.operator(ShowTextureImage.bl_idname, icon='IMAGE', text="Show in Image Editor")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
