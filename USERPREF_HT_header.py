@@ -137,7 +137,7 @@ class ClearFilterText(bpy.types.Operator):
 class CloseKeyMapItems(bpy.types.Operator):
 	bl_idname = "ui.close_key_map_items"
 	bl_label = "Close All Children"
-	bl_description = "Close all kyemap Children"
+	bl_description = "Close all keymap Children"
 	bl_options = {'REGISTER'}
 
 	@classmethod
@@ -409,7 +409,7 @@ class ShowEmptyShortcuts(bpy.types.Operator):
 		names = [k for k in _KEYMAP_DIC.keys()]
 		return [(name, name, "", idx) for idx, name in enumerate(names)]
 
-	key_area : EnumProperty(items=item_callback, name="Effective Area")
+	key_area : EnumProperty(items=item_callback, name="Keymap")
 
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
