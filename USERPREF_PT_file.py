@@ -45,6 +45,14 @@ class RegisterBlendBackupFiles(bpy.types.Operator):
 		return True
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		row = self.layout.split(factor=0.33)
+		row.label(text="Files to associate")
+		row = row.box().row(align=True)
+		for tx in ["blend1", " ", "~", "blend"]:
+			row.label(text=tx)
+		row.prop(self, 'max', text="")
+
 	def execute(self, context):
 		winreg.SetValue(winreg.HKEY_CURRENT_USER, r"Software\Classes\blend1_auto_file\shell\open\command", winreg.REG_SZ, '"'+sys.argv[0]+'" "%1"')
 		for i in range(self.max):
@@ -86,6 +94,7 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
+		self.layout.separator()
 		self.layout.label(text="Scramble Addon:", icon='PLUGIN')
 		split = self.layout.split(factor=0.7)
 		split_sub = split.split(factor=0.95)
@@ -101,7 +110,7 @@ def menu(self, context):
 
 		col = split.column()
 		col.label(text="File Associations (Windows Only)")
-		col.operator(RegisterBlendFile.bl_idname, icon='PLUGIN')
-		col.operator(RegisterBlendBackupFiles.bl_idname, icon='PLUGIN')
+		col.operator(RegisterBlendFile.bl_idname, icon='PLUGIN', text="Blend File")
+		col.operator(RegisterBlendBackupFiles.bl_idname, icon='PLUGIN', text="Backup File")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
