@@ -63,8 +63,8 @@ def update_func(self, context):
 
 class ChangeUserPreferencesTab(bpy.types.Operator):
 	bl_idname = "ui.change_preferences_tab"
-	bl_label = "Switch user prefences tab"
-	bl_description = "Cycles user settings tab"
+	bl_label = "Switch User Preference Tab"
+	bl_description = "Switch user settings tab in turn"
 	bl_options = {'REGISTER'}
 
 	is_left : BoolProperty(name="To Left", default=False)
@@ -73,7 +73,7 @@ class ChangeUserPreferencesTab(bpy.types.Operator):
 		tabs = ['INTERFACE', 'THEMES', 'VIEWPORT', 'LIGHTS', 'EDITING', 'ANIMATION', 'ADDONS', 'INPUT', 'NAVIGATION', 'KEYMAP', 'SYSTEM', 'SAVE_LOAD', 'FILE_PATHS', 'EXPERIMENTAL']
 		now_tab = context.preferences.active_section
 		if (now_tab not in tabs):
-			self.report(type={'ERROR'}, message="Unexpected Tab Now")
+			self.report(type={'ERROR'}, message="Active tab is undefined value")
 			return {'CANCELLED'}
 		if (self.is_left):
 			tabs.reverse()
@@ -90,14 +90,14 @@ class ChangeUserPreferencesTab(bpy.types.Operator):
 
 class SearchKeyBind(bpy.types.Operator):
 	bl_idname = "ui.search_key_bind"
-	bl_label = "Search Key Bind"
-	bl_description = "Find matching key bindings you set assignment"
+	bl_label = "Search by Key-Binding"
+	bl_description = "Show keymaps which key bindings contain the designated key"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
 		keymap = context.window_manager.keyconfigs.addon.keymaps['temp'].keymap_items[0]
 		if (keymap.type == 'NONE'):
-			self.report(type={'ERROR'}, message="Set search key is empty")
+			self.report(type={'ERROR'}, message="Target key is empty")
 			return {'CANCELLED'}
 		filter_str = keymap.type
 		if (not keymap.any):
@@ -120,7 +120,7 @@ class SearchKeyBind(bpy.types.Operator):
 class ClearFilterText(bpy.types.Operator):
 	bl_idname = "ui.clear_filter_text"
 	bl_label = "Clear Search Shortcuts"
-	bl_description = "Remove string used to search for shortcuts"
+	bl_description = "Set empty value as target key-binding for filtering"
 	bl_options = {'REGISTER'}
 
 	@classmethod
@@ -136,8 +136,8 @@ class ClearFilterText(bpy.types.Operator):
 
 class CloseKeyMapItems(bpy.types.Operator):
 	bl_idname = "ui.close_key_map_items"
-	bl_label = "Close all key configs"
-	bl_description = "Collapses all game menu"
+	bl_label = "Close All Children"
+	bl_description = "Close all kyemap Children"
 	bl_options = {'REGISTER'}
 
 	@classmethod
@@ -165,8 +165,8 @@ class CloseKeyMapItems(bpy.types.Operator):
 
 class ShowShortcutHtml(bpy.types.Operator):
 	bl_idname = "system.show_shortcut_html"
-	bl_label = "Show shortcut list by browser"
-	bl_description = "Can confirm Blender all shortcuts in browser"
+	bl_label = "Show Shortcut List in Browser"
+	bl_description = "Show the page to check assigned shortcuts in browser"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -258,10 +258,13 @@ class ShowShortcutHtml(bpy.types.Operator):
 
 class RegisterLastCommandKeyconfig(bpy.types.Operator):
 	bl_idname = "wm.register_last_command_keyconfig"
-	bl_label = "Create Shortcut by Last Command"
-	bl_description = "Last command create shortcut"
+	bl_label = "Assign Key-Binding to Last Command"
+	bl_description = "Assign a designated key binding to the lastly executed command"
 	bl_options = {'REGISTER'}
 
+	is_clipboard : BoolProperty(name="Use copied text", options={'HIDDEN'})
+	command : StringProperty(name="Command text", options={'HIDDEN'})
+	sub_command : StringProperty(name="Additional command text", options={'HIDDEN'})
 
 	def item_callback(self, context):
 		names = [k for k in _KEYMAP_DIC.keys()]
@@ -270,10 +273,6 @@ class RegisterLastCommandKeyconfig(bpy.types.Operator):
 		names = _KEYMAP_DIC[self.key_area]
 		return [(name, name, "", idx) for idx, name in enumerate(names)]
 
-
-	is_clipboard : BoolProperty(name="(Do Not Change)")
-	command : StringProperty(name="(Do Not Change)")
-	sub_command : StringProperty(name="(Do Not Change)")
 	key_area : EnumProperty(items=item_callback, name="Effective Area")
 	key_sub_area : EnumProperty(items=item_callback_sub, name="Sub Area")
 
@@ -302,7 +301,7 @@ class RegisterLastCommandKeyconfig(bpy.types.Operator):
 		if (commands[-1] == ''):
 			commands = commands[:-1]
 		if (len(commands) <= 0):
-			self.report(type={'ERROR'}, message="Last command not found")
+			self.report(type={'ERROR'}, message="Lastly executed command cannot be found")
 			return {'CANCELLED'}
 		commands.reverse()
 		for command in commands:
@@ -332,11 +331,11 @@ class RegisterLastCommandKeyconfig(bpy.types.Operator):
 					self.sub_command = 'data_path:'+re.search(r"^bpy\.context\.([^ ]+)", command).groups()[0]
 					self.sub_command = self.sub_command+","+'value:'+re.search(r' = [+-]?(\d*\.\d+|\d+\.?\d*)([eE][+-]?\d+|)\Z$', command).groups()[0]
 				else:
-					self.report(type={'ERROR'}, message="Command type not supported")
+					self.report(type={'ERROR'}, message="Failed to extract command strings")
 					return {'CANCELLED'}
 				break
 		else:
-			self.report(type={'ERROR'}, message="Could not find command can register")
+			self.report(type={'ERROR'}, message="Failed to extract command strings")
 			return {'CANCELLED'}
 		return context.window_manager.invoke_props_dialog(self, width=310)
 	def draw(self, context):
@@ -402,8 +401,8 @@ class RegisterLastCommandKeyconfig(bpy.types.Operator):
 
 class ShowEmptyShortcuts(bpy.types.Operator):
 	bl_idname = "view3d.show_empty_shortcuts"
-	bl_label = "Non-Assigning Shortcuts List"
-	bl_description = "Information area shows key assignments in current editing mode without"
+	bl_label = "Show List of Not-Binded Keys"
+	bl_description = "Show a list of keys which are not assigned to any commands in the designated group"
 	bl_options = {'REGISTER'}
 
 	def item_callback(self, context):
@@ -452,7 +451,7 @@ class ShowEmptyShortcuts(bpy.types.Operator):
 
 class ImportKeyConfigXml(bpy.types.Operator):
 	bl_idname = "file.import_key_config_xml"
-	bl_label = "Import Key Config XML"
+	bl_label = "Import Keymap from XML File"
 	bl_description = "game reads in XML format"
 	bl_options = {'REGISTER'}
 
@@ -472,14 +471,14 @@ class ImportKeyConfigXml(bpy.types.Operator):
 			return {'CANCELLED'}
 		root = tree.getroot()
 		if (root.tag != 'BlenderKeyConfig'):
-			self.report(type={'ERROR'}, message="This file is not Blender game XML file")
+			self.report(type={'ERROR'}, message="This XML file is not for Key Config")
 			return {'CANCELLED'}
 		try:
 			if (root.attrib['Version'] != '1.2'):
-				self.report(type={'ERROR'}, message="Does not correspond to version of Blender game XML file")
+				self.report(type={'ERROR'}, message="Only XML files of Version 1.2 can be accepted")
 				return {'CANCELLED'}
 		except KeyError:
-			self.report(type={'ERROR'}, message="Could not determine version of Blender game XML file")
+			self.report(type={'ERROR'}, message="Failed to check version of XML file")
 			return {'CANCELLED'}
 		for key_config_elem in root.findall('KeyConfig'):
 			key_config_name = key_config_elem.attrib['name']
@@ -555,8 +554,8 @@ class ImportKeyConfigXml(bpy.types.Operator):
 
 class ExportKeyConfigXml(bpy.types.Operator):
 	bl_idname = "file.export_key_config_xml"
-	bl_label = "Export Key Config XML"
-	bl_description = "Game save in XML format"
+	bl_label = "Export Keymap as XML File"
+	bl_description = "Export kye bindings as XML file"
 	bl_options = {'REGISTER'}
 
 	filepath : StringProperty(subtype='FILE_PATH')
@@ -623,8 +622,8 @@ class ExportKeyConfigXml(bpy.types.Operator):
 
 class MoveKeyBindCategory(bpy.types.Operator):
 	bl_idname = "ui.move_key_bind_category"
-	bl_label = "Move shortcut expanded to other categories"
-	bl_description = "Move key assignments that expand into other categories"
+	bl_label = "Move Expanded Key Binding to Other Categories"
+	bl_description = "Move the expanded key binding to other categories"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def item_callback(self, context):
@@ -654,7 +653,7 @@ class MoveKeyBindCategory(bpy.types.Operator):
 					if (keymap_item.show_expanded):
 						i += 1
 		if (2 <= i):
-			self.report(type={'ERROR'}, message="Try only one expansion assignments in the")
+			self.report(type={'ERROR'}, message="Please execute when just one element is expanded")
 			return {'CANCELLED'}
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
@@ -706,8 +705,8 @@ class MoveKeyBindCategory(bpy.types.Operator):
 
 class UpdateScrambleAddon(bpy.types.Operator):
 	bl_idname = "script.update_scramble_addon"
-	bl_label = "Update Blender-Scramble-Addon"
-	bl_description = "Download 'Blender-Scramble-Addon' and update it"
+	bl_label = "Update Scramble Addon"
+	bl_description = "Download 'Scramble Addon' and update to it"
 	bl_options = {'REGISTER'}
 
 	def invoke(self, context, event):
@@ -739,7 +738,7 @@ class UpdateScrambleAddon(bpy.types.Operator):
 
 class ToggleDisabledMenu(bpy.types.Operator):
 	bl_idname = "wm.toggle_disabled_menu"
-	bl_label = "Toggle 'On/Off Additional Items'"
+	bl_label = "Toggle Display of 'On/Off Additional Items'"
 	bl_description = "Show or hide 'turn on/off additional items' buttons displayed at end of menus added by the add-on"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -755,23 +754,23 @@ class ToggleDisabledMenu(bpy.types.Operator):
 
 class InputMenu(bpy.types.Menu):
 	bl_idname = "USERPREF_MT_header_input"
-	bl_label = "  ShortcutKeys"
-	bl_description = "Operations related to shortcut menu"
+	bl_label = "Keymap"
+	bl_description = "Functions to manipulate key bindings"
 
 	def draw(self, context):
 		self.layout.operator(ShowShortcutHtml.bl_idname, icon="PLUGIN")
 		self.layout.operator(ShowEmptyShortcuts.bl_idname, icon="PLUGIN")
 		self.layout.separator()
-		self.layout.operator(RegisterLastCommandKeyconfig.bl_idname, text="Create Shortcut by Last Command", icon="PLUGIN").is_clipboard = False
-		self.layout.operator(RegisterLastCommandKeyconfig.bl_idname, text="Clipboard command create shortcut", icon="PLUGIN").is_clipboard = True
+		self.layout.operator(RegisterLastCommandKeyconfig.bl_idname, icon="PLUGIN").is_clipboard = False
+		self.layout.operator(RegisterLastCommandKeyconfig.bl_idname, text="Assign Key-Binding to Command in Clipboard", icon="PLUGIN").is_clipboard = True
 		self.layout.separator()
 		self.layout.operator(ImportKeyConfigXml.bl_idname, icon="PLUGIN")
 		self.layout.operator(ExportKeyConfigXml.bl_idname, icon="PLUGIN")
 
 class AddonsMenu(bpy.types.Menu):
 	bl_idname = "USERPREF_MT_header_scramble_addon"
-	bl_label = "  Scramble Addon"
-	bl_description = "Operations involving scramble Addon menu"
+	bl_label = "Scramble Addon"
+	bl_description = "Functions to manipulate scramble Addon"
 
 	def draw(self, context):
 		self.layout.operator(ToggleDisabledMenu.bl_idname, icon="PLUGIN")
@@ -841,7 +840,7 @@ def menu(self, context):
 				keymap_item = keymap.keymap_items[0]
 			else:
 				keymap_item = keymap.keymap_items.new('', 'W', 'PRESS')
-			self.layout.label(text="Search Key Bind")
+			self.layout.label(text="Search by Key-Binding")
 			row = self.layout.row(align=True)
 			row.prop(keymap_item, 'type', event=True, text="")
 			row.operator(SearchKeyBind.bl_idname, icon="VIEWZOOM", text="")

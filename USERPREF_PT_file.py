@@ -15,8 +15,8 @@ except:
 
 class RegisterBlendFile(bpy.types.Operator):
 	bl_idname = "system.register_blend_file"
-	bl_label = ".blend file associated with this version"
-	bl_description = "(WindowsOS only) associated with Blender running file.blend file"
+	bl_label = "Associate blend File to Current Version of Blender"
+	bl_description = "Associate blend files to the current version of Blender"
 	bl_options = {'REGISTER'}
 
 	@classmethod
@@ -27,16 +27,16 @@ class RegisterBlendFile(bpy.types.Operator):
 	def execute(self, context):
 		winreg.SetValue(winreg.HKEY_CURRENT_USER, r"Software\Classes\.blend", winreg.REG_SZ, 'blend_auto_file')
 		winreg.SetValue(winreg.HKEY_CURRENT_USER, r"Software\Classes\blend_auto_file\shell\open\command", winreg.REG_SZ, '"'+sys.argv[0]+'" "%1"')
-		self.report(type={"INFO"}, message="executable file associated with a.blend file")
+		self.report(type={"INFO"}, message="Target files have been associated to the current version")
 		return {'FINISHED'}
 
 class RegisterBlendBackupFiles(bpy.types.Operator):
 	bl_idname = "system.register_blend_backup_files"
-	bl_label = "Backup Files with This Blender Version"
-	bl_description = "associates with Blender running file backup file, such as.blend1.blend2 (WindowsOS only)"
+	bl_label = "Associate Backup File to Current Version"
+	bl_description = "Associate backup files such as blend1 to the current version of Blender"
 	bl_options = {'REGISTER'}
 
-	max : IntProperty(name=".blend1 ~ .blendN", default=10, min=1, max=1000, soft_min=1, soft_max=1000)
+	max : IntProperty(name="Limit of files to associate", default=10, min=1, max=1000, soft_min=1, soft_max=1000)
 
 	@classmethod
 	def poll(cls, context):
@@ -58,7 +58,7 @@ class RegisterBlendBackupFiles(bpy.types.Operator):
 		for i in range(self.max):
 			i += 1
 			winreg.SetValue(winreg.HKEY_CURRENT_USER, r"Software\Classes\.blend"+str(i), winreg.REG_SZ, 'blend1_auto_file')
-		self.report(type={"INFO"}, message="executable file associated with backup file")
+		self.report(type={"INFO"}, message="Target files have been associated to the current version")
 		return {'FINISHED'}
 
 ################
@@ -99,11 +99,11 @@ def menu(self, context):
 		split = self.layout.split(factor=0.7)
 		split_sub = split.split(factor=0.95)
 		col = split_sub.column()
-		col.label(text="Image Editor: Advance")
+		col.label(text="External Image Editor")
 		col.prop(context.preferences.addons[__name__.partition('.')[0]].preferences, 'image_editor_path_1', text="")
 		col.prop(context.preferences.addons[__name__.partition('.')[0]].preferences, 'image_editor_path_2', text="")
 		col.prop(context.preferences.addons[__name__.partition('.')[0]].preferences, 'image_editor_path_3', text="")
-		col.label(text="Text Editor")
+		col.label(text="External Text Editor")
 		col.prop(context.preferences.addons[__name__.partition('.')[0]].preferences, 'text_editor_path_1', text="")
 		col.prop(context.preferences.addons[__name__.partition('.')[0]].preferences, 'text_editor_path_2', text="")
 		col.prop(context.preferences.addons[__name__.partition('.')[0]].preferences, 'text_editor_path_3', text="")
