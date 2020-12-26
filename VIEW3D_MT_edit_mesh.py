@@ -18,13 +18,10 @@ class ToggleMeshSelectMode(bpy.types.Operator):
 		mode = context.tool_settings.mesh_select_mode
 		if (mode[2]):
 			context.tool_settings.mesh_select_mode = (True, False, False)
-			self.report(type={"INFO"}, message="Vertex Select Mode")
 		elif (mode[1]):
 			context.tool_settings.mesh_select_mode = (False, False, True)
-			self.report(type={"INFO"}, message="Face Select Mode")
 		else:
 			context.tool_settings.mesh_select_mode = (False, True, False)
-			self.report(type={"INFO"}, message="Edge Select Mode")
 		return {'FINISHED'}
 
 ################
@@ -103,22 +100,17 @@ class SetProportionalEdit(bpy.types.Operator): #
 # サブメニュー #
 ################
 
-class PieMenu(bpy.types.Menu):
-	bl_idname = "VIEW3D_MT_edit_mesh_pie_menu"
-	bl_label = "Pie Menu"
-	bl_description = "This mesh edit pie"
-
-	def draw(self, context):
-		self.layout.operator(SelectModePieOperator.bl_idname, icon="PLUGIN")
-		self.layout.operator(ProportionalPieOperator.bl_idname, icon="PLUGIN")
-
-class ShortcutMenu(bpy.types.Menu):
+class EditMeshShortcutMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_edit_mesh_shortcut"
 	bl_label = "By Shortcuts"
 	bl_description = "Looks useful functions is to register shortcut"
 
 	def draw(self, context):
 		self.layout.operator(ToggleMeshSelectMode.bl_idname, icon="PLUGIN")
+		self.layout.separator()	
+		self.layout.operator(SelectModePieOperator.bl_idname, icon="PLUGIN")
+		self.layout.operator(ProportionalPieOperator.bl_idname, icon="PLUGIN")		
+
 
 ################
 # クラスの登録 #
@@ -131,8 +123,7 @@ classes = [
 	ProportionalPieOperator,
 	ProportionalPie,
 	SetProportionalEdit,
-	PieMenu,
-	ShortcutMenu
+	EditMeshShortcutMenu
 ]
 
 def register():
@@ -160,8 +151,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.menu(ShortcutMenu.bl_idname, icon="PLUGIN")
-		self.layout.menu(PieMenu.bl_idname, icon="PLUGIN")
+		self.layout.menu(EditMeshShortcutMenu.bl_idname, icon="PLUGIN")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
