@@ -18,17 +18,43 @@ class SetBoneNames(bpy.types.Operator):
 	bl_description = "name of selected bone sets together"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	name : StringProperty(name="Bone Name", default="Bone")
+	new_name : StringProperty(name="New Name", default="Bone")
+	name_sep : EnumProperty(name="Numbering Expression",items=[
+		(".",".00X","",1),("_","_00X","",2),("-","-00X","",3)])
+	start_from : EnumProperty(name="Numbering Starts from",items=[
+		("NO","No number","",1),("ZERO","000","",2),("ONE","001","",3)])
+
+	def draw(self, context):
+		row = self.layout.row(align=True)
+		row.label(text="New Name")
+		row.prop(self, 'new_name', text="")
+		row.prop(self, 'name_sep', text="")
+		row = self.layout.row(align=True)
+		row.label(text="Numbering Starts from")
+		row.prop(self, 'start_from', text="")
 
 	def execute(self, context):
-		context.active_bone.name = "temp"
-		context.active_bone.name = self.name
 		if (context.selected_bones):
-			for bone in context.selected_bones:
-				bone.name = self.name
-		if (context.selected_pose_bones):
-			for bone in context.selected_pose_bones:
-				bone.name = self.name
+			selectedBones = context.selected_bones[:]
+		elif (context.selected_pose_bones):
+			selectedBones = context.selected_pose_bones[:]
+		else:
+			return {'CANCELLED'}
+		name_head = f"{self.new_name}{self.name_sep}"
+		if self.start_from == 'NO':
+			new_names = [self.new_name] + [f"{name_head}{num+1:03}" for num in range(len(selectedBones)-1)]
+		elif self.start_from == 'ZERO':
+			new_names = [f"{name_head}{num:03}" for num in range(len(selectedBones))]
+		elif self.start_from == 'ONE':
+			new_names = [f"{name_head}{num+1:03}" for num in range(len(selectedBones))]
+		for b, nam in zip(selectedBones, new_names):
+			try:
+				existed_bone = context.active_object.data.bones[nam]
+				existed_bone.name = "temp"
+				b.name = nam
+				existed_bone.name = nam
+			except KeyError:
+				b.name = nam
 		return {'FINISHED'}
 
 class SetCurvedBones(bpy.types.Operator):
@@ -67,33 +93,28 @@ class SetBoneRoll(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
-		if ob:
-			if ob.type == 'ARMATURE':
-				if 'selected_bones' in dir(context):
-					if context.selected_bones:
-						if 1 <= len(context.selected_bones):
-							return True
-				if 'selected_pose_bones' in dir(context):
-					if context.selected_pose_bones:
-						if 1 <= len(context.selected_pose_bones):
-							return True
+		if ob and ob.type == 'ARMATURE':
+			if context.selected_bones:
+				if 1 <= len(context.selected_bones):
+					return True
+			elif context.selected_pose_bones:
+				if 1 <= len(context.selected_pose_bones):
+					return True
 		return False
-
-	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
 
 	def execute(self, context):
 		ob = context.active_object
 		arm = ob.data
-		bones = []
-		if 'selected_bones' in dir(context):
-			if context.selected_bones:
-				bones = context.selected_bones[:]
-		if bones == []:
-			for bone in context.selected_pose_bones:
-				bones.append(arm.bones[bone.name])
-		for bone in bones:
-			bone.roll = self.roll
+		if context.selected_bones:
+			bones = context.selected_bones[:]
+			for bone in bones:
+				bone.roll = self.roll
+		elif context.selected_pose_bones:
+			names = [b.name for b in context.selected_pose_bones]
+			bpy.ops.object.mode_set(mode='EDIT')
+			for nam in names:
+				arm.edit_bones[nam].roll = self.roll
+			bpy.ops.object.mode_set(mode='POSE')
 		return {'FINISHED'}
 
 ################
