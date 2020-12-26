@@ -354,7 +354,7 @@ class EqualizeSubsurfLevel(bpy.types.Operator):
 		('ToRender', "Match to Rendering", "", 1),
 		('ToPreview', "Match to Preview", "", 2),
 		]
-	mode : EnumProperty(items=items, name="How to set up")
+	mode : EnumProperty(items=items, name="Method")
 
 	@classmethod
 	def poll(cls, context):
@@ -388,7 +388,7 @@ class SetSubsurfOptimalDisplay(bpy.types.Operator):
 	bl_description = "Set 'Optimal Display' property of the selected objects' Subdivision Surface modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [('1', "Enable", "", 1),('0', "Disable", "", 2)]
+	items = [('1', "Enabled", "", 1),('0', "Disabled", "", 2)]
 	is_use : EnumProperty(items=items, name="Optimized View")
 
 	@classmethod
