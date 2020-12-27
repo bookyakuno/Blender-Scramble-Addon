@@ -47,33 +47,36 @@ class ToggleShowCage(bpy.types.Operator):
 	bl_description = "Toggles whether to apply modifiers to total en bloc spondylectomy in editing"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	mode_item = [
+		("NON","Vertices: Hide,   Meshes: Hide","",1),("EDIT","Vertices: Hide,   Meshes: Show","",2),("BOTH","Vertices: Show,   Meshes: Show","",3)
+	]
+	mode : EnumProperty(name="Target", items=mode_item)
+
+	def __init__(self):
+		mods = bpy.context.active_object.modifiers
+		edit_bools = [mod.show_in_editmode for mod in mods]
+		cage_bools = [mod.show_on_cage for mod in mods]
+		if sum(edit_bools)==0 and sum(cage_bools)==0:
+			self.mode = self.mode_display = 'EDIT'
+		elif sum(edit_bools)>=1 and sum(cage_bools)>=1:
+			self.mode = 'NON'
+		else:
+			self.mode = 'BOTH'
+	def draw(self, layout):
+		self.layout.prop(self, 'mode', expand=True)
+
 	def execute(self, context):
+		dic = {
+			'NON':[False,False,"Adjusting edit cage: Disabled, Display in edit mode: Disabled"],
+			'EDIT':[False,True,"Adjusting edit cage: Disabled, Display in edit mode: Enabled"],
+			'BOTH':[True,True,"Adjusting edit cage: Enabled, Display in edit mode: Enabled"]
+		}
 		activeObj = context.active_object
-		nowMode = 0
+		items = dic[self.mode]
 		for modi in activeObj.modifiers:
-			if (modi.show_in_editmode and nowMode <= 0):
-				nowMode = 1
-			if (modi.show_on_cage and nowMode <= 1):
-				nowMode = 2
-		newMode = nowMode + 1
-		if (newMode >= 3):
-			newMode = 0
-		for modi in activeObj.modifiers:
-			if (newMode == 0):
-				modi.show_in_editmode = False
-				modi.show_on_cage = False
-			if (newMode == 1):
-				modi.show_in_editmode = True
-				modi.show_on_cage = False
-			if (newMode == 2):
-				modi.show_in_editmode = True
-				modi.show_on_cage = True
-		if (newMode == 0):
-			self.report(type={'INFO'}, message="Display / adaptation of cage both have been cleared")
-		if (newMode == 1):
-			self.report(type={'INFO'}, message="On only cage view")
-		if (newMode == 2):
-			self.report(type={'INFO'}, message="Show cage / adaptation, both turned")
+			modi.show_on_cage = items[0]
+			modi.show_in_editmode = items[1]
+			self.report(type={'INFO'}, message=items[2])
 		return {'FINISHED'}
 
 class ToggleMirrorModifier(bpy.types.Operator):
@@ -92,20 +95,44 @@ class ToggleMirrorModifier(bpy.types.Operator):
 	use_mirror_v : BoolProperty(name="Texture V Mirror", default=False)
 	merge_threshold : FloatProperty(name="Combine Distance", default=0.001, min=0, max=1, soft_min=0, soft_max=1, step=0.01, precision=6)
 	is_top : BoolProperty(name="Add Top", default=True)
+	toggle : BoolProperty(name="Enabled / Disabled", default=True)
+	is_add : BoolProperty(name="Add or not", default=False)
+
+	def draw(self, context):
+		row = self.layout.row()
+		row.prop(self, 'toggle', toggle=1)
+		row.alignment = 'CENTER'
+		if self.is_add:
+			self.layout.separator()
+			row = self.layout.row()
+			row.use_property_split = True
+			row.prop(self, 'is_top')
+			box = self.layout.box()
+			row = box.row()
+			for p in ['use_x','use_y','use_z',]:
+				row.prop(self, p)
+			box.prop(self, 'use_clip')
+			row = box.row()
+			row.prop(self, 'use_mirror_merge')
+			row.prop(self, 'merge_threshold')
+			row = box.row()
+			row.prop(self, 'use_mirror_u')
+			row.prop(self, 'use_mirror_v')
+			box.prop(self, 'use_mirror_vertex_groups')
 
 	def execute(self, context):
-		activeObj = context.active_object
-		is_mirrored = False
-		for mod in activeObj.modifiers:
-			if (mod.type == 'MIRROR'):
-				is_mirrored = True
-				break
-		if (is_mirrored):
-			for mod in activeObj.modifiers:
-				if (mod.type == 'MIRROR'):
-					activeObj.modifiers.remove(mod)
+		self.toggle = True
+		modis = context.active_object.modifiers
+		mir_mods = [mod.name for mod in modis if mod.type=='MIRROR']
+		if mir_mods:
+			for nam in mir_mods:
+				if not modis[nam].show_in_editmode:
+					modis[nam].show_viewport = modis[nam].show_in_editmode = True
+				else:
+					modis[nam].show_viewport = not modis[nam].show_viewport
+			self.is_add = False
 		else:
-			new_mod = activeObj.modifiers.new("Mirror", 'MIRROR')
+			new_mod = modis.new("Mirror", 'MIRROR')
 			new_mod.use_axis = [self.use_x, self.use_y, self.use_z]
 			new_mod.use_mirror_merge = self.use_mirror_merge
 			new_mod.use_clip = self.use_clip
@@ -114,16 +141,10 @@ class ToggleMirrorModifier(bpy.types.Operator):
 			new_mod.use_mirror_v = self.use_mirror_v
 			new_mod.merge_threshold = self.merge_threshold
 			if (self.is_top):
-				for i in range(len(activeObj.modifiers)):
+				for i in range(len(modis)):
 					bpy.ops.object.modifier_move_up(modifier=new_mod.name)
+			self.is_add = True
 		return {'FINISHED'}
-	def invoke(self, context, event):
-		activeObj = context.active_object
-		for mod in activeObj.modifiers:
-			if (mod.type == 'MIRROR'):
-				self.execute(context)
-				return {'RUNNING_MODAL'}
-		return context.window_manager.invoke_props_dialog(self)
 
 class SelectedVertexGroupAverage(bpy.types.Operator):
 	bl_idname = "mesh.selected_vertex_group_average"
