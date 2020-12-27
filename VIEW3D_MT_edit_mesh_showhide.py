@@ -15,30 +15,33 @@ class InvertHide(bpy.types.Operator):
 	bl_description = "Invert show or non-show state"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	@classmethod
+	def poll(cls, context):
+		if (bpy.context.active_object.type == 'MESH'):
+			return True
+		return False
+
 	def execute(self, context):
 		obj = context.active_object
-		if (obj.type == "MESH"):
-			bpy.ops.object.mode_set(mode="OBJECT")
-			me = obj.data
-			for v in me.vertices:
-				v.hide = not v.hide
-			for e in me.edges:
-				for i in e.vertices:
-					if (me.vertices[i].hide == True):
-						e.hide = True
-						break
-				else:
-					e.hide = False
-			for f in me.polygons:
-				for i in f.vertices:
-					if (me.vertices[i].hide == True):
-						f.hide = True
-						break
-				else:
-					f.hide = False
-			bpy.ops.object.mode_set(mode="EDIT")
-		else:
-			self.report(type={"ERROR"}, message="Running on mesh object is active")
+		bpy.ops.object.mode_set(mode="OBJECT")
+		me = obj.data
+		for v in me.vertices:
+			v.hide = not v.hide
+		for e in me.edges:
+			for i in e.vertices:
+				if (me.vertices[i].hide == True):
+					e.hide = True
+					break
+			else:
+				e.hide = False
+		for f in me.polygons:
+			for i in f.vertices:
+				if (me.vertices[i].hide == True):
+					f.hide = True
+					break
+			else:
+				f.hide = False
+		bpy.ops.object.mode_set(mode="EDIT")
 		return {'FINISHED'}
 
 class HideVertexOnly(bpy.types.Operator):
@@ -47,41 +50,58 @@ class HideVertexOnly(bpy.types.Operator):
 	bl_description = "Hide and Fix Selected vertices"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	@classmethod
+	def poll(cls, context):
+		if (bpy.context.active_object.type == 'MESH'):
+			return True
+		return False
+
 	def execute(self, context):
 		obj = context.active_object
-		if (obj.type == "MESH"):
-			bpy.ops.object.mode_set(mode="OBJECT")
-			me = obj.data
-			for vert in me.vertices:
-				if (vert.select):
-					vert.hide = True
-			bpy.ops.object.mode_set(mode="EDIT")
-		else:
-			self.report(type={"ERROR"}, message="Running on mesh object is active")
+		bpy.ops.object.mode_set(mode="OBJECT")
+		me = obj.data
+		for vert in me.vertices:
+			if (vert.select):
+				vert.hide = True
+		bpy.ops.object.mode_set(mode="EDIT")
 		return {'FINISHED'}
 
-class HideParts(bpy.types.Operator):
-	bl_idname = "mesh.hide_parts"
 	bl_label = "Hide Selected Parts"
 	bl_description = "Hides mesh part has selected more than one top"
+class HidePartlySelected(bpy.types.Operator):
+	bl_idname = "mesh.hide_partly_selected"
 	bl_options = {'REGISTER', 'UNDO'}
-
-	unselected : BoolProperty(name="Non-select Parts", default=False)
 
 	def execute(self, context):
 		for bol, mode in zip(context.tool_settings.mesh_select_mode, ["VERT","EDGE","FACE"]):
 			if bol:
 				mode_type = mode
-		isSelecteds = []
 		mesh = bmesh.from_edit_mesh(context.active_object.data)
-		for vert in mesh.verts:
-			isSelecteds.append(vert.select)
+		isSelecteds = [v for v in mesh.verts]
 		bpy.ops.mesh.select_linked()
-		bpy.ops.mesh.hide(unselected=self.unselected)
+		bpy.ops.mesh.hide()
 		bpy.ops.mesh.select_all(action='DESELECT')
-		if self.unselected:
-			for idx, vert in enumerate(mesh.verts):
-				vert.select = isSelecteds[idx]
+		bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
+		bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type=mode_type)
+		return {'FINISHED'}
+
+class HideNotSelected(bpy.types.Operator):
+	bl_idname = "mesh.hide_not_selected"
+	bl_label = "Hide Not-Selected Parts"
+	bl_description = "Hide all of isolated meshes which vertices are not selected"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	def execute(self, context):
+		for bol, mode in zip(context.tool_settings.mesh_select_mode, ["VERT","EDGE","FACE"]):
+			if bol:
+				mode_type = mode
+		mesh = bmesh.from_edit_mesh(context.active_object.data)
+		isSelecteds = [v for v in mesh.verts]
+		bpy.ops.mesh.select_linked()
+		bpy.ops.mesh.hide(unselected=True)
+		bpy.ops.mesh.select_all(action='DESELECT')
+		for idx, vert in enumerate(mesh.verts):
+			vert.select = isSelecteds[idx]
 		bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type='VERT')
 		bpy.ops.mesh.select_mode(use_extend=False, use_expand=False, type=mode_type)
 		return {'FINISHED'}
@@ -93,7 +113,8 @@ class HideParts(bpy.types.Operator):
 classes = [
 	InvertHide,
 	HideVertexOnly,
-	HideParts
+	HidePartlySelected,
+	HideNotSelected
 ]
 
 def register():
@@ -121,8 +142,8 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.operator(HideParts.bl_idname, icon="PLUGIN", text="Hide Selected Parts").unselected = False
-		self.layout.operator(HideParts.bl_idname, icon="PLUGIN", text="Hide Unselected Parts").unselected = True
+		self.layout.operator(HidePartlySelected.bl_idname, icon="PLUGIN")
+		self.layout.operator(HideNotSelected.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.operator(InvertHide.bl_idname, icon="PLUGIN")
 		self.layout.separator()
