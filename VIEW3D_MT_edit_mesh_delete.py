@@ -77,12 +77,14 @@ class DeleteHideMesh(bpy.types.Operator):
 	bl_description = "Delete all are mesh"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	@classmethod
+	def poll(cls, context):
+		if not context.active_object.type == "MESH":
+			return False
+		return True
+
 	def execute(self, context):
-		obj = context.active_object
-		if (obj.type != 'MESH'):
-			self.report(type={"ERROR"}, message="This is not mesh object")
-			return {"CANCELLED"}
-		me = obj.data
+		me = context.active_object.data
 		bm = bmesh.from_edit_mesh(me)
 		for face in bm.faces[:]:
 			if (face.hide):
