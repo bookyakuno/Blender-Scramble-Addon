@@ -46,9 +46,7 @@ class DuplicateNewParts(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
-		objs = []
-		for obj in context.selectable_objects:
-			objs.append(obj.name)
+		objs = [obj.name for obj in context.selectable_objects]
 		bpy.ops.mesh.duplicate()
 		bpy.ops.mesh.separate(type='SELECTED')
 		bpy.ops.object.mode_set(mode='OBJECT')
@@ -121,31 +119,32 @@ class SeparateMaterialEX(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def item_callback(self, context):
-		mat_names = [mat.name for mat in bpy.context.active_object.data.materials]
+		mats = bpy.context.active_object.data.materials
 		if not self.is_stashed:
 			_STORE_ITEMS.clear()
-			for idx, nam in enumerate(mat_names):
-				_STORE_ITEMS.append((nam, nam, "", idx))
+			for idx, mat in enumerate(mats):
+				_STORE_ITEMS.append((str(idx), mat.name, "", idx))
 				self.is_stashed = True
 		#print(_STORE_ITEMS[0])#作成したリストの要素がうまく認識されないバグ?への一応の対処
 		return _STORE_ITEMS
 
-	target_mat : EnumProperty(items=item_callback, name="Material to Separate")
+	target_matidx : EnumProperty(items=item_callback, name="Material to Separate")
+	is_dupli : BoolProperty(name="Duplicate and Separate", default=False)
 	is_stashed : BoolProperty(name="Mats' list exists", default=False, options={'HIDDEN'})
 
 	def execute(self, context):
-		target_mat = context.active_object.data.materials[self.target_mat]
-		bpy.ops.mesh.separate(type='MATERIAL')
-		bpy.ops.object.mode_set(mode='OBJECT')		
-		selected_objs = context.selected_objects[:]
-		not_targets = [obj for obj in selected_objs if obj.data.materials[0] != target_mat]
-		target_obj = list(set(selected_objs) - set(not_targets))[0]
-		target_obj.select_set(False)
-		context.view_layer.objects.active = not_targets[0]
-		bpy.ops.object.join()
-		bpy.context.active_object.select_set(False)
-		target_obj.select_set(True)
-		context.view_layer.objects.active = target_obj
+		orig_obj = context.active_object
+		bpy.ops.mesh.select_all(action='DESELECT')
+		context.active_object.active_material_index = int(self.target_matidx)
+		bpy.ops.object.material_slot_select()
+		if self.is_dupli:
+			bpy.ops.mesh.duplicate()
+		bpy.ops.mesh.separate(type='SELECTED')
+		bpy.ops.object.mode_set(mode='OBJECT')
+		selected_set = set(context.selected_objects)
+		separated = list(selected_set - {orig_obj})[0]
+		orig_obj.select_set(False)
+		bpy.context.view_layer.objects.active = separated
 		bpy.ops.object.mode_set(mode='EDIT')
 		return {'FINISHED'}
 
@@ -155,13 +154,29 @@ class SeparateLooseEX(bpy.types.Operator):
 	bl_description = "Separate each not-selected / selected isolated part to another object"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	sep_selected : BoolProperty(name="Separate selected", default=False)
+	sep_selected : BoolProperty(name="Separate selected", default=False, options={'HIDDEN'})
+	is_dupli : BoolProperty(name="Duplicate and Separate", default=False)
+	end_method : EnumProperty(name="Mode", items=[
+		("EDIT","Edit: Original","",1),
+		("OBJECT_ORIG","Object: Original Selected","",2),
+		("OBJECT_SEPA","Object: Separated Selected","",3),
+		])
+
+	def draw(self, context):
+		row = self.layout.row()
+		row.use_property_split = True
+		row.prop(self, 'is_dupli')
+		row = self.layout.split(factor=0.15)
+		row.label(text="Mode")
+		row.prop(self, 'end_method', text="")
 
 	def execute(self, context):
 		orig_obj = context.active_object
 		bpy.ops.mesh.select_linked()
 		if not self.sep_selected:
 			bpy.ops.mesh.select_all(action='INVERT')
+		if self.is_dupli:
+			bpy.ops.mesh.duplicate()
 		bpy.ops.mesh.separate(type='SELECTED')
 		bpy.ops.object.mode_set(mode='OBJECT')
 		selected_set = set(context.selected_objects)
@@ -171,10 +186,12 @@ class SeparateLooseEX(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode='EDIT')
 		bpy.ops.mesh.separate(type='LOOSE')
 		bpy.ops.object.mode_set(mode='OBJECT')
-		bpy.ops.object.select_all(action='DESELECT')
-		orig_obj.select_set(True)
-		bpy.context.view_layer.objects.active = orig_obj
-		bpy.ops.object.mode_set(mode='EDIT')
+		if not self.end_method == 'OBJECT_SEPA':
+			bpy.ops.object.select_all(action='DESELECT')
+			orig_obj.select_set(True)
+			bpy.context.view_layer.objects.active = orig_obj
+			if self.end_method == 'EDIT':
+				bpy.ops.object.mode_set(mode='EDIT')
 		return {'FINISHED'}
 
 ################
