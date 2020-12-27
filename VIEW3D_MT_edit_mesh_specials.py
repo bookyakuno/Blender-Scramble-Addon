@@ -152,53 +152,45 @@ class SelectedVertexGroupAverage(bpy.types.Operator):
 	bl_description = "Fills selected vertex, vertices weighted average"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	strength : FloatProperty(name="Mix Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
+	strength : FloatProperty(name="Original Values' Effect", default=0, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
 
-	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
-	def execute(self, context):
+	@classmethod
+	def poll(cls, context):
 		obj = context.active_object
 		if len(obj.vertex_groups) == 0:
-			self.report(type={'ERROR'}, message="This object has no vertex_group")
-			return {'CANCELLED'}		
-		if (obj.type == "MESH"):
-			pre_mode = obj.mode
-			bpy.ops.object.mode_set(mode='OBJECT')
-			vert_groups = []
-			for vg in obj.vertex_groups:
-				vert_groups.append([])
-			selected_verts = []
-			for vert in obj.data.vertices:
-				if (vert.select):
-					selected_verts.append(vert)
-					for i in range(len(vert_groups)):
-						for vge in vert.groups:
-							if (i == vge.group):
-								vert_groups[vge.group].append(vge.weight)
-								break
-						else:
-							vert_groups[i].append(0)
-			vert_groups_average = []
-			for weights in vert_groups:
-				vert_groups_average.append(0)
-				for weight in weights:
-					vert_groups_average[-1] += weight
-				vert_groups_average[-1] /= len(weights)
-			i = 0
-			for vg in obj.vertex_groups:
-				for vert in selected_verts:
-					pre_weight = 0
-					for vge in vert.groups:
-						if (obj.vertex_groups[vge.group].name == vg.name):
-							pre_weight = vge.weight
-							break
-					weight = (vert_groups_average[i] * self.strength) + (pre_weight * (1 - self.strength))
-					vg.add([vert.index], weight, "REPLACE")
-				i += 1
+			return False
+		if not obj.type == "MESH":
+			return False
+		return True
+	def draw(self, context):
+		row = self.layout.split(factor=0.55)
+		row.label(text="Original Values' Effect")
+		row.prop(self, 'strength', text="")
+
+	def execute(self, context):
+		obj = context.active_object
+		pre_mode = obj.mode
+		bpy.ops.object.mode_set(mode='OBJECT')
+		vg_dic = {idx: dict() for idx, vg in enumerate(obj.vertex_groups)}
+		selected_verts = [v for v in obj.data.vertices if v.select]
+		if (len(selected_verts) <= 0):
 			bpy.ops.object.mode_set(mode=pre_mode)
-		else:
-			self.report(type={"ERROR"}, message="This is not mesh object")
+			self.report(type={'ERROR'}, message="Need to select at least one vertex")
 			return {'CANCELLED'}
+		for v in selected_verts:
+			for vge in v.groups:
+				belonged_vg_dic = vg_dic[vge.group]
+				belonged_vg_dic[v.index] = vge.weight
+		for key in vg_dic.keys():
+			v_group = obj.vertex_groups[key]
+			counts = len(list(vg_dic[key].keys()))
+			weight = sum(list(vg_dic[key].values()))
+			average = weight/counts
+			for vert_idx in vg_dic[key].keys():
+				pre_weight = vg_dic[key][vert_idx]
+				new_weight = pre_weight*self.strength + average*(1-self.strength)
+				v_group.add([vert_idx], new_weight, 'REPLACE')
+		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
 ################
