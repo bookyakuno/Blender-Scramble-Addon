@@ -13,12 +13,12 @@ SUFFIX_TPL = (".R",".L",".r",".l","_R","_L","_r","_l",".right",".left",".Right",
 
 class CreateMirror(bpy.types.Operator):
 	bl_idname = "armature.create_mirror"
-	bl_label = "Select Bones Mirroring"
-	bl_description = "Mirrored at any axes selected bone"
+	bl_label = "Add Suffix + Symmetrize"
+	bl_description = "Add left-right suffix to selected bones' names, and make their copies at the symmetric positions"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	is_connect : BoolProperty(name="Connection", default=True)
-	use_autoname : BoolProperty(name="Use Automatic R/L-naming", default=True)
+	is_connect : BoolProperty(name="Copy 'Connected'", default=True)
+	use_autoname : BoolProperty(name="Add Suffix", default=True)
 	use_rename : BoolProperty(name="Rename", default=False)
 	new_name : StringProperty(name="New Name", default="Bone")
 	name_sep : EnumProperty(name="Numbering Expression",items=[
@@ -107,11 +107,11 @@ class CreateMirror(bpy.types.Operator):
 
 class CopyBoneName(bpy.types.Operator):
 	bl_idname = "armature.copy_bone_name"
-	bl_label = "Bone name to Clipboard"
-	bl_description = "Copies Clipboard name of active bone"
+	bl_label = "Copy Bone Name to Clipboard"
+	bl_description = "Copy the active bone's name to Clipboard"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isObject : BoolProperty(name="And Object Name", default=False)
+	isObject : BoolProperty(name="Contain Object Name", default=False)
 
 	def execute(self, context):
 		if (self.isObject):
@@ -122,13 +122,13 @@ class CopyBoneName(bpy.types.Operator):
 
 class RenameBoneRegularExpression(bpy.types.Operator):
 	bl_idname = "armature.rename_bone_regular_expression"
-	bl_label = "Replace bone names by regular expression"
-	bl_description = "In bone name (of choice) to match regular expression replace"
+	bl_label = "Rename Bones by Regular Expression"
+	bl_description = "Replace selected bones' names by using regular expression"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isAll : BoolProperty(name="Include Non-select", default=False)
-	pattern : StringProperty(name="Before replace (regular expressions)", default="^")
-	repl : StringProperty(name="After", default="@")
+	isAll : BoolProperty(name="Apply to All Bones", default=False)
+	pattern : StringProperty(name="Target text", default="^")
+	repl : StringProperty(name="New Text", default="")
 
 	@classmethod
 	def poll(cls, context):
@@ -154,8 +154,8 @@ class RenameBoneRegularExpression(bpy.types.Operator):
 
 class RenameOppositeBone(bpy.types.Operator):
 	bl_idname = "armature.rename_opposite_bone"
-	bl_label = "Rename bone symmetry position"
-	bl_description = "Add '.L' or '.R' in the names of bones located on opposite side of X axis (and selected bones if needed)"
+	bl_label = "Manipulate Symmetric Bones' Names"
+	bl_description = "Change names of selected bones and their oppositeーside ones in a specific way"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	threshold : FloatProperty(name="Position of Threshold", default=0.00001, min=0, soft_min=0, step=0.001, precision=5)
@@ -285,15 +285,15 @@ class RenameOppositeBone(bpy.types.Operator):
 		bpy.ops.armature.flip_names(do_strip_numbers=True)
 		return {'FINISHED'}
 
-class extend_bone(bpy.types.Operator):
+class ExtendBone(bpy.types.Operator):
 	bl_idname = "armature.extend_bone"
 	bl_label = "Extend Bone"
-	bl_description = "Stretch new bone in direction of selected bone"
+	bl_description = "Stretch new bone in the direction of selected bone"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	is_parent : BoolProperty(name="Source Parent", default=True)
-	is_connect : BoolProperty(name="Connection", default=True)
 	length : FloatProperty(name="Length", default=1.0, min=-10, max=10, soft_min=-10, soft_max=10, step=10, precision=3)
+	is_parent : BoolProperty(name="Set Original as Parent", default=True)
+	is_connect : BoolProperty(name="Connected", default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -341,7 +341,7 @@ classes = [
 	CopyBoneName,
 	RenameBoneRegularExpression,
 	RenameOppositeBone,
-	extend_bone
+	ExtendBone
 ]
 
 def register():
@@ -369,9 +369,9 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.operator(extend_bone.bl_idname, icon='PLUGIN')
+		self.layout.operator(ExtendBone.bl_idname, icon='PLUGIN')
 		self.layout.separator()
-		self.layout.prop(context.object.data, 'use_mirror_x', icon='PLUGIN', text="X axis mirror edit")
+		self.layout.prop(context.object.data, 'use_mirror_x', icon='PLUGIN')
 		self.layout.operator(CreateMirror.bl_idname, icon='PLUGIN')
 		self.layout.operator(RenameOppositeBone.bl_idname, icon='PLUGIN')
 		self.layout.separator()

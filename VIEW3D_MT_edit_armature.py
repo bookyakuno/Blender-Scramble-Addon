@@ -13,8 +13,8 @@ import bpy
 
 class DeleteUnmassage(bpy.types.Operator):
 	bl_idname = "armature.delete_unmassage"
-	bl_label = "Delete bone without confirm"
-	bl_description = "Remove bones without confirm"
+	bl_label = "Delete Bone (without confirming)"
+	bl_description = "Remove all selected bones without displaying the confirmation message"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	def execute(self, context):

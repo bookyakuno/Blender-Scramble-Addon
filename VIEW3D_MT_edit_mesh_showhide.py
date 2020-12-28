@@ -11,8 +11,8 @@ from bpy.props import *
 
 class InvertHide(bpy.types.Operator):
 	bl_idname = "mesh.invert_hide"
-	bl_label = "Invert Show/Hide"
-	bl_description = "Invert show or non-show state"
+	bl_label = "Invert Show / Hide"
+	bl_description = "Invert display states of each vertices / edges / faces"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -47,7 +47,7 @@ class InvertHide(bpy.types.Operator):
 class HideVertexOnly(bpy.types.Operator):
 	bl_idname = "mesh.hide_vertex_only"
 	bl_label = "Hide Only Vertex"
-	bl_description = "Hide and Fix Selected vertices"
+	bl_description = "Hide selected vertices to prevent them from changing"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -66,10 +66,10 @@ class HideVertexOnly(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode="EDIT")
 		return {'FINISHED'}
 
-	bl_label = "Hide Selected Parts"
-	bl_description = "Hides mesh part has selected more than one top"
 class HidePartlySelected(bpy.types.Operator):
 	bl_idname = "mesh.hide_partly_selected"
+	bl_label = "Hide Partly-Selected Parts"
+	bl_description = "Hide all of isolated meshes at least one of which vertices is selected"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):

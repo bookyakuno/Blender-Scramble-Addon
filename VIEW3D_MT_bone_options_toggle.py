@@ -14,8 +14,8 @@ from bpy.props import *
 
 class SetBoneNames(bpy.types.Operator):
 	bl_idname = "pose.set_bone_names"
-	bl_label = "Set Bone Names"
-	bl_description = "name of selected bone sets together"
+	bl_label = "Rename Selected Bones"
+	bl_description = "Change selected bones' names together"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	new_name : StringProperty(name="New Name", default="Bone")
@@ -59,8 +59,8 @@ class SetBoneNames(bpy.types.Operator):
 
 class SetCurvedBones(bpy.types.Operator):
 	bl_idname = "pose.set_curved_bones"
-	bl_label = "Set Curve Bones"
-	bl_description = "Bones of selected curve born sets"
+	bl_label = "Set 'Bendy Bones' of Selected Bones"
+	bl_description = "Change selected bones' Bendy Bones together"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	bbone_segments : IntProperty(name="Segment", default=1, min=1, soft_min=1)
@@ -84,8 +84,8 @@ class SetCurvedBones(bpy.types.Operator):
 
 class SetBoneRoll(bpy.types.Operator):
 	bl_idname = "pose.set_bone_roll"
-	bl_label = "Set Rolls"
-	bl_description = "Set selected bone rolls"
+	bl_label = "Set Selected Bones' Roll"
+	bl_description = "Change selected bones' roll together"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	roll : FloatProperty(name="Roll", default=0, step=10, precision=3)

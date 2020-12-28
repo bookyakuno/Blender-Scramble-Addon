@@ -10,8 +10,8 @@ from bpy.props import *
 
 class PaintSelectedVertexColor(bpy.types.Operator):
 	bl_idname = "mesh.paint_selected_vertex_color"
-	bl_label = "Paint out selected vertex color"
-	bl_description = "Active vertex colors for selected vertices with specified color fills"
+	bl_label = "Fill Selected Vertices' Vertex Color"
+	bl_description = "Fill selected vertices with designated color at active vertex color"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	color : FloatVectorProperty(name="Color", default=(1, 1, 1), step=1, precision=3, subtype='COLOR_GAMMA', min=0, max=1, soft_min=0, soft_max=1)
@@ -33,8 +33,8 @@ class PaintSelectedVertexColor(bpy.types.Operator):
 
 class SelectTopShape(bpy.types.Operator):
 	bl_idname = "mesh.select_top_shape"
-	bl_label = "Select shape at top"
-	bl_description = "Schipke is at top of list, select"
+	bl_label = "Select Shape at Top"
+	bl_description = "Select the shape key at the top of list"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -43,8 +43,8 @@ class SelectTopShape(bpy.types.Operator):
 
 class ToggleShowCage(bpy.types.Operator):
 	bl_idname = "mesh.toggle_show_cage"
-	bl_label = "Transition modifiers apply to editing cage"
-	bl_description = "Toggles whether to apply modifiers to total en bloc spondylectomy in editing"
+	bl_label = "Switch Display Method of Modifiers' Results"
+	bl_description = "Switch display method of meshes or their vertices which are created by modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	mode_item = [
@@ -81,20 +81,20 @@ class ToggleShowCage(bpy.types.Operator):
 
 class ToggleMirrorModifier(bpy.types.Operator):
 	bl_idname = "mesh.toggle_mirror_modifier"
-	bl_label = "Toggle Mirror Modifiers"
-	bl_description = "Delete if not Miller modifier added, Yes"
+	bl_label = "Switch Display of Mirror Modifiers"
+	bl_description = "Switch display state of mirror modifiers (and add it if not exist)"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	use_x : BoolProperty(name="X Axis", default=True)
 	use_y : BoolProperty(name="Y Axis", default=False)
 	use_z : BoolProperty(name="Z Axis", default=False)
-	use_mirror_merge : BoolProperty(name="Combine", default=True)
+	use_mirror_merge : BoolProperty(name="Merge", default=True)
+	merge_threshold : FloatProperty(name="Merge Distance", default=0.001, min=0, max=1, soft_min=0, soft_max=1, step=0.01, precision=6)
 	use_clip : BoolProperty(name="Clipping", default=False)
-	use_mirror_vertex_groups : BoolProperty(name="Vertex Group Mirror", default=False)
 	use_mirror_u : BoolProperty(name="Texture U Mirror", default=False)
 	use_mirror_v : BoolProperty(name="Texture V Mirror", default=False)
-	merge_threshold : FloatProperty(name="Combine Distance", default=0.001, min=0, max=1, soft_min=0, soft_max=1, step=0.01, precision=6)
-	is_top : BoolProperty(name="Add Top", default=True)
+	use_mirror_vertex_groups : BoolProperty(name="Vertex Groups", default=True)
+	is_top : BoolProperty(name="Add at Top", default=True)
 	toggle : BoolProperty(name="Enabled / Disabled", default=True)
 	is_add : BoolProperty(name="Add or not", default=False)
 
@@ -148,8 +148,8 @@ class ToggleMirrorModifier(bpy.types.Operator):
 
 class SelectedVertexGroupAverage(bpy.types.Operator):
 	bl_idname = "mesh.selected_vertex_group_average"
-	bl_label = "Fill selected vertices average weight"
-	bl_description = "Fills selected vertex, vertices weighted average"
+	bl_label = "Average Selected Vertices' Weight"
+	bl_description = "Change selected vertives' weight to their average value"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	strength : FloatProperty(name="Original Values' Effect", default=0, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
@@ -231,7 +231,7 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.operator(SelectTopShape.bl_idname, icon="PLUGIN")
 		self.layout.separator()
-		self.layout.prop(context.object.data, "use_mirror_x", icon="PLUGIN", text="X axis mirror edit")
+		self.layout.prop(context.object.data, "use_mirror_x", icon="PLUGIN", text="X-Axis Mirror")
 		self.layout.operator(ToggleMirrorModifier.bl_idname, icon="PLUGIN")
 		self.layout.operator(ToggleShowCage.bl_idname, icon="PLUGIN")
 		self.layout.separator()

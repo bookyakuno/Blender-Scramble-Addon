@@ -10,8 +10,8 @@ from bpy.props import *
 
 class ToggleMeshSelectMode(bpy.types.Operator):
 	bl_idname = "mesh.toggle_mesh_select_mode"
-	bl_label = "Switch mesh select mode"
-	bl_description = "Mesh selection mode => top => side surface. Switch and"
+	bl_label = "Switch Mesh Select Mode"
+	bl_description = "Vertex Select => Edge Select => Face Select"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -30,8 +30,8 @@ class ToggleMeshSelectMode(bpy.types.Operator):
 
 class SelectModePieOperator(bpy.types.Operator):
 	bl_idname = "mesh.select_mode_pie_operator"
-	bl_label = "Mesh Selection Mode"
-	bl_description = "Mesh select pie menu"
+	bl_label = "Pie menu : Mesh Select Mode"
+	bl_description = "Switch mesh select mode"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -39,8 +39,8 @@ class SelectModePieOperator(bpy.types.Operator):
 		return {'FINISHED'}
 class SelectModePie(bpy.types.Menu): #
 	bl_idname = "VIEW3D_MT_edit_mesh_pie_select_mode"
-	bl_label = "Mesh Selection Mode"
-	bl_description = "Mesh select pie menu"
+	bl_label = "Pie menu : Mesh Select Mode"
+	bl_description = "Switch mesh select mode"
 
 	def draw(self, context):
 		self.layout.menu_pie().operator("mesh.select_mode", text="Vertex", icon='VERTEXSEL').type = 'VERT'
@@ -49,8 +49,8 @@ class SelectModePie(bpy.types.Menu): #
 
 class ProportionalPieOperator(bpy.types.Operator):
 	bl_idname = "mesh.proportional_pie_operator"
-	bl_label = "Proportional Edit"
-	bl_description = "Is pie menu proportional edit"
+	bl_label = "Pie menu : Proportional Edit"
+	bl_description = "Switch proportional editing mode"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -62,18 +62,18 @@ class ProportionalPieOperator(bpy.types.Operator):
 		return {'FINISHED'}
 class ProportionalPie(bpy.types.Menu): #
 	bl_idname = "VIEW3D_MT_edit_mesh_pie_proportional"
-	bl_label = "Proportional Edit"
-	bl_description = "Is pie menu proportional edit"
+	bl_label = "Pie menu : Proportional Edit"
+	bl_description = "Switch proportional editing mode"
 
 	def draw(self, context):
-		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Enable", icon="PROP_ON").mode = "ENABLED"
-		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Projection (2D)", icon="PROP_ON").mode = "PROJECTED"
-		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Connection", icon="PROP_CON").mode = "CONNECTED"
-		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Disable", icon="PROP_OFF").mode = "DISABLED"
+		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Enabled", icon="PROP_ON").mode = "ENABLED"
+		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Projected from View", icon="PROP_ON").mode = "PROJECTED"
+		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Connected Only", icon="PROP_CON").mode = "CONNECTED"
+		self.layout.menu_pie().operator(SetProportionalEdit.bl_idname, text="Disabled", icon="PROP_OFF").mode = "DISABLED"
 class SetProportionalEdit(bpy.types.Operator): #
 	bl_idname = "mesh.set_proportional_edit"
-	bl_label = "Set proportional edit mode"
-	bl_description = "Set proportional editing modes"
+	bl_label = "Pie menu : Proportional Edit"
+	bl_description = "Switch proportional editing mode"
 	bl_options = {'REGISTER'}
 
 	mode : StringProperty(name="Mode", default="DISABLED")
@@ -102,8 +102,8 @@ class SetProportionalEdit(bpy.types.Operator): #
 
 class EditMeshShortcutMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_edit_mesh_shortcut"
-	bl_label = "By Shortcuts"
-	bl_description = "Looks useful functions is to register shortcut"
+	bl_label = "Switch Mode (For Shortcut)"
+	bl_description = "Functions to switch editors that can be used easily by assigning shortcut"
 
 	def draw(self, context):
 		self.layout.operator(ToggleMeshSelectMode.bl_idname, icon="PLUGIN")

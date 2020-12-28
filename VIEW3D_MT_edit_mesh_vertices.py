@@ -11,8 +11,8 @@ _STORE_ITEMS = [] #保存用グローバル変数：EnumPropertyの動的なitem
 
 class CellMenuSeparateEX(bpy.types.Operator):
 	bl_idname = "mesh.cell_menu_separate_ex"
-	bl_label = "Separate (Advance)"
-	bl_description = "Isolate to another object of call extended menu"
+	bl_label = "Separate (Extra)"
+	bl_description = "Separate menu with extra functions"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -21,8 +21,8 @@ class CellMenuSeparateEX(bpy.types.Operator):
 
 class SeparateSelectedEX(bpy.types.Operator):
 	bl_idname = "mesh.separate_selected_ex"
-	bl_label = "Selected (Activate Isolated-side)"
-	bl_description = "After \"in choice of separation\" enters edit mode for separation side"
+	bl_label = "Separate Selection => Edit Separated"
+	bl_description = "Separate selected part to another object, and switch to the object's Edit mode"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -41,8 +41,8 @@ class SeparateSelectedEX(bpy.types.Operator):
 
 class DuplicateNewParts(bpy.types.Operator):
 	bl_idname = "mesh.duplicate_new_parts"
-	bl_label = "Duplicate Selected parts and to new object"
-	bl_description = "Enters edit mode, replication and selection to new object from"
+	bl_label = "Duplicate Selection => Edit Duplicated"
+	bl_description = "Duplicate selected part as another object, and switch to its Edit mode"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -62,14 +62,15 @@ class DuplicateNewParts(bpy.types.Operator):
 
 class QuickShrinkwrap(bpy.types.Operator):
 	bl_idname = "mesh.quick_shrinkwrap"
-	bl_label = "Quick Shrinkwrap"
-	bl_description = "Another one you mesh selected vertices pettanko!, glue"
+	bl_label = "Apply Shrinkwrap to Selection"
+	bl_description = "Apply to selected vertices Shrinkwrap modifier for the other selected object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
-		('NEAREST_SURFACEPOINT', "Closest Surface Point", "", 1),
-		('PROJECT', "Projection", "", 2),
-		('NEAREST_VERTEX', "Nearest Vertex", "", 3),
+		('NEAREST_SURFACEPOINT', "Nearest Surface Point", "Shrink the mesh to the nearest target surface", 1),
+		('PROJECT', "Project", "Shrink the mesh to the nearest target surface along a given axis", 2),
+		('NEAREST_VERTEX', "Nearest Vertex", "Shrink the mesh to the nearest target vertex", 3),
+		('TARGET_PROJECT', "Target Normal Project", "Shrink the mesh to the nearest target surface along the interpolated vertex normals of the target", 4),
 		]
 	wrap_method : EnumProperty(items=items, name="Mode", default='PROJECT')
 	offset : FloatProperty(name="Offset", default=0.0, min=-10, max=10, soft_min=-10, soft_max=10, step=1, precision=5)
@@ -95,7 +96,7 @@ class QuickShrinkwrap(bpy.types.Operator):
 		selected_verts = [v.index for v in active_obj.data.vertices if v.select]
 		if (len(selected_verts) <= 0):
 			bpy.ops.object.mode_set(mode=pre_mode)
-			self.report(type={'ERROR'}, message="One run, select vertex more than")
+			self.report(type={'ERROR'}, message="Need to select at least one vertex")
 			return {'CANCELLED'}
 		new_vg.add(selected_verts, 1.0, 'REPLACE')
 		new_mod = active_obj.modifiers.new("temp", 'SHRINKWRAP')
@@ -150,7 +151,7 @@ class SeparateMaterialEX(bpy.types.Operator):
 
 class SeparateLooseEX(bpy.types.Operator):
 	bl_idname = "mesh.separate_loose_ex"
-	bl_label = "By Non-Selected Loose Parts"
+	bl_label = "By Loose Parts (Non-Selected)"
 	bl_description = "Separate each not-selected / selected isolated part to another object"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -204,17 +205,17 @@ class SeparateMatEXMenu(bpy.types.Menu):
 	bl_description = "Separate specific-material-assigned part to another object, and switch to the object's Edit mode"
 
 	def draw(self, context):
-		mat_names = [mat.name for mat in context.active_object.data.materials]
-		for nam in mat_names:
-			self.layout.operator(SeparateMaterialEX.bl_idname, text=nam).target_mat = nam
+		mats = context.active_object.data.materials
+		for idx, mat in enumerate(mats):
+			self.layout.operator(SeparateMaterialEX.bl_idname, text=mat.name).target_matidx = str(idx)
 
 class SeparateEXMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_edit_mesh_separate_ex"
-	bl_label = "Separate (Advance)"
-	bl_description = "Isolate to another object of extended menu"
+	bl_label = "Separate (Extra)"
+	bl_description = "Separate menu with extra functions"
 
 	def draw(self, context):
-		self.layout.operator("mesh.separate", text="Selected").type = 'SELECTED'
+		self.layout.operator("mesh.separate", text="Selection").type = 'SELECTED'
 		self.layout.operator(SeparateSelectedEX.bl_idname, icon="PLUGIN")
 		self.layout.operator(DuplicateNewParts.bl_idname, icon="PLUGIN")
 		self.layout.separator()
@@ -222,8 +223,8 @@ class SeparateEXMenu(bpy.types.Menu):
 		self.layout.menu(SeparateMatEXMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.operator("mesh.separate", text="By Loose Parts").type = 'LOOSE'
-		self.layout.operator(SeparateLooseEX.bl_idname).sep_selected = False
-		self.layout.operator(SeparateLooseEX.bl_idname, text="By Selected Loose Parts").sep_selected = True
+		self.layout.operator(SeparateLooseEX.bl_idname, icon="PLUGIN").sep_selected = False
+		self.layout.operator(SeparateLooseEX.bl_idname, text="By Loose Parts (Selected)", icon="PLUGIN").sep_selected = True
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):

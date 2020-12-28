@@ -11,8 +11,8 @@ from bpy.props import *
 
 class DeleteBySelectMode(bpy.types.Operator):
 	bl_idname = "mesh.delete_by_select_mode"
-	bl_label = "Remove same element to selection mode"
-	bl_description = "Same mesh selection mode of current element (vertex and side and side) remove"
+	bl_label = "Delete Based on Select Mode"
+	bl_description = "Delete selected vertices / edges / faces in the specific way based on current mesh select mode"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	use_current : BoolProperty(name="Registered", default=False, options={'HIDDEN'})
@@ -25,14 +25,14 @@ class DeleteBySelectMode(bpy.types.Operator):
 	edge_items = [
 		("delete(type='EDGE')","Delete","Delete selected edges",1),
 		("dissolve_edges()"," Dissolve","Dissolve edges, merging faces",2),
-		("edge_collapse()","Collapse","Collapse edges to one vertex",3),
+		("edge_collapse()","Collapse","Collapse each edge to one vertex",3),
 		("delete_edgeloop()","Delete Loop","Delete an edge loop by merging the faces on each side",4)
 	]
 	edge_mode : EnumProperty(name="Method on Edge Mode", items=edge_items)
 	face_items = [
 		("delete(type='FACE')","Delete","Delete selected faces",1),
 		("dissolve_faces()"," Dissolve","Dissolve faces",2),
-		("delete(type='ONLY_FACE')","Only Faces","Delete selected faces but keep vertices and edges",3)
+		("delete(type='ONLY_FACE')","Only Faces","Delete selected faces keeping their vertices and edges",3)
 	]
 	face_mode : EnumProperty(name="Method on Face Mode", items=face_items)
 
@@ -73,8 +73,8 @@ class DeleteBySelectMode(bpy.types.Operator):
 
 class DeleteHideMesh(bpy.types.Operator):
 	bl_idname = "mesh.delete_hide_mesh"
-	bl_label = "Remove Hidden Meshes"
-	bl_description = "Delete all are mesh"
+	bl_label = "Delete Hidden Vertices"
+	bl_description = "Delete all hidden vertices of active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
