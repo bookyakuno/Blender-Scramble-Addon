@@ -14,91 +14,54 @@ class MakeLinkObjectName(bpy.types.Operator):
 	bl_description = "Link name of active object to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	@classmethod
-	def poll(cls, context):
-		if (len(context.selected_objects) < 2):
-			return False
-		return True
-	def execute(self, context):
-		name = context.active_object.name
-		for obj in context.selected_objects:
-			if (obj.name != name):
-				obj.name = "temp"
-				obj.name = name
-		bpy.context.active_object.name = name
-		return {'FINISHED'}
-
-class MakeLinkLayer(bpy.types.Operator):
-	bl_idname = "object.make_link_layer"
-	bl_label = "Set Same Layer"
-	bl_description = "link active object layers to other selected objects"
-	bl_options = {'REGISTER', 'UNDO'}
+	name_sep : EnumProperty(name="Numbering Expression",items=[
+		(".",".00X","",1),("_","_00X","",2),("-","-00X","",3)])
+	method : EnumProperty(name="Active Object's Name",items=[
+		("NO","Not Change","",1),("ZERO","Add 000","",2),("ONE","Add 001","",3)])
 
 	@classmethod
 	def poll(cls, context):
 		if (len(context.selected_objects) < 2):
 			return False
 		return True
+	def draw(self, context):
+		row = self.layout.row(align=True)
+		row.label(text="New Name")
+		box = row.box().row()
+		box.label(text=context.active_object.name)
+		box.prop(self, 'name_sep', text="")
+		row = self.layout.row(align=True)
+		row.label(text="Active Object's Name")
+		row.prop(self, 'method', text="")
+
 	def execute(self, context):
-		for obj in context.selected_objects:
-			if (obj.name != context.active_object.name):
-				active_col_name = context.active_object.users_collection[0].name
-				active_col_idx  = bpy.data.collection.find(active_col_name)
-				bpy.ops.object.move_to_collection(collection_index=active_col_idx+1)
-				break
-		return {'FINISHED'}
-
-class MakeLinkDisplaySetting(bpy.types.Operator):
-	bl_idname = "object.make_link_display_setting"
-	bl_label = "Make same objects display setting"
-	bl_description = "Copy settings panel of active object to other selected objects"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	isSameType : BoolProperty(name="Only objects of same type", default=True)
-	show_name : BoolProperty(name="Name", default=True)
-	show_axis : BoolProperty(name="Axis", default=True)
-	show_wire : BoolProperty(name="Wire Frame", default=True)
-	show_all_edges : BoolProperty(name="Show All Edges", default=True)
-	show_bounds : BoolProperty(name="Bound", default=True)
-	show_texture_space : BoolProperty(name="Texture Space", default=True)
-	show_in_front : BoolProperty(name="Front", default=True)
-	show_transparent : BoolProperty(name="Alpha", default=True)
-	display_bounds_type : BoolProperty(name="Bound Type", default=True)
-	display_type : BoolProperty(name="Maximum Draw Type", default=True)
-	color : BoolProperty(name="Object Color", default=True)
-
-	@classmethod
-	def poll(cls, context):
-		if (len(context.selected_objects) < 2):
-			return False
-		return True
-	def execute(self, context):
-		activeObj = context.active_object
-		for obj in context.selected_objects:
-			if (not self.isSameType or activeObj.type == obj.type):
-				if (obj.name != activeObj.name):
-					if (self.show_name):
-						obj.show_name = activeObj.show_name
-					if (self.show_axis):
-						obj.show_axis = activeObj.show_axis
-					if (self.show_wire):
-						obj.show_wire = activeObj.show_wire
-					if (self.show_all_edges):
-						obj.show_all_edges = activeObj.show_all_edges
-					if (self.show_bounds):
-						obj.show_bounds = activeObj.show_bounds
-					if (self.show_texture_space):
-						obj.show_texture_space = activeObj.show_texture_space
-					if (self.show_in_front):
-						obj.show_in_front = activeObj.show_in_front
-					if (self.show_transparent):
-						obj.show_transparent = activeObj.show_transparent
-					if (self.display_bounds_type):
-						obj.display_bounds_type = activeObj.display_bounds_type
-					if (self.display_type):
-						obj.display_type = activeObj.display_type
-					if (self.color):
-						obj.color = activeObj.color
+		new_name = context.active_object.name
+		selected_others = list(set(context.selected_objects) - {context.active_object})
+		name_head = f"{new_name}{self.name_sep}"
+		if self.method == 'NO':
+			new_names = [f"{name_head}{num+1:03}" for num in range(len(selected_others))]
+		if self.method == 'ZERO':
+			new_names = [f"{name_head}{num+1:03}" for num in range(len(selected_others))]
+		elif self.method == 'ONE':
+			new_names = [f"{name_head}{num+2:03}" for num in range(len(selected_others))]
+		suffix_dic = {'NO':None,'ZERO':"000",'ONE':"001"}
+		if suffix_dic[self.method]:
+			nam = f"{name_head}{suffix_dic[self.method]}"
+			try:
+				existed_obs = bpy.data.objects[nam]
+				existed_obs.name = "temp"
+				context.active_object.name = nam
+				existed_obs.name = nam
+			except KeyError:
+				context.active_object.name = nam
+		for ob, nam in zip(selected_others, new_names):
+			try:
+				existed_obs = bpy.data.objects[nam]
+				existed_obs.name = "temp"
+				ob.name = nam
+				existed_obs.name = nam
+			except KeyError:
+				ob.name = nam
 		return {'FINISHED'}
 
 class MakeLinkUVNames(bpy.types.Operator):
@@ -120,6 +83,7 @@ class MakeLinkUVNames(bpy.types.Operator):
 				if (obj.type == 'MESH'):
 					return True
 		return False
+
 	def execute(self, context):
 		active_obj = context.active_object
 		target_objs = []
@@ -150,6 +114,7 @@ class MakeLinkArmaturePose(bpy.types.Operator):
 				if (obj.type == 'ARMATURE'):
 					return True
 		return False
+
 	def execute(self, context):
 		active_obj = context.active_object
 		target_objs = []
@@ -190,6 +155,7 @@ class MakeLinkTransform(bpy.types.Operator):
 		if (len(context.selected_objects) < 2):
 			return False
 		return True
+
 	def execute(self, context):
 		active_obj = context.active_object
 		for obj in context.selected_objects:
@@ -234,8 +200,6 @@ class TransformMenu(bpy.types.Menu):
 
 classes = [
 	MakeLinkObjectName,
-	MakeLinkLayer,
-	MakeLinkDisplaySetting,
 	MakeLinkUVNames,
 	MakeLinkArmaturePose,
 	MakeLinkTransform,
@@ -270,11 +234,10 @@ def menu(self, context):
 		self.layout.menu(TransformMenu.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.operator(MakeLinkObjectName.bl_idname, text="Object Name", icon="PLUGIN")
-		self.layout.operator(MakeLinkLayer.bl_idname, text="Layer", icon="PLUGIN")
-		self.layout.operator(MakeLinkDisplaySetting.bl_idname, text="Display Setting", icon="PLUGIN")
+		self.layout.operator('object.copy_display_setting', text="Change to Same Display Setting", icon="PLUGIN")# object.copy_display_setting で定義
+		self.layout.operator(MakeLinkUVNames.bl_idname, icon="PLUGIN")
 		self.layout.separator()
-		self.layout.operator(MakeLinkUVNames.bl_idname, text="Empty UV", icon="PLUGIN")
-		self.layout.operator(MakeLinkArmaturePose.bl_idname, text="Movement of Armature", icon="PLUGIN")
+		self.layout.operator(MakeLinkArmaturePose.bl_idname, icon="PLUGIN")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
