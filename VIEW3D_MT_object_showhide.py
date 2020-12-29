@@ -9,7 +9,7 @@ import bpy.ops
 # オペレーター #
 ################
 
-class hide_view_clear_unselect(bpy.types.Operator):
+class HideViewClearUnselect(bpy.types.Operator):
 	bl_idname = "object.hide_view_clear_unselect"
 	bl_label = "Show Hidden (non-select)"
 	bl_description = "Does not display objects were hidden again, select"
@@ -18,19 +18,14 @@ class hide_view_clear_unselect(bpy.types.Operator):
 	show_col : BoolProperty(name="show hided collections", default=False)
 
 	def flatten(self, layer_collection):
-		flat_view = []
 		flat_hide = []
 		for coll in layer_collection.children:
 			if not coll.exclude and not coll.hide_viewport:
 				if len(coll.children) > 0:
-					flat_view.append(coll)
-					flat_view += self.flatten(coll)[0]
-					flat_hide += self.flatten(coll)[1]
-				else:
-					flat_view.append(coll)
+					flat_hide += self.flatten(coll)
 			elif not coll.exclude and coll.hide_viewport:
 				flat_hide.append(coll)
-		return [flat_view, flat_hide]
+		return flat_hide
 
 	def execute(self, context):
 		master_col = context.view_layer.layer_collection
@@ -38,10 +33,8 @@ class hide_view_clear_unselect(bpy.types.Operator):
 			views = [c for c in master_col.children if not c.exclude and not c.hide_viewport]
 			hides = [c for c in master_col.children if not c.exclude and c.hide_viewport]
 			for col in views:
-				if len(col.children) != 0:
-					f_view, f_hide = self.flatten(col)
-					views = views + f_view
-					hides = hides + f_hide
+				if len(col.children) > 0:
+					hides += self.flatten(col)
 			for col in hides:
 				col.hide_viewport = False
 		pre_selectable_objects = []
@@ -59,63 +52,48 @@ class InvertHide(bpy.types.Operator):
 	bl_description = "Flips object\'s view state and non-State"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	invert_nested_col : BoolProperty(name="Include nested collections", default=False)
-
+	method : EnumProperty(name="Collections", items=[
+		("IGNORE","Not Invert","Only Objects are changed",1),
+		("CHILD","Invert Nested","Collections in collection are changed",2),
+		("PARENT","Invert Parent","Collections in 'Scene Collection' are changed",3)])
+	
 	def flatten(self, layer_collection):
 		flat_view = []
-		flat_hide = []
 		for coll in layer_collection.children:
 			if not coll.exclude and not coll.hide_viewport:
 				if len(coll.children) > 0:
 					flat_view.append(coll)
-					flat_view += self.flatten(coll)[0]
-					flat_hide += self.flatten(coll)[1]
+					flat_view += self.flatten(coll)
 				else:
 					flat_view.append(coll)
-			elif not coll.exclude and coll.hide_viewport:
-				flat_hide.append(coll)
-		return [flat_view, flat_hide]
+		return flat_view
 
-	def execute(self, context):
-		objs = []
-		hide = []
-		master_col = context.view_layer.layer_collection
-		for obj in master_col.collection.objects:
-			obj.hide_set(not obj.hide_get())
-		collections = [c for c in master_col.children if not c.exclude and not c.hide_viewport]
-		for col in collections:
-			if len(col.children) != 0:
-				f_view, f_hide = self.flatten(col)
-				collections = collections + f_view
-				if self.invert_nested_col:
-					hide = hide + f_hide
-		for col in collections:
-			if col.has_objects():
-				objs = objs + [x for x in col.collection.objects]
-		for obj in objs:
-			obj.hide_set(not obj.hide_get())
-		if self.invert_nested_col:
-			for col in hide:
-				col.hide_viewport = False
-		return {'FINISHED'}
-
-class InvertCollectionHide(bpy.types.Operator):
-	bl_idname = "object.invert_collection_hide"
-	bl_label = "Invert Show/Hide (object & parent collection)"
-	bl_description = "Flips object\'s and collection\'s view state and non-State"
-	bl_options = {'REGISTER', 'UNDO'}
+	def draw(self, context):
+		layout = self.layout
+		layout.use_property_split = True
+		layout.prop(self, 'method', expand=True)
 
 	def execute(self, context):
 		objs = []
 		master_col = context.view_layer.layer_collection
 		for obj in master_col.collection.objects:
 			obj.hide_set(not obj.hide_get())
-		views = [c for c in master_col.children if not c.exclude and not c.hide_viewport]
-		hides = [c for c in master_col.children if not c.exclude and c.hide_viewport]
-		for col in views:
-			col.hide_viewport = True
-		for col in hides:
-			col.hide_viewport = False
+		if self.method == 'IGNORE':
+			views = self.flatten(master_col)
+			for col in views:
+				for obj in col.collection.objects:
+					obj.hide_set(not obj.hide_get())
+		else: 
+			for col in master_col.children:
+				if self.method == 'PARENT':
+					col.hide_viewport = not col.hide_viewport
+				elif self.method == 'CHILD':
+					if not col.exclude and not col.hide_viewport:
+						for obj in col.collection.objects:
+							 obj.hide_set(not obj.hide_get())
+						for child in col.children:
+							if not child.exclude:
+								child.hide_viewport = not child.hide_viewport
 		return {'FINISHED'}
 
 class HideOnlyType(bpy.types.Operator):
@@ -138,37 +116,13 @@ class HideOnlyType(bpy.types.Operator):
 		("SPEAKER", "Speaker", "", 11),
 		]
 	type : EnumProperty(items=items, name="Hide Object Type")
+	is_except : BoolProperty(name="Except designated", default=False, options={'HIDDEN'})
 
 	def execute(self, context):
 		for obj in context.selectable_objects:
-			if (obj.type == self.type):
+			if not self.is_except and (obj.type == self.type):
 				obj.hide_set(True)
-		return {'FINISHED'}
-
-class HideExceptType(bpy.types.Operator):
-	bl_idname = "object.hide_except_mesh"
-	bl_label = "Hide except type of objects"
-	bl_description = "Hides object non-specific type that is displayed"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	items = [
-		("MESH", "Mesh", "", 1),
-		("CURVE", "Curve", "", 2),
-		("SURFACE", "Surface", "", 3),
-		("META", "Metaballs", "", 4),
-		("FONT", "Text", "", 5),
-		("ARMATURE", "Armature", "", 6),
-		("LATTICE", "Lattice", "", 7),
-		("EMPTY", "Empty", "", 8),
-		("CAMERA", "Camera", "", 9),
-		("LAMP", "Lamp", "", 10),
-		("SPEAKER", "Speaker", "", 11),
-		]
-	type : EnumProperty(items=items, name="Extract Object Type")
-
-	def execute(self, context):
-		for obj in context.selectable_objects:
-			if (obj.type != self.type):
+			elif self.is_except and (not obj.type == self.type):
 				obj.hide_set(True)
 		return {'FINISHED'}
 
@@ -177,11 +131,9 @@ class HideExceptType(bpy.types.Operator):
 ################
 
 classes = [
-	hide_view_clear_unselect,
+	HideViewClearUnselect,
 	InvertHide,
-	InvertCollectionHide,
-	HideOnlyType,
-	HideExceptType
+	HideOnlyType
 ]
 
 def register():
@@ -209,12 +161,11 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.operator(hide_view_clear_unselect.bl_idname, icon='PLUGIN')
+		self.layout.operator(HideViewClearUnselect.bl_idname, icon='PLUGIN')
 		self.layout.operator(InvertHide.bl_idname, icon='PLUGIN')
-		self.layout.operator(InvertCollectionHide.bl_idname, icon='PLUGIN')
 		self.layout.separator()
-		self.layout.operator(HideOnlyType.bl_idname, icon='PLUGIN')
-		self.layout.operator(HideExceptType.bl_idname, icon='PLUGIN')
+		self.layout.operator(HideOnlyType.bl_idname, icon='PLUGIN').is_except = False
+		self.layout.operator(HideOnlyType.bl_idname, text="Hide Objects (Except Specific Type)", icon='PLUGIN').is_except = True
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
