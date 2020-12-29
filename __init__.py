@@ -455,8 +455,8 @@ def register():
 	bpy.types.VIEW3D_MT_make_links.append(VIEW3D_MT_make_links.menu)
 	VIEW3D_MT_object.register()
 	bpy.types.VIEW3D_MT_object.append(VIEW3D_MT_object.menu)
-	VIEW3D_MT_object_apply.register()
-	bpy.types.VIEW3D_MT_object_apply.append(VIEW3D_MT_object_apply.menu)
+	#VIEW3D_MT_object_apply.register() #廃止
+	#bpy.types.VIEW3D_MT_object_apply.append(VIEW3D_MT_object_apply.menu)
 	VIEW3D_MT_object_showhide.register()
 	bpy.types.VIEW3D_MT_object_showhide.append(VIEW3D_MT_object_showhide.menu)
 	VIEW3D_MT_object_specials.register()
@@ -648,8 +648,8 @@ def unregister():
 	bpy.types.VIEW3D_MT_make_links.remove(VIEW3D_MT_make_links.menu)
 	VIEW3D_MT_object.unregister()
 	bpy.types.VIEW3D_MT_object.remove(VIEW3D_MT_object.menu)
-	VIEW3D_MT_object_apply.unregister()
-	bpy.types.VIEW3D_MT_object_apply.remove(VIEW3D_MT_object_apply.menu)
+	#VIEW3D_MT_object_apply.unregister() #廃止
+	#bpy.types.VIEW3D_MT_object_apply.remove(VIEW3D_MT_object_apply.menu)
 	VIEW3D_MT_object_showhide.unregister()
 	bpy.types.VIEW3D_MT_object_showhide.remove(VIEW3D_MT_object_showhide.menu)
 	VIEW3D_MT_object_specials.unregister()
