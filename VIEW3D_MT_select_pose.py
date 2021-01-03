@@ -178,6 +178,8 @@ class SelectChildrenEnd(bpy.types.Operator):
 	bl_description = "Select bones child-child child\'s bones. And we will select to end"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	to_fork : BoolProperty(name="To fork-point", default=False)
+
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
@@ -188,7 +190,14 @@ class SelectChildrenEnd(bpy.types.Operator):
 	def execute(self, context):
 		pre_mode = context.active_object.mode
 		bpy.ops.object.mode_set(mode='EDIT')
-		bpy.ops.armature.select_similar(type='CHILDREN')
+		if self.to_fork:
+			for bone in context.selected_bones:
+				for b in bone.children_recursive:
+					b.select = True
+					if len(b.children) >= 2:
+						break
+		else:
+			bpy.ops.armature.select_similar(type='CHILDREN')
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
@@ -197,6 +206,8 @@ class SelectParentEnd(bpy.types.Operator):
 	bl_label = "Select root of bone"
 	bl_description = "Choice bones parent => parent of parent bone. And we will select to end"
 	bl_options = {'REGISTER', 'UNDO'}
+
+	to_fork : BoolProperty(name="To fork-point", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -210,7 +221,31 @@ class SelectParentEnd(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode='EDIT')
 		for bone in context.selected_bones:
 			for b in bone.parent_recursive:
+				if self.to_fork and len(b.children) >= 2:
+					break
 				b.select = True
+		bpy.ops.object.mode_set(mode=pre_mode)
+		return {'FINISHED'}
+
+class SelectBothEnd(bpy.types.Operator):
+	bl_idname = "pose.select_both_end"
+	bl_label = "Select Bones (All Parent & Children)"
+	bl_description = "Select all parents and children of selected bones"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	to_fork : BoolProperty(name="To fork-point", default=False)
+
+	@classmethod
+	def poll(cls, context):
+		if context.active_object:
+			if context.selected_bones or context.selected_pose_bones:
+				return True
+		return False
+
+	def execute(self, context):
+		pre_mode = context.active_object.mode
+		bpy.ops.pose.select_children_end(to_fork=self.to_fork)
+		bpy.ops.pose.select_parent_end(to_fork=self.to_fork)
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
@@ -389,6 +424,7 @@ classes = [
 	SelectSameNameBones,
 	SelectChildrenEnd,
 	SelectParentEnd,
+	SelectBothEnd,
 	SelectPath,
 	SelectAxisOver,
 	SelectSimilarForPose,
@@ -428,6 +464,7 @@ def menu(self, context):
 		self.layout.operator(SelectPath.bl_idname, icon='PLUGIN')
 		self.layout.operator(SelectParentEnd.bl_idname, icon='PLUGIN')
 		self.layout.operator(SelectChildrenEnd.bl_idname, icon='PLUGIN')
+		self.layout.operator(SelectBothEnd.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.operator(SelectAxisOver.bl_idname, icon='PLUGIN')
 		self.layout.operator(SelectSerialNumberNameBone.bl_idname, icon='PLUGIN')
