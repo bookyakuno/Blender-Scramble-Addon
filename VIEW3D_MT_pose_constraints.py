@@ -14,35 +14,79 @@ class ConstraintIKToLimitRotation(bpy.types.Operator):
 	bl_description = "Copy rotation constraint restrictions IK rotation restriction settings"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isAdd : BoolProperty(name="If not add constraints", default=True)
-	isLocal : BoolProperty(name="Local Space", default=True)
-	DisableSetting : BoolProperty(name="Disable IK-restriction", default=False)
+	items = [(it.identifier, it.name, it.description, idx)
+		for idx, it in enumerate(bpy.types.LimitRotationConstraint.bl_rna.properties["owner_space"].enum_items)]
+	space : EnumProperty(name="Owner Space", items=items, default='LOCAL')
+	#DisableSetting : BoolProperty(name="Disable IK rotation limit", default=True)
+
+	@classmethod
+	def poll(cls, context):
+		if context.selected_pose_bones:
+			for bone in context.selected_pose_bones:
+				if bone.use_ik_limit_x or bone.use_ik_limit_y or bone.use_ik_limit_z:
+					return True
+		return False
 
 	def execute(self, context):
 		for bone in context.selected_pose_bones:
-			if (self.isAdd):
-				for const in bone.constraints:
-					if (const.type == "LIMIT_ROTATION"):
-						break
-				else:
-					bone.constraints.new("LIMIT_ROTATION")
 			for const in bone.constraints:
 				if (const.type == "LIMIT_ROTATION"):
-					const.use_limit_x = bone.use_ik_limit_x
-					const.use_limit_y = bone.use_ik_limit_y
-					const.use_limit_z = bone.use_ik_limit_z
-					const.min_x = bone.ik_min_x
-					const.min_y = bone.ik_min_y
-					const.min_z = bone.ik_min_z
-					const.max_x = bone.ik_max_x
-					const.max_y = bone.ik_max_y
-					const.max_z = bone.ik_max_z
-					if (self.isLocal):
-						const.owner_space = "LOCAL"
+					limit_const = const
+					break
+			else:
+				bone.constraints.new("LIMIT_ROTATION")
+				limit_const = bone.constraints[-1]
+			for p in ['limit_x','limit_y','limit_z']:
+				exec(f"limit_const.use_{p} = bone.use_ik_{p}")
+			for p in ['min_x','min_y','min_z','max_x','max_y','max_z',]:
+				exec(f"limit_const.{p} = bone.ik_{p}")
+			limit_const.owner_space = self.space
+			"""
+			# 特定の組み合わせで use_ik_limit を False にするとオペレーターパネルが表示されない
+			#対処法が不明なのでとりあえずこのオプションは停止(2.90)
 			if self.DisableSetting:
 				bone.use_ik_limit_x = False
 				bone.use_ik_limit_y = False
 				bone.use_ik_limit_z = False
+			"""
+		return {'FINISHED'}
+
+class LimitRotationToConstraintIK(bpy.types.Operator):
+	bl_idname = "pose.limit_rotation_to_constraint_ik"
+	bl_label = "Convert Limit Rotation Constraint to IK Limit"
+	bl_description = "Set selected bones' IK limit rotation settings based on their limit rotation constraints"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	remove_const : BoolProperty(name="Remove Constraint", default=True)
+
+	@classmethod
+	def poll(cls, context):
+		if context.selected_pose_bones:
+			for bone in context.selected_pose_bones:
+				const_types = [c.type for c in bone.constraints]
+				if "LIMIT_ROTATION" in const_types:
+					return True
+		return False
+
+	def execute(self, context):
+		for bone in context.selected_pose_bones:
+			for const in bone.constraints:
+				if (const.type == "LIMIT_ROTATION"):
+					limit_const = const
+					break
+			else:
+				continue
+			for p in ['limit_x','limit_y','limit_z']:
+				exec(f"bone.use_ik_{p} = limit_const.use_{p}")
+			for p in ['min_x','min_y','min_z','max_x','max_y','max_z',]:
+				exec(f"bone.ik_{p} = limit_const.{p}")
+			if self.remove_const:
+				#bone.constraints.remove(limit_const)
+				#コンストレイントを削除するとオペレーターパネルが表示されない
+				#対処法が不明なのでとりあえずこのオプションは停止(2.90)
+				limit_const.mute = True
+			else:
+				limit_const.mute = True
 		return {'FINISHED'}
 
 ################
@@ -50,7 +94,8 @@ class ConstraintIKToLimitRotation(bpy.types.Operator):
 ################
 
 classes = [
-	ConstraintIKToLimitRotation
+	ConstraintIKToLimitRotation,
+	LimitRotationToConstraintIK
 ]
 
 def register():
@@ -79,6 +124,7 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
 		self.layout.operator(ConstraintIKToLimitRotation.bl_idname, icon="PLUGIN")
+		self.layout.operator(LimitRotationToConstraintIK.bl_idname, icon="PLUGIN")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
