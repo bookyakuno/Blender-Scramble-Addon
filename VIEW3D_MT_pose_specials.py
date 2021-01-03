@@ -12,7 +12,7 @@ _STORE_ITEMS = [] #保存用グローバル変数：EnumPropertyの動的なitem
 
 class CreateCustomShape(bpy.types.Operator):
 	bl_idname = "pose.create_custom_shape"
-	bl_label = "Create CustomShape"
+	bl_label = "Create Custom Shape"
 	bl_description = "Creates choice bone shape"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -84,10 +84,10 @@ class CreateWeightCopyMesh(bpy.types.Operator):
 	bl_description = "Creates mesh to use with copy of selected bone weight"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	name : StringProperty(name="Name of create object", default="Object for weight copy")
+	name : StringProperty(name="Name", default="Object for weight copy")
 	items = [
-		('TAIL', "End", "", 1),
-		('HEAD', "Root", "", 2),
+		('TAIL', "Tail", "", 1),
+		('HEAD', "Head", "", 2),
 		]
 	mode : EnumProperty(items=items, name="Position of Weight")
 
@@ -130,8 +130,8 @@ class CreateWeightCopyMesh(bpy.types.Operator):
 
 class SplineAnnotation(bpy.types.Operator):
 	bl_idname = "pose.spline_annotation"
-	bl_label = "Fit chain of bones to Annotation"
-	bl_description = "Select bones linked like chain of threading to Annotation, pose"
+	bl_label = "Place Bones along Grease Pencil"
+	bl_description = "Place selected bones along designated grease pencil or annotation"
 	bl_properties = "act_layer"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -143,7 +143,7 @@ class SplineAnnotation(bpy.types.Operator):
 	y_mode : EnumProperty(name="Y Scale Mode", items=y_items, default='NONE')
 	keep_loc : BoolProperty(name="Stay current location", default=False)
 	reverse : BoolProperty(name="Switch Direction", default=False)
-	remove_gp : BoolProperty(name="Remove Stroke", default=True)
+	remove_gp : BoolProperty(name="Remove target grease pencil", default=False)
 
 	def item_callback(self, context):
 		_STORE_ITEMS.clear()
@@ -243,19 +243,19 @@ class SplineAnnotation(bpy.types.Operator):
 
 class SetSlowParentBone(bpy.types.Operator):
 	bl_idname = "pose.set_slow_parent_bone"
-	bl_label = "Set SlowParent"
-	bl_description = "Sets selected bone slow parent"
+	bl_label = "Set Slow Parent"
+	bl_description = "Set slow parent to selected bone"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
-		('DAMPED_TRACK', "Damp Track", "", 1),
+		('DAMPED_TRACK', "Damped Track", "", 1),
 		('IK', "IK", "", 2),
 		('STRETCH_TO', "Stretch", "", 3),
 		]#('COPY_LOCATION', "Copy Location", "", 4),
 	constraint : EnumProperty(items=items, name="Constraints")
 	radius : FloatProperty(name="Empty Size", default=0.5, min=0.01, max=10, soft_min=0.01, soft_max=10, step=10, precision=3)
-	slow_parent_offset : FloatProperty(name="SlowParent Strength", default=4, min=1, max=10, soft_min=1, soft_max=10, step=1)
-	is_use_driver : BoolProperty(name="Add driver to bone", default=True)
+	slow_parent_offset : FloatProperty(name="Strength", default=4, min=1, max=10, soft_min=1, soft_max=10, step=1)
+	is_use_driver : BoolProperty(name="Set 'Strength' by custom property", default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -332,8 +332,8 @@ class SetSlowParentBone(bpy.types.Operator):
 
 class RenameBoneNameEnd(bpy.types.Operator):
 	bl_idname = "pose.rename_bone_name_end"
-	bl_label = "Bone name XXX. R => XXX_R juggling"
-	bl_description = "Bone name XXX. R => conversion XXX_R"
+	bl_label = "Change Suffix"
+	bl_description = "Change selected bones suffixes to designated ones"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	is_all : BoolProperty(name="Apply to All Bones", default=False)
@@ -400,12 +400,12 @@ class RenameBoneNameEnd(bpy.types.Operator):
 
 class RenameBoneNameEndJapanese(bpy.types.Operator):
 	bl_idname = "pose.rename_bone_name_end_japanese"
-	bl_label = "Bone names XXX.R => 右XXX"
-	bl_description = "Bone names XXX.R => 右XXX"
+	bl_label = "日本語の接尾辞に変更"
+	bl_description = "「.R/L」と「_R/L」を「左/右」に変換します"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	reverse : BoolProperty(name="XXX.R => 右XXX", default=False)
 	is_all : BoolProperty(name="Apply to All Bones", default=False)
+	reverse : BoolProperty(name="日本語 → 英語", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -437,8 +437,8 @@ class RenameBoneNameEndJapanese(bpy.types.Operator):
 
 class TogglePosePosition(bpy.types.Operator):
 	bl_idname = "pose.toggle_pose_position"
-	bl_label = "Enable/Disable Pose"
-	bl_description = "Toggles pose/rest position of armature"
+	bl_label = "Switch Position"
+	bl_description = "Switch pose / rest position of armature"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -450,16 +450,16 @@ class TogglePosePosition(bpy.types.Operator):
 	def execute(self, context):
 		if context.object.data.pose_position == 'POSE':
 			context.object.data.pose_position = 'REST'
-			self.report(type={'WARNING'}, message="Pose Disabled")
+			self.report(type={'INFO'}, message="Rest Position")
 		else:
 			context.object.data.pose_position = 'POSE'
-			self.report(type={'INFO'}, message="Pose Enabled")
+			self.report(type={'INFO'}, message="Pose Position")
 		return {'FINISHED'}
 
 class CopyConstraintsMirror(bpy.types.Operator):
 	bl_idname = "pose.copy_constraints_mirror"
-	bl_label = "Copy constraints to mirror bone"
-	bl_description = "\"X.L\" If \"X.R\", \"X.R\" bone \"X.L\" name copy constraints"
+	bl_label = "Copy Constraints to Flipped-Name Bones"
+	bl_description = "Copy selected bones' constraints to bones which have left-right-flipped name"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -518,8 +518,8 @@ class CopyConstraintsMirror(bpy.types.Operator):
 
 class RemoveBoneNameSerialNumbers(bpy.types.Operator):
 	bl_idname = "pose.remove_bone_name_serial_numbers"
-	bl_label = "Remove bone name serial number"
-	bl_description = "Attempts to get rid of numbers from bone with sequential number, such as \"X.001"
+	bl_label = "Remove Dot-Number from Names"
+	bl_description = "Try to remove right-most dot-number from select bones' names"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -541,16 +541,16 @@ class SetRigidBodyBone(bpy.types.Operator):
 	bl_description = "Sets by RigidBody physics led of selected bone set,"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	shape_size : FloatProperty(name="Shape Size", default=0.1, min=0, max=10, soft_min=0, soft_max=10, step=1, precision=3)
-	shape_level : IntProperty(name="Shape Subsurf", default=3, min=1, max=6, soft_min=1, soft_max=6)
-	constraints_size : FloatProperty(name="RigidConstraints Size", default=0.1, min=0, max=10, soft_min=0, soft_max=10, step=1, precision=3)
-	is_parent_shape : BoolProperty(name="Track shape rigid body constraints", default=False)
-	rot_limit : FloatProperty(name="Rotation Limit", default=90, min=0, max=360, soft_min=0, soft_max=360, step=1, precision=3)
-	linear_damping : FloatProperty(name="Damping: Move", default=0.04, min=0, max=1, soft_min=0, soft_max=1, step=1, precision=3)
-	angular_damping : FloatProperty(name="Damping: Rotate", default=0.1, min=0, max=1, soft_min=0, soft_max=1, step=1, precision=3)
+	shape_size : FloatProperty(name="Size", default=0.1, min=0, max=10, soft_min=0, soft_max=10, step=1, precision=3)
+	shape_level : IntProperty(name="Number of Subdivisions", default=3, min=1, max=6, soft_min=1, soft_max=6)
+	constraints_size : FloatProperty(name="Size", default=0.1, min=0, max=10, soft_min=0, soft_max=10, step=1, precision=3)
 	items = [(it.identifier, it.name, it.description, idx)
 		for idx, it in enumerate( bpy.ops.object.empty_add.get_rna_type().properties["type"].enum_items)]
 	empty_display_type : EnumProperty(items=items, name="Shape", default='SPHERE')
+	is_parent_shape : BoolProperty(name="Follow objects", default=False)
+	rot_limit : FloatProperty(name="Limit Rotation", default=90, min=0, max=360, soft_min=0, soft_max=360, step=1, precision=3)
+	linear_damping : FloatProperty(name="Translation", default=0.04, min=0, max=1, soft_min=0, soft_max=1, step=1, precision=3)
+	angular_damping : FloatProperty(name="Rotation", default=0.1, min=0, max=1, soft_min=0, soft_max=1, step=1, precision=3)
 
 	@classmethod
 	def poll(cls, context):
@@ -710,17 +710,17 @@ class SetRigidBodyBone(bpy.types.Operator):
 
 class SetIKRotationLimitByPose(bpy.types.Operator):
 	bl_idname = "pose.set_ik_rotation_limit_by_pose"
-	bl_label = "Now pose to rotation limit"
-	bl_description = "Current bone rotation sets to rotation limit constraints and IK"
+	bl_label = "Convert Current Rotation to Limit"
+	bl_description = "Create limit rotation constraint or set IK's rotation limit based on selected bones' current rotation"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	use_x : BoolProperty(name="X Axis Limit", default=True)
-	use_y : BoolProperty(name="Y Axis Limit", default=True)
-	use_z : BoolProperty(name="Z Axis Limit", default=True)
-	is_clear_rot : BoolProperty(name="Reset Pose Rotation", default=True)
 	mode : EnumProperty(name="Limit Rotation", items=[('CONST', "Constraint", "", 2),('IK', "IK", "", 1)])
 	other_side : EnumProperty(name="Limit of opposite direction", items=[
 		('SYMMETRY', "Symmetrized", "", 1),('LIMIT_180', "No Limit", "", 2),('LIMIT_0', "Limit All", "", 3)])
+	use_x : BoolProperty(name="X Axis", default=True)
+	use_y : BoolProperty(name="Y Axis", default=True)
+	use_z : BoolProperty(name="Z Axis", default=True)
+	is_clear_rot : BoolProperty(name="Reset Bones Rotation", default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -846,7 +846,7 @@ class SetIKRotationLimitByPose(bpy.types.Operator):
 
 class BoneNameMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_pose_specials_bone_name"
-	bl_label = "Bone Name"
+	bl_label = "Change Bone Name"
 
 	def draw(self, context):
 		self.layout.operator(RemoveBoneNameSerialNumbers.bl_idname, icon="PLUGIN")
@@ -860,7 +860,7 @@ class BoneNameMenu(bpy.types.Menu):
 
 class SpecialsMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_pose_specials_specials"
-	bl_label = "Special Processing"
+	bl_label = "Advanced Manipulation"
 
 	def draw(self, context):
 		self.layout.operator(SplineAnnotation.bl_idname, icon="PLUGIN")

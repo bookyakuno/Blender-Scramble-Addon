@@ -10,8 +10,8 @@ from bpy.props import *
 
 class ConstraintIKToLimitRotation(bpy.types.Operator):
 	bl_idname = "pose.constraint_ik_to_limit_rotation"
-	bl_label = "IK Rotation Limit to Constraints"
-	bl_description = "Copy rotation constraint restrictions IK rotation restriction settings"
+	bl_label = "Convert IK Rotation Limit to Constraint"
+	bl_description = "Add to selected bones limit rotation constraints which limitations are same as their IK settings"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [(it.identifier, it.name, it.description, idx)

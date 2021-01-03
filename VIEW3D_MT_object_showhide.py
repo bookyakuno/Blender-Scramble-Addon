@@ -11,11 +11,11 @@ import bpy.ops
 
 class HideViewClearUnselect(bpy.types.Operator):
 	bl_idname = "object.hide_view_clear_unselect"
-	bl_label = "Show Hidden (non-select)"
-	bl_description = "Does not display objects were hidden again, select"
+	bl_label = "Show Hidden Objects (without selecting)"
+	bl_description = "Show hidden objects without selecting"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	show_col : BoolProperty(name="show hided collections", default=False)
+	show_col : BoolProperty(name="Show hidden collections", default=False)
 
 	def flatten(self, layer_collection):
 		flat_hide = []
@@ -48,8 +48,8 @@ class HideViewClearUnselect(bpy.types.Operator):
 
 class InvertHide(bpy.types.Operator):
 	bl_idname = "object.invert_hide"
-	bl_label = "Invert Show/Hide"
-	bl_description = "Flips object\'s view state and non-State"
+	bl_label = "Invert Show / Hide"
+	bl_description = "Invert display states of objects and/or collections"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	method : EnumProperty(name="Collections", items=[
@@ -74,7 +74,6 @@ class InvertHide(bpy.types.Operator):
 		layout.prop(self, 'method', expand=True)
 
 	def execute(self, context):
-		objs = []
 		master_col = context.view_layer.layer_collection
 		for obj in master_col.collection.objects:
 			obj.hide_set(not obj.hide_get())
@@ -98,8 +97,8 @@ class InvertHide(bpy.types.Operator):
 
 class HideOnlyType(bpy.types.Operator):
 	bl_idname = "object.hide_only_mesh"
-	bl_label = "Hide only type of objects"
-	bl_description = "Hides object of specific type are displayed"
+	bl_label = "Hide Objects (Specific Type)"
+	bl_description = "Hide specific type or the other types' objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -115,7 +114,7 @@ class HideOnlyType(bpy.types.Operator):
 		("LAMP", "Lamp", "", 10),
 		("SPEAKER", "Speaker", "", 11),
 		]
-	type : EnumProperty(items=items, name="Hide Object Type")
+	type : EnumProperty(items=items, name="Type")
 	is_except : BoolProperty(name="Except designated", default=False, options={'HIDDEN'})
 
 	def execute(self, context):

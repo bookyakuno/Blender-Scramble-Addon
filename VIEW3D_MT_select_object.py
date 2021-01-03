@@ -11,15 +11,15 @@ from bpy.props import *
 
 class SelectBoundBoxSize(bpy.types.Operator):
 	bl_idname = "object.select_bound_box_size"
-	bl_label = "Compare size and select objects"
-	bl_description = "Select maximum objects larger or smaller objects"
+	bl_label = "Select (Object Size)"
+	bl_description = "Select objects based on their size"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [
-		('LARGE', "Select Big", "", 1),
-		('SMALL', "Select Small", "", 2),
-		]
-	mode : EnumProperty(items=items, name="Select Mode")
+	mode : EnumProperty(name="Select Mode", items=[
+		('MORE_L', "Larger than Active", "", 1),
+		('MORE_S', "Smaller than Active", "", 2),
+		('MOST_L', "From Largest", "", 3),
+		('MOST_S', "From Smallest", "", 4)])
 	items = [
 		('MESH', "Mesh", "", 1),
 		('CURVE', "Curve", "", 2),
@@ -30,7 +30,7 @@ class SelectBoundBoxSize(bpy.types.Operator):
 		('LATTICE', "Lattice", "", 7),
 		('ALL', "All", "", 8),
 		]
-	select_type : EnumProperty(items=items, name="Select Type", default='MESH')
+	select_type : EnumProperty(items=items, name="Type", default='MESH')
 	number : IntProperty(name="Number", default=1, min=1, max=100, soft_min=1, soft_max=100)
 
 	def draw(self, context):
@@ -81,8 +81,8 @@ class SelectBoundBoxSize(bpy.types.Operator):
 
 class SelectGroupedName(bpy.types.Operator):
 	bl_idname = "object.select_grouped_name"
-	bl_label = "Select object same name"
-	bl_description = "Select visible object of active object with same name, such as (X.001 X X.002)"
+	bl_label = "Objects Sharing Same Name"
+	bl_description = "Select objects which names are same as active object except dot-number"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -102,8 +102,8 @@ class SelectGroupedName(bpy.types.Operator):
 
 class SelectGroupedMaterial(bpy.types.Operator):
 	bl_idname = "object.select_grouped_material"
-	bl_label = "Select objects of same material structure"
-	bl_description = "Select active object material structure and same visible objects"
+	bl_label = "Objects All Materials are Same"
+	bl_description = "Select objects which have exactly the same materials as active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -123,8 +123,8 @@ class SelectGroupedMaterial(bpy.types.Operator):
 
 class SelectGroupedModifiers(bpy.types.Operator):
 	bl_idname = "object.select_grouped_modifiers"
-	bl_label = "Select same modifier structure object"
-	bl_description = "Select same modifier of active objects visible objects"
+	bl_label = "Objects All Modifiers are Same"
+	bl_description = "Select objects which have exactly the same modifiers as active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -143,8 +143,8 @@ class SelectGroupedModifiers(bpy.types.Operator):
 
 class SelectGroupedSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.select_grouped_subsurf_level"
-	bl_label = "Select same subsurf level object"
-	bl_description = "Select Subsurf levels of active objects have same visible objects"
+	bl_label = "Objects with Same Number of Subdivisions"
+	bl_description = "Select objects which use same number of subdivisions of subdivision surface modifier as active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -170,8 +170,8 @@ class SelectGroupedSubsurfLevel(bpy.types.Operator):
 
 class SelectGroupedArmatureTarget(bpy.types.Operator):
 	bl_idname = "object.select_grouped_armature_target"
-	bl_label = "Select objects that transform in same armature"
-	bl_description = "Select visible objects are transformed in an active object with same armature"
+	bl_label = "Objects Referring Same Armature"
+	bl_description = "Select objects which refer the same armature object as active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -201,7 +201,7 @@ class SelectGroupedArmatureTarget(bpy.types.Operator):
 
 class SelectMeshFaceOnly(bpy.types.Operator):
 	bl_idname = "object.select_mesh_face_only"
-	bl_label = "Select face exist mesh"
+	bl_label = "Mesh with Face"
 	bl_description = "Select mesh more than one face"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -215,8 +215,8 @@ class SelectMeshFaceOnly(bpy.types.Operator):
 
 class SelectMeshEdgeOnly(bpy.types.Operator):
 	bl_idname = "object.select_mesh_edge_only"
-	bl_label = "Select edge only mesh"
-	bl_description = "Terms, select only side mesh"
+	bl_label = "Mesh with Only Edges"
+	bl_description = "Select objects which meshes have only edges"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -229,8 +229,8 @@ class SelectMeshEdgeOnly(bpy.types.Operator):
 
 class SelectMeshVertexOnly(bpy.types.Operator):
 	bl_idname = "object.select_mesh_vertex_only"
-	bl_label = "Select only vertices of mesh"
-	bl_description = "Surfaces and edges, select mesh vertices only"
+	bl_label = "Mesh with Only Vertices"
+	bl_description = "Select objects which meshes have only vertices"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -243,8 +243,8 @@ class SelectMeshVertexOnly(bpy.types.Operator):
 
 class SelectMeshNone(bpy.types.Operator):
 	bl_idname = "object.select_mesh_none"
-	bl_label = "Select mesh even non vertex"
-	bl_description = "Surface and edge and select mesh object vertex is not empty"
+	bl_label = "Mesh with No Vertex"
+	bl_description = "Select objects which meshes have no vertex"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -261,7 +261,7 @@ class SelectMeshNone(bpy.types.Operator):
 
 class SelectGroupedEX(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_select_object_grouped_ex"
-	bl_label = "Select by relation (Extra)"
+	bl_label = "Select Grouped (Extra)"
 
 	def draw(self, context):
 		for item in bpy.ops.object.select_grouped.get_rna_type().properties["type"].enum_items:
@@ -275,7 +275,7 @@ class SelectGroupedEX(bpy.types.Menu):
 
 class SelectMesh(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_select_object_mesh"
-	bl_label = "Select characteristics of mesh"
+	bl_label = "Select (Special Mesh)"
 
 	def draw(self, context):
 		self.layout.operator(SelectMeshFaceOnly.bl_idname, icon='PLUGIN')

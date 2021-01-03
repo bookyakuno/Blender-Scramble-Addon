@@ -10,8 +10,8 @@ from bpy.props import *
 
 class MakeLinkObjectName(bpy.types.Operator):
 	bl_idname = "object.make_link_object_name"
-	bl_label = "Sync Object Name"
-	bl_description = "Link name of active object to other selected objects"
+	bl_label = "Change to Same Object Name"
+	bl_description = "Rename selected objects based on active object's name"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	name_sep : EnumProperty(name="Numbering Expression",items=[
@@ -66,8 +66,8 @@ class MakeLinkObjectName(bpy.types.Operator):
 
 class MakeLinkUVNames(bpy.types.Operator):
 	bl_idname = "object.make_link_uv_names"
-	bl_label = "Link empty UV map"
-	bl_description = "Empty, add UV active objects to other selected objects"
+	bl_label = "Change to Same-name UV Map"
+	bl_description = "Add to selected objects empty UV maps which names are same as active object's maps"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -97,8 +97,8 @@ class MakeLinkUVNames(bpy.types.Operator):
 
 class MakeLinkArmaturePose(bpy.types.Operator):
 	bl_idname = "object.make_link_armature_pose"
-	bl_label = "Link motion of armature"
-	bl_description = "By constraints on other selected armature mimic active armature movement"
+	bl_label = "Follow to Active Armature"
+	bl_description = "Add constraint to selected armatures so that they follow to active armature"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	influence : FloatProperty(name="Influence", default=1.0, max=1.0, min=0.0)
@@ -142,8 +142,8 @@ class MakeLinkArmaturePose(bpy.types.Operator):
 
 class MakeLinkTransform(bpy.types.Operator):
 	bl_idname = "object.make_link_transform"
-	bl_label = "Link Transform"
-	bl_description = "Information of active object copies to other selected objects"
+	bl_label = "Change to Same Transform"
+	bl_description = "Change selected objects' locations / rotations / scales to same as active object's"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	copy_location : BoolProperty(name="Location", default=True)
@@ -180,18 +180,18 @@ class MakeLinkTransform(bpy.types.Operator):
 
 class TransformMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_make_links_transform"
-	bl_label = "Transform"
-	bl_description = "Link object transforms"
+	bl_label = "Change to Same Transform"
+	bl_description = "Change selected objects' locations / rotations / scales to same as active object's"
 
 	def draw(self, context):
-		op = self.layout.operator(MakeLinkTransform.bl_idname, text="Transform", icon='PLUGIN')
+		op = self.layout.operator(MakeLinkTransform.bl_idname)
 		op.copy_location, op.copy_rotation, op.copy_scale = True, True, True
 		self.layout.separator()
-		op = self.layout.operator(MakeLinkTransform.bl_idname, text="Location", icon='PLUGIN')
+		op = self.layout.operator(MakeLinkTransform.bl_idname, text="Copy Location")
 		op.copy_location, op.copy_rotation, op.copy_scale = True, False, False
-		op = self.layout.operator(MakeLinkTransform.bl_idname, text="Rotation", icon='PLUGIN')
+		op = self.layout.operator(MakeLinkTransform.bl_idname, text="Copy Rotation")
 		op.copy_location, op.copy_rotation, op.copy_scale = False, True, False
-		op = self.layout.operator(MakeLinkTransform.bl_idname, text="Scale", icon='PLUGIN')
+		op = self.layout.operator(MakeLinkTransform.bl_idname, text="Copy Scale")
 		op.copy_location, op.copy_rotation, op.copy_scale = False, False, True
 
 ################
@@ -233,7 +233,7 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.menu(TransformMenu.bl_idname, icon='PLUGIN')
 		self.layout.separator()
-		self.layout.operator(MakeLinkObjectName.bl_idname, text="Object Name", icon="PLUGIN")
+		self.layout.operator(MakeLinkObjectName.bl_idname, icon="PLUGIN")
 		self.layout.operator('object.copy_display_setting', text="Change to Same Display Setting", icon="PLUGIN")# object.copy_display_setting で定義
 		self.layout.operator(MakeLinkUVNames.bl_idname, icon="PLUGIN")
 		self.layout.separator()

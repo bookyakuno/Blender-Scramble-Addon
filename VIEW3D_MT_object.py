@@ -9,8 +9,8 @@ from bpy.props import *
 ################
 class CopyPieOperator(bpy.types.Operator):
 	bl_idname = "object.copy_pie_operator"
-	bl_label = "Copy"
-	bl_description = "Pie object copy is"
+	bl_label = "Pie menu : Copy to Other Objects"
+	bl_description = "Copy active object's specific property to selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -18,8 +18,8 @@ class CopyPieOperator(bpy.types.Operator):
 		return {'FINISHED'}
 class CopyPie(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_pie_copy"
-	bl_label = "Copy"
-	bl_description = "Pie object copy is"
+	bl_label = "Pie menu : Copy to Other Objects"
+	bl_description = "Copy active object's specific property to selected objects"
 
 	def draw(self, context):
 		#Left - Right - Bottom - Top - TopLeft - TopRight - BottomLeft - BottomRight
@@ -38,8 +38,8 @@ class CopyPie(bpy.types.Menu):
 
 class ObjectModePieOperator(bpy.types.Operator):
 	bl_idname = "object.object_mode_pie_operator"
-	bl_label = "Object Modes"
-	bl_description = "Is pie menu objects in interactive mode"
+	bl_label = "Pie menu : Object's Mode"
+	bl_description = "Switch object interaction mode"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -47,8 +47,8 @@ class ObjectModePieOperator(bpy.types.Operator):
 		return {'FINISHED'}
 class ObjectModePie(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_pie_object_mode"
-	bl_label = "Object Modes"
-	bl_description = "Is pie menu objects in interactive mode"
+	bl_label = "Pie menu : Object's Mode"
+	bl_description = "Switch object interaction mode"
 
 	def draw(self, context):
 		#Left - Right - Bottom - Top - TopLeft - TopRight - BottomLeft - BottomRight
@@ -64,11 +64,11 @@ class ObjectModePie(bpy.types.Menu):
 		pie_menu.operator(SetObjectMode.bl_idname, text="Vertex Paint", icon="VPAINT_HLT").mode = "VERTEX_PAINT"
 class SetObjectMode(bpy.types.Operator): #
 	bl_idname = "object.set_object_mode"
-	bl_label = "Set Object Modes"
-	bl_description = "Set interactive mode of object"
+	bl_label = "Switch Object's Mode"
+	bl_description = "Switch object interaction mode"
 	bl_options = {'REGISTER'}
 
-	mode : StringProperty(name="Interactive Mode", default="OBJECT")
+	mode : StringProperty(name="Interaction Mode", default="OBJECT")
 
 	def execute(self, context):
 		try:
@@ -80,8 +80,8 @@ class SetObjectMode(bpy.types.Operator): #
 
 class SubdivisionSetPieOperator(bpy.types.Operator):
 	bl_idname = "object.subdivision_set_pie_operator"
-	bl_label = "Subsurf Setting"
-	bl_description = "Is pie menu to set Subsurf levels"
+	bl_label = "Pie menu : Subsurface"
+	bl_description = "Change properties of selected objects' subdivision surface modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -89,8 +89,8 @@ class SubdivisionSetPieOperator(bpy.types.Operator):
 		return {'FINISHED'}
 class SubdivisionSetPie(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_pie_subdivision_set"
-	bl_label = "Subsurf Setting"
-	bl_description = "Is pie menu to set Subsurf levels"
+	bl_label = "Pie menu : Subsurface"
+	bl_description = "Change properties of selected objects' subdivision surface modifiers"
 
 	def draw(self, context):
 		#Left - Right - Bottom - Top - TopLeft - TopRight - BottomLeft - BottomRight
@@ -117,8 +117,8 @@ class SubdivisionSetPie(bpy.types.Menu):
 
 class DrawTypePieOperator(bpy.types.Operator):
 	bl_idname = "object.display_type_pie_operator"
-	bl_label = "Maximum Draw Type"
-	bl_description = "Is pie menu to set up drawing type"
+	bl_label = "Pie menu : Display in Viewport"
+	bl_description = "Change display method of selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -126,8 +126,8 @@ class DrawTypePieOperator(bpy.types.Operator):
 		return {'FINISHED'}
 class DrawTypePie(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_pie_display_type"
-	bl_label = "Maximum Draw Type"
-	bl_description = "Is pie menu to set up drawing type"
+	bl_label = "Pie menu : Display in Viewport"
+	bl_description = "Change display method of selected objects"
 
 	def draw(self, context):
 		layout = self.layout.menu_pie()
@@ -140,11 +140,11 @@ class DrawTypePie(bpy.types.Menu):
 			layout.operator(SetDrawType.bl_idname, text=name, icon=icon).type = p
 class SetDrawType(bpy.types.Operator): #
 	bl_idname = "object.set_display_type"
-	bl_label = "Setting maximum Drawing Type"
-	bl_description = "Set maximum drawing type"
+	bl_label = "Change Display Method"
+	bl_description = "Change display method of selected objects"
 	bl_options = {'REGISTER'}
 
-	type : StringProperty(name="Drawing Type", default="OBJECT")
+	type : StringProperty(name="Display As", default="OBJECT")
 
 	def execute(self, context):
 		for obj in context.selected_objects:
@@ -157,8 +157,8 @@ class SetDrawType(bpy.types.Operator): #
 
 class DeleteUnmassage(bpy.types.Operator):
 	bl_idname = "object.delete_unmassage"
-	bl_label = "Delete Without Confirmation"
-	bl_description = "Deletes object without displaying confirmation message when deleting"
+	bl_label = "Delete Objects (without confirming)"
+	bl_description = "Deletes all selected objects without displaying the confirmation message"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	use_global : BoolProperty(name="Delete All", default=False)

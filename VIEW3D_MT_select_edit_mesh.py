@@ -10,8 +10,8 @@ from bpy.props import *
 
 class SelectAxisLimit(bpy.types.Operator):
 	bl_idname = "mesh.select_axis_limit"
-	bl_label = "Select Vertex X=0"
-	bl_description = "Select vertex of X=0"
+	bl_label = "Select Vertex (X=0)"
+	bl_description = "Select vertices which X-axis location is zero"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -40,8 +40,8 @@ class SelectAxisLimit(bpy.types.Operator):
 
 class SelectAxisOver(bpy.types.Operator):
 	bl_idname = "mesh.select_axis_over"
-	bl_label = "Select Right Half"
-	bl_description = "Select right half of mesh (other settings too)"
+	bl_label = "Select Vertex (Right Side)"
+	bl_description = "Select vertices on right side"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -50,11 +50,8 @@ class SelectAxisOver(bpy.types.Operator):
 		("2", "Z Axis", "", 3),
 		]
 	axis : EnumProperty(items=items, name="Axis")
-	items = [
-		("-1", "-(Minus)", "", 1),
-		("1", "+(Plus)", "", 2),
-		]
-	direction : EnumProperty(items=items, name="Direction")
+	direction : EnumProperty(name="Direction", items=[
+		("1", "Right / Top", "", 2),("-1", "Left / Bottom", "", 1)])
 	offset : FloatProperty(name="Offset", default=0, step=10, precision=3)
 	threshold : FloatProperty(name="Threshold", default=0.0000001, step=0.1, precision=10)
 

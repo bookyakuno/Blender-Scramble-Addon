@@ -10,8 +10,8 @@ from bpy.props import *
 
 class MargeSelectedVertexGroup(bpy.types.Operator):
 	bl_idname = "paint.marge_selected_vertex_group"
-	bl_label = "Combine Weights"
-	bl_description = "Weight of selected bone and same vertex group merges"
+	bl_label = "Add Designated Bone's Weight"
+	bl_description = "Add to active vertex group the weight of vertex group linked to designated bone"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	crate_newvg : BoolProperty(name="Create new vertex group", default=False)
@@ -50,8 +50,8 @@ class MargeSelectedVertexGroup(bpy.types.Operator):
 
 class RemoveSelectedVertexGroup(bpy.types.Operator):
 	bl_idname = "paint.remove_selected_vertex_group"
-	bl_label = "Subtraction Weights"
-	bl_description = "Subtracts weight of selected bone and same vertex groups"
+	bl_label = "Subtract Designated Bone's Weight"
+	bl_description = "Subtract the weight of vertex group linked to designated bone from active vertex group"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	target : StringProperty(name="Target", default="")
@@ -75,14 +75,14 @@ class RemoveSelectedVertexGroup(bpy.types.Operator):
 		return {'FINISHED'}
 
 class VertexGroupAverageAll(bpy.types.Operator):
-	bl_idname = "mesh.vertex_group_average_all"
-	bl_label = "Fill average weight of all vertices"
-	bl_description = "In average weight of all, fills all vertices"
+	bl_idname = "paint.vertex_group_average_all"
+	bl_label = "Average All Vertices' Weight"
+	bl_description ="Change all vertices' weight to their average value"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	strength : FloatProperty(name="Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
 	all_group : BoolProperty(name="Apply to All Groups", default=True)
 	target : StringProperty(name="Target", default="")
+	strength : FloatProperty(name="Original Values' Effect", default=0, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
 
 	@classmethod
 	def poll(cls, context):
@@ -134,8 +134,8 @@ class VertexGroupAverageAll(bpy.types.Operator):
 
 class ApplyDynamicPaint(bpy.types.Operator):
 	bl_idname = "mesh.apply_dynamic_paint"
-	bl_label = "Paint objects overlap"
-	bl_description = "I painted weight of portion that overlaps other selected objects"
+	bl_label = "Set Weight to Overlapping Area"
+	bl_description = "Set weight to vertices at areas where active object overlaps selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	is_new : BoolProperty(name="Create new vertex group", default=False)
@@ -143,10 +143,10 @@ class ApplyDynamicPaint(bpy.types.Operator):
 	distance : FloatProperty(name="Distance", default=1.0, min=0, max=100, soft_min=0, soft_max=100, step=10, precision=3)
 	items = [
 		("ADD", "Add", "", 1),
-		("SUBTRACT", "Sub", "", 2),
+		("SUBTRACT", "Subtract", "", 2),
 		("REPLACE", "Replace", "", 3),
 		]
-	mode : EnumProperty(items=items, name="Fill Method")
+	mode : EnumProperty(items=items, name="Method")
 
 	@classmethod
 	def poll(cls, context):
@@ -213,13 +213,13 @@ class ApplyDynamicPaint(bpy.types.Operator):
 
 class BlurWeight(bpy.types.Operator):
 	bl_idname = "mesh.blur_weight"
-	bl_label = "Vertex Group Blur"
-	bl_description = "Blurs active or all vertex groups"
+	bl_label = "Blur Weight (Active Group)"
+	bl_description = "Blur active or all vertex groups' weight"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	blur_count : IntProperty(name="Repeat Count", default=10, min=1, max=100, soft_min=1, soft_max=100, step=1)
-	use_clean : BoolProperty(name="Remove weight of 0.0", default=True)
 	all_group : BoolProperty(name="Apply to All Groups", default=False)
+	blur_count : IntProperty(name="Strength", default=10, min=1, max=100, soft_min=1, soft_max=100, step=1)
+	use_clean : BoolProperty(name="Remove Zero-Weight Vertices", default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -326,8 +326,8 @@ def menu(self, context):
 		self.layout.operator(MargeSelectedVertexGroup.bl_idname, icon="PLUGIN")
 		self.layout.operator(RemoveSelectedVertexGroup.bl_idname, icon="PLUGIN")
 		self.layout.separator()
-		self.layout.operator(BlurWeight.bl_idname, text="Blur Active", icon="PLUGIN").mode = 'ACTIVE'
-		self.layout.operator(BlurWeight.bl_idname, text="Blur All", icon="PLUGIN").mode = 'ALL'
+		self.layout.operator(BlurWeight.bl_idname, icon="PLUGIN")
+		self.layout.operator(BlurWeight.bl_idname, text="Blur Weight (All Groups)", icon="PLUGIN").all_group = True
 		self.layout.separator()
 		self.layout.operator(VertexGroupAverageAll.bl_idname, icon="PLUGIN")
 		self.layout.separator()

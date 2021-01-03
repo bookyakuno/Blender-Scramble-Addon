@@ -11,8 +11,8 @@ from bpy.props import *
 
 class SelectSerialNumberNameBone(bpy.types.Operator):
 	bl_idname = "pose.select_serial_number_name_bone"
-	bl_label = "Select Numbered Bone"
-	bl_description = "Select bones with number names (example x.001)"
+	bl_label = "Select Bone (Dot-Number)"
+	bl_description = "Select bones which names end with dot-number"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -35,8 +35,8 @@ class SelectSerialNumberNameBone(bpy.types.Operator):
 
 class SelectMoveSymmetryNameBones(bpy.types.Operator):
 	bl_idname = "pose.select_move_symmetry_name_bones"
-	bl_label = "Symmetrical bones move select"
-	bl_description = "If you select X.R change selection to X.L, X.L if to X.R"
+	bl_label = "Select Bones (Flipped-Name)"
+	bl_description = "Select bones which have left-right-flipped name of currently selected"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	keep_current : BoolProperty(name="Keep Selection", default=True)
@@ -126,8 +126,8 @@ class SelectSameConstraintBone(bpy.types.Operator):
 
 class SelectSameNameBones(bpy.types.Operator):
 	bl_idname = "pose.select_same_name_bones"
-	bl_label = "Select bone of same name"
-	bl_description = "Select bones same names (example X X.001 X.002)"
+	bl_label = "Select Bones (Sharing Name)"
+	bl_description = "Select bones which names are same as active bone except dot-number and left-right suffix"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	method : EnumProperty(name="Method", items=[
@@ -174,8 +174,8 @@ class SelectSameNameBones(bpy.types.Operator):
 
 class SelectChildrenEnd(bpy.types.Operator):
 	bl_idname = "pose.select_children_end"
-	bl_label = "Select end of bone"
-	bl_description = "Select bones child-child child\'s bones. And we will select to end"
+	bl_label = "Select Bones (All Children)"
+	bl_description = "Select all children of selected bones"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	to_fork : BoolProperty(name="To fork-point", default=False)
@@ -203,8 +203,8 @@ class SelectChildrenEnd(bpy.types.Operator):
 
 class SelectParentEnd(bpy.types.Operator):
 	bl_idname = "pose.select_parent_end"
-	bl_label = "Select root of bone"
-	bl_description = "Choice bones parent => parent of parent bone. And we will select to end"
+	bl_label = "Select Bones (All Parent)"
+	bl_description = "Select all parents of selected bones"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	to_fork : BoolProperty(name="To fork-point", default=False)
@@ -283,8 +283,8 @@ class SelectPath(bpy.types.Operator):
 
 class SelectAxisOver(bpy.types.Operator):
 	bl_idname = "pose.select_axis_over"
-	bl_label = "Select Right Half"
-	bl_description = "Select right half of bone (other settings are also available)"
+	bl_label = "Select Bones (Right Side)"
+	bl_description = "Select bones on right side"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -293,11 +293,8 @@ class SelectAxisOver(bpy.types.Operator):
 		('2', "Z", "", 3),
 		]
 	axis : EnumProperty(items=items, name="Axis")
-	items = [
-		('-1', "-(Minus)", "", 1),
-		('1', "+(Plus)", "", 2),
-		]
-	direction : EnumProperty(items=items, name="Direction")
+	direction : EnumProperty(name="Direction", items=[
+		("1", "Right / Top", "", 2),("-1", "Left / Bottom", "", 1)])
 	offset : FloatProperty(name="Offset", default=0, step=10, precision=3)
 	threshold : FloatProperty(name="Threshold", default=-0.0001, step=0.01, precision=4)
 
@@ -352,8 +349,8 @@ class SelectSimilarForPose(bpy.types.Operator):
 
 class SelectOneAndPath(bpy.types.Operator):
 	bl_idname = "pose.select_one_and_path"
-	bl_label = "Select bone and path"
-	bl_description = "Select path to it, select cursor part bone and"
+	bl_label = "Select Bones to Cursor"
+	bl_description = "Select bones which exist between selected bones and cursor position"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	mouse_pos : IntVectorProperty(name="Mouse Position", size=2, options={'HIDDEN'})
@@ -393,7 +390,7 @@ class SelectOneAndPath(bpy.types.Operator):
 
 class SelectGroupedMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_select_pose_grouped"
-	bl_label = "Select by relation (Extra)"
+	bl_label = "Grouped (Extra)"
 
 	def draw(self, context):
 		self.layout.operator('pose.select_grouped', text="Layer", icon='PLUGIN').type = 'LAYER'
