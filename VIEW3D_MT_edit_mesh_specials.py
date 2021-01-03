@@ -33,8 +33,8 @@ class PaintSelectedVertexColor(bpy.types.Operator):
 
 class SelectTopShape(bpy.types.Operator):
 	bl_idname = "mesh.select_top_shape"
-	bl_label = "Select Shape at Top"
-	bl_description = "Select the shape key at the top of list"
+	bl_label = "Show Base Shape"
+	bl_description = "Show base shape of active object's shape keys in viewport"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -149,7 +149,7 @@ class ToggleMirrorModifier(bpy.types.Operator):
 class SelectedVertexGroupAverage(bpy.types.Operator):
 	bl_idname = "mesh.selected_vertex_group_average"
 	bl_label = "Average Selected Vertices' Weight"
-	bl_description = "Change selected vertives' weight to their average value"
+	bl_description = "Change selected vertices' weight to their average value"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	all_group : BoolProperty(name="Apply to All Groups", default=True)

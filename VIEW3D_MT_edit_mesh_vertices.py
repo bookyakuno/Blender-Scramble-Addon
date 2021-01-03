@@ -115,7 +115,7 @@ class QuickShrinkwrap(bpy.types.Operator):
 
 class SeparateMaterialEX(bpy.types.Operator):
 	bl_idname = "mesh.separate_material_ex"
-	bl_label = "Separate by One Material"
+	bl_label = "By One Material"
 	bl_description = "Separate specific-material-assigned part to another object, and switch to the object's Edit mode"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -201,7 +201,7 @@ class SeparateLooseEX(bpy.types.Operator):
 
 class SeparateMatEXMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_edit_mesh_separate_mat_ex"
-	bl_label = "Separate by One Material"
+	bl_label = "By One Material"
 	bl_description = "Separate specific-material-assigned part to another object, and switch to the object's Edit mode"
 
 	def draw(self, context):

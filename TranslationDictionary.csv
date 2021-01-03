@@ -1421,7 +1421,7 @@
 "編集ケージの適用：無効、　編集モードでの表示：有効","Adjusting edit cage: Disabled, Display in edit mode: Enabled"
 "編集ケージの適用：有効、　編集モードでの表示：有効","Adjusting edit cage: Enabled, Display in edit mode: Enabled"
 "ミラーモディファイアのビューポートでの表示状態を切り替え、無い場合は追加します","Switch display state of mirror modifiers (and add it if not exist)"
-"選択された頂点のウェイトを、それらの平均値に変更します","Change selected vertives' weight to their average value"
+"選択された頂点のウェイトを、それらの平均値に変更します","Change selected vertices' weight to their average value"
 "機能が追加された「分離」メニュー","Separate menu with extra functions"
 "選択部分を別オブジェクトに分離し、そのオブジェクトの編集モードに切り替えます","Separate selected part to another object, and switch to its Edit mode"
 "選択部分を複製して新規オブジェクトを作成し、そのオブジェクトの編集モードに切り替えます","Duplicate selected part as another object, and switch to its Edit mode"
