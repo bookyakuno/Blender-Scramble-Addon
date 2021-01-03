@@ -124,6 +124,8 @@ class RenameBoneRegularExpression(bpy.types.Operator):
 	def execute(self, context):
 		obj = context.active_object
 		bones = context.selected_bones
+		if not bones:
+			bones = [b.bone for b in context.selected_pose_bones]
 		if (self.isAll):
 			bones = obj.data.bones
 		for bone in bones:
