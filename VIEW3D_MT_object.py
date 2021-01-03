@@ -80,7 +80,7 @@ class SetObjectMode(bpy.types.Operator): #
 
 class SubdivisionSetPieOperator(bpy.types.Operator):
 	bl_idname = "object.subdivision_set_pie_operator"
-	bl_label = "Pie menu : Subsurface"
+	bl_label = "Pie menu : Subsurf"
 	bl_description = "Change properties of selected objects' subdivision surface modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
