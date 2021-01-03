@@ -105,21 +105,6 @@ class CreateMirror(bpy.types.Operator):
 		context.object.data.use_mirror_x = preUseMirror
 		return {'FINISHED'}
 
-class CopyBoneName(bpy.types.Operator):
-	bl_idname = "armature.copy_bone_name"
-	bl_label = "Copy Bone Name to Clipboard"
-	bl_description = "Copy the active bone's name to Clipboard"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	isObject : BoolProperty(name="Contain Object Name", default=False)
-
-	def execute(self, context):
-		if (self.isObject):
-			context.window_manager.clipboard = context.active_object.name + ":" + context.active_bone.name
-		else:
-			context.window_manager.clipboard = context.active_bone.name
-		return {'FINISHED'}
-
 class RenameBoneRegularExpression(bpy.types.Operator):
 	bl_idname = "armature.rename_bone_regular_expression"
 	bl_label = "Rename Bones by Regular Expression"
@@ -132,11 +117,8 @@ class RenameBoneRegularExpression(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		ob = context.active_object
-		if ob:
-			if ob.type == 'ARMATURE':
-				if ob.mode == "EDIT":
-					return True
+		if context.active_object and context.active_object.type == 'ARMATURE':
+			return True
 		return False
 
 	def execute(self, context):
@@ -338,7 +320,6 @@ class ExtendBone(bpy.types.Operator):
 
 classes = [
 	CreateMirror,
-	CopyBoneName,
 	RenameBoneRegularExpression,
 	RenameOppositeBone,
 	ExtendBone
@@ -375,7 +356,7 @@ def menu(self, context):
 		self.layout.operator(CreateMirror.bl_idname, icon='PLUGIN')
 		self.layout.operator(RenameOppositeBone.bl_idname, icon='PLUGIN')
 		self.layout.separator()
-		self.layout.operator(CopyBoneName.bl_idname, icon='PLUGIN')
+		self.layout.operator('object.copy_bone_name', icon='PLUGIN')#BONE_PT_context_bone で定義
 		self.layout.operator(RenameBoneRegularExpression.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
