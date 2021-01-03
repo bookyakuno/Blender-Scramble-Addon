@@ -152,6 +152,8 @@ class SelectedVertexGroupAverage(bpy.types.Operator):
 	bl_description = "Change selected vertives' weight to their average value"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	all_group : BoolProperty(name="Apply to All Groups", default=True)
+	target : StringProperty(name="Target", default="")
 	strength : FloatProperty(name="Original Values' Effect", default=0, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
 
 	@classmethod
@@ -162,7 +164,16 @@ class SelectedVertexGroupAverage(bpy.types.Operator):
 		if not obj.type == "MESH":
 			return False
 		return True
+	def __init__(self):
+		idx = bpy.context.active_object.vertex_groups.active_index
+		self.target = bpy.context.active_object.vertex_groups[idx].name
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
+		self.layout.prop(self, 'all_group')
+		row = self.layout.row()
+		row.enabled = not self.all_group
+		row.prop_search(self, 'target', context.active_object, "vertex_groups", text="Target", translate=True, icon='GROUP_VERTEX')
 		row = self.layout.split(factor=0.55)
 		row.label(text="Original Values' Effect")
 		row.prop(self, 'strength', text="")
@@ -181,7 +192,11 @@ class SelectedVertexGroupAverage(bpy.types.Operator):
 			for vge in v.groups:
 				belonged_vg_dic = vg_dic[vge.group]
 				belonged_vg_dic[v.index] = vge.weight
-		for key in vg_dic.keys():
+		if self.all_group:
+			keys = list(vg_dic.keys())
+		else:
+			keys = [obj.vertex_groups.find(self.target)]
+		for key in keys:
 			v_group = obj.vertex_groups[key]
 			counts = len(list(vg_dic[key].keys()))
 			weight = sum(list(vg_dic[key].values()))
