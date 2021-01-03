@@ -24,13 +24,13 @@ class SelectSerialNumberNameBone(bpy.types.Operator):
 
 	def execute(self, context):
 		if context.active_object.mode == 'POSE':
-			for bone in context.visible_pose_bones:
-				if (re.search(r'\.\d+$', bone.name)):
-					bone.bone.select = True
+			visibles = [p.bone for p in context.visible_pose_bones]
 		elif context.active_object.mode == 'EDIT':
-			for bone in context.visible_bones:
-				if (re.search(r'\.\d+$', bone.name)):
-					bone.select = True
+			visibles = context.visible_bones
+		targets = list(set(visibles) & set(context.active_object.data.bones))
+		for bone in targets:
+			if (re.search(r'\.\d+$', bone.name)):
+				bone.select = True
 		return {'FINISHED'}
 
 class SelectMoveSymmetryNameBones(bpy.types.Operator):
@@ -114,7 +114,8 @@ class SelectSameConstraintBone(bpy.types.Operator):
 
 	def execute(self, context):
 		active_consts = [c.type for c in context.active_pose_bone.constraints]
-		for bone in context.visible_pose_bones:
+		visibles = [p for p in context.visible_pose_bones if p.name in context.active_object.data.bones]
+		for bone in visibles:
 			bone_consts = [c.type for c in bone.constraints]
 			if self.all_same:
 				if set(active_consts) == set(bone_consts):
@@ -283,8 +284,8 @@ class SelectPath(bpy.types.Operator):
 
 class SelectAxisOver(bpy.types.Operator):
 	bl_idname = "pose.select_axis_over"
-	bl_label = "Select Bones (Right Side)"
-	bl_description = "Select bones on right side"
+	bl_label = "Select Bones (One Side)"
+	bl_description = "Select bones on one side"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -307,17 +308,19 @@ class SelectAxisOver(bpy.types.Operator):
 	def execute(self, context):
 		pre_mode = context.active_object.mode
 		bpy.ops.object.mode_set(mode='POSE')
+		bpy.ops.pose.select_all(action='DESELECT')
 		direction = int(self.direction)
 		offset = self.offset
 		threshold = self.threshold
-		for pbone in context.visible_pose_bones[:]:
-			bone = context.active_object.data.bones[pbone.name]
+		visibles = [p.bone for p in context.visible_pose_bones]
+		for bone in list(set(visibles) & set(context.active_object.data.bones)):
 			hLoc = bone.head_local[int(self.axis)]
 			tLoc = bone.tail_local[int(self.axis)]
 			if (offset * direction <= hLoc * direction + threshold):
 				bone.select = True
 			if (offset * direction <= tLoc * direction + threshold):
 				bone.select = True
+		context.active_object.data.bones.active = context.selected_pose_bones[0].bone
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
