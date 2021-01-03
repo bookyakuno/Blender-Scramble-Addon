@@ -465,7 +465,8 @@ class CopyConstraintsMirror(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		if context.selected_pose_bones:
-			return True
+			if len(context.active_pose_bone.constraints) > 0:
+				return True
 		return False
 
 	def execute(self, context):
@@ -927,8 +928,8 @@ def menu(self, context):
 		self.layout.separator()
 		self.layout.operator(CopyConstraintsMirror.bl_idname, icon="PLUGIN")
 		self.layout.separator()
-		self.layout.menu(BoneNameMenu.bl_idname, icon="PLUGIN")
 		self.layout.menu(SpecialsMenu.bl_idname, icon="PLUGIN")
+		self.layout.menu(BoneNameMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		if (context.object.data.pose_position == 'POSE'):
 			self.layout.operator(TogglePosePosition.bl_idname, text="Switch Position (Current: Pose)", icon="PLUGIN")
