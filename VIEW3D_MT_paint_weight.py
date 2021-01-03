@@ -18,9 +18,15 @@ class MargeSelectedVertexGroup(bpy.types.Operator):
 	target : StringProperty(name="Target", default="")
 	new_name : StringProperty(name="Name", default="")
 
+	@classmethod
+	def poll(cls, context):
+		if context.active_object.vertex_groups.active_index == -1:
+			return False
+		return True
 	def __init__(self):
+		idx = bpy.context.active_object.vertex_groups.active_index
 		self.target = bpy.context.active_object.vertex_groups[0].name
-		self.new_name = f"{bpy.context.active_pose_bone.name}_merged"
+		self.new_name = f"{bpy.context.active_object.vertex_groups[idx].name}_merged"
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
@@ -56,6 +62,11 @@ class RemoveSelectedVertexGroup(bpy.types.Operator):
 
 	target : StringProperty(name="Target", default="")
 
+	@classmethod
+	def poll(cls, context):
+		if context.active_object.vertex_groups.active_index == -1:
+			return False
+		return True
 	def __init__(self):
 		self.target = bpy.context.active_object.vertex_groups[0].name
 	def invoke(self, context, event):
@@ -86,10 +97,7 @@ class VertexGroupAverageAll(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		obj = context.active_object
-		if len(obj.vertex_groups) == 0:
-			return False
-		if not obj.type == "MESH":
+		if context.active_object.vertex_groups.active_index == -1:
 			return False
 		return True
 	def __init__(self):
@@ -151,6 +159,8 @@ class ApplyDynamicPaint(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		if not context.selected_objects or len(context.selected_objects) < 2:
+			return False
+		if context.active_object.vertex_groups.active_index == -1:
 			return False
 		return True
 	def invoke(self, context, event):
@@ -223,7 +233,7 @@ class BlurWeight(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if not context.active_object or not context.active_object.type == 'MESH':
+		if context.active_object.vertex_groups.active_index == -1:
 			return False
 		return True
 	def draw(self, context):
