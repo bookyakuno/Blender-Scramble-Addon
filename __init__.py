@@ -469,7 +469,7 @@ def register():
 	bpy.types.VIEW3D_MT_pose_showhide.append(VIEW3D_MT_pose_showhide.menu)
 	VIEW3D_MT_pose_specials.register()
 	bpy.types.VIEW3D_MT_pose_context_menu.append(VIEW3D_MT_pose_specials.menu)
-	#VIEW3D_MT_select_edit_armature.register()#クラスなしのためregister()は未定義
+	VIEW3D_MT_select_edit_armature.register()
 	bpy.types.VIEW3D_MT_select_edit_armature.append(VIEW3D_MT_select_edit_armature.menu)
 	VIEW3D_MT_select_edit_mesh.register()
 	bpy.types.VIEW3D_MT_select_edit_mesh.append(VIEW3D_MT_select_edit_mesh.menu)
@@ -662,7 +662,7 @@ def unregister():
 	bpy.types.VIEW3D_MT_pose_showhide.remove(VIEW3D_MT_pose_showhide.menu)
 	VIEW3D_MT_pose_specials.unregister()
 	bpy.types.VIEW3D_MT_pose_context_menu.remove(VIEW3D_MT_pose_specials.menu)
-	#VIEW3D_MT_select_edit_armature.unregister()#クラスなしのためunregister()は未定義
+	VIEW3D_MT_select_edit_armature.unregister()
 	bpy.types.VIEW3D_MT_select_edit_armature.remove(VIEW3D_MT_select_edit_armature.menu)
 	VIEW3D_MT_select_edit_mesh.unregister()
 	bpy.types.VIEW3D_MT_select_edit_mesh.remove(VIEW3D_MT_select_edit_mesh.menu)
