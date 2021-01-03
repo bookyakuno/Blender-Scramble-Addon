@@ -297,7 +297,7 @@ class ApplyBoolean(bpy.types.Operator):
 
 class SetRenderSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.set_render_subsurf_level"
-	bl_label = "Set number of subdivisions when rendering"
+	bl_label = "Set Number of Subdivisions When Rendering"
 	bl_description = "Set 'number of subdivisions when rendering' property of the selected objects' Subdivision Surface modifiers"
 	bl_property = "level_enum"
 	bl_options = {'REGISTER', 'UNDO'}

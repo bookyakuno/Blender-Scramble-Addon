@@ -884,7 +884,7 @@
 "シェーディングを切り替えます","Toggle Shading"
 "選択部分を表示 (非ズーム)","Show Selected (non-zoom)"
 "アクティブテクスチャスロット","Active Texture Slot"
-"レンダリング時の細分化数を設定","Set number of subdivisions when rendering"
+"レンダリング時の細分化数を設定","Set Number of Subdivisions When Rendering"
 "サブディビジョンサーフェスについて操作を行います","Manipulate Subdivision Surface modifier"
 "アクティブな画像を正規化します","Normalize  the active image"
 "画像をぼかす (低速)","Blur image (Slow)"
