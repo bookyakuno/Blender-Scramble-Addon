@@ -26,7 +26,6 @@ class RenameSpecificNameUV(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type != 'MESH'):
-				self.report(type={'WARNING'}, message=obj.name+" is ignored because it is not mesh")
 				continue
 			me = obj.data
 			for uv in me.uv_layers[:]:
@@ -53,7 +52,6 @@ class DeleteSpecificNameUV(bpy.types.Operator):
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type != 'MESH'):
-				self.report(type={'WARNING'}, message=obj.name+" is ignored because it is not mesh")
 				continue
 			me = obj.data
 			for uv in me.uv_layers:
