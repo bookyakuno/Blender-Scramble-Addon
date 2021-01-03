@@ -61,7 +61,7 @@ class CreateVertexToMetaball(bpy.types.Operator):
 
 	name : StringProperty(name="Metaballs' Names", default="Mball")
 	size : FloatProperty(name="Size", default=0.1, min=0.001, max=10, soft_min=0.001, soft_max=10, step=1, precision=3)
-	resolution : FloatProperty(name="Resolution Viewport", default=0.1, min=0.001, max=10, soft_min=0.001, soft_max=10, step=0.5, precision=3)
+	resolution : FloatProperty(name="Resolution", default=0.1, min=0.001, max=10, soft_min=0.001, soft_max=10, step=0.5, precision=3)
 	use_vg : BoolProperty(name="Use vertex weight as size", default=False)
 
 	@classmethod
@@ -124,7 +124,7 @@ class AddGreasePencilPathMetaballs(bpy.types.Operator):
 
 	density : IntProperty(name="Density", default=3, min=1, max=9, soft_min=1, soft_max=9, step=1)
 	radius : FloatProperty(name="Size", default=0.05, min=0, max=1, soft_min=0, soft_max=1, step=0.2, precision=3)
-	resolution : FloatProperty(name="Resolution Viewport", default=0.05, min=0.001, max=1, soft_min=0.001, soft_max=1, step=0.2, precision=3)
+	resolution : FloatProperty(name="Resolution", default=0.05, min=0.001, max=1, soft_min=0.001, soft_max=1, step=0.2, precision=3)
 	gp_name : StringProperty(name="Target GreasePencil / Annotation", default="")
 	gp_obj_name :StringProperty(name="Name of GreasePencil Owner", default="", options={'HIDDEN'})
 
@@ -467,15 +467,11 @@ class SyncRenderHide(bpy.types.Operator):
 	bl_description = "Allow to render displayed objects, and restrict rendering hidden objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	apply_to_hidden : BoolProperty(name="Restrict rendering objects in hidden collection", default=True)
-
 	@classmethod
 	def poll(cls, context):
 		if context.selected_objects:
 			return True
 		return False
-	def draw(self, layout):
-		self.layout.prop(self, 'apply_to_hidden')
 	def flatten(self, layer_collection):
 		flat_view = []
 		for coll in layer_collection.children:
@@ -488,9 +484,8 @@ class SyncRenderHide(bpy.types.Operator):
 		return flat_view
 
 	def execute(self, context):
-		if self.apply_to_hidden:
-			for obj in context.view_layer.objects:
-				obj.hide_render = True
+		for obj in context.view_layer.objects:
+			obj.hide_render = True
 		master_col = context.view_layer.layer_collection
 		views = self.flatten(master_col)
 		for col in views:
@@ -617,7 +612,7 @@ class AddPrefixSuffix(bpy.types.Operator):
 	prefix : StringProperty(name="Prefix", default="")
 	add_suffix : BoolProperty(name="Add Prefix", default=True)
 	suffix : StringProperty(name="Suffix", default="")
-	use_fstring : BoolProperty(name="Use f-string  ({context.~} and {object.~})", default=True)
+	use_fstring : BoolProperty(name="Use f-string  ({context.~} and {object.~})", default=False)
 	change_data :  BoolProperty(name="Change Data's Name to Object's Name", default=False)
 
 	@classmethod
@@ -950,9 +945,11 @@ class ObjectNameMenu(bpy.types.Menu):
 
 	def draw(self, context):
 		self.layout.operator(RenameObjectRegularExpression.bl_idname, icon="PLUGIN")
+		self.layout.operator(AddPrefixSuffix.bl_idname, icon="PLUGIN")
+		self.layout.separator()
 		self.layout.operator('object.data_name_to_object_name', icon="PLUGIN").apply_selected = True#OBJECT_PT_context_object で定義
 		self.layout.operator('object.object_name_to_data_name', icon="PLUGIN").apply_selected = True#OBJECT_PT_context_object で定義
-		self.layout.operator(AddPrefixSuffix.bl_idname, icon="PLUGIN")
+
 
 class SpecialsMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_specials"

@@ -1412,7 +1412,6 @@
 "選択オブジェクトに「厚み付けモディファイア」による輪郭描画を追加します","Add to thicken modi contour drawing selection"
 "選択されたオブジェクトのレンダリングを制限します","Restrict rendering selected objects"
 "レンダリングを許可 (表示オブジェクトのみ)","Allow Rendering (Only Displayed)"
-"非表示のコレクション内のオブジェクトのレンダリングを禁止","Restrict rendering objects in hidden collection"
 "表示されているオブジェクトのレンダリングを許可し、非表示のオブジェクトのレンダリングを制限します","Allow to render displayed objects, and restrict rendering hidden objects"
 "全てのオブジェクトを選択可能に変更します","Make all objects selectable"
 "選択されていないオブジェクトを選択不可能に変更します","Make unselected objects unselectable"
