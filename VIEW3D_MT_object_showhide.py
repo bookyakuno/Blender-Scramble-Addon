@@ -54,7 +54,7 @@ class InvertHide(bpy.types.Operator):
 
 	method : EnumProperty(name="Collections", items=[
 		("IGNORE","Not Invert","Only Objects are changed",1),
-		("CHILD","Invert Nested","Collections in collection are changed",2),
+		("CHILD","Invert Only Nested","Collections in collection are changed",2),
 		("PARENT","Invert Parent","Collections in 'Scene Collection' are changed",3)])
 	
 	def flatten(self, layer_collection):
@@ -115,7 +115,7 @@ class HideOnlyType(bpy.types.Operator):
 		("SPEAKER", "Speaker", "", 11),
 		]
 	type : EnumProperty(items=items, name="Type")
-	is_except : BoolProperty(name="Except designated", default=False, options={'HIDDEN'})
+	is_except : BoolProperty(name="Except designated type", default=False)
 
 	def execute(self, context):
 		for obj in context.selectable_objects:
