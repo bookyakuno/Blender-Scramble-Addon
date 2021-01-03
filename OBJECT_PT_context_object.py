@@ -2,6 +2,7 @@
 # "Propaties" Area > "Object" Tab
 
 import bpy
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -12,6 +13,8 @@ class DataNameToObjectName(bpy.types.Operator):
 	bl_label = "Change Object's Name to Data's Name"
 	bl_description = "Change the object's name to the same as its data's name"
 	bl_options = {'REGISTER', 'UNDO'}
+
+	apply_selected : BoolProperty(name="Apply to selected objects", default=False, options={'HIDDEN'})
 	
 	@classmethod
 	def poll(cls, context):
@@ -19,11 +22,14 @@ class DataNameToObjectName(bpy.types.Operator):
 			return False
 		if (not context.object.data):
 			return False
-		if (context.object.name == context.object.data.name):
-			return False
 		return True
+
 	def execute(self, context):
-		context.object.name = context.object.data.name
+		if self.apply_selected:
+			for obj in context.selected_objects:
+				obj.name = obj.data.name
+		else:
+			context.object.name = context.object.data.name
 		return {'FINISHED'}
 
 class ObjectNameToDataName(bpy.types.Operator):
@@ -31,18 +37,23 @@ class ObjectNameToDataName(bpy.types.Operator):
 	bl_label = "Change Data's Name to Object's Name"
 	bl_description = "Change the data's name to the same as its object's name"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
+	apply_selected : BoolProperty(name="Apply to selected objects", default=False, options={'HIDDEN'})
+
 	@classmethod
 	def poll(cls, context):
 		if (not context.object):
 			return False
 		if (not context.object.data):
 			return False
-		if (context.object.name == context.object.data.name):
-			return False
 		return True
+
 	def execute(self, context):
-		context.object.data.name = context.object.name
+		if self.apply_selected:
+			for obj in context.selected_objects:
+				obj.data.name = obj.name
+		else:
+			context.object.data.name = context.object.name
 		return {'FINISHED'}
 
 class CopyObjectName(bpy.types.Operator):
