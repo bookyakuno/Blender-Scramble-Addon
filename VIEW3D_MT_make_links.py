@@ -16,8 +16,8 @@ class MakeLinkObjectName(bpy.types.Operator):
 
 	name_sep : EnumProperty(name="Numbering Expression",items=[
 		(".",".00X","",1),("_","_00X","",2),("-","-00X","",3)])
-	method : EnumProperty(name="Active Object's Name",items=[
-		("NO","Not Change","",1),("ZERO","Add 000","",2),("ONE","Add 001","",3)])
+	method : EnumProperty(name="Active Object",items=[
+		("NO","No number","",1),("ZERO","000","",2),("ONE","001","",3)])
 
 	@classmethod
 	def poll(cls, context):
@@ -31,7 +31,7 @@ class MakeLinkObjectName(bpy.types.Operator):
 		box.label(text=context.active_object.name)
 		box.prop(self, 'name_sep', text="")
 		row = self.layout.row(align=True)
-		row.label(text="Active Object's Name")
+		row.label(text="Active Object")
 		row.prop(self, 'method', text="")
 
 	def execute(self, context):
