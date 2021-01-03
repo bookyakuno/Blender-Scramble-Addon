@@ -174,6 +174,22 @@ class ApplyDynamicPaint(bpy.types.Operator):
 		row.enabled = self.is_new
 		row.prop(self, 'new_name')
 
+	@classmethod
+	def poll(cls, context):
+		if not context.selected_objects or len(context.selected_objects) < 2:
+			return False
+		return True
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		layout = self.layout
+		layout.use_property_split = True
+		for p in ['mode','distance','is_new']:
+			layout.prop(self, p)
+		row = layout.row()
+		row.enabled = self.is_new
+		row.prop(self, 'new_name')
+
 	def execute(self, context):
 		activeObj = context.active_object
 		if len(activeObj.vertex_groups) == 0 or self.is_new:
