@@ -40,8 +40,8 @@ class SelectAxisLimit(bpy.types.Operator):
 
 class SelectAxisOver(bpy.types.Operator):
 	bl_idname = "mesh.select_axis_over"
-	bl_label = "Select Vertex (Right Side)"
-	bl_description = "Select vertices on right side"
+	bl_label = "Select Vertex (One Side)"
+	bl_description = "Select vertices on one side"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
