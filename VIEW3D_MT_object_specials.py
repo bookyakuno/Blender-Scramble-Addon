@@ -608,6 +608,42 @@ class RenameObjectRegularExpression(bpy.types.Operator):
 			obj.name = new_name
 		return {'FINISHED'}
 
+class AddPrefixSuffix(bpy.types.Operator):
+	bl_idname = "object.add_prefix_and_suffix"
+	bl_label = "Add Prefix / Suffix to Objects Names"
+	bl_description = "Add designated text as prefix / suffix to selected_objects' names"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	add_prefix : BoolProperty(name="Add Prefix", default=True)
+	prefix : StringProperty(name="Prefix", default="")
+	add_suffix : BoolProperty(name="Add Prefix", default=True)
+	suffix : StringProperty(name="Suffix", default="")
+	use_fstring : BoolProperty(name="Use f-string  ({context.~} and {object.~})", default=True)
+	change_data :  BoolProperty(name="Change Data's Name to Object's Name", default=False)
+
+	@classmethod
+	def poll(cls, context):
+		if context.selected_objects:
+			return True
+		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, 'use_fstring')
+		for ps in [['add_prefix', 'prefix'], ['add_suffix', 'suffix']]:
+			row = self.layout.row()
+			row.prop(self, ps[0], text="")
+			row.prop(self, ps[1])
+		self.layout.prop(self, 'change_data')
+
+	def execute(self, context):
+		for object in context.selected_objects:
+			if self.use_fstring:
+				object.name = eval(f'f"{self.prefix}"') + object.name + eval(f'f"{self.suffix}"')
+			else:
+				object.name = self.prefix + object.name + self.suffix
+		return {'FINISHED'}
+
 ####################################
 # オペレーター(オブジェクトカラー) #
 ####################################
@@ -918,6 +954,7 @@ class ObjectNameMenu(bpy.types.Menu):
 		self.layout.operator(RenameObjectRegularExpression.bl_idname, icon="PLUGIN")
 		self.layout.operator('object.data_name_to_object_name', icon="PLUGIN").apply_selected = True#OBJECT_PT_context_object で定義
 		self.layout.operator('object.object_name_to_data_name', icon="PLUGIN").apply_selected = True#OBJECT_PT_context_object で定義
+		self.layout.operator(AddPrefixSuffix.bl_idname, icon="PLUGIN")
 
 class SpecialsMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_specials"
@@ -956,6 +993,7 @@ classes = [
 	SetUnselectHideSelect,
 	SetHideSelect,
 	RenameObjectRegularExpression,
+	AddPrefixSuffix,
 	ApplyObjectColor,
 	ParentSetApplyModifiers,
 	CreateRopeMesh,
