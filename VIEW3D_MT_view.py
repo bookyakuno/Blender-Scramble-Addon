@@ -111,36 +111,42 @@ class ToggleViewportShadeA(bpy.types.Operator):
 	bl_description = "Wireframe => Solid => Material => Rendered (modifiable)"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [
-			("WIREFRAME", "Wireframe", "", 1),	("SOLID", "Solid", "", 2),
-			("MATERIAL", "Material", "", 3), ("RENDERED", "Rendered", "", 4)
-		]
-	FirstItem : EnumProperty(name="1st ", items=items)
-	SecondItem : EnumProperty(name="2nd ", items=[items[1],items[0],items[2],items[3]])
-	ThirdItem : EnumProperty(name="3rd ", items=[items[2],items[1],items[0],items[3]])
-	FourthItem : EnumProperty(name="4th ", items=[items[3],items[0],items[1],items[2]])
+	items = [("WIREFRAME", "Wireframe", "", 1),	("SOLID", "Solid", "", 2),
+			("MATERIAL", "Material", "", 3), ("RENDERED", "Rendered", "", 4)]
+	first : EnumProperty(name="1st ", items=items)
+	second : EnumProperty(name="2nd ", items=[items[1],items[0],items[2],items[3]])
+	third : EnumProperty(name="3rd ", items=[items[2],items[1],items[0],items[3]])
+	fourth : EnumProperty(name="4th ", items=[items[3],items[0],items[1],items[2]])
 	methods = [
-			("FOURLOOP", "1-2-3-4 loop", "", 1),
-			("THREELOOP", "1-2-3 loop", "", 2),
-			("TWOLOOP", "1-2 loop", "", 3),
+			("4", "1-2-3-4", "", 1),
+			("3", "1-2-3", "", 2),
+			("2", "1-2", "", 3),
 		]
-	loopMethod : EnumProperty(name="Loop Method", items=methods)
+	loopMethod : EnumProperty(name="Loop", items=methods)
+	index : IntProperty(name="Index", default=0, options={'HIDDEN'})
+
+	def draw(self, context):
+		row = self.layout.split(factor=0.2)
+		row.label(text="Loop")
+		row.prop(self, 'loopMethod', expand=True)
+		for p in ['first', 'second', 'third', 'fourth']:
+			row = self.layout.row()
+			row.use_property_split = True
+			if p == 'third':
+				row.enabled = (self.loopMethod in ["3","4"])
+			elif p == 'fourth':
+				row.enabled = (self.loopMethod == "4")
+			row.prop(self, p)
 
 	def execute(self, context):
-		if (context.space_data.shading.type == self.FirstItem):
-			context.space_data.shading.type = self.SecondItem
-		elif (context.space_data.shading.type == self.SecondItem):
-			if self.loopMethod == "TWOLOOP":
-				context.space_data.shading.type = self.FirstItem
-			else:
-				context.space_data.shading.type  = self.ThirdItem
-		elif (context.space_data.shading.type == self.ThirdItem):
-			if self.loopMethod == "FOURLOOP":
-				context.space_data.shading.type  = self.FourthItem
-			else:
-				context.space_data.shading.type  = self.FirstItem
-		else:
-			context.space_data.shading.type = self.FirstItem
+		items = [self.first, self.second,self.third,self.fourth][:int(self.loopMethod)]
+		try:
+			context.space_data.shading.type = items[self.index+1]
+			self.index += 1
+		except IndexError:
+			context.space_data.shading.type = items[0]
+			self.index = 0
+		self.temp = self.loopMethod
 		return {'FINISHED'}
 
 class ProjectEditEX(bpy.types.Operator):
@@ -161,6 +167,16 @@ class ProjectEditEX(bpy.types.Operator):
 			context.preferences.filepaths.image_editor = context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3
 		bpy.ops.image.project_edit()
 		context.preferences.filepaths.image_editor = pre_path
+		return {'FINISHED'}
+
+class OldSnapMenuOperator(bpy.types.Operator):
+	bl_idname = "view3d.old_snap_menu_operator"
+	bl_label = "Snap Menu (Blender 2.7)"
+	bl_description = "Display snap menu panel used in Blender 2.7"
+	bl_options = {'REGISTER'}
+
+	def execute(self, context):
+		bpy.ops.wm.call_menu(name='VIEW3D_MT_snap')
 		return {'FINISHED'}
 
 ################
@@ -231,14 +247,9 @@ class CollectionDisplayOperator(bpy.types.Operator):
 	bl_description = "Toggle collection visibility"
 	bl_options = {'REGISTER'}
 
-	align : EnumProperty(name="Align", items=[("HORIZONTAL", "Horizontal", "", 1), ("VERTICAL", "Vertical", "", 2)])
 
 	def invoke(self, context, event):
-		if self.align == 'HORIZONTAL':
-			WIDTH = len(context.view_layer.layer_collection.children)*200
-		elif self.align == 'VERTICAL':
-			WIDTH = 360
-		return context.window_manager.invoke_props_dialog(self, width=WIDTH)
+		return context.window_manager.invoke_popup(self)
 	def flatten(self, layer_collection):
 		flat = []
 		for coll in layer_collection.children:
@@ -288,19 +299,14 @@ class CollectionDisplayOperator(bpy.types.Operator):
 			obj_par_collection = context.view_layer.objects.active.users_collection[0].name
 		else:
 			obj_par_collection = ""
-		row = self.layout.row().split(factor=0.7)
-		row.label(text="Show/Hide objects | Hide others | Show/Hide collection | Texture/Wireframe", icon='NONE')
+		row = self.layout.split(factor=0.45)
+		row.label(text="")
 		row.operator(CollectionShowHide.bl_idname, text="Show All", icon='NONE').is_all = "SHOW"
 		row.operator(CollectionShowHide.bl_idname, text="Hide All", icon='NONE').is_all = "HIDE"
-		if self.align == 'HORIZONTAL': root = self.layout.row()
-		elif self.align == 'VERTICAL': root = self.layout.box()
+		root = self.layout.box()
 		for col in context.view_layer.layer_collection.children:
-			if self.align == 'HORIZONTAL':
-				branch= root.box().column()
-				item = branch.row()
-			elif self.align == 'VERTICAL':
-				branch = root.box()
-				item = branch.row()
+			branch = root.box()
+			item = branch.row()
 			if col.name == obj_par_collection:
 				item.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(col, TYPE='OBJ_ACTIVE') ).name = col.name
 			else:
@@ -324,109 +330,8 @@ class CollectionDisplayOperator(bpy.types.Operator):
 					op.name, op.is_all = [coll.name, 'SINGLE']
 					item2.operator(CollectionWireFrame.bl_idname, text="", icon=self.GetIcon(coll, TYPE="WIRE"), emboss=False).name = coll.name
 			branch.separator(factor=1.0)
-		spl = self.layout.split(factor=0.5).prop(self, "align")
 	def execute(self, context):
 		return {"FINISHED"}
-
-class CollectionPieOperator(bpy.types.Operator):
-	bl_idname = "view3d.collection_pie_operator"
-	bl_label = "Collection Pie Menu"
-	bl_description = "Toggle collection visibility"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	def execute(self, context):
-		bpy.ops.wm.call_menu_pie(name=CollectionPie.bl_idname)
-		return {'FINISHED'}
-
-class CollectionPie(bpy.types.Menu):
-	bl_idname = "VIEW3D_MT_object_pie_collection"
-	bl_label = "Collection Display Menu"
-	bl_description = "Toggle collection Show/Hide/Wireframe"
-
-	def flatten(self, layer_collection):
-		flat = []
-		for coll in layer_collection.children:
-			if len(coll.children) > 0:
-				flat.append(coll)
-				flat += self.flatten(coll)
-			else:
-				flat.append(coll)
-				flat.append(None)
-		return flat
-
-	def GetIcon(self, layer_collection, TYPE=None):
-		if not TYPE:
-			if layer_collection.hide_viewport:
-				return "HIDE_ON"
-			else:
-				return "HIDE_OFF"
-		elif TYPE == 'WIRE':
-			for obj in layer_collection.collection.objects[:5]:
-				if (obj.display_type != 'WIRE'):
-					return "SHADING_TEXTURE"
-			else:
-				return 'SHADING_WIRE'
-		elif TYPE == 'OBJ_ACTIVE':
-			for obj in layer_collection.collection.objects[:5]:
-				if (obj.hide_get() == False):
-					return 'KEYTYPE_KEYFRAME_VEC'
-			else:
-				return 'KEYTYPE_JITTER_VEC'
-		elif TYPE == 'OBJ_OTHER':
-			for obj in layer_collection.collection.objects[:5]:
-				if (obj.hide_get() == False):
-					return 'HANDLETYPE_AUTO_VEC'
-			else:
-				return 'HANDLETYPE_VECTOR_VEC'
-
-	def make_collec_dic(self, layer_collection, dictionary, idx=1):
-		for coll in layer_collection.children:
-			dictionary[coll.name] = {"self":coll, "idx":idx}
-			idx += 1
-			if len(coll.children) > 0:
-				dictionary = self.make_collec_dic(coll, dictionary, idx)
-		return dictionary
-
-	def draw(self, context):
-		dic = {}
-		collec_dic = self.make_collec_dic(context.view_layer.layer_collection, dic)
-		if context.view_layer.objects.active:
-			obj_par_collection = context.view_layer.objects.active.users_collection[0].name
-		else:
-			obj_par_collection = ""
-		box = self.layout.box()
-		row = box.row().split(factor=0.7)
-		row.label(text="Show/Hide objects | Hide others | Show/Hide collection | Texture/Wireframe", icon='NONE')
-		row.operator(CollectionShowHide.bl_idname, text="Show All", icon='NONE').is_all = "SHOW"
-		row.operator(CollectionShowHide.bl_idname, text="Hide All", icon='NONE').is_all = "HIDE"
-		row = box.row()
-		for col in context.view_layer.layer_collection.children:
-			column = row.box().column()
-			item = column.row()
-			if col.name == obj_par_collection:
-				item.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(col, TYPE='OBJ_ACTIVE') ).name = col.name
-			else:
-				item.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(col, TYPE='OBJ_OTHER')).name = col.name
-			item.operator("object.hide_collection", text=f"{col.name}", icon='NONE').collection_index = collec_dic[col.name]["idx"]
-			op = item.operator(CollectionShowHide.bl_idname, text="", icon=self.GetIcon(col))
-			op.name, op.is_all = [col.name, 'SINGLE']
-			item.operator(CollectionWireFrame.bl_idname, text="", icon=self.GetIcon(col, TYPE="WIRE")).name = col.name
-			flatten_nest = self.flatten(col)
-			for coll in flatten_nest:
-				if coll == None:
-					column.separator(factor=0.3)
-				else:
-					item2 = column.row()
-					if coll.name == obj_par_collection:
-						item2.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(coll, TYPE='OBJ_ACTIVE')).name = coll.name
-					else:
-						item2.operator(CollectionObjectsShowHide.bl_idname, text="", icon=self.GetIcon(coll, TYPE='OBJ_OTHER')).name = coll.name
-					item2.operator("object.hide_collection", text=f"{coll.name}", icon='NONE').collection_index = collec_dic[coll.name]["idx"]
-					op = item2.operator(CollectionShowHide.bl_idname, text="", icon=self.GetIcon(coll))
-					op.name, op.is_all = [coll.name, 'SINGLE']
-
-					item2.operator(CollectionWireFrame.bl_idname, text="", icon=self.GetIcon(coll, TYPE="WIRE")).name = coll.name
-			column.separator(factor=1.0)
 
 class CollectionShowHide(bpy.types.Operator):
 	bl_idname = "view3d.collection_show_hide"
@@ -569,10 +474,8 @@ class RunPanelPie(bpy.types.Operator): #
 					toolshelf = True
 		if (properties != self.properties):
 			context.space_data.show_region_ui = not context.space_data.show_region_ui
-			#bpy.ops.view3d.properties()
 		if (toolshelf != self.toolshelf):
 			context.space_data.show_region_toolbar = not context.space_data.show_region_toolbar
-			#bpy.ops.view3d.toolshelf()
 		return {'FINISHED'}
 
 ################
@@ -585,25 +488,19 @@ class ShortcutsMenu(bpy.types.Menu):
 	bl_description = "Registering shortcut feature that might come in handy"
 
 	def draw(self, context):
-		self.layout.operator(LocalViewEx.bl_idname, icon='PLUGIN')
+		self.layout.operator(ViewNumpadPieOperator.bl_idname, icon='PLUGIN')
+		self.layout.operator(ViewportShadePieOperator.bl_idname, icon='PLUGIN')
+		self.layout.operator(PanelPieOperator.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.operator(TogglePanelsA.bl_idname, icon='PLUGIN')
 		self.layout.operator(TogglePanelsB.bl_idname, icon='PLUGIN')
 		self.layout.operator(TogglePanelsC.bl_idname, icon='PLUGIN')
 		self.layout.separator()
+		self.layout.operator(LocalViewEx.bl_idname, icon='PLUGIN')
 		self.layout.operator(ToggleViewportShadeA.bl_idname, icon='PLUGIN')
+		self.layout.operator(CollectionDisplayOperator.bl_idname, icon='PLUGIN')
+		self.layout.operator(OldSnapMenuOperator.bl_idname)
 
-class PieMenu(bpy.types.Menu):
-	bl_idname = "VIEW3D_MT_view_pie"
-	bl_label = "Pie Menu"
-	bl_description = "This is pie menu of 3D view"
-
-	def draw(self, context):
-		self.layout.operator(ViewNumpadPieOperator.bl_idname, icon='PLUGIN')
-		self.layout.operator(ViewportShadePieOperator.bl_idname, icon='PLUGIN')
-		self.layout.operator(CollectionDisplayOperator.bl_idname, text="Collection", icon='PLUGIN')
-		# self.layout.operator(CollectionPieOperator.bl_idname, text="Collection", icon='PLUGIN')
-		self.layout.operator(PanelPieOperator.bl_idname, text="Panel Switch", icon='PLUGIN')
 
 ################
 # クラスの登録 #
@@ -621,17 +518,15 @@ classes = [
 	ViewportShadePieOperator,
 	ViewportShadePie,
 	SetViewportShade,
-	#CollectionPieOperator,
 	CollectionDisplayOperator,
-	#CollectionPie,
 	CollectionShowHide,
 	CollectionWireFrame,
 	CollectionObjectsShowHide,
+	OldSnapMenuOperator,
 	PanelPieOperator,
 	PanelPie,
 	RunPanelPie,
-	ShortcutsMenu,
-	PieMenu
+	ShortcutsMenu
 ]
 
 def register():
@@ -660,21 +555,16 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
 		self.layout.menu(ShortcutsMenu.bl_idname, icon='PLUGIN')
-		self.layout.menu(PieMenu.bl_idname, icon='PLUGIN')
-		col = self.layout.column()
-		col.label(text="=== Edit Screenshot with Editors ===", icon='NONE')
-		if (context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1):
-			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_1)
-			name, ext = os.path.splitext(path)
-			col.operator(ProjectEditEX.bl_idname, icon="PLUGIN", text=name).index = 1
-		if (context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2):
-			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_2)
-			name, ext = os.path.splitext(path)
-			col.operator(ProjectEditEX.bl_idname, icon="PLUGIN", text=name).index = 2
-		if (context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3):
-			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.image_editor_path_3)
-			name, ext = os.path.splitext(path)
-			col.operator(ProjectEditEX.bl_idname, icon="PLUGIN", text=name).index = 3
+		flag = False
+		prefs = context.preferences.addons[__name__.partition('.')[0]].preferences
+		for idx in ['1', '2', '3']:
+			if eval(f"prefs.image_editor_path_{idx}"):
+				if not flag:
+					self.layout.label(text="=== Edit Screenshot ===")
+					flag = True
+				path = os.path.basename(eval(f"prefs.image_editor_path_{idx}"))
+				name, ext = os.path.splitext(path)
+				self.layout.operator(ProjectEditEX.bl_idname, icon="PLUGIN", text=name).index = int(idx)
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
