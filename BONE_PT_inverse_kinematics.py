@@ -283,11 +283,11 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		spl = self.layout.split(factor=0.8)
+		spl = self.layout.split(factor=0.7)
 		row = spl.row(align=True)
 		row.operator(reverse_ik_min_max.bl_idname, icon='ARROW_LEFTRIGHT', text="Reverse min & max")
 		row.operator(copy_ik_axis_setting.bl_idname, icon='LINKED', text="Copy to other axes")
-		spl.operator(reset_ik_settings.bl_idname, icon='X', text="Reset")
+		spl.operator(reset_ik_settings.bl_idname, icon='X', text="Initialize")
 		if 2 <= len(context.selected_pose_bones):
 			self.layout.operator(copy_ik_settings.bl_idname, icon='COPY_ID', text="Copy IK Setting to selected bones")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
