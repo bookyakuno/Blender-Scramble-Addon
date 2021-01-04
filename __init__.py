@@ -320,7 +320,7 @@ def register():
 	#　bpy.utils.register_class(cls)を使って登録することが必要
 	BONE_PT_context_bone.register()
 	bpy.types.BONE_PT_context_bone.append(BONE_PT_context_bone.menu)
-	#BONE_PT_display.register()#クラスなしのためregister()は未定義
+	#BONE_PT_display.register()#クラスなし
 	bpy.types.BONE_PT_display.append(BONE_PT_display.menu)
 	BONE_PT_inverse_kinematics.register()
 	bpy.types.BONE_PT_inverse_kinematics.append(BONE_PT_inverse_kinematics.menu)
@@ -354,13 +354,13 @@ def register():
 	bpy.types.IMAGE_MT_uvs.append(IMAGE_MT_uvs.menu)
 	IMAGE_MT_view.register()
 	bpy.types.IMAGE_MT_view.append(IMAGE_MT_view.menu)
-	#INFO_HT_header.register()#クラスなしのためregister()は未定義
+	#INFO_HT_header.register()#クラスなし
 	bpy.types.INFO_HT_header.prepend(INFO_HT_header.menu_prepend)
 	INFO_MT_file.register()
 	bpy.types.TOPBAR_MT_file.append(INFO_MT_file.menu)
 	INFO_MT_file_external_data.register()
 	bpy.types.TOPBAR_MT_file_external_data.append(INFO_MT_file_external_data.menu)
-	#INFO_MT_help.register()#クラスなしのためregister()は未定義
+	#INFO_MT_help.register()#クラスなし
 	bpy.types.TOPBAR_MT_help.append(INFO_MT_help.menu)
 	INFO_MT_mesh_add.register()
 	bpy.types.VIEW3D_MT_mesh_add.append(INFO_MT_mesh_add.menu)
@@ -382,7 +382,7 @@ def register():
 	bpy.types.OBJECT_PT_context_object.append(OBJECT_PT_context_object.menu)
 	OBJECT_PT_display.register()
 	bpy.types.OBJECT_PT_display.append(OBJECT_PT_display.menu)
-	#OBJECT_PT_transform.register()#クラスなしのためregister()は未定義
+	#OBJECT_PT_transform.register()#クラスなし
 	bpy.types.OBJECT_PT_transform.append(OBJECT_PT_transform.menu)
 	PHYSICS_PT_rigid_body.register()
 	bpy.types.PHYSICS_PT_rigid_body.append(PHYSICS_PT_rigid_body.menu)
@@ -489,7 +489,7 @@ def unregister():
 
 	BONE_PT_context_bone.unregister()
 	bpy.types.BONE_PT_context_bone.remove(BONE_PT_context_bone.menu)
-	#BONE_PT_display.unregister()#クラスなしのためunregister()は未定義
+	#BONE_PT_display.unregister()#クラスなし
 	bpy.types.BONE_PT_display.remove(BONE_PT_display.menu)
 	BONE_PT_inverse_kinematics.unregister()
 	bpy.types.BONE_PT_inverse_kinematics.remove(BONE_PT_inverse_kinematics.menu)
@@ -523,13 +523,13 @@ def unregister():
 	bpy.types.IMAGE_MT_uvs.remove(IMAGE_MT_uvs.menu)
 	IMAGE_MT_view.unregister()
 	bpy.types.IMAGE_MT_view.remove(IMAGE_MT_view.menu)
-	#INFO_HT_header.unregister()#クラスなしのためunregister()は未定義
+	#INFO_HT_header.unregister()#クラスなし
 	bpy.types.INFO_HT_header.remove(INFO_HT_header.menu_prepend)
 	INFO_MT_file.unregister()
 	bpy.types.TOPBAR_MT_file.remove(INFO_MT_file.menu)
 	INFO_MT_file_external_data.unregister()
 	bpy.types.TOPBAR_MT_file_external_data.remove(INFO_MT_file_external_data.menu)
-	#INFO_MT_help.unregister()#クラスなしのためunregister()は未定義
+	#INFO_MT_help.unregister()#クラスなし
 	bpy.types.TOPBAR_MT_help.remove(INFO_MT_help.menu)
 	INFO_MT_mesh_add.unregister()
 	bpy.types.VIEW3D_MT_mesh_add.remove(INFO_MT_mesh_add.menu)
@@ -551,7 +551,7 @@ def unregister():
 	bpy.types.OBJECT_PT_context_object.remove(OBJECT_PT_context_object.menu)
 	OBJECT_PT_display.unregister()
 	bpy.types.OBJECT_PT_display.remove(OBJECT_PT_display.menu)
-	#OBJECT_PT_transform.unregister()#クラスなしのためunregister()は未定義
+	#OBJECT_PT_transform.unregister()#クラスなし
 	bpy.types.OBJECT_PT_transform.remove(OBJECT_PT_transform.menu)
 	PHYSICS_PT_rigid_body.unregister()
 	bpy.types.PHYSICS_PT_rigid_body.remove(PHYSICS_PT_rigid_body.menu)
