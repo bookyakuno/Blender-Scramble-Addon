@@ -229,7 +229,6 @@ class AddonPreferences(bpy.types.AddonPreferences):
 
 	disabled_menu : StringProperty(name="Invalid Menu", default="")
 	use_disabled_menu : BoolProperty(name="Enable 'On/Off additional items' Button", default=False)
-	view_savedata : StringProperty(name="View Save Data", default="")
 	key_config_xml_path : StringProperty(name="XML Config Path", default="BlenderKeyConfig.xml")
 
 	image_editor_path_1 : StringProperty(name="Path of Image Edit Software 1", default="", subtype='FILE_PATH')
@@ -250,8 +249,6 @@ class AddonPreferences(bpy.types.AddonPreferences):
 			box = layout.box()
 			box.prop(self, 'use_disabled_menu')
 			box.prop(self, 'disabled_menu')
-			box = layout.box()
-			box.prop(self, 'view_savedata')
 			box = layout.box()
 			box.prop(self, 'key_config_xml_path')
 
