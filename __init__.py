@@ -61,8 +61,8 @@ if "bpy" in locals():
 	"PHYSICS_PT_rigid_body",
 	"PHYSICS_PT_rigid_body_constraint",
 	"PROPERTIES_HT_header",
-	"RENDER_PT_bake",
-	"RENDER_PT_render",
+	"CYCLES_RENDER_PT_bake",
+	"RENDER_PT_context",
 	"SCENE_PT_rigid_body_world",
 	"TEXTURE_PT_image",
 	"TEXT_MT_text",
@@ -148,8 +148,8 @@ else:
 	PHYSICS_PT_rigid_body,
 	PHYSICS_PT_rigid_body_constraint,
 	PROPERTIES_HT_header,
-	RENDER_PT_bake,
-	RENDER_PT_render,
+	CYCLES_RENDER_PT_bake,
+	RENDER_PT_context,
 	SCENE_PT_rigid_body_world,
 	TEXTURE_PT_image,
 	TEXT_MT_text,
@@ -390,10 +390,10 @@ def register():
 	bpy.types.PHYSICS_PT_rigid_body_constraint.append(PHYSICS_PT_rigid_body_constraint.menu)
 	PROPERTIES_HT_header.register()
 	bpy.types.PROPERTIES_HT_header.append(PROPERTIES_HT_header.menu)
-	RENDER_PT_bake.register()
-	bpy.types.CYCLES_RENDER_PT_bake.append(RENDER_PT_bake.menu)
-	RENDER_PT_render.register()
-	bpy.types.RENDER_PT_context.append(RENDER_PT_render.menu)
+	CYCLES_RENDER_PT_bake.register()
+	bpy.types.CYCLES_RENDER_PT_bake.append(CYCLES_RENDER_PT_bake.menu)
+	RENDER_PT_context.register()
+	bpy.types.RENDER_PT_context.append(RENDER_PT_context.menu)
 	SCENE_PT_rigid_body_world.register()
 	bpy.types.SCENE_PT_rigid_body_world.append(SCENE_PT_rigid_body_world.menu)
 	TEXTURE_PT_image.register()
@@ -559,11 +559,11 @@ def unregister():
 	bpy.types.PHYSICS_PT_rigid_body_constraint.remove(PHYSICS_PT_rigid_body_constraint.menu)
 	PROPERTIES_HT_header.unregister()
 	bpy.types.PROPERTIES_HT_header.remove(PROPERTIES_HT_header.menu)
-	RENDER_PT_bake.unregister()
+	CYCLES_RENDER_PT_bake.unregister()
 	if hasattr(bpy.types, "CYCLES_RENDER_PT_bake"): # script.reroad で再読込すると、CYCLES_RENDER_PT_bakeが見つからないというエラーが出るので、とりあえずエラー文をスルー
-		bpy.types.CYCLES_RENDER_PT_bake.remove(RENDER_PT_bake.menu)
-	RENDER_PT_render.unregister()
-	bpy.types.RENDER_PT_context.remove(RENDER_PT_render.menu)
+		bpy.types.CYCLES_RENDER_PT_bake.remove(CYCLES_RENDER_PT_bake.menu)
+	RENDER_PT_context.unregister()
+	bpy.types.RENDER_PT_context.remove(RENDER_PT_context.menu)
 	SCENE_PT_rigid_body_world.unregister()
 	bpy.types.SCENE_PT_rigid_body_world.remove(SCENE_PT_rigid_body_world.menu)
 	TEXTURE_PT_image.unregister()
