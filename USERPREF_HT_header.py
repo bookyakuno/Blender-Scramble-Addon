@@ -456,11 +456,6 @@ class ImportKeyConfigXml(bpy.types.Operator):
 	bl_options = {'REGISTER'}
 
 	filepath : StringProperty(subtype='FILE_PATH')
-	items = [
-		('RESET', "Reset", "", 1),
-		('ADD', "Add", "", 2),
-		]
-	mode : EnumProperty(items=items, name="Mode", default='ADD')
 
 	def execute(self, context):
 		context.preferences.addons[__name__.partition('.')[0]].preferences.key_config_xml_path = self.filepath
@@ -488,9 +483,6 @@ class ImportKeyConfigXml(bpy.types.Operator):
 				key_map = key_config.keymaps[key_map_name]
 				if (key_map.is_modal):
 					continue
-				if (self.mode == 'RESET'):
-					for key_map_item in key_map.keymap_items:
-						key_map.keymap_items.remove(key_map_item)
 				for key_map_item_elem in key_map_elem.findall('KeyMapItem'):
 					active = True
 					if ('Active' in key_map_item_elem.attrib):
