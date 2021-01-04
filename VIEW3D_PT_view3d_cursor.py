@@ -22,8 +22,9 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		row = self.layout.row(align=True)
-		row.operator('view3d.snap_cursor_to_selected', icon='LAYER_ACTIVE', text="To Select")
-		row.operator('view3d.snap_cursor_to_center', icon='X', text="Reset")
+		row = self.layout.split(factor=0.2, align=True)
+		row.label(text="Move")
+		row.operator('view3d.snap_cursor_to_selected', icon='SNAP_VOLUME', text="Selected")
+		row.operator('view3d.snap_cursor_to_center', icon='OBJECT_ORIGIN', text="Origin")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
