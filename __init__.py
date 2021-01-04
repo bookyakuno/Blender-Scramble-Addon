@@ -43,12 +43,12 @@ if "bpy" in locals():
 	"IMAGE_MT_uvs",
 	"IMAGE_MT_view",
 	"INFO_HT_header",
-	"INFO_MT_file",
-	"INFO_MT_file_external_data",
-	"INFO_MT_help",
-	"INFO_MT_mesh_add",
-	"INFO_MT_render",
-	"INFO_MT_window",
+	"TOPBAR_MT_file",
+	"TOPBAR_MT_file_external_data",
+	"TOPBAR_MT_help",
+	"VIEW3D_MT_mesh_add",
+	"TOPBAR_MT_render",
+	"TOPBAR_MT_window",
 	"MATERIAL_MT_context_menu",
 	"MESH_MT_shape_key_context_menu",
 	"MESH_MT_vertex_group_context_menu",
@@ -130,12 +130,12 @@ else:
 	IMAGE_MT_uvs,
 	IMAGE_MT_view,
 	INFO_HT_header,
-	INFO_MT_file,
-	INFO_MT_file_external_data,
-	INFO_MT_help,
-	INFO_MT_mesh_add,
-	INFO_MT_render,
-	INFO_MT_window,
+	TOPBAR_MT_file,
+	TOPBAR_MT_file_external_data,
+	TOPBAR_MT_help,
+	VIEW3D_MT_mesh_add,
+	TOPBAR_MT_render,
+	TOPBAR_MT_window,
 	MATERIAL_MT_context_menu,
 	MESH_MT_shape_key_context_menu,
 	MESH_MT_vertex_group_context_menu,
@@ -356,18 +356,18 @@ def register():
 	bpy.types.IMAGE_MT_view.append(IMAGE_MT_view.menu)
 	#INFO_HT_header.register()#クラスなし
 	bpy.types.INFO_HT_header.prepend(INFO_HT_header.menu_prepend)
-	INFO_MT_file.register()
-	bpy.types.TOPBAR_MT_file.append(INFO_MT_file.menu)
-	INFO_MT_file_external_data.register()
-	bpy.types.TOPBAR_MT_file_external_data.append(INFO_MT_file_external_data.menu)
-	#INFO_MT_help.register()#クラスなし
-	bpy.types.TOPBAR_MT_help.append(INFO_MT_help.menu)
-	INFO_MT_mesh_add.register()
-	bpy.types.VIEW3D_MT_mesh_add.append(INFO_MT_mesh_add.menu)
-	INFO_MT_render.register()
-	bpy.types.TOPBAR_MT_render.append(INFO_MT_render.menu)
-	INFO_MT_window.register()
-	bpy.types.TOPBAR_MT_window.append(INFO_MT_window.menu)
+	TOPBAR_MT_file.register()
+	bpy.types.TOPBAR_MT_file.append(TOPBAR_MT_file.menu)
+	TOPBAR_MT_file_external_data.register()
+	bpy.types.TOPBAR_MT_file_external_data.append(TOPBAR_MT_file_external_data.menu)
+	#TOPBAR_MT_help.register()#クラスなし
+	bpy.types.TOPBAR_MT_help.append(TOPBAR_MT_help.menu)
+	VIEW3D_MT_mesh_add.register()
+	bpy.types.VIEW3D_MT_mesh_add.append(VIEW3D_MT_mesh_add.menu)
+	TOPBAR_MT_render.register()
+	bpy.types.TOPBAR_MT_render.append(TOPBAR_MT_render.menu)
+	TOPBAR_MT_window.register()
+	bpy.types.TOPBAR_MT_window.append(TOPBAR_MT_window.menu)
 	MATERIAL_MT_context_menu.register()
 	bpy.types.MATERIAL_MT_context_menu.append(MATERIAL_MT_context_menu.menu)
 	MESH_MT_shape_key_context_menu.register()
@@ -525,18 +525,18 @@ def unregister():
 	bpy.types.IMAGE_MT_view.remove(IMAGE_MT_view.menu)
 	#INFO_HT_header.unregister()#クラスなし
 	bpy.types.INFO_HT_header.remove(INFO_HT_header.menu_prepend)
-	INFO_MT_file.unregister()
-	bpy.types.TOPBAR_MT_file.remove(INFO_MT_file.menu)
-	INFO_MT_file_external_data.unregister()
-	bpy.types.TOPBAR_MT_file_external_data.remove(INFO_MT_file_external_data.menu)
-	#INFO_MT_help.unregister()#クラスなし
-	bpy.types.TOPBAR_MT_help.remove(INFO_MT_help.menu)
-	INFO_MT_mesh_add.unregister()
-	bpy.types.VIEW3D_MT_mesh_add.remove(INFO_MT_mesh_add.menu)
-	INFO_MT_render.unregister()
-	bpy.types.TOPBAR_MT_render.remove(INFO_MT_render.menu)
-	INFO_MT_window.unregister()
-	bpy.types.TOPBAR_MT_window.remove(INFO_MT_window.menu)
+	TOPBAR_MT_file.unregister()
+	bpy.types.TOPBAR_MT_file.remove(TOPBAR_MT_file.menu)
+	TOPBAR_MT_file_external_data.unregister()
+	bpy.types.TOPBAR_MT_file_external_data.remove(TOPBAR_MT_file_external_data.menu)
+	#TOPBAR_MT_help.unregister()#クラスなし
+	bpy.types.TOPBAR_MT_help.remove(TOPBAR_MT_help.menu)
+	VIEW3D_MT_mesh_add.unregister()
+	bpy.types.VIEW3D_MT_mesh_add.remove(VIEW3D_MT_mesh_add.menu)
+	TOPBAR_MT_render.unregister()
+	bpy.types.TOPBAR_MT_render.remove(TOPBAR_MT_render.menu)
+	TOPBAR_MT_window.unregister()
+	bpy.types.TOPBAR_MT_window.remove(TOPBAR_MT_window.menu)
 	MATERIAL_MT_context_menu.unregister()
 	bpy.types.MATERIAL_MT_context_menu.remove(MATERIAL_MT_context_menu.menu)
 	MESH_MT_shape_key_context_menu.unregister()
