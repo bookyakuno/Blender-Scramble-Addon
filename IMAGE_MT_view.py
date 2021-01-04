@@ -157,7 +157,7 @@ class TogglePanelsC(bpy.types.Operator):
 
 class panel_pie_operator(bpy.types.Operator):
 	bl_idname = "image.panel_pie_operator"
-	bl_label = "Pie menu : Sidebar/Toolbar"
+	bl_label = "Pie Menu : Sidebar/Toolbar"
 	bl_description = "Toggle sidebar and toolbar's display states"
 	bl_options = {'MACRO'}
 
