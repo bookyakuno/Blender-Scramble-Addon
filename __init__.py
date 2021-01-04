@@ -49,9 +49,9 @@ if "bpy" in locals():
 	"INFO_MT_mesh_add",
 	"INFO_MT_render",
 	"INFO_MT_window",
-	"MATERIAL_MT_specials",
-	"MESH_MT_shape_key_specials",
-	"MESH_MT_vertex_group_specials",
+	"MATERIAL_MT_context_menu",
+	"MESH_MT_shape_key_context_menu",
+	"MESH_MT_vertex_group_context_menu",
 	"DATA_PT_vertex_groups",
 	"NODE_MT_node",
 	"NODE_MT_view",
@@ -68,22 +68,22 @@ if "bpy" in locals():
 	"TEXT_MT_text",
 	"USERPREF_HT_header",
 	"USERPREF_PT_file",
-	"VIEW3D_MT_armature_specials",
+	"VIEW3D_MT_armature_context_menu",
 	"VIEW3D_MT_bone_options_toggle",
 	"VIEW3D_MT_edit_armature",
 	"VIEW3D_MT_edit_mesh",
 	"VIEW3D_MT_edit_mesh_delete",
 	"VIEW3D_MT_edit_mesh_showhide",
-	"VIEW3D_MT_edit_mesh_specials",
+	"VIEW3D_MT_edit_mesh_context_menu",
 	"VIEW3D_MT_edit_mesh_vertices",
 	"VIEW3D_MT_make_links",
 	"VIEW3D_MT_object",
 	"VIEW3D_MT_object_showhide",
-	"VIEW3D_MT_object_specials",
+	"VIEW3D_MT_object_context_menu",
 	"VIEW3D_MT_paint_weight",
 	"VIEW3D_MT_pose_constraints",
 	"VIEW3D_MT_pose_showhide",
-	"VIEW3D_MT_pose_specials",
+	"VIEW3D_MT_pose_context_menu",
 	"VIEW3D_MT_select_edit_armature",
 	"VIEW3D_MT_select_edit_mesh",
 	"VIEW3D_MT_select_object",
@@ -136,9 +136,9 @@ else:
 	INFO_MT_mesh_add,
 	INFO_MT_render,
 	INFO_MT_window,
-	MATERIAL_MT_specials,
-	MESH_MT_shape_key_specials,
-	MESH_MT_vertex_group_specials,
+	MATERIAL_MT_context_menu,
+	MESH_MT_shape_key_context_menu,
+	MESH_MT_vertex_group_context_menu,
 	DATA_PT_vertex_groups,
 	NODE_MT_node,
 	NODE_MT_view,
@@ -155,22 +155,22 @@ else:
 	TEXT_MT_text,
 	USERPREF_HT_header,
 	USERPREF_PT_file,
-	VIEW3D_MT_armature_specials,
+	VIEW3D_MT_armature_context_menu,
 	VIEW3D_MT_bone_options_toggle,
 	VIEW3D_MT_edit_armature,
 	VIEW3D_MT_edit_mesh,
 	VIEW3D_MT_edit_mesh_delete,
 	VIEW3D_MT_edit_mesh_showhide,
-	VIEW3D_MT_edit_mesh_specials,
+	VIEW3D_MT_edit_mesh_context_menu,
 	VIEW3D_MT_edit_mesh_vertices,
 	VIEW3D_MT_make_links,
 	VIEW3D_MT_object,
 	VIEW3D_MT_object_showhide,
-	VIEW3D_MT_object_specials,
+	VIEW3D_MT_object_context_menu,
 	VIEW3D_MT_paint_weight,
 	VIEW3D_MT_pose_constraints,
 	VIEW3D_MT_pose_showhide,
-	VIEW3D_MT_pose_specials,
+	VIEW3D_MT_pose_context_menu,
 	VIEW3D_MT_select_edit_armature,
 	VIEW3D_MT_select_edit_mesh,
 	VIEW3D_MT_select_object,
@@ -368,12 +368,12 @@ def register():
 	bpy.types.TOPBAR_MT_render.append(INFO_MT_render.menu)
 	INFO_MT_window.register()
 	bpy.types.TOPBAR_MT_window.append(INFO_MT_window.menu)
-	MATERIAL_MT_specials.register()
-	bpy.types.MATERIAL_MT_context_menu.append(MATERIAL_MT_specials.menu)
-	MESH_MT_shape_key_specials.register()
-	bpy.types.MESH_MT_shape_key_context_menu.append(MESH_MT_shape_key_specials.menu)
-	MESH_MT_vertex_group_specials.register()
-	bpy.types.MESH_MT_vertex_group_context_menu.append(MESH_MT_vertex_group_specials.menu)
+	MATERIAL_MT_context_menu.register()
+	bpy.types.MATERIAL_MT_context_menu.append(MATERIAL_MT_context_menu.menu)
+	MESH_MT_shape_key_context_menu.register()
+	bpy.types.MESH_MT_shape_key_context_menu.append(MESH_MT_shape_key_context_menu.menu)
+	MESH_MT_vertex_group_context_menu.register()
+	bpy.types.MESH_MT_vertex_group_context_menu.append(MESH_MT_vertex_group_context_menu.menu)
 	NODE_MT_node.register()
 	bpy.types.NODE_MT_node.append(NODE_MT_node.menu)
 	NODE_MT_view.register()
@@ -404,8 +404,8 @@ def register():
 	bpy.types.USERPREF_PT_navigation_bar.append(USERPREF_HT_header.menu)
 	USERPREF_PT_file.register()
 	bpy.types.USERPREF_PT_file_paths_applications.append(USERPREF_PT_file.menu)
-	VIEW3D_MT_armature_specials.register()
-	bpy.types.VIEW3D_MT_armature_context_menu.append(VIEW3D_MT_armature_specials.menu)
+	VIEW3D_MT_armature_context_menu.register()
+	bpy.types.VIEW3D_MT_armature_context_menu.append(VIEW3D_MT_armature_context_menu.menu)
 	VIEW3D_MT_bone_options_toggle.register()
 	bpy.types.VIEW3D_MT_bone_options_toggle.append(VIEW3D_MT_bone_options_toggle.menu)
 	VIEW3D_MT_edit_armature.register()
@@ -416,8 +416,8 @@ def register():
 	bpy.types.VIEW3D_MT_edit_mesh_delete.append(VIEW3D_MT_edit_mesh_delete.menu)
 	VIEW3D_MT_edit_mesh_showhide.register()
 	bpy.types.VIEW3D_MT_edit_mesh_showhide.append(VIEW3D_MT_edit_mesh_showhide.menu)
-	VIEW3D_MT_edit_mesh_specials.register()
-	bpy.types.VIEW3D_MT_edit_mesh_context_menu.append(VIEW3D_MT_edit_mesh_specials.menu)
+	VIEW3D_MT_edit_mesh_context_menu.register()
+	bpy.types.VIEW3D_MT_edit_mesh_context_menu.append(VIEW3D_MT_edit_mesh_context_menu.menu)
 	VIEW3D_MT_edit_mesh_vertices.register()
 	bpy.types.VIEW3D_MT_edit_mesh_vertices.append(VIEW3D_MT_edit_mesh_vertices.menu)
 	VIEW3D_MT_make_links.register()
@@ -426,16 +426,16 @@ def register():
 	bpy.types.VIEW3D_MT_object.append(VIEW3D_MT_object.menu)
 	VIEW3D_MT_object_showhide.register()
 	bpy.types.VIEW3D_MT_object_showhide.append(VIEW3D_MT_object_showhide.menu)
-	VIEW3D_MT_object_specials.register()
-	bpy.types.VIEW3D_MT_object_context_menu.append(VIEW3D_MT_object_specials.menu)
+	VIEW3D_MT_object_context_menu.register()
+	bpy.types.VIEW3D_MT_object_context_menu.append(VIEW3D_MT_object_context_menu.menu)
 	VIEW3D_MT_paint_weight.register()
 	bpy.types.VIEW3D_MT_paint_weight.append(VIEW3D_MT_paint_weight.menu)
 	VIEW3D_MT_pose_constraints.register()
 	bpy.types.VIEW3D_MT_pose_constraints.append(VIEW3D_MT_pose_constraints.menu)
 	VIEW3D_MT_pose_showhide.register()
 	bpy.types.VIEW3D_MT_pose_showhide.append(VIEW3D_MT_pose_showhide.menu)
-	VIEW3D_MT_pose_specials.register()
-	bpy.types.VIEW3D_MT_pose_context_menu.append(VIEW3D_MT_pose_specials.menu)
+	VIEW3D_MT_pose_context_menu.register()
+	bpy.types.VIEW3D_MT_pose_context_menu.append(VIEW3D_MT_pose_context_menu.menu)
 	VIEW3D_MT_select_edit_armature.register()
 	bpy.types.VIEW3D_MT_select_edit_armature.append(VIEW3D_MT_select_edit_armature.menu)
 	VIEW3D_MT_select_edit_mesh.register()
@@ -537,12 +537,12 @@ def unregister():
 	bpy.types.TOPBAR_MT_render.remove(INFO_MT_render.menu)
 	INFO_MT_window.unregister()
 	bpy.types.TOPBAR_MT_window.remove(INFO_MT_window.menu)
-	MATERIAL_MT_specials.unregister()
-	bpy.types.MATERIAL_MT_context_menu.remove(MATERIAL_MT_specials.menu)
-	MESH_MT_shape_key_specials.unregister()
-	bpy.types.MESH_MT_shape_key_context_menu.remove(MESH_MT_shape_key_specials.menu)
-	MESH_MT_vertex_group_specials.unregister()
-	bpy.types.MESH_MT_vertex_group_context_menu.remove(MESH_MT_vertex_group_specials.menu)
+	MATERIAL_MT_context_menu.unregister()
+	bpy.types.MATERIAL_MT_context_menu.remove(MATERIAL_MT_context_menu.menu)
+	MESH_MT_shape_key_context_menu.unregister()
+	bpy.types.MESH_MT_shape_key_context_menu.remove(MESH_MT_shape_key_context_menu.menu)
+	MESH_MT_vertex_group_context_menu.unregister()
+	bpy.types.MESH_MT_vertex_group_context_menu.remove(MESH_MT_vertex_group_context_menu.menu)
 	NODE_MT_node.unregister()
 	bpy.types.NODE_MT_node.remove(NODE_MT_node.menu)
 	NODE_MT_view.unregister()
@@ -574,8 +574,8 @@ def unregister():
 	bpy.types.USERPREF_PT_navigation_bar.remove(USERPREF_HT_header.menu)
 	USERPREF_PT_file.unregister()
 	bpy.types.USERPREF_PT_file_paths_applications.remove(USERPREF_PT_file.menu)
-	VIEW3D_MT_armature_specials.unregister()
-	bpy.types.VIEW3D_MT_armature_context_menu.remove(VIEW3D_MT_armature_specials.menu)
+	VIEW3D_MT_armature_context_menu.unregister()
+	bpy.types.VIEW3D_MT_armature_context_menu.remove(VIEW3D_MT_armature_context_menu.menu)
 	VIEW3D_MT_bone_options_toggle.unregister()
 	bpy.types.VIEW3D_MT_bone_options_toggle.remove(VIEW3D_MT_bone_options_toggle.menu)
 	VIEW3D_MT_edit_armature.unregister()
@@ -586,8 +586,8 @@ def unregister():
 	bpy.types.VIEW3D_MT_edit_mesh_delete.remove(VIEW3D_MT_edit_mesh_delete.menu)
 	VIEW3D_MT_edit_mesh_showhide.unregister()
 	bpy.types.VIEW3D_MT_edit_mesh_showhide.remove(VIEW3D_MT_edit_mesh_showhide.menu)
-	VIEW3D_MT_edit_mesh_specials.unregister()
-	bpy.types.VIEW3D_MT_edit_mesh_context_menu.remove(VIEW3D_MT_edit_mesh_specials.menu)
+	VIEW3D_MT_edit_mesh_context_menu.unregister()
+	bpy.types.VIEW3D_MT_edit_mesh_context_menu.remove(VIEW3D_MT_edit_mesh_context_menu.menu)
 	VIEW3D_MT_edit_mesh_vertices.unregister()
 	bpy.types.VIEW3D_MT_edit_mesh_vertices.remove(VIEW3D_MT_edit_mesh_vertices.menu)
 	VIEW3D_MT_make_links.unregister()
@@ -596,16 +596,16 @@ def unregister():
 	bpy.types.VIEW3D_MT_object.remove(VIEW3D_MT_object.menu)
 	VIEW3D_MT_object_showhide.unregister()
 	bpy.types.VIEW3D_MT_object_showhide.remove(VIEW3D_MT_object_showhide.menu)
-	VIEW3D_MT_object_specials.unregister()
-	bpy.types.VIEW3D_MT_object_context_menu.remove(VIEW3D_MT_object_specials.menu)
+	VIEW3D_MT_object_context_menu.unregister()
+	bpy.types.VIEW3D_MT_object_context_menu.remove(VIEW3D_MT_object_context_menu.menu)
 	VIEW3D_MT_paint_weight.unregister()
 	bpy.types.VIEW3D_MT_paint_weight.remove(VIEW3D_MT_paint_weight.menu)
 	VIEW3D_MT_pose_constraints.unregister()
 	bpy.types.VIEW3D_MT_pose_constraints.remove(VIEW3D_MT_pose_constraints.menu)
 	VIEW3D_MT_pose_showhide.unregister()
 	bpy.types.VIEW3D_MT_pose_showhide.remove(VIEW3D_MT_pose_showhide.menu)
-	VIEW3D_MT_pose_specials.unregister()
-	bpy.types.VIEW3D_MT_pose_context_menu.remove(VIEW3D_MT_pose_specials.menu)
+	VIEW3D_MT_pose_context_menu.unregister()
+	bpy.types.VIEW3D_MT_pose_context_menu.remove(VIEW3D_MT_pose_context_menu.menu)
 	VIEW3D_MT_select_edit_armature.unregister()
 	bpy.types.VIEW3D_MT_select_edit_armature.remove(VIEW3D_MT_select_edit_armature.menu)
 	VIEW3D_MT_select_edit_mesh.unregister()
