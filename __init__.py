@@ -98,7 +98,6 @@ if "bpy" in locals():
 	"VIEW3D_MT_view",
 	"VIEW3D_MT_view_align",
 	"VIEW3D_MT_view_align_selected",
-	"VIEW3D_PT_addon_sidebar",
 	"VIEW3D_PT_imapaint_tools_missing",
 	"VIEW3D_PT_layers",
 	"VIEW3D_PT_slots_projectpaint",
@@ -195,7 +194,6 @@ else:
 	VIEW3D_MT_view,
 	VIEW3D_MT_view_align,
 	VIEW3D_MT_view_align_selected,
-	VIEW3D_PT_addon_sidebar,
 	VIEW3D_PT_imapaint_tools_missing,
 	VIEW3D_PT_layers,
 	VIEW3D_PT_slots_projectpaint,
@@ -487,7 +485,6 @@ def register():
 	bpy.types.VIEW3D_MT_view_align.append(VIEW3D_MT_view_align.menu)
 	VIEW3D_MT_view_align_selected.register()
 	bpy.types.VIEW3D_MT_view_align_selected.append(VIEW3D_MT_view_align_selected.menu)
-	VIEW3D_PT_addon_sidebar.register()#menuなし
 	#===　廃止したもの　===
 	#VIEW3D_PT_imapaint_tools_missing.register()
 	#bpy.types.VIEW3D_PT_imapaint_tools_missing.append(VIEW3D_PT_imapaint_tools_missing.menu)
@@ -498,12 +495,10 @@ def register():
 	#=========
 	#VIEW3D_PT_layers.register()#クラスなし
 	bpy.types.VIEW3D_PT_collections.append(VIEW3D_PT_layers.menu)
-	#=== VIEW3D_PT_addon_sidebarの中で使用するので以下の2つはメニューを登録しない ===
-	#VIEW3D_PT_transform_orientations.register()#クラスなし
-	#bpy.types.VIEW3D_PT_transform_orientations.append(VIEW3D_PT_transform_orientations.menu)
-	#VIEW3D_PT_view3d_name.register()#クラスなし
-	#bpy.types.VIEW3D_PT_tools_object_options.append(VIEW3D_PT_view3d_name.menu)
-	#========
+	VIEW3D_PT_transform_orientations.register()
+	#bpy.types.VIEW3D_PT_transform_orientations.append(VIEW3D_PT_transform_orientations.menu)#パネルなので、メニューは登録しない
+	VIEW3D_PT_view3d_name.register()
+	#bpy.types.VIEW3D_PT_tools_object_options.append(VIEW3D_PT_view3d_name.menu)#パネルなので、メニューは登録しない
 	#VIEW3D_PT_view3d_cursor.register()#クラスなし
 	bpy.types.VIEW3D_PT_view3d_cursor.append(VIEW3D_PT_view3d_cursor.menu)
 	VIEW3D_PT_view3d_properties.register()
@@ -680,7 +675,6 @@ def unregister():
 	bpy.types.VIEW3D_MT_view_align.remove(VIEW3D_MT_view_align.menu)
 	VIEW3D_MT_view_align_selected.unregister()
 	bpy.types.VIEW3D_MT_view_align_selected.remove(VIEW3D_MT_view_align_selected.menu)
-	VIEW3D_PT_addon_sidebar.unregister()#menuなし
 	#===　廃止したもの　===
 	#VIEW3D_PT_imapaint_tools_missing.unregister()
 	#bpy.types.VIEW3D_PT_imapaint_tools_missing.remove(VIEW3D_PT_imapaint_tools_missing.menu)
@@ -691,12 +685,10 @@ def unregister():
 	#========
 	#VIEW3D_PT_layers.unregister()#クラスなし
 	bpy.types.VIEW3D_PT_collections.remove(VIEW3D_PT_layers.menu)
-	#=== VIEW3D_PT_addon_sidebarの中で使用するので以下の2つはメニューを登録解除しない ===
-	#VIEW3D_PT_transform_orientations.unregister()#クラスなし
-	#bpy.types.VIEW3D_PT_transform_orientations.remove(VIEW3D_PT_transform_orientations.menu)
-	#VIEW3D_PT_view3d_name.unregister()#クラスなし
-	#bpy.types.VIEW3D_PT_tools_object_options.remove(VIEW3D_PT_view3d_name.menu)
-	#========
+	VIEW3D_PT_transform_orientations.unregister()
+	#bpy.types.VIEW3D_PT_transform_orientations.remove(VIEW3D_PT_transform_orientations.menu)#パネルなので、メニューは登録解除しない
+	VIEW3D_PT_view3d_name.unregister()
+	#bpy.types.VIEW3D_PT_tools_object_options.remove(VIEW3D_PT_view3d_name.menu)#パネルなので、メニューは登録解除しない
 	#VIEW3D_PT_view3d_cursor.unregister()#クラスなし
 	bpy.types.VIEW3D_PT_view3d_cursor.remove(VIEW3D_PT_view3d_cursor.menu)
 	VIEW3D_PT_view3d_properties.unregister()
