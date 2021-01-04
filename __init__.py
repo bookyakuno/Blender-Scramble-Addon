@@ -66,8 +66,8 @@ if "bpy" in locals():
 	"SCENE_PT_rigid_body_world",
 	"TEXTURE_PT_image",
 	"TEXT_MT_text",
-	"USERPREF_HT_header",
-	"USERPREF_PT_file",
+	"USERPREF_PT_navigation_bar",
+	"USERPREF_PT_file_paths_applications",
 	"VIEW3D_MT_armature_context_menu",
 	"VIEW3D_MT_bone_options_toggle",
 	"VIEW3D_MT_edit_armature",
@@ -93,7 +93,7 @@ if "bpy" in locals():
 	"VIEW3D_MT_view",
 	"VIEW3D_MT_view_align",
 	"VIEW3D_MT_view_align_selected",
-	"VIEW3D_PT_layers",
+	"VIEW3D_PT_collections",
 	"VIEW3D_PT_transform_orientations",
 	"VIEW3D_PT_view3d_cursor",
 	"VIEW3D_PT_view3d_name",
@@ -153,8 +153,8 @@ else:
 	SCENE_PT_rigid_body_world,
 	TEXTURE_PT_image,
 	TEXT_MT_text,
-	USERPREF_HT_header,
-	USERPREF_PT_file,
+	USERPREF_PT_navigation_bar,
+	USERPREF_PT_file_paths_applications,
 	VIEW3D_MT_armature_context_menu,
 	VIEW3D_MT_bone_options_toggle,
 	VIEW3D_MT_edit_armature,
@@ -180,7 +180,7 @@ else:
 	VIEW3D_MT_view,
 	VIEW3D_MT_view_align,
 	VIEW3D_MT_view_align_selected,
-	VIEW3D_PT_layers,
+	VIEW3D_PT_collections,
 	VIEW3D_PT_transform_orientations,
 	VIEW3D_PT_view3d_cursor,
 	VIEW3D_PT_view3d_name,
@@ -400,10 +400,10 @@ def register():
 	bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_PT_image.menu)
 	TEXT_MT_text.register()
 	bpy.types.TEXT_MT_text.append(TEXT_MT_text.menu)
-	USERPREF_HT_header.register()
-	bpy.types.USERPREF_PT_navigation_bar.append(USERPREF_HT_header.menu)
-	USERPREF_PT_file.register()
-	bpy.types.USERPREF_PT_file_paths_applications.append(USERPREF_PT_file.menu)
+	USERPREF_PT_navigation_bar.register()
+	bpy.types.USERPREF_PT_navigation_bar.append(USERPREF_PT_navigation_bar.menu)
+	USERPREF_PT_file_paths_applications.register()
+	bpy.types.USERPREF_PT_file_paths_applications.append(USERPREF_PT_file_paths_applications.menu)
 	VIEW3D_MT_armature_context_menu.register()
 	bpy.types.VIEW3D_MT_armature_context_menu.append(VIEW3D_MT_armature_context_menu.menu)
 	VIEW3D_MT_bone_options_toggle.register()
@@ -454,8 +454,8 @@ def register():
 	bpy.types.VIEW3D_MT_view_align.append(VIEW3D_MT_view_align.menu)
 	VIEW3D_MT_view_align_selected.register()
 	bpy.types.VIEW3D_MT_view_align_selected.append(VIEW3D_MT_view_align_selected.menu)
-	#VIEW3D_PT_layers.register()#クラスなし
-	bpy.types.VIEW3D_PT_collections.append(VIEW3D_PT_layers.menu)
+	#VIEW3D_PT_collections.register()#クラスなし
+	bpy.types.VIEW3D_PT_collections.append(VIEW3D_PT_collections.menu)
 	VIEW3D_PT_transform_orientations.register()
 	#bpy.types.VIEW3D_PT_transform_orientations.append(VIEW3D_PT_transform_orientations.menu)#パネルなので、メニューは登録しない
 	VIEW3D_PT_view3d_name.register()
@@ -570,10 +570,10 @@ def unregister():
 	bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_PT_image.menu)
 	TEXT_MT_text.unregister()
 	bpy.types.TEXT_MT_text.remove(TEXT_MT_text.menu)
-	USERPREF_HT_header.unregister()
-	bpy.types.USERPREF_PT_navigation_bar.remove(USERPREF_HT_header.menu)
-	USERPREF_PT_file.unregister()
-	bpy.types.USERPREF_PT_file_paths_applications.remove(USERPREF_PT_file.menu)
+	USERPREF_PT_navigation_bar.unregister()
+	bpy.types.USERPREF_PT_navigation_bar.remove(USERPREF_PT_navigation_bar.menu)
+	USERPREF_PT_file_paths_applications.unregister()
+	bpy.types.USERPREF_PT_file_paths_applications.remove(USERPREF_PT_file_paths_applications.menu)
 	VIEW3D_MT_armature_context_menu.unregister()
 	bpy.types.VIEW3D_MT_armature_context_menu.remove(VIEW3D_MT_armature_context_menu.menu)
 	VIEW3D_MT_bone_options_toggle.unregister()
@@ -624,8 +624,8 @@ def unregister():
 	bpy.types.VIEW3D_MT_view_align.remove(VIEW3D_MT_view_align.menu)
 	VIEW3D_MT_view_align_selected.unregister()
 	bpy.types.VIEW3D_MT_view_align_selected.remove(VIEW3D_MT_view_align_selected.menu)
-	#VIEW3D_PT_layers.unregister()#クラスなし
-	bpy.types.VIEW3D_PT_collections.remove(VIEW3D_PT_layers.menu)
+	#VIEW3D_PT_collections.unregister()#クラスなし
+	bpy.types.VIEW3D_PT_collections.remove(VIEW3D_PT_collections.menu)
 	VIEW3D_PT_transform_orientations.unregister()
 	#bpy.types.VIEW3D_PT_transform_orientations.remove(VIEW3D_PT_transform_orientations.menu)#パネルなので、メニューは登録解除しない
 	VIEW3D_PT_view3d_name.unregister()
