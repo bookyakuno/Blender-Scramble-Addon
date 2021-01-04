@@ -10,8 +10,8 @@ from bpy.props import *
 
 class SnapMesh3DCursor(bpy.types.Operator):
 	bl_idname = "view3d.snap_mesh_3d_cursor"
-	bl_label = "3D Cursor Snap to Mesh"
-	bl_description = "(Please use shortcuts) mesh surface under mouse move 3D cursor"
+	bl_label = "Cursor to Mouse"
+	bl_description = "Move 3D cursor to the mouse cursor"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -23,8 +23,8 @@ class SnapMesh3DCursor(bpy.types.Operator):
 
 class Move3DCursorToViewLocation(bpy.types.Operator):
 	bl_idname = "view3d.move_3d_cursor_to_view_location"
-	bl_label = "3D cursor to view"
-	bl_description = "Move 3D cursor to location of center point of"
+	bl_label = "Cursor to Center of View"
+	bl_description = "Move 3D cursor to the center of viewport"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -33,8 +33,8 @@ class Move3DCursorToViewLocation(bpy.types.Operator):
 
 class Move3DCursorFar(bpy.types.Operator):
 	bl_idname = "view3d.move_3d_cursor_far"
-	bl_label = "Hide 3D Cursor (move far)"
-	bl_description = "Pretend to hide 3D cursor to move far far away"
+	bl_label = "Cursor to Out of View"
+	bl_description = "Move 3D cursor far away not to appear in viewport"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -77,9 +77,9 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.operator(Move3DCursorToViewLocation.bl_idname, text="Cursor => View Positon", icon="PLUGIN")
-		self.layout.operator(Move3DCursorFar.bl_idname, text="Hide Cursor (Move Far)", icon="PLUGIN")
-		self.layout.operator(SnapMesh3DCursor.bl_idname, text="Cursor => Mesh surface", icon="PLUGIN")
+		self.layout.operator(SnapMesh3DCursor.bl_idname, icon="PLUGIN")
+		self.layout.operator(Move3DCursorToViewLocation.bl_idname, icon="PLUGIN")
+		self.layout.operator(Move3DCursorFar.bl_idname, icon="PLUGIN")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

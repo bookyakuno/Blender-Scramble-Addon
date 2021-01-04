@@ -10,8 +10,8 @@ from bpy.props import *
 
 class ViewSelectedEX(bpy.types.Operator):
 	bl_idname = "view3d.view_selected_ex"
-	bl_label = "Show Selected (non-zoom)"
-	bl_description = "Selected ones over center of 3D perspective not (zoom)"
+	bl_label = "Center View to Selected (Non-Zoom)"
+	bl_description = "Center the view keeping current distance so that selected in the middle of the view"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -33,8 +33,8 @@ class ViewSelectedEX(bpy.types.Operator):
 
 class ResetView(bpy.types.Operator):
 	bl_idname = "view3d.reset_view"
-	bl_label = "Viewpoint at Origin"
-	bl_description = "3D view perspective moves in center of coordinates"
+	bl_label = "Center View to Origin"
+	bl_description = "Center the view so that origin in the middle of the view"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -46,8 +46,8 @@ class ResetView(bpy.types.Operator):
 
 class SelectAndView(bpy.types.Operator):
 	bl_idname = "view3d.select_and_view"
-	bl_label = "Select and Set view center"
-	bl_description = "Select object under mouse, in heart of point of view (SHIFT while additional choices)"
+	bl_label = "Center View to Mouse & Select Object"
+	bl_description = "Select object under the mouse cursor, and center the view so that it in the middle of the view"
 	bl_options = {'REGISTER'}
 
 	zoom : BoolProperty(name="Zoom", default=False)
@@ -70,8 +70,8 @@ class SelectAndView(bpy.types.Operator):
 
 class ReverseView(bpy.types.Operator):
 	bl_idname = "view3d.reverse_view"
-	bl_label = "Invert View"
-	bl_description = "This reverses present view"
+	bl_label = "View from Opposite Side"
+	bl_description = "Orbit the view around 180 degree and move to opposite side of current view"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -82,8 +82,8 @@ class ReverseView(bpy.types.Operator):
 
 class ResetViewAndCursor(bpy.types.Operator):
 	bl_idname = "view3d.reset_view_and_cursor"
-	bl_label = "3D cursor with viewpoint at origin"
-	bl_description = "Perspective and 3D cursor position move to starting point (XYZ=0.0)"
+	bl_label = "Center View to Origin & Move 3D Cursor"
+	bl_description = "Center the view so that origin in the middle of the view, and move 3D cursor to origin"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -93,8 +93,8 @@ class ResetViewAndCursor(bpy.types.Operator):
 
 class SnapMeshViewAndCursor(bpy.types.Operator):
 	bl_idname = "view3d.snap_mesh_view_and_cursor"
-	bl_label = "Snap mesh view and 3D cursor"
-	bl_description = "(Please use shortcuts) move viewpoint and 3D cursor mesh surface under mouse"
+	bl_label ="Center View to Mouse & Move 3D Cursor"
+	bl_description = "Center the view to the mouse cursor and move 3D cursor there"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):

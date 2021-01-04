@@ -10,8 +10,8 @@ from bpy.props import *
 
 class SaveView(bpy.types.Operator):
 	bl_idname = "view3d.save_view"
-	bl_label = "Save View"
-	bl_description = "Save current 3D view perspective"
+	bl_label = "Save Current View"
+	bl_description = "Save current view's location, rotation and distance"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	save_name : StringProperty(name="Name", default="View", options={'SKIP_SAVE'})
@@ -88,8 +88,8 @@ class SaveView(bpy.types.Operator):
 
 class LoadView(bpy.types.Operator):
 	bl_idname = "view3d.load_view"
-	bl_label = "Load View"
-	bl_description = "Load to current 3D view perspective"
+	bl_label = "Load Other View"
+	bl_description = "Change view's location, rotation and distance to saved values"
 	bl_options = {'REGISTER',}
 
 	target : StringProperty(name="Target", default="")
@@ -109,8 +109,8 @@ class LoadView(bpy.types.Operator):
 
 class DeleteViewSavedata(bpy.types.Operator):
 	bl_idname = "view3d.delete_view_savedata"
-	bl_label = "Delete View Save"
-	bl_description = "Removes all view save data"
+	bl_label = "Delete View Data"
+	bl_description = "Remove saved view's information"
 	bl_options = {'REGISTER',}
 
 	target : StringProperty(name="Target", default="", options={'HIDDEN'})

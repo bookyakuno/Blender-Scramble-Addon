@@ -12,8 +12,8 @@ from bpy.props import *
 
 class LocalViewEx(bpy.types.Operator):
 	bl_idname = "view3d.local_view_ex"
-	bl_label = "Global / local view (non-zoom)"
-	bl_description = "Displays only selected objects and centered point of view doesn\'t (zoom)"
+	bl_label = "Toggle Local View (Keep Current)"
+	bl_description = "Switch to display of selected objects separately keeping current location and distance"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -25,7 +25,7 @@ class LocalViewEx(bpy.types.Operator):
 		pre_cursor_location = context.scene.cursor.location.copy()
 		bpy.ops.view3d.localview()
 		if (context.space_data.local_view):
-			self.report(type={'INFO'}, message="Local")
+			self.report(type={'INFO'}, message="Local View")
 		else:
 			self.report(type={'INFO'}, message="Global")
 		context.scene.cursor.location = pre_cursor_location
@@ -37,8 +37,8 @@ class LocalViewEx(bpy.types.Operator):
 
 class TogglePanelsA(bpy.types.Operator):
 	bl_idname = "view3d.toggle_panels_a"
-	bl_label = "Toggle Panel (mode A)"
-	bl_description = "properties/tool shelf \"both display\" / \"both hide\" toggle"
+	bl_label = "Toggle Panel : 'BOTH'"
+	bl_description = "Show BOTH of Sidebar and Toolbar <=> Hide BOTH of them"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -61,8 +61,8 @@ class TogglePanelsA(bpy.types.Operator):
 
 class TogglePanelsB(bpy.types.Operator):
 	bl_idname = "view3d.toggle_panels_b"
-	bl_label = "Toggle Panel (mode B)"
-	bl_description = "\"Panel both hide\" => show only tool shelf => show only properties => \"Panel both display\" for toggle"
+	bl_label = "Toggle Panel : 'IN-TURN'"
+	bl_description = "Hide BOTH of sidebar and toolbar => Show ONLY toolbar => Show ONLY sidebar => Show BOTH"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -84,8 +84,8 @@ class TogglePanelsB(bpy.types.Operator):
 
 class TogglePanelsC(bpy.types.Operator):
 	bl_idname = "view3d.toggle_panels_c"
-	bl_label = "Toggle Panel (mode C)"
-	bl_description = "\"Panel both hide\" => \"show only tool shelf => show only properties. toggle"
+	bl_label = "Toggle Panel : 'ONE-SIDE'"
+	bl_description = "Hide BOTH of sidebar and toolbar => Show ONLY toolbar  => Show ONLY sidebar"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -107,8 +107,8 @@ class TogglePanelsC(bpy.types.Operator):
 
 class ToggleViewportShadeA(bpy.types.Operator):
 	bl_idname = "view3d.toggle_viewport_shade_a"
-	bl_label = "Shading Switch"
-	bl_description = "Wireframe => Solid => Material => Rendered (modifiable)"
+	bl_label = "Switch Viewport Shading"
+	bl_description = "Switch viewport shading in designated order"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [("WIREFRAME", "Wireframe", "", 1),	("SOLID", "Solid", "", 2),
@@ -151,8 +151,8 @@ class ToggleViewportShadeA(bpy.types.Operator):
 
 class ProjectEditEX(bpy.types.Operator):
 	bl_idname = "image.project_edit_ex"
-	bl_label = "Edit Viewport-image with Editors"
-	bl_description = "Take a screenshot of the view-port and edit it in the external image editor referenced at User Preference"
+	bl_label = "Edit Screenshot with Editors"
+	bl_description = "Take a screenshot of viewport and edit it in the external image editor referenced at User Preference"
 	bl_options = {'REGISTER'}
 
 	index : IntProperty(name="Number of Use", default=1, min=1, max=3, soft_min=1, soft_max=3)
@@ -185,8 +185,8 @@ class OldSnapMenuOperator(bpy.types.Operator):
 
 class ViewNumpadPieOperator(bpy.types.Operator):
 	bl_idname = "view3d.view_numpad_pie_operator"
-	bl_label = "Preset View"
-	bl_description = "Is pie menu of preset views or (NUMPAD 1, 3, 7)"
+	bl_label = "Pie Menu: Viewport"
+	bl_description = "Switch a preset viewport"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -195,14 +195,14 @@ class ViewNumpadPieOperator(bpy.types.Operator):
 
 class ViewNumpadPie(bpy.types.Menu): #
 	bl_idname = "VIEW3D_MT_view_pie_view_numpad"
-	bl_label = "Preset View"
-	bl_description = "Is pie menu of preset views or (NUMPAD 1, 3, 7)"
+	bl_label = "Pie Menu: Viewport"
+	bl_description = "Switch a preset viewport"
 
 	def draw(self, context):
 		self.layout.menu_pie().operator("view3d.view_axis", text="Left", icon="TRIA_LEFT").type = "LEFT"
 		self.layout.menu_pie().operator("view3d.view_axis", text="Right", icon="TRIA_RIGHT").type = "RIGHT"
-		self.layout.menu_pie().operator("view3d.view_axis", text="Down", icon="TRIA_DOWN").type = "BOTTOM"
-		self.layout.menu_pie().operator("view3d.view_axis", text="Up", icon="TRIA_UP").type = "TOP"
+		self.layout.menu_pie().operator("view3d.view_axis", text="Bottom", icon="TRIA_DOWN").type = "BOTTOM"
+		self.layout.menu_pie().operator("view3d.view_axis", text="Top", icon="TRIA_UP").type = "TOP"
 		self.layout.menu_pie().operator("view3d.view_axis", text="Back", icon="SHADING_BBOX").type = "BACK"
 		self.layout.menu_pie().operator("view3d.view_camera", text="Camera", icon="CAMERA_DATA")
 		self.layout.menu_pie().operator("view3d.view_axis", text="Front", icon="SHADING_SOLID").type = "FRONT"
@@ -210,8 +210,8 @@ class ViewNumpadPie(bpy.types.Menu): #
 
 class ViewportShadePieOperator(bpy.types.Operator):
 	bl_idname = "view3d.viewport_shade_pie_operator"
-	bl_label = "Shading Switch"
-	bl_description = "Is shading switch pie"
+	bl_label = "Pie Menu: Viewport Shading"
+	bl_description = "Switch viewport shading"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -220,19 +220,19 @@ class ViewportShadePieOperator(bpy.types.Operator):
 
 class ViewportShadePie(bpy.types.Menu): #
 	bl_idname = "VIEW3D_MT_view_pie_viewport_shade"
-	bl_label = "Shading Switch"
-	bl_description = "Is shading switch pie"
+	bl_label = "Pie Menu: Viewport Shading"
+	bl_description = "Switch viewport shading"
 
 	def draw(self, context):
-		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Render", icon="SHADING_TEXTURE").mode = "RENDERED"
+		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Rendered", icon="SHADING_TEXTURE").mode = "RENDERED"
 		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Solid", icon="SHADING_SOLID").mode = "SOLID"
-		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Wire Frame", icon="SHADING_WIRE").mode = "WIREFRAME"
+		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Wireframe", icon="SHADING_WIRE").mode = "WIREFRAME"
 		self.layout.menu_pie().operator(SetViewportShade.bl_idname, text="Material", icon="MATERIAL").mode = "MATERIAL"
 
 class SetViewportShade(bpy.types.Operator): #
 	bl_idname = "view3d.set_viewport_shade"
-	bl_label = "Shading Switch"
-	bl_description = "Toggle Shading"
+	bl_label = "Switch Viewport Shading"
+	bl_description = "Switch viewport shading"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	mode : StringProperty(name="Shading", default="SOLID")
@@ -243,10 +243,9 @@ class SetViewportShade(bpy.types.Operator): #
 
 class CollectionDisplayOperator(bpy.types.Operator):
 	bl_idname = "view3d.collection_display_operator"
-	bl_label = "Collection Display Menu"
-	bl_description = "Toggle collection visibility"
-	bl_options = {'REGISTER'}
-
+	bl_label = "Switch Collections Display"
+	bl_description = "Switch display state of each collection"
+	bl_options = {'REGISTER','UNDO'}
 
 	def invoke(self, context, event):
 		return context.window_manager.invoke_popup(self)
@@ -335,7 +334,7 @@ class CollectionDisplayOperator(bpy.types.Operator):
 
 class CollectionShowHide(bpy.types.Operator):
 	bl_idname = "view3d.collection_show_hide"
-	bl_label = "Toggle Collection Show/Hide"
+	bl_label = "Show / Hide Collection"
 	bl_description = "Shows or hides the collection"
 	bl_options = {'REGISTER'}
 
@@ -370,8 +369,8 @@ class CollectionShowHide(bpy.types.Operator):
 
 class CollectionWireFrame(bpy.types.Operator):
 	bl_idname = "view3d.collection_show_as_wireframe"
-	bl_label = "Toggle Texture/Wireframe"
-	bl_description = "Shows the objects as wire edges or textured"
+	bl_label = "Switch Textured / Wireframe"
+	bl_description = "Display objects in collection as wire edges or textured"
 	bl_options = {'REGISTER'}
 
 	name : StringProperty(name="Collection Name")
@@ -397,8 +396,8 @@ class CollectionWireFrame(bpy.types.Operator):
 
 class CollectionObjectsShowHide(bpy.types.Operator):
 	bl_idname = "view3d.collection_objects_show_hide"
-	bl_label = "Toggle Show/Hide of contained objects"
-	bl_description = "Show or hide all objects in the selected collection"
+	bl_label = "Show / Hide Contained Objects"
+	bl_description = "Show or hide all objects in collection"
 	bl_options = {'REGISTER'}
 
 	name : StringProperty(name="Collection Name")
@@ -428,8 +427,8 @@ class CollectionObjectsShowHide(bpy.types.Operator):
 
 class PanelPieOperator(bpy.types.Operator):
 	bl_idname = "view3d.panel_pie_operator"
-	bl_label = "Switch panel pie menu"
-	bl_description = "Toggle panel pie menu"
+	bl_label = "Pie Menu : Sidebar/Toolbar"
+	bl_description = "Toggle sidebar and toolbar's display states"
 	bl_options = {'MACRO'}
 
 	def execute(self, context):
@@ -438,27 +437,27 @@ class PanelPieOperator(bpy.types.Operator):
 
 class PanelPie(bpy.types.Menu): #
 	bl_idname = "VIEW3D_MT_view_pie_panel"
-	bl_label = "Switch panel pie menu"
-	bl_description = "Toggle panel pie menu"
+	bl_label = "Pie menu : Sidebar/Toolbar"
+	bl_description = "Toggle sidebar and toolbar's display states"
 
 	def draw(self, context):
-		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Only Tool Shelf", icon='TRIA_LEFT')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Only Toolbar", icon='TRIA_LEFT')
 		op.properties, op.toolshelf = False, True
-		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Only Properties", icon='TRIA_RIGHT')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Only Sidebar", icon='TRIA_RIGHT')
 		op.properties, op.toolshelf = True, False
-		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Double Sided", icon='ARROW_LEFTRIGHT')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Both Show", icon='ARROW_LEFTRIGHT')
 		op.properties, op.toolshelf = True, True
-		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Hide", icon='RESTRICT_VIEW_ON')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Both Hide", icon='RESTRICT_VIEW_ON')
 		op.properties, op.toolshelf = False, False
 
 class RunPanelPie(bpy.types.Operator): #
 	bl_idname = "view3d.run_panel_pie"
-	bl_label = "Switch panel pie menu"
-	bl_description = "Toggle panel pie menu"
+	bl_label = "Toggle Panels' Display"
+	bl_description = "Toggle sidebar and toolbar's display states"
 	bl_options = {'MACRO'}
 
-	properties : BoolProperty(name="Property")
-	toolshelf : BoolProperty(name="Tool Shelf")
+	properties : BoolProperty(name="Sidebar")
+	toolshelf : BoolProperty(name="Toolbar")
 
 	def execute(self, context):
 		properties = self.properties
@@ -484,8 +483,8 @@ class RunPanelPie(bpy.types.Operator): #
 
 class ShortcutsMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_view_shortcuts"
-	bl_label = "By Shortcuts"
-	bl_description = "Registering shortcut feature that might come in handy"
+	bl_label = "Toggle Display (For Shortcut)"
+	bl_description = "Functions to toggle display states or so that can be used easily by assigning shortcut"
 
 	def draw(self, context):
 		self.layout.operator(ViewNumpadPieOperator.bl_idname, icon='PLUGIN')
