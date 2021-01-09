@@ -37,11 +37,11 @@ class RemoveEmptyVertexGroups(bpy.types.Operator):
 
 class RemoveSpecifiedStringVertexGroups(bpy.types.Operator):
 	bl_idname = "mesh.remove_specified_string_vertex_groups"
-	bl_label = "Remove Groups with Specific Name"
+	bl_label = "Remove Groups which Contain Specific Texts"
 	bl_description = "Remove all vertex groups that contain a designated text"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	string : StringProperty(name="Remove groups which names contain :", default="")
+	string : StringProperty(name="Text", default="")
 
 	@classmethod
 	def poll(cls, context):
@@ -54,19 +54,12 @@ class RemoveSpecifiedStringVertexGroups(bpy.types.Operator):
 
 	def execute(self, context):
 		obj = context.active_object
-		count = 0
 		for vg in obj.vertex_groups[:]:
 			if (self.string in vg.name):
 				obj.vertex_groups.remove(vg)
-				count += 1
-		self.report(type={'INFO'}, message=str(count)+" removed vertex groups")
 		return {'FINISHED'}
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self, width=350)
-	def draw(self, context):
-		sp = self.layout.split(factor=0.6)
-		sp.label(text="Remove groups which names contain :")
-		sp.prop(self, 'string', text="")
+		return context.window_manager.invoke_props_dialog(self)
 
 class SelectActiveGroupOnly(bpy.types.Operator):
 	bl_idname = "mesh.select_active_vertex_group_only"
