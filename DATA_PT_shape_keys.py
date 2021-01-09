@@ -7,25 +7,7 @@ from bpy.props import *
 ################
 # オペレーター #
 ################
-"""
-class SyncShapeKeysName(bpy.types.Operator):
-	bl_idname = "mesh.sync_shape_keys_name"
-	bl_label = "Shape key name from object name"
-	bl_description = "Same as object name name of shape key"
-	bl_options = {'REGISTER', 'UNDO'}
 
-	@classmethod
-	def poll(cls, context):
-		if context.active_object:
-			if context.active_object.type == 'MESH':
-				if context.active_object.data.shape_keys:
-					return True
-		return False
-
-	def execute(self, context):
-		context.active_object.data.shape_keys.name = context.active_object.name
-		return {'FINISHED'}
-"""
 class InsertKeyframeAllShapes(bpy.types.Operator):
 	bl_idname = "mesh.insert_keyframe_all_shapes"
 	bl_label = "Insert Keyframes for All Shapes"
@@ -316,7 +298,7 @@ class ShapeKeyMergeAbove(bpy.types.Operator):
 			me.shape_keys.key_blocks[i].value = pre_values[i-2]
 		return {'FINISHED'}
 
-class mute_all_shape_keys(bpy.types.Operator):
+class MuteAllShapeKeys(bpy.types.Operator):
 	bl_idname = "object.mute_all_shape_keys"
 	bl_label = "Disable / Enable All Shapes"
 	bl_description = "Enable or disable all shape keys"
@@ -377,7 +359,6 @@ class InsetKeyframeMenu(bpy.types.Menu):
 ################
 
 classes = [
-	#SyncShapeKeysName,
 	InsertKeyframeAllShapes,
 	InsertKeyframeWithInverval,
 	InsertKeyframeToActiveQuick,
@@ -385,7 +366,7 @@ classes = [
 	ShapeKeyApplySwitchBasis,
 	ShapeKeyMergeAll,
 	ShapeKeyMergeAbove,
-	mute_all_shape_keys,
+	MuteAllShapeKeys,
 	MergeShapeMenu,
 	InsetKeyframeMenu,
 ]
@@ -419,14 +400,11 @@ def menu_prepend(self, context):
 			if obj.type == 'MESH' and obj.data.shape_keys:
 				row = self.layout.row()
 				rowrow = row.row(align=True)
-				op = rowrow.operator(mute_all_shape_keys.bl_idname, text="", icon='HIDE_OFF')
+				op = rowrow.operator(MuteAllShapeKeys.bl_idname, text="", icon='HIDE_OFF')
 				op.mode = 'ENABLE'
-				op = rowrow.operator(mute_all_shape_keys.bl_idname, text="", icon='HIDE_ON')
+				op = rowrow.operator(MuteAllShapeKeys.bl_idname, text="", icon='HIDE_ON')
 				op.mode = 'DISABLE'
 				row.menu(MergeShapeMenu.bl_idname, icon='MOD_MESHDEFORM')
 				row.menu(InsetKeyframeMenu.bl_idname, icon='KEY_HLT')
-				#row.operator(SyncShapeKeysName.bl_idname, icon='OBJECT_DATA', text="")
-
-
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
