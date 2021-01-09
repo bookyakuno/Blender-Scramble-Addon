@@ -97,7 +97,7 @@ class AddVertexColorSelectedObject(bpy.types.Operator):
 	bl_description = "Add vertex colors with specified color and name to the selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	name : StringProperty(name="Vertex Color Name", default="Col")
+	name : StringProperty(name="Name", default="Col")
 	color : FloatVectorProperty(name="Vertex Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
 
 	@classmethod
@@ -123,26 +123,13 @@ class AddVertexColorSelectedObject(bpy.types.Operator):
 		return {'FINISHED'}
 
 ################
-# サブメニュー #
-################
-
-class SubMenu(bpy.types.Menu):
-	bl_idname = "DATA_MT_vertex_colors_sub_menu"
-	bl_label = "Bulk Manipulation"
-	bl_description = "Manipulate selected objects' vertex colors together"
-
-	def draw(self, context):
-		self.layout.operator(AddVertexColorSelectedObject.bl_idname, icon='PLUGIN')
-
-################
 # クラスの登録 #
 ################
 
 classes = [
 	MoveActiveVertexColor,
 	VertexColorSet,
-	AddVertexColorSelectedObject,
-	SubMenu
+	AddVertexColorSelectedObject
 ]
 
 def register():
@@ -177,6 +164,5 @@ def menu(self, context):
 				sub.operator(MoveActiveVertexColor.bl_idname, icon='TRIA_DOWN', text="").mode = 'DOWN'
 				row.operator(VertexColorSet.bl_idname, icon='BRUSH_DATA', text="Fill Vertices")
 				row.operator(AddVertexColorSelectedObject.bl_idname, icon='PLUGIN', text="Add Together")
-		#row.menu(SubMenu.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
