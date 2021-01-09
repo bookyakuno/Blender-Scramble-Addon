@@ -50,20 +50,21 @@ class CopyTransformLockSettings(bpy.types.Operator):
 	bl_description = "Copy active bone's lock of location / rotation / scale to other selected bones"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	lock_location_x : BoolProperty(name="Loc X", default=True)
-	lock_location_y : BoolProperty(name="Loc Y", default=True)
-	lock_location_z : BoolProperty(name="Loc Z", default=True)
+	lock_location_x : BoolProperty(name="X", default=True)
+	lock_location_y : BoolProperty(name="Y", default=True)
+	lock_location_z : BoolProperty(name="Z", default=True)
 
-	lock_rotation_x : BoolProperty(name="Rot X", default=True)
-	lock_rotation_y : BoolProperty(name="Rot Y", default=True)
-	lock_rotation_z : BoolProperty(name="Rot Z", default=True)
+	lock_rotation_x : BoolProperty(name="X", default=True)
+	lock_rotation_y : BoolProperty(name="Y", default=True)
+	lock_rotation_z : BoolProperty(name="Z", default=True)
 
-	lock_scale_x : BoolProperty(name="Scale X ", default=True)
-	lock_scale_y : BoolProperty(name="Scale Y ", default=True)
-	lock_scale_z : BoolProperty(name="Scale Z ", default=True)
+	lock_scale_x : BoolProperty(name="X ", default=True)
+	lock_scale_y : BoolProperty(name="Y ", default=True)
+	lock_scale_z : BoolProperty(name="Z ", default=True)
 
-	lock_rotations_4d : BoolProperty(name="Lock Rotation", default=True)
-	lock_rotation_w : BoolProperty(name="Rot W", default=True)
+	ps = bpy.types.PoseBone.bl_rna.properties
+	lock_rotations_4d : BoolProperty(name=ps["lock_rotations_4d"].name, description=ps["lock_rotations_4d"].description, default=True)
+	lock_rotation_w : BoolProperty(name=ps["lock_rotation_w"].name, description=ps["lock_rotation_w"].description, default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -79,16 +80,17 @@ class CopyTransformLockSettings(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def draw(self, context):
-		for axis in ['x', 'y', 'z']:
-			row = self.layout.row()
-			row.prop(self, 'lock_location_' + axis)
-			row.prop(self, 'lock_rotation_' + axis)
-			row.prop(self, 'lock_scale_' + axis)
+		for p in ['lock_location_', 'lock_rotation_', 'lock_scale_']:
+			box = self.layout.box()
+			row = box.row()
+			row.label(text=p.split("_")[1].capitalize())
+			row.prop(self, p+'x')
+			row.prop(self, p+'y')
+			row.prop(self, p+'z')
 		if context.active_pose_bone.rotation_mode in ['QUATERNION', 'AXIS_ANGLE']:
-			self.layout.separator(factor=0.3)
-			row = self.layout.split(factor=0.35)
+			row = box.row()
 			row.prop(self, 'lock_rotation_w')
-			row.prop(self, 'lock_rotations_4d', text="Four component rotations")
+			row.prop(self, 'lock_rotations_4d')
 
 	def execute(self, context):
 		active_pose_bone = context.active_pose_bone
