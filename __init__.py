@@ -113,7 +113,7 @@ if "bpy" in locals():
 	"PHYSICS_PT_field",
 	"PHYSICS_PT_softbody",
 	"PHYSICS_PT_cloth",
-	"BONE_PT_transform_locks",
+	#"BONE_PT_transform_locks",
 	"BONE_PT_relations",
 	]
 	for module in reloadable_modules:
@@ -209,7 +209,7 @@ else:
 	PHYSICS_PT_field,
 	PHYSICS_PT_softbody,
 	PHYSICS_PT_cloth,
-	BONE_PT_transform_locks,
+	#BONE_PT_transform_locks,
 	BONE_PT_relations,
 	)
 	#from . import ***
@@ -512,8 +512,8 @@ def register():
 	bpy.types.PHYSICS_PT_softbody.append(PHYSICS_PT_softbody.menu)
 	PHYSICS_PT_cloth.register()
 	bpy.types.PHYSICS_PT_cloth.append(PHYSICS_PT_cloth.menu)
-	BONE_PT_transform_locks.register()
-	bpy.types.BONE_PT_transform.append(BONE_PT_transform_locks.menu)
+	#BONE_PT_transform_locks.register() #BONE_PT_transform に統合
+	#bpy.types.BONE_PT_transform.append(BONE_PT_transform_locks.menu)
 	BONE_PT_relations.register()
 	bpy.types.BONE_PT_relations.append(BONE_PT_relations.menu)
 	#bpy.types.***.append(***.menu)
@@ -702,8 +702,8 @@ def unregister():
 	bpy.types.PHYSICS_PT_softbody.remove(PHYSICS_PT_softbody.menu)
 	PHYSICS_PT_cloth.unregister()
 	bpy.types.PHYSICS_PT_cloth.remove(PHYSICS_PT_cloth.menu)
-	BONE_PT_transform_locks.unregister()
-	bpy.types.BONE_PT_transform.remove(BONE_PT_transform_locks.menu)
+	#BONE_PT_transform_locks.unregister() #BONE_PT_transform に統合
+	#bpy.types.BONE_PT_transform.remove(BONE_PT_transform_locks.menu)
 	BONE_PT_relations.unregister()
 	bpy.types.BONE_PT_relations.remove(BONE_PT_relations.menu)
 	#bpy.types.***.remove(***.menu)
