@@ -8,18 +8,18 @@ from bpy.props import *
 # オペレーター #
 ################
 
-class copy_curve_shape_setting(bpy.types.Operator):
+class CopyCurveShapeSetting(bpy.types.Operator):
 	bl_idname = "curve.copy_curve_shape_setting"
 	bl_label = "Copy Shape Settings"
 	bl_description = "Copy active curve's shape settings to other selected curves"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	dimensions : BoolProperty(name="Curve type (2D/3D)", default=True)
-	resolution_u : BoolProperty(name="Preview U", default=True)
-	render_resolution_u : BoolProperty(name="Render U", default=True)
+	resolution_u : BoolProperty(name="Viewport", default=True)
+	render_resolution_u : BoolProperty(name="Rendering", default=True)
 	fill_mode : BoolProperty(name="Fill Mode", default=True)
 	use_fill_deform : BoolProperty(name="Fill Deformed", default=True)
-	twist_mode : BoolProperty(name="Twist Mode", default=True)
+	twist_mode : BoolProperty(name="Twist Method", default=True)
 	use_radius : BoolProperty(name="Radius", default=True)
 	use_stretch : BoolProperty(name="Stretch", default=True)
 	twist_smooth : BoolProperty(name="Smooth", default=True)
@@ -38,27 +38,22 @@ class copy_curve_shape_setting(bpy.types.Operator):
 
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-
 	def draw(self, context):
-		row = self.layout.box().row()
-		row.label(text="Shape")
-		row.prop(self, 'dimensions')
 		row = self.layout.row()
 		column = row.column().box()
-		column.label(text="Resolution:")
+		column.label(text="Resolution U")
 		column.prop(self, 'resolution_u')
 		column.prop(self, 'render_resolution_u')
+		column = row.column()
+		column.box().prop(self, 'dimensions')
+		box = column.box()
+		box.prop(self, 'twist_mode')
+		box.prop(self, 'twist_smooth')
+		row = self.layout.row()
 		column = row.column().box()
-		column.label(text="Twisting:")
-		column.prop(self, 'twist_mode')
-		column.prop(self, 'twist_smooth')
-		row = self.layout.split(factor=0.4)
-		column = row.column().box()
-		column.label(text="Fill:")
 		column.prop(self, 'fill_mode')
 		column.prop(self, 'use_fill_deform')
 		column = row.column().box()
-		column.label(text="Options for Path/Curve-Deform:")
 		column.prop(self, 'use_radius')
 		column.prop(self, 'use_stretch')
 		column.prop(self, 'use_deform_bounds')
@@ -70,7 +65,6 @@ class copy_curve_shape_setting(bpy.types.Operator):
 			if active_ob.name != ob.name:
 				if ob.type == 'CURVE':
 					curve = ob.data
-
 					if self.dimensions:
 						curve.dimensions = active_curve.dimensions
 					if self.resolution_u:
@@ -98,7 +92,7 @@ class copy_curve_shape_setting(bpy.types.Operator):
 ################
 
 classes = [
-	copy_curve_shape_setting
+	CopyCurveShapeSetting
 ]
 
 def register():
@@ -126,6 +120,6 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		if 2 <= len(context.selected_objects):
-			self.layout.operator(copy_curve_shape_setting.bl_idname, icon='COPY_ID')
+			self.layout.operator(CopyCurveShapeSetting.bl_idname, icon='COPY_ID')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
