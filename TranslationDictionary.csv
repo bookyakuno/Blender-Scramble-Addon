@@ -1,3 +1,4 @@
+"→","to"
 "X軸","X Axis"
 "Y軸","Y Axis"
 "Z軸","Z Axis"
@@ -1112,7 +1113,7 @@
 "クイック・チャイルド","Quick child"
 "第二選択ボーンを親として、アクティブなボーンにチャイルドコンストレイントを追加します","Add child constraint to the active bone setting the selected bone as parent"
 "第二選択ボーンが終端になるように、アクティブなボーンのIKのチェーン数を設定します","Set chain length of the active bone's IK so that the chain's end is the selected bone"
-"上手くチェーン数を取得出来ませんでした","Could not get chain well"
+"チェーン数の取得に失敗しました","Failed to get chain counts"
 "第二選択ボーンをアクティブなボーンのIKのポールターゲットに設定します","Set the selected bone as Pole Target of the active bone's IK"
 "IKのポール角度を設定","Set Pole Angle of IK"
 "選択したボーンの位置がレスト位置と同じになるように、IKのポール角度を設定します","Set pole angle of the selected bone so that its location is equal to the rest position's one"
@@ -1353,7 +1354,6 @@
 "選択された辺をそれぞれ1つの頂点に折りたたみます","Collapse each edge to one vertex"
 "選択された面を削除します","Delete selected faces"
 "選択された面を、頂点と辺を維持しつつ削除します","Delete selected faces keeping their vertices and edges"
-
 "編集ケージの適用：無効、　編集モードでの表示：無効","Adjusting edit cage: Disabled, Display in edit mode: Disabled"
 "編集ケージの適用：無効、　編集モードでの表示：有効","Adjusting edit cage: Disabled, Display in edit mode: Enabled"
 "編集ケージの適用：有効、　編集モードでの表示：有効","Adjusting edit cage: Enabled, Display in edit mode: Enabled"
