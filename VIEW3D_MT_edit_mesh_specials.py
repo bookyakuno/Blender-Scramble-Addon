@@ -92,7 +92,7 @@ class ToggleMirrorModifier(bpy.types.Operator):
 	merge_threshold : FloatProperty(name="Merge Distance", default=0.001, min=0, max=1, soft_min=0, soft_max=1, step=0.01, precision=6)
 	use_clip : BoolProperty(name="Clipping", default=False)
 	use_mirror_u : BoolProperty(name="Mirror U", default=False)
-	use_mirror_v : BoolProperty(name="Mirror V ", default=False)
+	use_mirror_v : BoolProperty(name="Mirror V", default=False)
 	use_mirror_vertex_groups : BoolProperty(name="Vertex Groups", default=True)
 	is_top : BoolProperty(name="Add at Top", default=True)
 	toggle : BoolProperty(name="Toggle", default=False)
