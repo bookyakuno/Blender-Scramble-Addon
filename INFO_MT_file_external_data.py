@@ -30,7 +30,7 @@ class ResaveAllImage(bpy.types.Operator):
 					img.unpack()
 				except RuntimeError:
 					pass
-		self.report(type={"INFO"}, message="Saved image files in 'textures' folder")
+		self.report(type={"INFO"}, message="Saved image files into 'textures' folder")
 		return {'FINISHED'}
 
 class IsolationTexturesUnusedFiles(bpy.types.Operator):
@@ -170,7 +170,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.operator('image.reload_all_image', icon="PLUGIN")
+		self.layout.operator('image.reload_all_image', icon="PLUGIN")#IMAGE_MT_image.py で定義
 		self.layout.separator()
 		self.layout.operator(ResaveAllImage.bl_idname, icon="PLUGIN")
 		self.layout.operator(IsolationTexturesUnusedFiles.bl_idname, icon="PLUGIN")
