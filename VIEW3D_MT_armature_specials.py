@@ -139,7 +139,7 @@ class RenameBoneRegularExpression(bpy.types.Operator):
 class RenameOppositeBone(bpy.types.Operator):
 	bl_idname = "armature.rename_opposite_bone"
 	bl_label = "Manipulate Symmetric Bones' Names"
-	bl_description = "Change names of selected bones and their oppositeーside ones in a specific way"
+	bl_description = "Change names of selected bones and its opposite-side ones in a specific way"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	threshold : FloatProperty(name="Position of Threshold", default=0.00001, min=0, soft_min=0, step=0.001, precision=5)
