@@ -144,7 +144,7 @@ class SelectGroupedModifiers(bpy.types.Operator):
 class SelectGroupedSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.select_grouped_subsurf_level"
 	bl_label = "Objects with Same Number of Subdivisions"
-	bl_description = "Select objects which use same number of subdivisions of subdivision surface modifier as active object"
+	bl_description = "Select objects which use same number of subdivisions in viewport of subdivision surface modifier as active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -202,7 +202,7 @@ class SelectGroupedArmatureTarget(bpy.types.Operator):
 class SelectMeshFaceOnly(bpy.types.Operator):
 	bl_idname = "object.select_mesh_face_only"
 	bl_label = "Mesh with Face"
-	bl_description = "Select mesh more than one face"
+	bl_description = "Select objects which meshes have more than one face"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
