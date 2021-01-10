@@ -223,12 +223,12 @@ class AddonPreferences(bpy.types.AddonPreferences):
 	tab_addon_menu            : EnumProperty(name="Tab", description="", items=[
 	('DISPLAY', "Display", ""),
 	 # ('KEYMAP', "Keymap", ""),
-	('EXTERNAL_APP', "External app", ""),
+	('EXTERNAL_APP', "External Editors", ""),
 	('LINK', "Link", "")
 	], default='DISPLAY')
 
 	disabled_menu : StringProperty(name="Invalid Menu", default="")
-	use_disabled_menu : BoolProperty(name="Enable 'On/Off additional items' Button", default=False)
+	use_disabled_menu : BoolProperty(name="Display 'On/Off Additional Items' Button", default=False)
 	key_config_xml_path : StringProperty(name="XML Config Path", default="BlenderKeyConfig.xml")
 
 	image_editor_path_1 : StringProperty(name="Path of Image Edit Software 1", default="", subtype='FILE_PATH')
@@ -260,7 +260,7 @@ class AddonPreferences(bpy.types.AddonPreferences):
 			box.prop(self, 'image_editor_path_2')
 			box.prop(self, 'image_editor_path_3')
 			box = layout.box()
-			box.label(text="Eext Editoer",icon="TEXT")
+			box.label(text="Text Editor",icon="TEXT")
 			box.prop(self, 'text_editor_path_1')
 			box.prop(self, 'text_editor_path_2')
 			box.prop(self, 'text_editor_path_3')
@@ -277,8 +277,8 @@ class AddonPreferences(bpy.types.AddonPreferences):
 # 追加メニューの有効/無効
 class ToggleMenuEnable(bpy.types.Operator):
 	bl_idname = "wm.toggle_menu_enable"
-	bl_label = "On/Off Additional Items"
-	bl_description = "Extra menu of ScrambleAddon toggle Enable/Disable"
+	bl_label = "Toggle Display of 'On/Off Additional Items'"
+	bl_description = "Show or hide 'turn on/off additional items' buttons displayed at end of menus added by the add-on"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	id : StringProperty()
