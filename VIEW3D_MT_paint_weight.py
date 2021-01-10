@@ -11,7 +11,7 @@ from bpy.props import *
 class MargeSelectedVertexGroup(bpy.types.Operator):
 	bl_idname = "paint.marge_selected_vertex_group"
 	bl_label = "Add Designated Bone's Weight"
-	bl_description = "Add to active vertex group the weight of vertex group linked to designated bone"
+	bl_description = "Add the weight of vertex group linked to designated bone to active vertex group"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	crate_newvg : BoolProperty(name="Create new vertex group", default=False)
