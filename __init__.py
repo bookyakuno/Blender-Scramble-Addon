@@ -65,10 +65,7 @@ if "bpy" in locals():
 	"RENDER_PT_bake",
 	"RENDER_PT_render",
 	"SCENE_PT_rigid_body_world",
-	"TEXTURE_MT_specials",
-	"TEXTURE_PT_context_texture",
 	"TEXTURE_PT_image",
-	"TEXTURE_PT_mapping",
 	"TEXT_MT_text",
 	"USERPREF_HT_header",
 	"USERPREF_PT_file",
@@ -82,7 +79,6 @@ if "bpy" in locals():
 	"VIEW3D_MT_edit_mesh_vertices",
 	"VIEW3D_MT_make_links",
 	"VIEW3D_MT_object",
-	"VIEW3D_MT_object_apply",
 	"VIEW3D_MT_object_showhide",
 	"VIEW3D_MT_object_specials",
 	"VIEW3D_MT_paint_weight",
@@ -98,10 +94,7 @@ if "bpy" in locals():
 	"VIEW3D_MT_view",
 	"VIEW3D_MT_view_align",
 	"VIEW3D_MT_view_align_selected",
-	"VIEW3D_PT_imapaint_tools_missing",
 	"VIEW3D_PT_layers",
-	"VIEW3D_PT_slots_projectpaint",
-	"VIEW3D_PT_tools_imagepaint_external",
 	"VIEW3D_PT_transform_orientations",
 	"VIEW3D_PT_view3d_cursor",
 	"VIEW3D_PT_view3d_name",
@@ -113,7 +106,6 @@ if "bpy" in locals():
 	"PHYSICS_PT_field",
 	"PHYSICS_PT_softbody",
 	"PHYSICS_PT_cloth",
-	#"BONE_PT_transform_locks",
 	"BONE_PT_relations",
 	]
 	for module in reloadable_modules:
@@ -161,10 +153,7 @@ else:
 	RENDER_PT_bake,
 	RENDER_PT_render,
 	SCENE_PT_rigid_body_world,
-	TEXTURE_MT_specials,
-	TEXTURE_PT_context_texture,
 	TEXTURE_PT_image,
-	TEXTURE_PT_mapping,
 	TEXT_MT_text,
 	USERPREF_HT_header,
 	USERPREF_PT_file,
@@ -178,7 +167,6 @@ else:
 	VIEW3D_MT_edit_mesh_vertices,
 	VIEW3D_MT_make_links,
 	VIEW3D_MT_object,
-	VIEW3D_MT_object_apply,
 	VIEW3D_MT_object_showhide,
 	VIEW3D_MT_object_specials,
 	VIEW3D_MT_paint_weight,
@@ -194,10 +182,7 @@ else:
 	VIEW3D_MT_view,
 	VIEW3D_MT_view_align,
 	VIEW3D_MT_view_align_selected,
-	VIEW3D_PT_imapaint_tools_missing,
 	VIEW3D_PT_layers,
-	VIEW3D_PT_slots_projectpaint,
-	VIEW3D_PT_tools_imagepaint_external,
 	VIEW3D_PT_transform_orientations,
 	VIEW3D_PT_view3d_cursor,
 	VIEW3D_PT_view3d_name,
@@ -209,7 +194,6 @@ else:
 	PHYSICS_PT_field,
 	PHYSICS_PT_softbody,
 	PHYSICS_PT_cloth,
-	#BONE_PT_transform_locks,
 	BONE_PT_relations,
 	)
 	#from . import ***
@@ -416,14 +400,8 @@ def register():
 	bpy.types.RENDER_PT_context.append(RENDER_PT_render.menu)
 	SCENE_PT_rigid_body_world.register()
 	bpy.types.SCENE_PT_rigid_body_world.append(SCENE_PT_rigid_body_world.menu)
-	#TEXTURE_MT_specials.register()#TEXTURE_PT_image に統合
-	#bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_MT_specials.menu)
-	#TEXTURE_PT_context_texture.register()#クラスなしのためregister()は未定義
-	#bpy.types.TEXTURE_PT_context_texture.append(TEXTURE_PT_context_texture.menu)
 	TEXTURE_PT_image.register()
 	bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_PT_image.menu)
-	#TEXTURE_PT_mapping.register()#TEXTURE_PT_image に統合
-	#bpy.types.VIEW3D_PT_slots_projectpaint.append(TEXTURE_PT_mapping.menu)
 	TEXT_MT_text.register()
 	bpy.types.TEXT_MT_text.append(TEXT_MT_text.menu)
 	USERPREF_HT_header.register()
@@ -450,8 +428,6 @@ def register():
 	bpy.types.VIEW3D_MT_make_links.append(VIEW3D_MT_make_links.menu)
 	VIEW3D_MT_object.register()
 	bpy.types.VIEW3D_MT_object.append(VIEW3D_MT_object.menu)
-	#VIEW3D_MT_object_apply.register() #廃止
-	#bpy.types.VIEW3D_MT_object_apply.append(VIEW3D_MT_object_apply.menu)
 	VIEW3D_MT_object_showhide.register()
 	bpy.types.VIEW3D_MT_object_showhide.append(VIEW3D_MT_object_showhide.menu)
 	VIEW3D_MT_object_specials.register()
@@ -482,14 +458,6 @@ def register():
 	bpy.types.VIEW3D_MT_view_align.append(VIEW3D_MT_view_align.menu)
 	VIEW3D_MT_view_align_selected.register()
 	bpy.types.VIEW3D_MT_view_align_selected.append(VIEW3D_MT_view_align_selected.menu)
-	#===　廃止したもの　===
-	#VIEW3D_PT_imapaint_tools_missing.register()
-	#bpy.types.VIEW3D_PT_imapaint_tools_missing.append(VIEW3D_PT_imapaint_tools_missing.menu)
-	#VIEW3D_PT_slots_projectpaint.register()
-	#bpy.types.VIEW3D_PT_slots_projectpaint.append(VIEW3D_PT_slots_projectpaint.menu)
-	#VIEW3D_PT_tools_imagepaint_external.register()#VIEW3D_MT_viewに移動
-	#bpy.types.IMAGE_MT_image.append(VIEW3D_PT_tools_imagepaint_external.menu)
-	#=========
 	#VIEW3D_PT_layers.register()#クラスなし
 	bpy.types.VIEW3D_PT_collections.append(VIEW3D_PT_layers.menu)
 	VIEW3D_PT_transform_orientations.register()
@@ -512,8 +480,6 @@ def register():
 	bpy.types.PHYSICS_PT_softbody.append(PHYSICS_PT_softbody.menu)
 	PHYSICS_PT_cloth.register()
 	bpy.types.PHYSICS_PT_cloth.append(PHYSICS_PT_cloth.menu)
-	#BONE_PT_transform_locks.register() #BONE_PT_transform に統合
-	#bpy.types.BONE_PT_transform.append(BONE_PT_transform_locks.menu)
 	BONE_PT_relations.register()
 	bpy.types.BONE_PT_relations.append(BONE_PT_relations.menu)
 	#bpy.types.***.append(***.menu)
@@ -606,14 +572,8 @@ def unregister():
 	bpy.types.RENDER_PT_context.remove(RENDER_PT_render.menu)
 	SCENE_PT_rigid_body_world.unregister()
 	bpy.types.SCENE_PT_rigid_body_world.remove(SCENE_PT_rigid_body_world.menu)
-	#TEXTURE_MT_specials.unregister()#TEXTURE_PT_image に統合
-	#bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_MT_specials.menu)
-	#TEXTURE_PT_context_texture.unregister()#クラスなしのためunregister()は未定義
-	#bpy.types.TEXTURE_PT_context_texture.remove(TEXTURE_PT_context_texture.menu)
 	TEXTURE_PT_image.unregister()
 	bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_PT_image.menu)
-	#TEXTURE_PT_mapping.unregister()#TEXTURE_PT_image に統合
-	#bpy.types.VIEW3D_PT_slots_projectpaint.remove(TEXTURE_PT_mapping.menu)
 	TEXT_MT_text.unregister()
 	bpy.types.TEXT_MT_text.remove(TEXT_MT_text.menu)
 	USERPREF_HT_header.unregister()
@@ -640,8 +600,6 @@ def unregister():
 	bpy.types.VIEW3D_MT_make_links.remove(VIEW3D_MT_make_links.menu)
 	VIEW3D_MT_object.unregister()
 	bpy.types.VIEW3D_MT_object.remove(VIEW3D_MT_object.menu)
-	#VIEW3D_MT_object_apply.unregister() #廃止
-	#bpy.types.VIEW3D_MT_object_apply.remove(VIEW3D_MT_object_apply.menu)
 	VIEW3D_MT_object_showhide.unregister()
 	bpy.types.VIEW3D_MT_object_showhide.remove(VIEW3D_MT_object_showhide.menu)
 	VIEW3D_MT_object_specials.unregister()
@@ -672,14 +630,6 @@ def unregister():
 	bpy.types.VIEW3D_MT_view_align.remove(VIEW3D_MT_view_align.menu)
 	VIEW3D_MT_view_align_selected.unregister()
 	bpy.types.VIEW3D_MT_view_align_selected.remove(VIEW3D_MT_view_align_selected.menu)
-	#===　廃止したもの　===
-	#VIEW3D_PT_imapaint_tools_missing.unregister()
-	#bpy.types.VIEW3D_PT_imapaint_tools_missing.remove(VIEW3D_PT_imapaint_tools_missing.menu)
-	#VIEW3D_PT_slots_projectpaint.unregister()
-	#bpy.types.VIEW3D_PT_slots_projectpaint.remove(VIEW3D_PT_slots_projectpaint.menu)
-	#VIEW3D_PT_tools_imagepaint_external.unregister()#VIEW3D_MT_viewに移動
-	#bpy.types.IMAGE_MT_image.remove(VIEW3D_PT_tools_imagepaint_external.menu)	
-	#========
 	#VIEW3D_PT_layers.unregister()#クラスなし
 	bpy.types.VIEW3D_PT_collections.remove(VIEW3D_PT_layers.menu)
 	VIEW3D_PT_transform_orientations.unregister()
@@ -702,8 +652,6 @@ def unregister():
 	bpy.types.PHYSICS_PT_softbody.remove(PHYSICS_PT_softbody.menu)
 	PHYSICS_PT_cloth.unregister()
 	bpy.types.PHYSICS_PT_cloth.remove(PHYSICS_PT_cloth.menu)
-	#BONE_PT_transform_locks.unregister() #BONE_PT_transform に統合
-	#bpy.types.BONE_PT_transform.remove(BONE_PT_transform_locks.menu)
 	BONE_PT_relations.unregister()
 	bpy.types.BONE_PT_relations.remove(BONE_PT_relations.menu)
 	#bpy.types.***.remove(***.menu)
