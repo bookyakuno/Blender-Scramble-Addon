@@ -50,7 +50,6 @@ if "bpy" in locals():
 	"INFO_MT_render",
 	"INFO_MT_window",
 	"MATERIAL_MT_specials",
-	"MATERIAL_PT_context_material",
 	"MESH_MT_shape_key_specials",
 	"MESH_MT_vertex_group_specials",
 	"DATA_PT_vertex_groups",
@@ -138,7 +137,6 @@ else:
 	INFO_MT_render,
 	INFO_MT_window,
 	MATERIAL_MT_specials,
-	MATERIAL_PT_context_material,
 	MESH_MT_shape_key_specials,
 	MESH_MT_vertex_group_specials,
 	DATA_PT_vertex_groups,
@@ -372,8 +370,6 @@ def register():
 	bpy.types.TOPBAR_MT_window.append(INFO_MT_window.menu)
 	MATERIAL_MT_specials.register()
 	bpy.types.MATERIAL_MT_context_menu.append(MATERIAL_MT_specials.menu)
-	#MATERIAL_PT_context_material.register()#クラスなしのためregister()は未定義
-	#bpy.types.MATERIAL_PT_context_material.append(MATERIAL_PT_context_material.menu)
 	MESH_MT_shape_key_specials.register()
 	bpy.types.MESH_MT_shape_key_context_menu.append(MESH_MT_shape_key_specials.menu)
 	MESH_MT_vertex_group_specials.register()
@@ -543,8 +539,6 @@ def unregister():
 	bpy.types.TOPBAR_MT_window.remove(INFO_MT_window.menu)
 	MATERIAL_MT_specials.unregister()
 	bpy.types.MATERIAL_MT_context_menu.remove(MATERIAL_MT_specials.menu)
-	#MATERIAL_PT_context_material.unregister()#クラスなしのためunregister()は未定義
-	#bpy.types.MATERIAL_PT_context_material.remove(MATERIAL_PT_context_material.menu)
 	MESH_MT_shape_key_specials.unregister()
 	bpy.types.MESH_MT_shape_key_context_menu.remove(MESH_MT_shape_key_specials.menu)
 	MESH_MT_vertex_group_specials.unregister()
