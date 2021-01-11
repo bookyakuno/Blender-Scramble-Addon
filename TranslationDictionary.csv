@@ -1181,6 +1181,7 @@
 "ウェイトコピー用メッシュを作成","Create mesh for weight copy"
 "選択中のボーンのウェイトコピーで使用するメッシュを作成します","Creates mesh to use with copy of selected bone weight"
 "ウェイトの位置","Position of Weight"
+"ボーン名を変更","Change Bone Name"
 "名前からドット付き数字を削除","Remove Dot-Number from Names"
 "選択されたボーンの名前に対し、末尾のドット付き数字の除去を試みます","Try to remove right-most dot-number from select bones' names"
 "接尾辞を変更","Change Suffix"
