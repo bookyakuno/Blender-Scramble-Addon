@@ -1,4 +1,5 @@
-"BONE_PT_constraints","BONE_PT_constraints"
+"","======= BONE_PT_constraints ======="
+
 "クイック・チャイルド","Quick child"
 "第二選択ボーンを親として、アクティブなボーンにチャイルドコンストレイントを追加します","Add child constraint to the active bone setting the selected bone as parent"
 "IKのチェーンの長さを設定","Set Chain Length of IK"
@@ -11,7 +12,9 @@
 "個別処理","Individual processing"
 
 
-"BONE_PT_context_bone","BONE_PT_context_bone"
+
+"","======= BONE_PT_context_bone ======="
+
 "接尾辞を追加","Add Axis Suffix"
 "ボーン名に接尾辞を追加","Add Axis Suffix to Bone Name"
 "アクティブなボーン名に左右を示す接尾辞を追加します","Add an axis suffix to the active bone's name"
@@ -25,7 +28,9 @@
 "オブジェクト名も含める","Contain Object Name"
 
 
-"BONE_PT_inverse_kinematics","BONE_PT_inverse_kinematics"
+
+"","======= BONE_PT_inverse_kinematics ======="
+
 "初期化","Initialize"
 "IK設定をリセット","Reset IK Settings"
 "全てのIK設定を初期化します","Reset all of IK settings"
@@ -43,12 +48,16 @@
 "軸を選び、その軸におけるIK制限の最小角と最大角を反転させます","Choose axes and reverse their minimum and maximum angles for IK Limit"
 
 
-"BONE_PT_relations","BONE_PT_relations"
+
+"","======= BONE_PT_relations ======="
+
 "関係設定をコピー","Copy Relations Settings"
 "アクティブなボーンの関係設定を、他の選択ボーンにコピーします","Copy axtive bone's relations settings to other selected bones"
 
 
-"BONE_PT_transform","BONE_PT_transform"
+
+"","======= BONE_PT_transform ======="
+
 "ボーンの変形をコピー","Copy Bone Transform"
 "位置コピー","Copy Location"
 "回転コピー","Copy Rotation"
@@ -58,7 +67,9 @@
 "アクティブなボーンの位置・回転・スケールのロック設定を、他の選択ボーンにコピーします","Copy active bone's lock of location / rotation / scale to other selected bones"
 
 
-"CYCLES_RENDER_PT_bake","CYCLES_RENDER_PT_bake"
+
+"","======= CYCLES_RENDER_PT_bake ======="
+
 "ベイク用の画像を新規に作成","Crate New Image for Bake"
 "ベイクに使うための新規画像を作成します","Create a new image to use for bake"
 "アルファ値を使用","Use alpha"
@@ -66,7 +77,9 @@
 "浮動小数点カラーを使用","Use floating point color"
 
 
-"DATA_PT_bone_groups","DATA_PT_bone_groups"
+
+"","======= DATA_PT_bone_groups ======="
+
 "表示","Show"
 "このボーングループのボーンを表示","Show bone in the bone group"
 "このボーングループのボーンのみ表示","Show only bone in the bones group"
@@ -76,7 +89,9 @@
 "アクティブなボーングループのボーンのみを表示、もしくはそれらのボーンのみを隠します","Show or hide ONLY the bones in the active Bone Group"
 
 
-"DATA_PT_geometry_curve","DATA_PT_geometry_curve"
+
+"","======= DATA_PT_geometry_curve ======="
+
 "ジオメトリ設定をコピー","Copy Geometry Settings"
 "アクティブなカーブオブジェクトのジオメトリの設定を、他の選択カーブにコピーします","Copy active curve's geometry settings to other selected curves"
 "ベベル先端","Bevel Start"
@@ -98,7 +113,9 @@
 "テーパーオブジェクト","Taper Object"
 
 
-"DATA_PT_modifiers","DATA_PT_modifiers"
+
+"","======= DATA_PT_modifiers ======="
+
 "全てリネーム","Rename All"
 "全てのモディファイア名を自動でリネーム","Auto-rename all modifiers' names"
 "選択された各オブジェクトにおいて、全てのモディファイア名をモディファイアの参照先オブジェクト名に変更します","Set the names of all the selected objects' modifiers to the names of their target objects"
@@ -169,7 +186,9 @@
 "ミラーは適用しない","Not Apply Mirror"
 
 
-"DATA_PT_pose_library","DATA_PT_pose_library"
+
+"","======= DATA_PT_pose_library ======="
+
 "ポーズライブラリのポーズを移動","Move Pose"
 "ポーズライブラリのポーズを最上部 / 最下部へ","Move Pose to Top / Bottom"
 "アクティブなポーズライブラリのポーズを最上部、もしくは最下部へ移動させます","Move the pose to top or bottom of the active pose library"
@@ -177,13 +196,17 @@
 "一番下に移動","Move to Bottom"
 
 
-"DATA_PT_shape_curve","DATA_PT_shape_curve"
+
+"","======= DATA_PT_shape_curve ======="
+
 "シェイプ設定をコピー","Copy Shape Settings"
 "アクティブなカーブのシェイプ設定を、他の選択カーブにコピーします","Copy active curve's shape settings to other selected curves"
 "カーブタイプ(2D/3D)","Curve type (2D/3D)"
 
 
-"DATA_PT_shape_keys","DATA_PT_shape_keys"
+
+"","======= DATA_PT_shape_keys ======="
+
 "キーフレームを挿入","Insert Keyframes"
 "それぞれのシェイプキーに対してまとめてキーフレームを挿入する機能です","Functions to insert keyframes for each shape keys together"
 "間隔","Interval"
@@ -216,7 +239,9 @@
 "全シェイプを無効化/有効化","Disable / Enable All Shapes"
 
 
-"DATA_PT_skeleton","DATA_PT_skeleton"
+
+"","======= DATA_PT_skeleton ======="
+
 "全レイヤー表示","Show All Layers"
 "アクティブなアーマチュアの全てのレイヤーを表示します","Show all the active armature's layers"
 "選択されたボーングループのレイヤーを表示","Show selected bone group's layers"
@@ -225,7 +250,9 @@
 "ボーングループがありません","No Bone groups"
 
 
-"DATA_PT_uv_texture","DATA_PT_uv_texture"
+
+"","======= DATA_PT_uv_texture ======="
+
 "UVを移動","Move UV"
 "アクティブなUVを上下に移動させます","Move the active UV up or down"
 "まとめて操作","Bulk Manipulation"
@@ -238,7 +265,9 @@
 "アクティブなオブジェクトのUVのうち、選択されていないものを削除します","Remove Unselected UV Maps of the active object"
 
 
-"DATA_PT_vertex_colors","DATA_PT_vertex_colors"
+
+"","======= DATA_PT_vertex_colors ======="
+
 "頂点カラーを移動","Move Vertex Color"
 "アクティブな頂点カラーレイヤーを上下に移動します","Move up or down the active vertex color layer"
 "塗り潰す","Fill Vertices"
@@ -249,7 +278,9 @@
 "選択された各オブジェクトにおいて、色と名前を指定して頂点カラーを追加します","Add vertex colors with specified color and name to the selected objects"
 
 
-"DATA_PT_vertex_groups","DATA_PT_vertex_groups"
+
+"","======= DATA_PT_vertex_groups ======="
+
 "頂点/頂点グループ削除","Remove Vertex/Group"
 "特定の頂点や頂点グループの削除を行う機能です","Functions to remove specific vertices or vertex groups"
 "空の頂点グループを削除","Remove Empty Vertex Groups"
@@ -270,7 +301,9 @@
 "対象","Target"
 
 
-"DOPESHEET_MT_key","DOPESHEET_MT_key"
+
+"","======= DOPESHEET_MT_key ======="
+
 "キーフレームを削除 (確認しない)","Delete KeyFrames (without confirming)"
 "確認用のメーセージを表示せずに、選択した全てのキーフレームを削除します","Remove all selected keyframes without displaying the confirmation message"
 "値が重複するキーフレームを削除","Delete Value-overlapping keyframes"
@@ -278,7 +311,9 @@
 "キーを1つは残す","Keep At Least One Key"
 
 
-"IMAGE_MT_image","IMAGE_MT_image"
+
+"","======= IMAGE_MT_image ======="
+
 "新規画像 (拡張)","New Images (Extra)"
 "UVグリッド","UV Grid"
 "UVグリッドを新規作成","Create New UV Grid Image"
@@ -350,7 +385,9 @@
 "画像","Image"
 
 
-"IMAGE_MT_select","IMAGE_MT_select"
+
+"","======= IMAGE_MT_select ======="
+
 "分割された頂点の「もう一方」を選択","Select The OTHER Separated Vertices"
 "選択された頂点とメッシュ上の同じ部分を参照する別の頂点を選択します","Select other vertices referencing the same part of the mesh as the selected ones do"
 "全ての分割された頂点を選択","Select ALL Separated Vertices"
@@ -358,7 +395,9 @@
 "選択を維持","Keep Selection"
 
 
-"IMAGE_MT_uvs","IMAGE_MT_uvs"
+
+"","======= IMAGE_MT_uvs ======="
+
 "UVを平面メッシュに変換","Convert UV to Plane Mesh"
 "アクティブなUVを平面メッシュオブジェクトに変換します","Convert the active UV to a plane mesh object"
 "UVを島ごとにリサイズ","Resize UV Islands"
@@ -366,7 +405,9 @@
 "倍率","Scale Factor"
 
 
-"IMAGE_MT_view","IMAGE_MT_view"
+
+"","======= IMAGE_MT_view ======="
+
 "2Dカーソルの位置を設定","Set 2DCursor Position"
 "2Dカーソルを指定の位置に移動させます","Move 2D cursor to a designated position"
 "上","Top"
@@ -394,7 +435,9 @@
 "パネルの表示を切り替えます","Toggle Panels' Display"
 
 
-"MATERIAL_MT_context_menu","MATERIAL_MT_context_menu"
+
+"","======= MATERIAL_MT_context_menu ======="
+
 "アクティブなマテリアルスロットを一番上に移動させます","Move active material slot to the top of list"
 "アクティブなマテリアルスロットを一番下に移動させます","Move active material slot to the bottom of list"
 "全てのマテリアルスロットを削除","Remove All Material Slots"
@@ -407,7 +450,9 @@
 "Eevee：「裏面の非表示」を有効にします。 / Cycles：メッシュの裏側が透明になるようにシェーダーノードを追加します","Eevee: Enable 'backface culling' / Cycles: Add shader nodes to make the back side of mesh transparent"
 
 
-"MESH_MT_shape_key_context_menu","MESH_MT_shape_key_context_menu"
+
+"","======= MESH_MT_shape_key_context_menu ======="
+
 "シェイプキーを複製","Duplicate Shape Key"
 "アクティブなシェイプキーを複製します","Duplicate active shape key"
 "同名のシェイプキーをドライバーでリンク","Link Shape Keys with Same Name by Driver"
@@ -419,7 +464,9 @@
 "一番下のシェイプキーを選択します","Select the bottom shape key"
 
 
-"MESH_MT_vertex_group_context_menu","MESH_MT_vertex_group_context_menu"
+
+"","======= MESH_MT_vertex_group_context_menu ======="
+
 "頂点グループの反転したコピーを追加","Add Mirrored Vertex Group"
 "アクティブな頂点グループについて、ウェイトおよび名前を反転したコピーを追加します","For the active vertex group, add its copy with flipped weight and name"
 "左右を反転した名前のグループを追加","Add Group with Left-Right-Flipped name"
@@ -430,7 +477,9 @@
 "アクティブな頂点グループを一番下へ移動させます","Move the active vertex groups to bottom"
 
 
-"NODE_MT_node","NODE_MT_node"
+
+"","======= NODE_MT_node ======="
+
 "ノードツリーを他のマテリアルにコピー","Copy Node Tree to Other Materials"
 "アクティブなマテリアルの全てのノードを他のマテリアルにコピーします","Copy all of active material's nodes to other material"
 "選択オブジェクトのマテリアルのみ","Selected Objects' Material Only"
@@ -438,7 +487,9 @@
 "ノードツリーを置き換える","Replace Node Tree"
 
 
-"OBJECT_PT_context_object","OBJECT_PT_context_object"
+
+"","======= OBJECT_PT_context_object ======="
+
 "データ名をクリップボードにコピー","Copy Data Name to Clipboard"
 "アクティブなオブジェクトのデータ名をクリップボードにコピーします","Copy the data's name of active object's to Clipboard"
 "オブジェクト名をクリップボードにコピー","Copy Object Name to Clipboard"
@@ -450,7 +501,9 @@
 "データ名をオブジェクト名と同じ名前に変更します","Change the data's name to the same as its object's name"
 
 
-"OBJECT_PT_display","OBJECT_PT_display"
+
+"","======= OBJECT_PT_display ======="
+
 "表示設定をコピー","Copy Display Setting"
 "アクティブなオブジェクトの表示設定を他の選択オブジェクトにコピーします","Copy active object's display settings to other selected objects"
 "同じタイプにのみコピー","Copy to only same type"
@@ -458,28 +511,38 @@
 "すべての辺を表示","Show All Edges"
 
 
-"PHYSICS_PT_cloth","PHYSICS_PT_cloth"
+
+"","======= PHYSICS_PT_cloth ======="
+
 "クロスの設定をコピー","Copy Cloth Setting"
 "アクティブなオブジェクトのクロスシミュレーションの設定を、他の選択オブジェクトにコピーします","Copy active object's Cloth simulation settings to other selected objects"
 
 
-"PHYSICS_PT_dynamic_paint","PHYSICS_PT_dynamic_paint"
+
+"","======= PHYSICS_PT_dynamic_paint ======="
+
 "ダイナミックペイント設定をコピー","Copy Dynamic Paint Setting"
 "アクティブなオブジェクトのダイナミックペイント設定を、他の選択オブジェクトにコピーします","Copy active object's Dynamic paint settings to other selected objects"
 
 
-"PHYSICS_PT_field","PHYSICS_PT_field"
+
+"","======= PHYSICS_PT_field ======="
+
 "フォースフィールド設定をコピー","Copy Force Field Setting"
 "アクティブなオブジェクトのフォースフィールド設定を、他の選択オブジェクトにコピーします","Copy active object's Force Field settings to  other selected objects"
 
 
-"PHYSICS_PT_rigid_body","PHYSICS_PT_rigid_body"
+
+"","======= PHYSICS_PT_rigid_body ======="
+
 "設定をコピー","Copy Setting"
 "リジッドボディの設定をコピー","Copy Rigid Body Setting"
 "アクティブなオブジェクトのリジッドボディの設定を、他の選択オブジェクトにコピーします","Copy active object's Rigid Body settings to other selected objects"
 
 
-"PHYSICS_PT_rigid_body_constraint","PHYSICS_PT_rigid_body_constraint"
+
+"","======= PHYSICS_PT_rigid_body_constraint ======="
+
 "リジッドボディコンストレイントの設定をコピー","Copy Rigid Body Constraint Setting"
 "アクティブなオブジェクトのリジッドボディコンストレイントの設定を、他の選択オブジェクトにコピーします","Copy active object's Rigid Body Constraint settings to other selected objects"
 "対象に設定されたオブジェクトもコピー","Copy Targeted Objects"
@@ -496,18 +559,24 @@
 "汎用","Generic"
 
 
-"PHYSICS_PT_softbody","PHYSICS_PT_softbody"
+
+"","======= PHYSICS_PT_softbody ======="
+
 "ソフトボディの設定をコピー","Copy Soft Body Setting"
 "アクティブオブジェクトのソフトボディの設定を、他の選択オブジェクトにコピーします","Copy active object's Soft Body settings to other selected objects"
 
 
-"PROPERTIES_HT_header","PROPERTIES_HT_header"
+
+"","======= PROPERTIES_HT_header ======="
+
 "プロパティタブを切り替え","Switch Property Tab"
 "プロパティのタブを順番に切り替えます","Switch property tab in turn"
 "値が不正な値です","Invalid Value"
 
 
-"RENDER_PT_context","RENDER_PT_context"
+
+"","======= RENDER_PT_context ======="
+
 "レンダリング結果の表示方法","Display Method for Result"
 "アニメーション","Animation"
 "バックグラウンドでレンダリング","Render from Command Line"
@@ -516,7 +585,9 @@
 "スレッド数","Number of Threads"
 
 
-"SCENE_PT_rigid_body_world","SCENE_PT_rigid_body_world"
+
+"","======= SCENE_PT_rigid_body_world ======="
+
 "再作成","Re-create"
 "リジッドボディワールドを作り直す","Re-create Rigid Body World"
 "同じ設定を使い、リジッドボディワールドを作り直します","Re-create rigid body world with same settings"
@@ -524,7 +595,9 @@
 "リジッドボディワールドの開始/終了フレームを、レンダリングの開始/終了フレームに一致させます","Change rigid body world's start / end frames to the rendering's start / end frames"
 
 
-"TEXTURE_PT_image","TEXTURE_PT_image"
+
+"","======= TEXTURE_PT_image ======="
+
 "テクスチャスロットを移動","Move Texture Slot"
 "アクティブなテクスチャスロットを上下に移動します","Move up or down active texture slot"
 "テクスチャスロットを最上部 / 最下部へ","Move Texture to Top / Bottom"
@@ -555,12 +628,16 @@
 "画像が指定されていません","Image is not specified"
 
 
-"TEXT_MT_text","TEXT_MT_text"
+
+"","======= TEXT_MT_text ======="
+
 "== エディターでテキストを編集 ==","== Edit Text with Editors =="
 "ユーザー設定で設定されたテキストエディターで現在のテキストを開きます","Open current text in text editors referenced at User Preference"
 
 
-"TOPBAR_MT_file","TOPBAR_MT_file"
+
+"","======= TOPBAR_MT_file ======="
+
 "最後に使ったファイルを開く","Open Last Used File"
 "「最近使用したファイル」の一番上のファイルを開きます","Open the file at the top of 'Open Recent'"
 "最新の自動保存を読み込み","Load Last AutoSave"
@@ -608,7 +685,9 @@
 "全ての物理演算の開始/終了フレームを、レンダリングの開始/終了フレームに一致させます","Change all physics' start / end frames to the rendering's start / end frames"
 
 
-"TOPBAR_MT_file_external_data","TOPBAR_MT_file_external_data"
+
+"","======= TOPBAR_MT_file_external_data ======="
+
 "全ての画像ファイルをtexturesフォルダに保存する","Save All Image Files in 'textures' Folder"
 "新規に作成した「textures」フォルダ、あるいは既存の「textures」フォルダの中に、参照されている全ての画像ファイルを保存します","Select the existed 'textures' folder or create it, and save all the referenced image files in it"
 "画像ファイルをtexturesフォルダ内に保存しました","Saved image files into 'textures' folder"
@@ -620,7 +699,9 @@
 "ファイルブラウザのブックマークのリストをBlenderのテキストエディターに表示します","Display the list of bookmarked files at file browser in Blender's text editor"
 
 
-"TOPBAR_MT_render","TOPBAR_MT_render"
+
+"","======= TOPBAR_MT_render ======="
+
 "解像度 X","Resolution X"
 "解像度 Y","Resolution Y"
 "レンダリング画像のサイズ","Rendering Image's Size"
@@ -668,7 +749,9 @@
 "レンダリング","Rendering"
 
 
-"TOPBAR_MT_window","TOPBAR_MT_window"
+
+"","======= TOPBAR_MT_window ======="
+
 "UIの言語を切り替え (英語⇔日本語)","Switch UI Language (English/Japanese)"
 "インターフェイスの表示言語を、英語と日本語で切り替えます","Switch interface language between English and Japanese"
 "エディター切り替え(ショートカット登録用)","Switch Editors (For Shortcut)"
@@ -704,7 +787,9 @@
 "テキストエディター","Text Editor"
 
 
-"USERPREF_PT_file_paths_applications","USERPREF_PT_file_paths_applications"
+
+"","======= USERPREF_PT_file_paths_applications ======="
+
 "関連付け (Windowsのみ)","File Associations (Windows Only)"
 "関連付けの対象","Files to associate"
 "blendファイル","Blend File"
@@ -717,7 +802,9 @@
 "外部のテキストエディター","External Text Editor"
 
 
-"USERPREF_PT_navigation_bar","USERPREF_PT_navigation_bar"
+
+"","======= USERPREF_PT_navigation_bar ======="
+
 "ユーザー設定のタブを切り替え","Switch User Preference Tab"
 "ユーザー設定のタブを順番に切り替えます","Switch user settings tab in turn"
 "Scramble Addonを操作する機能群です","Functions to manipulate scramble Addon"
@@ -759,7 +846,9 @@
 "キーマップ検索の対象を未指定に戻します","Set empty value as target key-binding for filtering"
 
 
-"VIEW3D_MT_armature_context_menu","VIEW3D_MT_armature_context_menu"
+
+"","======= VIEW3D_MT_armature_context_menu ======="
+
 "接尾辞付与 + 対称化","Add Suffix + Symmetrize"
 "選択したボーンの名前に左右を示す接尾辞を追加し、対称の位置に反転したコピーを作成します","Add left-right suffix to selected bones' names, and make their copies at the symmetric positions"
 "接続の設定をコピー","Copy 'Connected'"
@@ -782,7 +871,9 @@
 "元のボーンを親に設定","Set Original as Parent"
 
 
-"VIEW3D_MT_bone_options_toggle","VIEW3D_MT_bone_options_toggle"
+
+"","======= VIEW3D_MT_bone_options_toggle ======="
+
 "選択したボーンをリネーム","Rename Selected Bones"
 "選択されたボーンの名前をまとめて設定します","Change selected bones' names together"
 "選択したボーンのベンディボーンを設定","Set 'Bendy Bones' of Selected Bones"
@@ -791,12 +882,16 @@
 "選択されたボーンのロールをまとめて設定します","Change selected bones' roll together"
 
 
-"VIEW3D_MT_edit_armature","VIEW3D_MT_edit_armature"
+
+"","======= VIEW3D_MT_edit_armature ======="
+
 "ボーンを削除 (確認しない)","Delete Bone (without confirming)"
 "確認用のメーセージを表示せずに、選択した全てのボーンを削除します","Remove all selected bones without displaying the confirmation message"
 
 
-"VIEW3D_MT_edit_mesh","VIEW3D_MT_edit_mesh"
+
+"","======= VIEW3D_MT_edit_mesh ======="
+
 "メッシュ選択モードの切り替え","Switch Mesh Select Mode"
 "頂点選択 → 辺選択 → 面選択","Vertex Select => Edge Select => Face Select"
 "モード切り替え(ショートカット登録用)","Switch Mode (For Shortcut)"
@@ -811,7 +906,9 @@
 "接続のみ","Connected Only"
 
 
-"VIEW3D_MT_edit_mesh_context_menu","VIEW3D_MT_edit_mesh_context_menu"
+
+"","======= VIEW3D_MT_edit_mesh_context_menu ======="
+
 "ベースのシェイプを表示","Show Base Shape"
 "アクティブなオブジェクトのシェイプのうち、ベースとして設定されたシェイプをビューポートで表示します","Show base shape of active object's shape keys in viewport"
 "ミラーモディファイアの表示を切り替え","Switch Display of Mirror Modifiers"
@@ -831,7 +928,9 @@
 "少なくとも一つは頂点を選択してください","Need to select at least one vertex"
 
 
-"VIEW3D_MT_edit_mesh_delete","VIEW3D_MT_edit_mesh_delete"
+
+"","======= VIEW3D_MT_edit_mesh_delete ======="
+
 "選択モードに応じて削除","Delete Based on Select Mode"
 "メッシュ選択モードに応じて、特定の方法で選択した頂点/辺/面を削除します","Delete selected vertices / edges / faces in the specific way based on current mesh select mode"
 "削除方法","Delete Method"
@@ -847,7 +946,9 @@
 "アクティブなオブジェクトの隠されている頂点を全て削除します","Delete all hidden vertices of active object"
 
 
-"VIEW3D_MT_edit_mesh_showhide","VIEW3D_MT_edit_mesh_showhide"
+
+"","======= VIEW3D_MT_edit_mesh_showhide ======="
+
 "表示 / 隠すを反転","Invert Show / Hide"
 "頂点/辺/面の表示状態を反転させます","Invert display states of each vertices / edges / faces"
 "頂点のみを隠す","Hide Only Vertex"
@@ -858,7 +959,9 @@
 "分離されたメッシュのうち、頂点が全く選択されていないものを全て隠します","Hide all of isolated meshes which vertices are not selected"
 
 
-"VIEW3D_MT_edit_mesh_vertices","VIEW3D_MT_edit_mesh_vertices"
+
+"","======= VIEW3D_MT_edit_mesh_vertices ======="
+
 "分離 (拡張)","Separate (Extra)"
 "機能が追加された「分離」メニュー","Separate menu with extra functions"
 "選択を分離 → 分離したものを編集","Separate Selection => Edit Separated"
@@ -881,7 +984,9 @@
 "選択された頂点に、もう1つの選択オブジェクトを対称にしたシュリンクラップを適用します","Apply to selected vertices Shrinkwrap modifier for the other selected object"
 
 
-"VIEW3D_MT_make_links","VIEW3D_MT_make_links"
+
+"","======= VIEW3D_MT_make_links ======="
+
 "トランスフォームを同一に","Change to Same Transform"
 "他の選択オブジェクトの位置/回転/スケールを、アクティブなオブジェクトのものと同一にします","Change selected objects' locations / rotations / scales to same as active object's"
 "オブジェクト名を同一に","Change to Same Object Name"
@@ -893,7 +998,9 @@
 "他の選択アーマチュアにコンストレイントを追加し、アクティブなアーマチュアに追随させます","Add constraint to selected armatures so that they follow to active armature"
 
 
-"VIEW3D_MT_mesh_add","VIEW3D_MT_mesh_add"
+
+"","======= VIEW3D_MT_mesh_add ======="
+
 "1つの頂点のみ","Only One Vertex"
 "1頂点のみで構成されたメッシュを3Dカーソルの位置に作成します","Add a mesh composed of only one vertex at the 3D cursor's location"
 "四角ポリゴン球","Squared-Polygon Sphere"
@@ -904,7 +1011,9 @@
 "グループに含める頂点のウエイトの閾値","Threshold Weight of Included Vertices"
 
 
-"VIEW3D_MT_object","VIEW3D_MT_object"
+
+"","======= VIEW3D_MT_object ======="
+
 "オブジェクトを削除 (確認しない)","Delete Objects (without confirming)"
 "確認用のメーセージを表示せずに、選択した全てのオブジェクトを削除します","Deletes all selected objects without displaying the confirmation message"
 "プロパティを変更(ショートカット登録用)","Change Properties (For Shortcut)"
@@ -926,7 +1035,9 @@
 "選択されたオブジェクトのビューポートでの表示方法を変更します","Change display method of selected objects"
 
 
-"VIEW3D_MT_object_context_menu","VIEW3D_MT_object_context_menu"
+
+"","======= VIEW3D_MT_object_context_menu ======="
+
 "頂点ウェイトを転送","Transfer Vertex Weight"
 "選択されたメッシュからアクティブなメッシュに、頂点ウェイトを転送します","Transfer vertex weights from selected meshes to active one"
 "既存の頂点グループを削除","Delete existed vertex groups"
@@ -990,7 +1101,9 @@
 "3Dビューのシェーディングがソリッドモードに変更されました","Viewport shading has been changed to 'Solid' mode"
 
 
-"VIEW3D_MT_object_showhide","VIEW3D_MT_object_showhide"
+
+"","======= VIEW3D_MT_object_showhide ======="
+
 "隠したオブジェクトを表示 (非選択)","Show Hidden Objects (without selecting)"
 "隠していたオブジェクトを非選択状態で表示します","Show hidden objects without selecting"
 "隠したコレクションも表示","Show hidden collections"
@@ -1007,7 +1120,9 @@
 "指定したタイプ以外","Except designated type"
 
 
-"VIEW3D_MT_paint_weight","VIEW3D_MT_paint_weight"
+
+"","======= VIEW3D_MT_paint_weight ======="
+
 "指定したボーンのウェイトを加算","Add Designated Bone's Weight"
 "アクティブな頂点グループに対し、指定したボーンで利用される頂点グループのウェイトを追加します","Add the weight of vertex group linked to designated bone to active vertex group"
 "指定したボーンのウェイトを減算","Subtract Designated Bone's Weight"
@@ -1022,7 +1137,9 @@
 "アクティブ、もしくは全ての頂点グループのウェイトをぼかします","Blur active or all vertex groups' weight"
 
 
-"VIEW3D_MT_pose_constraints","VIEW3D_MT_pose_constraints"
+
+"","======= VIEW3D_MT_pose_constraints ======="
+
 "IKの回転制限をコンストレイントに変換","Convert IK Rotation Limit to Constraint"
 "選択されたボーンのIKの回転制限設定を、回転制限コンストレイントとして設定します","Add to selected bones limit rotation constraints which limits are same as their IK settings"
 "IKの回転制限設定を無効化","Disable IK rotation limit"
@@ -1031,7 +1148,9 @@
 "コンストレイントを削除","Remove Constraint"
 
 
-"VIEW3D_MT_pose_context_menu","VIEW3D_MT_pose_context_menu"
+
+"","======= VIEW3D_MT_pose_context_menu ======="
+
 "対称なボーンにコンストレイントをコピー","Copy Constraints to Flipped-Name Bones"
 "選択されたボーンのコンストレイントを、左右が反転した名前のボーンにコピーします","Copy selected bones' constraints to bones which have left-right-flipped name"
 "グリースペンシルに沿ってボーンを配置","Place Bones along Grease Pencil"
@@ -1072,20 +1191,26 @@
 "位置切り替え (現在：ポーズ位置)","Switch Position (Current: Pose)"
 
 
-"VIEW3D_MT_pose_showhide","VIEW3D_MT_pose_showhide"
+
+"","======= VIEW3D_MT_pose_showhide ======="
+
 "選択されたボーンを選択不可能に変更します","Make selected bones unselectable"
 "選択されていないボーンを選択不可能に変更します","Make unselected bones unselectable"
 "表示されていないボーンには適用しない","Not apply to undisplayed bones"
 "全てのボーンを選択可能に変更します","Make all bones selectable"
 
 
-"VIEW3D_MT_select_edit_armature","VIEW3D_MT_select_edit_armature"
+
+"","======= VIEW3D_MT_select_edit_armature ======="
+
 "選択を変更 (対称な名前)","Change Selection (Flipped-Name)"
 "マウス位置までのボーンを選択","Select Bones to Mouse"
 "選択されたボーンからマウス位置までのボーンを選択します","Select bones which exist between selected bones and mouse position"
 
 
-"VIEW3D_MT_select_edit_mesh","VIEW3D_MT_select_edit_mesh"
+
+"","======= VIEW3D_MT_select_edit_mesh ======="
+
 "頂点を選択 (片側)","Select Vertex (One Side)"
 "片側の頂点を選択します","Select vertices on one side"
 "右 / 上","Right / Top"
@@ -1094,7 +1219,9 @@
 "X座標がゼロである頂点を選択します","Select vertices which X-axis location is zero"
 
 
-"VIEW3D_MT_select_object","VIEW3D_MT_select_object"
+
+"","======= VIEW3D_MT_select_object ======="
+
 "選択 (特殊メッシュ)","Select (Special Mesh)"
 "面を持つメッシュ","Mesh with Face"
 "1つ以上の面を持つメッシュオブジェクトを選択します","Select objects which meshes have more than one face"
@@ -1123,7 +1250,9 @@
 "アクティブなオブジェクトと同じアーマチュアオブジェクトを参照しているオブジェクトを選択します","Select objects which refer the same armature object as active object"
 
 
-"VIEW3D_MT_select_pose","VIEW3D_MT_select_pose"
+
+"","======= VIEW3D_MT_select_pose ======="
+
 "ボーンを選択 (2つの間)","Select Bones (Between Two)"
 "選択されたボーンからもう1つの選択ボーンまでの間にあるボーンを選択します","Select bones which exist between two selected bones"
 "ボーンを選択 (全ての親)","Select Bones (All Parent)"
@@ -1153,7 +1282,9 @@
 "類似","Similar"
 
 
-"VIEW3D_MT_snap","VIEW3D_MT_snap"
+
+"","======= VIEW3D_MT_snap ======="
+
 "3Dカーソルをビューの中心に","Cursor to Center of View"
 "3Dカーソルをビューの中心に移動させます","Move 3D cursor to the center of viewport"
 "3Dカーソルをマウス位置に","Cursor to Mouse"
@@ -1162,13 +1293,17 @@
 "3Dカーソルを遠くに移動させ、ビューに表示されないようにします","Move 3D cursor far away not to appear in viewport"
 
 
-"VIEW3D_MT_uv_map","VIEW3D_MT_uv_map"
+
+"","======= VIEW3D_MT_uv_map ======="
+
 "選択部分のUV展開を他からコピー","Copy Selected Part's UV Data from Other"
 "メッシュの選択部分におけるUV展開を、アクティブなオブジェクトの他のUVからコピーします","Copy UV data for mesh's selected part from another UV Map of active object"
 "コピー元のUV","Copy from"
 
 
-"VIEW3D_MT_view","VIEW3D_MT_view"
+
+"","======= VIEW3D_MT_view ======="
+
 "パイメニュー：視点","Pie Menu: Viewport"
 "プリセットの視点に切り替えます","Switch a preset viewport"
 "後","Back"
@@ -1201,7 +1336,9 @@
 "=== スクリーンショットを編集 ===","=== Edit Screenshot ==="
 
 
-"VIEW3D_MT_view_align","VIEW3D_MT_view_align"
+
+"","======= VIEW3D_MT_view_align ======="
+
 "選択されたものを視点の中心に (ズームなし)","Center View to Selected (Non-Zoom)"
 "選択されたものがビューの中心になるように、現在の距離を維持しつつ視点を移動します","Center the view keeping current distance so that selected in the middle of the view"
 "反対側からの視点","View from Opposite Side"
@@ -1216,20 +1353,28 @@
 "マウス位置のオブジェクトを選択し、ビューの中心になるように視点を移動します","Select object under the mouse cursor, and center the view so that it in the middle of the view"
 
 
-"VIEW3D_MT_view_align_selected","VIEW3D_MT_view_align_selected"
+
+"","======= VIEW3D_MT_view_align_selected ======="
+
 "アクティブな面に視点を揃える","Align View to Active Face"
 "アクティブな面の法線の向きに基づいて、視点の角度を決定します","Rotate view based on active face's normal direction"
 
 
-"VIEW3D_PT_collections","VIEW3D_PT_collections"
+
+"","======= VIEW3D_PT_collections ======="
+
 "アーマチュアのレイヤー","Layers of Armature"
 
 
-"VIEW3D_PT_view3d_cursor","VIEW3D_PT_view3d_cursor"
+
+"","======= VIEW3D_PT_view3d_cursor ======="
+
 "原点","Origin"
 
 
-"VIEW3D_PT_view3d_properties","VIEW3D_PT_view3d_properties"
+
+"","======= VIEW3D_PT_view3d_properties ======="
+
 "現在の視点を保存","Save Current View"
 "現在のビューの位置・角度・距離を保存します","Save current view's location, rotation and distance"
 "別の視点を読み込み","Load Other View"
@@ -1239,7 +1384,9 @@
 "シーンのカメラ","Active Camera"
 
 
-"__init__","__init__"
+
+"","======= __init__ ======="
+
 "「追加項目のオン/オフ」ボタンを表示","Display 'On/Off Additional Items' Button"
 "無効なメニュー","Invalid Menu"
 "XMLキーコンフィグのパス","XML Config Path"
