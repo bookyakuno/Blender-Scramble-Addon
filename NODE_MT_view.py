@@ -9,8 +9,8 @@ import bpy
 
 class TogglePanelsA(bpy.types.Operator):
 	bl_idname = "node.toggle_panels_a"
-	bl_label = "Toggle Panel (mode A)"
-	bl_description = "properties/tool shelf \"both display\" / \"both hide\" toggle"
+	bl_label = "Toggle Panel : 'BOTH'"
+	bl_description = "Show BOTH of Sidebar and Toolbar <=> Hide BOTH of them"
 	bl_options = {'REGISTER'}
 	
 	def execute(self, context):
@@ -33,8 +33,8 @@ class TogglePanelsA(bpy.types.Operator):
 
 class TogglePanelsB(bpy.types.Operator):
 	bl_idname = "node.toggle_panels_b"
-	bl_label = "Toggle Panel (mode B)"
-	bl_description = "\"Panel both hide\" => show only tool shelf => show only properties => \"Panel both display\" for toggle"
+	bl_label = "Toggle Panel : 'IN-TURN'"
+	bl_description = "Hide BOTH of sidebar and toolbar => Show ONLY toolbar => Show ONLY sidebar => Show BOTH"
 	bl_options = {'REGISTER'}
 	
 	def execute(self, context):
@@ -56,8 +56,8 @@ class TogglePanelsB(bpy.types.Operator):
 
 class TogglePanelsC(bpy.types.Operator):
 	bl_idname = "node.toggle_panels_c"
-	bl_label = "Toggle Panel (mode C)"
-	bl_description = "\"Panel both hide\" => \"show only tool shelf => show only properties. toggle"
+	bl_label = "Toggle Panel : 'ONE-SIDE'"
+	bl_description = "Hide BOTH of sidebar and toolbar => Show ONLY toolbar  => Show ONLY sidebar"
 	bl_options = {'REGISTER'}
 	
 	def execute(self, context):
@@ -83,8 +83,8 @@ class TogglePanelsC(bpy.types.Operator):
 
 class ShortcutsMenu(bpy.types.Menu):
 	bl_idname = "NODE_MT_view_shortcuts"
-	bl_label = "By Shortcuts"
-	bl_description = "Registering shortcut feature that might come in handy"
+	bl_label = "Toggle Display (For Shortcut)"
+	bl_description = "Functions to toggle display states or so that can be used easily by assigning shortcut"
 	
 	def draw(self, context):
 		self.layout.operator(TogglePanelsA.bl_idname, icon="PLUGIN")

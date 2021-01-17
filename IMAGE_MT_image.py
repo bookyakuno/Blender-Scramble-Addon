@@ -11,8 +11,8 @@ from bpy.props import *
 
 class RenameImageFileName(bpy.types.Operator):
 	bl_idname = "image.rename_image_file_name"
-	bl_label = "Image name from file name"
-	bl_description = "External images are using name of active image file name"
+	bl_label = "Match Image Name to File Name"
+	bl_description = "Change the active image's name to its linked file's name"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	isExt : BoolProperty(name="Include Extension", default=True)
@@ -39,8 +39,8 @@ class RenameImageFileName(bpy.types.Operator):
 
 class AllRenameImageFileName(bpy.types.Operator):
 	bl_idname = "image.all_rename_image_file_name"
-	bl_label = "Change all image names to used file name"
-	bl_description = "names of all images using external image file name"
+	bl_label = "Match ALL Image Names to File Names"
+	bl_description = "Change all images' names to their linked files' names"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	isExt : BoolProperty(name="Include Extension", default=True)
@@ -66,7 +66,7 @@ class AllRenameImageFileName(bpy.types.Operator):
 class ReloadAllImage(bpy.types.Operator):
 	bl_idname = "image.reload_all_image"
 	bl_label = "Reload All Images"
-	bl_description = "Reloads all image data referring to external file"
+	bl_description = "Reload all images from their linked files"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -91,11 +91,11 @@ class ReloadAllImage(bpy.types.Operator):
 
 class FillOverrideColor(bpy.types.Operator):
 	bl_idname = "image.fill_override_color"
-	bl_label = "Override Color"
-	bl_description = "All over colors you specify active image"
+	bl_label = "Convert to One-color Image"
+	bl_description = "Convert the active image to one-color image of specified color"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	color : FloatVectorProperty(name="Color", description="Fill Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
+	color : FloatVectorProperty(name="Color", description="Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
 
 	@classmethod
 	def poll(cls, context):
@@ -123,7 +123,7 @@ class FillOverrideColor(bpy.types.Operator):
 class FillColor(bpy.types.Operator):
 	bl_idname = "image.fill_color"
 	bl_label = "Fill With Color"
-	bl_description = "Fill with color image active all"
+	bl_description = "Fill the active image with specified color"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	color : FloatVectorProperty(name="Color", description="Fill Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
@@ -157,11 +157,11 @@ class FillColor(bpy.types.Operator):
 
 class FillTransparency(bpy.types.Operator):
 	bl_idname = "image.fill_transparency"
-	bl_label = "Fill Transparent"
+	bl_label = "Fill Transparent Part"
 	bl_description = "transparent parts of image are active in specified color fills"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	color : FloatVectorProperty(name="Fill Color", default=(1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
+	color : FloatVectorProperty(name="Fill Color",  default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
 
 	@classmethod
 	def poll(cls, context):
@@ -188,7 +188,7 @@ class FillTransparency(bpy.types.Operator):
 		pixels[:,:,0]= (pixels[:,:,0] * alphas) + (color[0] * unalphas)
 		pixels[:,:,1]= (pixels[:,:,1] * alphas) + (color[1] * unalphas)
 		pixels[:,:,2]= (pixels[:,:,2] * alphas) + (color[2] * unalphas)
-		pixels[:,:,3] = 1.0
+		pixels[:,:,3] = alphas + color[3] * unalphas
 		img.pixels = pixels.flatten()
 		img.gl_free()
 		for area in context.screen.areas:
@@ -198,7 +198,7 @@ class FillTransparency(bpy.types.Operator):
 class Normalize(bpy.types.Operator):
 	bl_idname = "image.normalize"
 	bl_label = "Normalize Image"
-	bl_description = "Normalize Active Image"
+	bl_description = "Normalize  the active image"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -230,8 +230,8 @@ class Normalize(bpy.types.Operator):
 
 class RenameImageFile(bpy.types.Operator):
 	bl_idname = "image.rename_image_file"
-	bl_label = "Change name of image file"
-	bl_description = "Change file name of active image"
+	bl_label = "Rename linked Image File"
+	bl_description = "Rename the image file linked to the active image"
 	bl_options = {'REGISTER'}
 
 	new_name : StringProperty(name="New File Name")
@@ -246,7 +246,7 @@ class RenameImageFile(bpy.types.Operator):
 	def invoke(self, context, event):
 		self.new_name = bpy.path.basename(context.edit_image.filepath_raw)
 		if (self.new_name == ""):
-			self.report(type={"ERROR"}, message="External file does not exist in this image")
+			self.report(type={"ERROR"}, message="External file does not exist for this image")
 			return {"CANCELLED"}
 		return context.window_manager.invoke_props_dialog(self)
 	def execute(self, context):
@@ -254,7 +254,7 @@ class RenameImageFile(bpy.types.Operator):
 		dir = os.path.dirname(bpy.path.abspath(context.edit_image.filepath_raw))
 		name = bpy.path.basename(context.edit_image.filepath_raw)
 		if (self.new_name == name):
-			self.report(type={"ERROR"}, message="image file name is same as original")
+			self.report(type={"ERROR"}, message="File name is same as the original one")
 			return {"CANCELLED"}
 		bpy.ops.image.save_as(filepath=os.path.join(dir, self.new_name))
 		context.edit_image.name = self.new_name
@@ -264,8 +264,8 @@ class RenameImageFile(bpy.types.Operator):
 # ながとさんに協力して頂きました、感謝！
 class BlurImage(bpy.types.Operator):
 	bl_idname = "image.blur_image"
-	bl_label = "Blur image (Note heavy)"
-	bl_description = "Blur Active Image"
+	bl_label = "Blur image (Slow)"
+	bl_description = "Blur the active image (Caution：it takes some time)"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	strength : IntProperty(name="Blur Strength", default=10, min=1, max=100, soft_min=1, soft_max=100)
@@ -283,9 +283,6 @@ class BlurImage(bpy.types.Operator):
 
 	def execute(self, context):
 		img = context.edit_image
-		if (not img):
-			self.report(type={'ERROR'}, message="Active image not found")
-			return {'CANCELLED'}
 		w, h, c = img.size[0], img.size[1], img.channels
 		ps = numpy.array(img.pixels)
 		lengthes = []
@@ -327,7 +324,7 @@ class BlurImage(bpy.types.Operator):
 class ReverseWidthImage(bpy.types.Operator):
 	bl_idname = "image.reverse_width_image"
 	bl_label = "Flip Horizontally"
-	bl_description = "Reverse this image horizontally"
+	bl_description = "Flip the active image horizontally"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -340,9 +337,6 @@ class ReverseWidthImage(bpy.types.Operator):
 
 	def execute(self, context):
 		img = context.edit_image
-		if (not img):
-			self.report(type={'ERROR'}, message="Active image not found")
-			return {'CANCELLED'}
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
 		pixels = numpy.array(img.pixels).reshape(img_height, img_width, img_channel)
 		#for i in range(img_height):
@@ -357,7 +351,7 @@ class ReverseWidthImage(bpy.types.Operator):
 class ReverseHeightImage(bpy.types.Operator):
 	bl_idname = "image.reverse_height_image"
 	bl_label = "Flip Vertically"
-	bl_description = "Reverse this image verticaliy"
+	bl_description = "Flip the active image vertically"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -370,9 +364,6 @@ class ReverseHeightImage(bpy.types.Operator):
 
 	def execute(self, context):
 		img = context.edit_image
-		if (not img):
-			self.report(type={'ERROR'}, message="Active image not found")
-			return {'CANCELLED'}
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
 		pixels = numpy.array(img.pixels).reshape(img_height, img_width, img_channel)
 		pixels = pixels[::-1]
@@ -384,8 +375,8 @@ class ReverseHeightImage(bpy.types.Operator):
 
 class Rotate90Image(bpy.types.Operator):
 	bl_idname = "image.rotate_90_image"
-	bl_label = "Rotate 90 Degrees"
-	bl_description = "Rotate active image 90 degrees"
+	bl_label = "Rotate by 90 Degrees"
+	bl_description = "Rotate the active image by 90 degrees"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -412,8 +403,8 @@ class Rotate90Image(bpy.types.Operator):
 
 class Rotate180Image(bpy.types.Operator):
 	bl_idname = "image.rotate_180_image"
-	bl_label = "Rotate 180 Degrees"
-	bl_description = "Rotate active image 180 degrees"
+	bl_label = "Rotate by 180 Degrees"
+	bl_description = "Rotate the active image by 180 degrees"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -426,9 +417,6 @@ class Rotate180Image(bpy.types.Operator):
 
 	def execute(self, context):
 		img = context.edit_image
-		if (not img):
-			self.report(type={'ERROR'}, message="Active image not found")
-			return {'CANCELLED'}
 		img_width, img_height, img_channel = img.size[0], img.size[1], img.channels
 		pixels = numpy.array(img.pixels).reshape(img_height, img_width, img_channel)
 		pixels[:,:] = pixels[:,::-1]
@@ -441,8 +429,8 @@ class Rotate180Image(bpy.types.Operator):
 
 class Rotate270Image(bpy.types.Operator):
 	bl_idname = "image.rotate_270_image"
-	bl_label = "Rotate 270 Degrees"
-	bl_description = "Rotate active image 270 degrees"
+	bl_label = "Rotate by 270 Degrees"
+	bl_description = "Rotate the active image by 270 degrees"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -469,8 +457,8 @@ class Rotate270Image(bpy.types.Operator):
 
 class ExternalEditEX(bpy.types.Operator):
 	bl_idname = "image.external_edit_ex"
-	bl_label = "Edit by external editor (Advance)"
-	bl_description = "Open image in an external editor of additional files page of custom"
+	bl_label = "Edit with External Editors"
+	bl_description = "Edit the active image with image editors referenced at User Preference"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	index : IntProperty(name="Number of Use", default=1, min=1, max=3, soft_min=1, soft_max=3)
@@ -479,17 +467,12 @@ class ExternalEditEX(bpy.types.Operator):
 	def poll(cls, context):
 		if (not context.edit_image):
 			return False
-		if (context.edit_image.filepath == ""):
-			return False
 		return True
 
 	def execute(self, context):
 		img = context.edit_image
-		if (not img):
-			self.report(type={'ERROR'}, message="Image Not Found")
-			return {'CANCELLED'}
-		if (img.filepath == ""):
-			self.report(type={'ERROR'}, message="Cannot find image path")
+		if img.filepath == "":
+			self.report(type={'ERROR'}, message="Please save the image as an external file such as ~.png")
 			return {'CANCELLED'}
 		path = bpy.path.abspath(img.filepath)
 		pre_path = context.preferences.filepaths.image_editor
@@ -506,7 +489,7 @@ class ExternalEditEX(bpy.types.Operator):
 class Resize(bpy.types.Operator):
 	bl_idname = "image.resize"
 	bl_label = "Resize Image"
-	bl_description = "Resize Active Image"
+	bl_description = "Resize the active image"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def width_update(self, context):
@@ -554,8 +537,8 @@ class Resize(bpy.types.Operator):
 
 class Duplicate(bpy.types.Operator):
 	bl_idname = "image.duplicate"
-	bl_label = "Copy Image"
-	bl_description = "Duplicate Active Image"
+	bl_label = "Duplicate Image"
+	bl_description = "Duplicate the active image"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -601,8 +584,8 @@ class Duplicate(bpy.types.Operator):
 
 class NewUVChecker(bpy.types.Operator):
 	bl_idname = "image.new_uv_checker"
-	bl_label = "New UV Grid"
-	bl_description = "UV grid to download from WEB, and create new images"
+	bl_label = "Create New UV Grid Image"
+	bl_description = "Download an UV grid image from WEB and add it as new image"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -667,11 +650,11 @@ class NewUVChecker(bpy.types.Operator):
 
 class Tiles(bpy.types.Operator):
 	bl_idname = "image.tiles"
-	bl_label = "Tile Image"
-	bl_description = "Array and scale-down active image"
+	bl_label = "Lay out Shrunken Images"
+	bl_description = "Shrink and lay out the active image"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	count : IntProperty(name="Number of Tile", default=2, min=2, max=8, soft_min=2, soft_max=8)
+	count : IntProperty(name="Number of Tiles", default=2, min=2, max=8, soft_min=2, soft_max=8)
 
 	@classmethod
 	def poll(cls, context):
@@ -683,6 +666,13 @@ class Tiles(bpy.types.Operator):
 
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, count):
+		row = self.layout.split(factor=0.4)
+		sp = row.split(factor=0.2)
+		sp.label(text="")
+		sp.label(text="Number of Tiles")
+		row.prop(self, "count", text="")
+		row.label(text=f" * {self.count} = {self.count * self.count}")
 
 	def execute(self, context):
 		img = context.edit_image
@@ -711,12 +701,12 @@ class Tiles(bpy.types.Operator):
 
 class ResizeBlur(bpy.types.Operator):
 	bl_idname = "image.resize_blur"
-	bl_label = "Blur Image Fast"
-	bl_description = "active image blur fast do"
+	bl_label = "Blur Image (Fast)"
+	bl_description = "Blur the active image"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	size : FloatProperty(name="Strength", default=50, min=1, max=99, soft_min=1, soft_max=99, step=0, precision=0, subtype='PERCENTAGE')
-	count : IntProperty(name="Count", default=10, min=1, max=100, soft_min=1, soft_max=100)
+	size : FloatProperty(name="Blur Strength", default=50, min=1, max=99, soft_min=1, soft_max=99, step=0, precision=0, subtype='PERCENTAGE')
+	count : IntProperty(name="Number of Blurring", default=10, min=1, max=100, soft_min=1, soft_max=100)
 
 	@classmethod
 	def poll(cls, context):
@@ -744,17 +734,17 @@ class ResizeBlur(bpy.types.Operator):
 
 class NewNoise(bpy.types.Operator):
 	bl_idname = "image.new_noise"
-	bl_label = "Create new noise image"
-	bl_description = "Add new noise image"
+	bl_label = "Create New Noise Image"
+	bl_description = "Create a noise image with specified settings and add it as new image"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	monochrome : BoolProperty(name="Decolor Noise", default=False)
+	monochrome : BoolProperty(name="Monochrome Noise", default=False)
 	alpha_noise : BoolProperty(name="Alpha Noise", default=False)
 	name : StringProperty(name="Name", default="Noise")
 	width : IntProperty(name="Width", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
 	height : IntProperty(name="Height", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
-	alpha : BoolProperty(name="Alpha", default=True)
-	float_buffer : BoolProperty(name="32-bit Float", default=False)
+	alpha : BoolProperty(name="Use alpha", default=True)
+	float_buffer : BoolProperty(name="Use floating point color", default=False)
 
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
@@ -784,8 +774,8 @@ class NewNoise(bpy.types.Operator):
 
 class Decolorization(bpy.types.Operator):
 	bl_idname = "image.decolorization"
-	bl_label = "Decolorize"
-	bl_description = "This decolor active image"
+	bl_label = "Convert to Grayscale"
+	bl_description = "Convert the active image to grayscale"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -812,8 +802,8 @@ class Decolorization(bpy.types.Operator):
 
 class Clipping(bpy.types.Operator):
 	bl_idname = "image.clipping"
-	bl_label = "Change size of image"
-	bl_description = "Change size active image"
+	bl_label = "Change Size of Image's Frame"
+	bl_description = "Change size of the active image's frame"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	width : IntProperty(name="Width", default=1024, min=1, max=8192, soft_min=1, soft_max=8192)
@@ -823,14 +813,14 @@ class Clipping(bpy.types.Operator):
 		('CENTER', "Center", "", 2),
 		('RIGHT', "Right", "", 3),
 		]
-	width_align : EnumProperty(items=items, name="Horizontal Position")
+	width_align : EnumProperty(items=items, name="Image Alignment : Horizontal")
 	items = [
 		('UP', "Up", "", 1),
 		('CENTER', "Center", "", 2),
 		('DOWN', "Down", "", 3),
 		]
-	height_align : EnumProperty(items=items, name="Vertical Position")
-	fill_color : FloatVectorProperty(name="Fill Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=3, precision=2, subtype='COLOR_GAMMA', size=4)
+	height_align : EnumProperty(items=items, name="Image Alignment : Vertical")
+	fill_color : FloatVectorProperty(name="Color of Blank Space", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=3, precision=2, subtype='COLOR_GAMMA', size=4)
 
 	@classmethod
 	def poll(cls, context):
@@ -843,7 +833,7 @@ class Clipping(bpy.types.Operator):
 	def invoke(self, context, event):
 		img = context.edit_image
 		self.width, self.height = img.size[0], img.size[1]
-		return context.window_manager.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_dialog(self, width=400)
 
 	def execute(self, context):
 		img = context.edit_image
@@ -904,8 +894,7 @@ class Clipping(bpy.types.Operator):
 
 class TransformMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_transform"
-	bl_label = "Transform"
-	bl_description = "Image Transform Menu"
+	bl_label = "Transform Image"
 
 	def draw(self, context):
 		self.layout.operator(ReverseWidthImage.bl_idname, icon='PLUGIN')
@@ -917,7 +906,7 @@ class TransformMenu(bpy.types.Menu):
 
 class ExternalEditEXMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_external_edit_ex"
-	bl_label = "External Editor (Extra)"
+	bl_label = "Edit with External Editors"
 
 	def draw(self, context):
 		prefs = bpy.context.preferences.addons[__name__.partition('.')[0]].preferences
@@ -936,12 +925,12 @@ class ExternalEditEXMenu(bpy.types.Menu):
 
 class FillMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_fill"
-	bl_label = "Paint"
+	bl_label = "Paint Image"
 
 	def draw(self, context):
-		self.layout.operator(FillOverrideColor.bl_idname, icon='PLUGIN', text="Override")
-		self.layout.operator(FillColor.bl_idname, icon='PLUGIN', text="Paint Out")
-		self.layout.operator(FillTransparency.bl_idname, icon='PLUGIN', text="Fill Transparent")
+		self.layout.operator(FillOverrideColor.bl_idname, icon='PLUGIN')
+		self.layout.operator(FillColor.bl_idname, icon='PLUGIN')
+		self.layout.operator(FillTransparency.bl_idname, icon='PLUGIN')
 
 class NewMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_new"
@@ -953,29 +942,29 @@ class NewMenu(bpy.types.Menu):
 
 class ColorMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_color"
-	bl_label = "Color"
+	bl_label = "Edit Color"
 
 	def draw(self, context):
-		self.layout.operator(Normalize.bl_idname, icon='PLUGIN', text="Normalize")
-		self.layout.operator(Decolorization.bl_idname, icon='PLUGIN', text="Decolorization")
+		self.layout.operator(Normalize.bl_idname, icon='PLUGIN')
+		self.layout.operator(Decolorization.bl_idname, icon='PLUGIN')
 
 class EditMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_edit"
-	bl_label = "Edit"
+	bl_label = "Edit Image"
 
 	def draw(self, context):
-		self.layout.operator(Duplicate.bl_idname, icon='PLUGIN', text="Copy")
-		self.layout.operator(Clipping.bl_idname, icon='PLUGIN', text="Change Size")
-		self.layout.operator(Resize.bl_idname, icon='PLUGIN', text="Scale")
-		self.layout.operator(Tiles.bl_idname, icon='PLUGIN', text="Tile")
+		self.layout.operator(Duplicate.bl_idname, icon='PLUGIN')
+		self.layout.operator(Clipping.bl_idname, icon='PLUGIN')
+		self.layout.operator(Resize.bl_idname, icon='PLUGIN')
+		self.layout.operator(Tiles.bl_idname, icon='PLUGIN')
 
 class FilterMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_image_filter"
-	bl_label = "Filter"
+	bl_label = "Blur Image"
 
 	def draw(self, context):
-		self.layout.operator(ResizeBlur.bl_idname, icon='PLUGIN', text="Blur (high Speed)")
-		self.layout.operator(BlurImage.bl_idname, icon='PLUGIN', text="Blur (slow)")
+		self.layout.operator(ResizeBlur.bl_idname, icon='PLUGIN')
+		self.layout.operator(BlurImage.bl_idname, icon='PLUGIN')
 
 ################
 # クラスの登録 #

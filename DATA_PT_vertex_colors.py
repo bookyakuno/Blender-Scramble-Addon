@@ -66,7 +66,7 @@ class VertexColorSet(bpy.types.Operator):
 	bl_description = "Fill the active vertex color layer with the specified color"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	color : FloatVectorProperty(name="Vertex Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=3, precision=10, subtype='COLOR_GAMMA')
+	color : FloatVectorProperty(name="Vertex Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=3, precision=10, subtype='COLOR_GAMMA', size=4)
 
 	@classmethod
 	def poll(cls, context):
@@ -87,7 +87,7 @@ class VertexColorSet(bpy.types.Operator):
 		me = obj.data
 		active_col = me.vertex_colors.active
 		for data in active_col.data:
-			data.color = (self.color[0] ,self.color[1], self.color[2], 1.0)
+			data.color = self.color
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
@@ -98,7 +98,7 @@ class AddVertexColorSelectedObject(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	name : StringProperty(name="Vertex Color Name", default="Col")
-	color : FloatVectorProperty(name="Vertex Color", default=(0.0, 0.0, 0.0), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA')
+	color : FloatVectorProperty(name="Vertex Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
 
 	@classmethod
 	def poll(cls, context):
@@ -117,9 +117,9 @@ class AddVertexColorSelectedObject(bpy.types.Operator):
 				try:
 					col = me.vertex_colors[self.name]
 				except KeyError:
-					col = me.vertex_colors.new(self.name)
+					col = me.vertex_colors.new(name=self.name)
 				for data in col.data:
-					data.color = (self.color[0] ,self.color[1], self.color[2], 1.0)
+					data.color = self.color
 		return {'FINISHED'}
 
 ################

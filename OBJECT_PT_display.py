@@ -11,19 +11,20 @@ from bpy.props import *
 class CopyDisplaySetting(bpy.types.Operator):
 	bl_idname = "object.copy_display_setting"
 	bl_label = "Copy Display Setting"
-	bl_description = "Copy selected objects of other display settings"
+	bl_description = "Copy active object's display settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	copy_show_name : BoolProperty(name="Name", default=True)
 	copy_show_axis : BoolProperty(name="Axis", default=True)
-	copy_show_wire : BoolProperty(name="Wire Frame", default=True)
+	copy_show_wire : BoolProperty(name="Wireframe", default=True)
 	copy_show_all_edges : BoolProperty(name="Show All Edges", default=True)
-	copy_show_bounds : BoolProperty(name="Bound", default=True)
-	copy_display_bounds_type : BoolProperty(name="Bound Type", default=True)
+	copy_show_bounds : BoolProperty(name="Bounds", default=True)
+	copy_display_bounds_type : BoolProperty(name="Boundary Display Type", default=True)
 	copy_show_texture_space : BoolProperty(name="Texture Space", default=True)
-	copy_show_in_front : BoolProperty(name="X-ray", default=True)
-	copy_show_transparent : BoolProperty(name="Alpha", default=True)
-	copy_display_type : BoolProperty(name="Maximum Draw Type", default=True)
+	copy_show_shadows : BoolProperty(name="Shadow", default=True)
+	copy_show_in_front : BoolProperty(name="In Front", default=True)
+	#copy_show_transparent : BoolProperty(name="Display Color with Alpha", default=True)
+	copy_display_type : BoolProperty(name="Display As", default=True)
 	copy_color : BoolProperty(name="Object Color", default=True)
 
 	@classmethod
@@ -37,23 +38,25 @@ class CopyDisplaySetting(bpy.types.Operator):
 
 	def draw(self, context):
 		row = self.layout.row()
-		row.prop(self, 'copy_show_name')
-		row.prop(self, 'copy_show_bounds')
-		row = self.layout.row()
-		row.label(text="")
-		row.prop(self, 'copy_display_bounds_type')
-		row = self.layout.row()
-		row.prop(self, 'copy_show_axis')
-		row.prop(self, 'copy_show_texture_space')
-		row = self.layout.row()
-		row.prop(self, 'copy_show_wire')
-		row.prop(self, 'copy_show_in_front')
-		row = self.layout.row()
-		row.prop(self, 'copy_show_all_edges')
-		row.prop(self, 'copy_show_transparent')
-		row = self.layout.row()
-		row.prop(self, 'copy_display_type')
-		row.prop(self, 'copy_color')
+		column = row.column().box()
+		column.prop(self, 'copy_show_name')
+		column.prop(self, 'copy_show_axis')
+		column.prop(self, 'copy_show_wire')
+		column.prop(self, 'copy_show_all_edges')
+		column.prop(self, 'copy_show_texture_space')
+		column.prop(self, 'copy_show_shadows')
+		column.prop(self, 'copy_show_in_front')
+		column = row.column()
+		box = column.box()
+		box .prop(self, 'copy_color')
+		#box .prop(self, 'copy_show_transparent')
+		column.separator()
+		box = column.box()
+		box.prop(self, 'copy_display_type')
+		column.separator()
+		box = column.box()
+		box.prop(self, 'copy_show_bounds')		
+		box.prop(self, 'copy_display_bounds_type')
 
 	def execute(self, context):
 		active_obj = context.active_object
@@ -75,8 +78,10 @@ class CopyDisplaySetting(bpy.types.Operator):
 					obj.show_texture_space = active_obj.show_texture_space
 				if (self.copy_show_in_front):
 					obj.show_in_front = active_obj.show_in_front
-				if (self.copy_show_transparent):
-					obj.show_transparent = active_obj.show_transparent
+				if (self.copy_show_shadows):
+					obj.copy_show_shadows = active_obj.copy_show_shadows
+				#if (self.copy_show_transparent):
+				#	obj.show_transparent = active_obj.show_transparent
 				if (self.copy_display_type):
 					obj.display_type = active_obj.display_type
 				if (self.copy_color):

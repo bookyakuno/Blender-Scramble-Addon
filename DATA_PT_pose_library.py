@@ -55,7 +55,7 @@ class MoveActivePoseMost(bpy.types.Operator):
 	bl_description = "Move the pose to top or bottom of the active pose library"
 	bl_options = {'REGISTER'}
 
-	is_top : BoolProperty(name="To Top", default=False)
+	is_top : BoolProperty(name="Move to Top", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -119,7 +119,7 @@ def menu(self, context):
 					row.operator(MoveActivePose.bl_idname, icon='TRIA_UP', text="").is_up = True
 					row.operator(MoveActivePose.bl_idname, icon='TRIA_DOWN', text="").is_up = False
 					row = sp.row()
-					row.operator(MoveActivePoseMost.bl_idname, icon='TRIA_UP_BAR', text="To Top").is_top = True
-					row.operator(MoveActivePoseMost.bl_idname, icon='TRIA_DOWN_BAR', text="To Bottom").is_top = False
+					row.operator(MoveActivePoseMost.bl_idname, icon='TRIA_UP_BAR', text="Move to Top").is_top = True
+					row.operator(MoveActivePoseMost.bl_idname, icon='TRIA_DOWN_BAR', text="Move to Bottom").is_top = False
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

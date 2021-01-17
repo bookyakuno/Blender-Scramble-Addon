@@ -302,7 +302,7 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 	bl_property = "level_enum"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	level : IntProperty(name="Number of Divisions", default=6, min=0, max=10)
+	level : IntProperty(name="Number of Subdivisions", default=6, min=0, max=10)
 	is_more: BoolProperty(name="more", default=False)
 
 	items = [

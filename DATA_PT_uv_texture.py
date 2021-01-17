@@ -159,7 +159,7 @@ class DeleteEmptyUV(bpy.types.Operator):
 class RemoveUnselectedUV(bpy.types.Operator):
 	bl_idname = "object.remove_unselected_uv"
 	bl_label = "Remove Unselected UV"
-	bl_description = "Remove Unselected UV Maps"
+	bl_description = "Remove Unselected UV Maps of the active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod

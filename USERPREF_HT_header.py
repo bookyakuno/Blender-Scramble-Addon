@@ -905,7 +905,7 @@ class MoveKeyBindCategory(bpy.types.Operator):
 class UpdateScrambleAddon(bpy.types.Operator):
 	bl_idname = "script.update_scramble_addon"
 	bl_label = "Update Blender-Scramble-Addon"
-	bl_description = "Downloads, updates and check out Blender-Scramble-Addon"
+	bl_description = "Download 'Blender-Scramble-Addon' and update it"
 	bl_options = {'REGISTER'}
 
 	def invoke(self, context, event):
@@ -932,13 +932,13 @@ class UpdateScrambleAddon(bpy.types.Operator):
 					uzf.write(zf.read(f))
 					uzf.close()
 		zf.close()
-		self.report(type={"INFO"}, message="Please restart Blender updated add-ons")
+		self.report(type={"INFO"}, message="Update completed. Please restart Blender")
 		return {'FINISHED'}
 
 class ToggleDisabledMenu(bpy.types.Operator):
 	bl_idname = "wm.toggle_disabled_menu"
-	bl_label = "Toggle \"On/Off Additional Items\""
-	bl_description = "Show or hide turn on/off additional items button at end of menu by ScrambleAddon"
+	bl_label = "Toggle 'On/Off Additional Items'"
+	bl_description = "Show or hide 'turn on/off additional items' buttons displayed at end of menus added by the add-on"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):

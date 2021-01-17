@@ -10,12 +10,13 @@ from bpy.props import *
 
 class CopyAllMaterialNode(bpy.types.Operator):
 	bl_idname = "node.copy_all_material_node"
-	bl_label = "Copy to other material shader node"
-	bl_description = "Copies of other material shader nodes are displayed"
+	bl_label = "Copy Node Tree to Other Materials"
+	bl_description = "Copy all of active material's nodes to other material"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isOnlySelected : BoolProperty(name="Selected Object Only", default=False)
-	isOnlyUseNode : BoolProperty(name="Only Used Nodes", default=False)
+	isOnlySelected : BoolProperty(name="Selected Objects' Material Only", default=True)
+	isOnlyUseNode : BoolProperty(name="Material Using Nodes Only", default=True)
+	isReplace : BoolProperty(name="Replace Node Tree", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -25,7 +26,7 @@ class CopyAllMaterialNode(bpy.types.Operator):
 			return False
 		if (not context.object.active_material.use_nodes):
 			return False
-		if (context.space_data.node_tree.type != 'SHADER'):
+		if (context.space_data.tree_type != 'ShaderNodeTree'):
 			return False
 		return True
 	def execute(self, context):
@@ -59,25 +60,36 @@ class CopyAllMaterialNode(bpy.types.Operator):
 			dummyObj.material_slots[0].material = mat
 			dummyObj.active_material_index = 0
 			mat.use_nodes = True
-			mat.node_tree.nodes.clear()
+			if self.isReplace:
+				mat.node_tree.nodes.clear()
 			context.space_data.node_tree = mat.node_tree
-			bpy.ops.node.clipboard_paste()
-			for node in mat.node_tree.nodes:
-				try:
-					if (node.material.name == activeMat.name):
-						node.material = mat
-				except AttributeError: pass
+			if not self.isReplace:
+				frame = context.space_data.node_tree.nodes.new(type='NodeFrame')
+				frame.label = mat.name
+				bpy.ops.node.select_all(action='DESELECT')
+				bpy.ops.node.clipboard_paste()
+				for n in context.selected_nodes:
+					n.parent = frame
+			else:
+				bpy.ops.node.clipboard_paste()
 		bpy.ops.object.delete()
 		activeObj.select_set(True)
 		bpy.context.view_layer.objects.active = activeObj
 		return {'FINISHED'}
 
 	def invoke(self, context, event):
-		if (context.space_data.tree_type != 'ShaderNodeTree'):
-			self.report(type={"ERROR"}, message="Please run shader nodes")
-			return {"CANCELLED"}
-		wm = context.window_manager
-		return wm.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		box = self.layout.box()
+		sp = box.split(factor=0.2)
+		sp.label(text="Target")
+		sp.prop(self, 'isOnlySelected')
+		sp = box.split(factor=0.2)
+		sp.label(text="")
+		sp.prop(self, 'isOnlyUseNode')
+		sp = self.layout.split(factor=0.2)
+		sp.label(text="")
+		sp.prop(self, 'isReplace')
 
 ################
 # クラスの登録 #
