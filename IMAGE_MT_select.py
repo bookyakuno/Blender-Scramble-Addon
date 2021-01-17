@@ -3,6 +3,7 @@
 
 import bpy
 import bmesh
+from bpy.props import *
 
 ################
 # オペレーター #
@@ -10,8 +11,8 @@ import bmesh
 
 class SelectSeamEdge(bpy.types.Operator):
 	bl_idname = "uv.select_seam_edge"
-	bl_label = "Select Vertex Isolated"
-	bl_description = "Select vertices are isolated by seam"
+	bl_label = "Select ALL Separated Vertices"
+	bl_description = "Select all vertices linked to seam edges and separated when unwrapping"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	def execute(self, context):
@@ -49,12 +50,49 @@ class SelectSeamEdge(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode='EDIT')
 		return {'FINISHED'}
 
+class SelectLinkedVetex(bpy.types.Operator):
+	bl_idname = "uv.select_linked_vertex"
+	bl_label = "Select The OTHER Separated Vertices"
+	bl_description = "Select other vertices referencing the same part of the mesh as the selected ones do"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	keep_pre : BoolProperty(name="Keep Selection", default=True)
+	
+	def execute(self, context):
+		activeObj = context.active_object
+		me = activeObj.data
+		bpy.ops.object.mode_set(mode='OBJECT')
+		bm = bmesh.new()
+		bm.from_mesh(me)
+		uv_lay = bm.loops.layers.uv.active
+		idxs = []
+		pre_loops = []
+		for face in bm.faces:
+			for loop in face.loops:
+				index = loop.vert.index
+				if loop[uv_lay].select == True:
+					idxs.append(index)
+					pre_loops.append(loop)
+		for face in bm.faces:
+			for loop in face.loops:
+				if (not self.keep_pre) and (loop in pre_loops):
+					loop[uv_lay].select = False
+					continue
+				index = loop.vert.index
+				if index in idxs:
+					loop[uv_lay].select = True
+		bm.to_mesh(me)
+		bm.free()
+		bpy.ops.object.mode_set(mode='EDIT')
+		return {'FINISHED'}
+
 ################
 # クラスの登録 #
 ################
 
 classes = [
-	SelectSeamEdge
+	SelectSeamEdge,
+	SelectLinkedVetex
 ]
 
 def register():
@@ -83,6 +121,7 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
 		self.layout.operator(SelectSeamEdge.bl_idname, icon="PLUGIN")
+		self.layout.operator(SelectLinkedVetex.bl_idname, icon="PLUGIN")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

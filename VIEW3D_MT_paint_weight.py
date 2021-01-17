@@ -157,10 +157,13 @@ class ApplyDynamicPaint(bpy.types.Operator):
 		if (not preActiveVg):
 			isNew = True
 		brushObjs = []
+
 		for obj in context.selected_objects:
 			if (activeObj.name != obj.name):
 				brushObjs.append(obj)
+
 		bpy.ops.object.mode_set(mode="OBJECT")
+
 		for obj in brushObjs:
 			bpy.context.view_layer.objects.active = obj
 			bpy.ops.object.modifier_add(type='DYNAMIC_PAINT')
@@ -168,20 +171,25 @@ class ApplyDynamicPaint(bpy.types.Operator):
 			bpy.ops.dpaint.type_toggle(type='BRUSH')
 			obj.modifiers[-1].brush_settings.paint_source = 'VOLUME_DISTANCE'
 			obj.modifiers[-1].brush_settings.paint_distance = self.distance
+
 		bpy.context.view_layer.objects.active = activeObj
 		bpy.ops.object.modifier_add(type='DYNAMIC_PAINT')
 		bpy.ops.dpaint.type_toggle(type='CANVAS')
 		activeObj.modifiers[-1].canvas_settings.canvas_surfaces[-1].surface_type = 'WEIGHT'
 		bpy.ops.dpaint.output_toggle(output='A')
 		dpVg = activeObj.vertex_groups[-1]
+		# mod_soft_body = activeObj.modifiers.new(name="Soft Body", type='SOFT_BODY')
+
 		#"Dynamic Paint weight group isn't updated unless weight has been assigned" というバグが2.80にある(あった?)
 		#おそらくこれに関連し、スクリプト経由でダイナミックペイントを適用する際に
 		#何もしない場合、作成される頂点グループ dp_weight の中身がリセットされる
 		#これに対応するため、ここではソフトボディに関連付けして中身を固定している
+
 		bpy.ops.object.modifier_add(type='SOFT_BODY')
 		activeObj.modifiers[-2].settings.vertex_group_mass = dpVg.name
 		bpy.ops.object.modifier_apply(modifier=activeObj.modifiers[-1].name)
 		activeObj.modifiers.remove(activeObj.modifiers[-1])#ソフトボディ除去削除
+
 		if (not isNew):
 			me = activeObj.data
 			for vert in me.vertices:
@@ -195,6 +203,7 @@ class ApplyDynamicPaint(bpy.types.Operator):
 		for obj in brushObjs:
 			obj.modifiers.remove(obj.modifiers[-1])
 		return {'FINISHED'}
+
 
 class BlurWeight(bpy.types.Operator):
 	bl_idname = "mesh.blur_weight"

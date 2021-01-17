@@ -10,22 +10,22 @@ from bpy.props import *
 
 class ConvertMesh(bpy.types.Operator):
 	bl_idname = "uv.convert_mesh"
-	bl_label = "Convert UV to mesh"
-	bl_description = "Converts new mesh to UV active"
+	bl_label = "Convert UV to Plane Mesh"
+	bl_description = "Convert the active UV to a plane mesh object"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	@classmethod
+	def poll(cls, context):
+		if (not context.object):
+			return False
+		if (context.object.type != 'MESH'):
+			return False
+		if (not context.object.data.uv_layers.active):
+			return False
+		return True
 	def execute(self, context):
 		obj = context.object
-		if (not obj):
-			self.report(type={'ERROR'}, message="An active object is not found")
-			return {'CANCELLED'}
-		if (obj.type != 'MESH'):
-			self.report(type={'ERROR'}, message="This is not mesh object")
-			return {'CANCELLED'}
 		me = obj.data
-		if (not me.uv_layers.active):
-			self.report(type={'ERROR'}, message="UV cannot be found")
-			return {'CANCELLED'}
 		bpy.ops.object.mode_set(mode='OBJECT')
 		bpy.ops.object.select_all(action='DESELECT')
 
@@ -114,10 +114,10 @@ class ConvertMesh(bpy.types.Operator):
 class scale_uv_parts(bpy.types.Operator):
 	bl_idname = "uv.scale_uv_parts"
 	bl_label = "Resize UV Islands"
-	bl_description = "UV island into central position and resize"
+	bl_description = "Resize UV island using their median points as scaling pivots"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	scale : FloatProperty(name="Size", default=0.9, min=0, max=10, soft_min=0, soft_max=10, step=3, precision=2)
+	scale : FloatProperty(name="Scale Factor", default=0.9, min=0, max=10, soft_min=0, soft_max=10, step=3, precision=2)
 	items = [
 		('MEDIAN', "Median Point", "", 1),
 		('CENTER', "Bounding Box Center", "", 2),

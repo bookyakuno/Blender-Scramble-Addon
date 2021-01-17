@@ -9,8 +9,8 @@ import bpy
 
 class DataNameToObjectName(bpy.types.Operator):
 	bl_idname = "object.data_name_to_object_name"
-	bl_label = "Object name to data name"
-	bl_description = "Set data name linked to object name"
+	bl_label = "Change Object's Name to Data's Name"
+	bl_description = "Change the object's name to the same as its data's name"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	@classmethod
@@ -28,8 +28,8 @@ class DataNameToObjectName(bpy.types.Operator):
 
 class ObjectNameToDataName(bpy.types.Operator):
 	bl_idname = "object.object_name_to_data_name"
-	bl_label = "Data name to object name"
-	bl_description = "Sets data linked to object name"
+	bl_label = "Change Data's Name to Object's Name"
+	bl_description = "Change the data's name to the same as its object's name"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	@classmethod
@@ -47,8 +47,8 @@ class ObjectNameToDataName(bpy.types.Operator):
 
 class CopyObjectName(bpy.types.Operator):
 	bl_idname = "object.copy_object_name"
-	bl_label = "Copy Object Name"
-	bl_description = "Copy to Clipboard object name"
+	bl_label = "Copy Object Name to Clipboard"
+	bl_description = "Copy the active object's name to Clipboard"
 	bl_options = {'REGISTER'}
 	
 	@classmethod
@@ -65,8 +65,8 @@ class CopyObjectName(bpy.types.Operator):
 
 class CopyDataName(bpy.types.Operator):
 	bl_idname = "object.copy_data_name"
-	bl_label = "Copy Data Name"
-	bl_description = "Copies data to Clipboard"
+	bl_label = "Copy Data Name to Clipboard"
+	bl_description = "Copies the data's name of active object's to Clipboard"
 	bl_options = {'REGISTER'}
 	
 	@classmethod
@@ -118,16 +118,18 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		row = self.layout.row(align=True)
-		row.alignment = 'RIGHT'
-		row.label(text="To Clipboard", icon='COPYDOWN')
-		row.operator('object.copy_object_name', icon='OBJECT_DATAMODE', text="")
+		row = self.layout.split(factor=0.55)
+		#row.alignment = 'RIGHT'
+		box = row.box().row(align=True)
+		box.label(text="To Clipboard", icon='COPYDOWN')
+		box.operator('object.copy_object_name', icon='OBJECT_DATAMODE', text="")
 		if (context.active_bone or context.active_pose_bone):
-			row.operator('object.copy_bone_name', icon='BONE_DATA', text="")
-		row.operator('object.copy_data_name', icon='EDITMODE_HLT', text="")
-		row.label(text="Name Sync", icon='LINKED')
-		row.operator('object.object_name_to_data_name', icon='TRIA_DOWN_BAR', text="")
-		row.operator('object.data_name_to_object_name', icon='TRIA_UP_BAR', text="")
+			box.operator('object.copy_bone_name', icon='BONE_DATA', text="")# BONE_PT_context_bone.py で定義
+		box.operator('object.copy_data_name', icon='EDITMODE_HLT', text="")
+		box = row.box().row(align=True)
+		box.label(text="Match Names", icon='LINKED')
+		box.operator('object.object_name_to_data_name', icon='TRIA_DOWN_BAR', text="")
+		box.operator('object.data_name_to_object_name', icon='TRIA_UP_BAR', text="")
 		self.layout.template_ID(context.object, 'data')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

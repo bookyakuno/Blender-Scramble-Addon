@@ -12,7 +12,7 @@ from bpy.ops import *
 
 class CopyBoneName(bpy.types.Operator):
 	bl_idname = "object.copy_bone_name"
-	bl_label = "Copy Bone name to Clipboard"
+	bl_label = "Copy Bone Name to Clipboard"
 	bl_description = "Copy the active bone's name to Clipboard"
 	bl_options = {'REGISTER', 'UNDO'}
 
