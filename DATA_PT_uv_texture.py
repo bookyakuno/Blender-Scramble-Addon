@@ -40,7 +40,7 @@ class RenameSpecificNameUV(bpy.types.Operator):
 class DeleteSpecificNameUV(bpy.types.Operator):
 	bl_idname = "object.delete_specific_name_uv"
 	bl_label = "Delete specific UVs together"
-	bl_description = "Removes the selected objects' UV Maps with specific name"
+	bl_description = "Remove the selected objects' UV Maps with specific name"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	name : StringProperty(name="Remove UV Name", default="UV")

@@ -17,7 +17,7 @@ class CopyShape(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
-		if (ob):
+		if (ob) and ob.mode == 'OBJECT':
 			if ob.type in {'MESH','CURVE'}:
 				if (ob.active_shape_key):
 					return True
@@ -42,32 +42,10 @@ class CopyShape(bpy.types.Operator):
 				me.shape_keys.key_blocks[k].value = v
 		return {'FINISHED'}
 
-class InsertKeyframeAllShapes(bpy.types.Operator):
-	bl_idname = "mesh.insert_keyframe_all_shapes"
-	bl_label = "Insert keyframes to all shapes"
-	bl_description = "Inserts keyframe for all shapes on current frame"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	@classmethod
-	def poll(cls, context):
-		ob = context.active_object
-		if (ob):
-			if ob.type in {'MESH','CURVE'}:
-				if (ob.active_shape_key):
-					return True
-		return False
-
-	def execute(self, context):
-		for shape in context.active_object.data.shape_keys.key_blocks:
-			shape.keyframe_insert(data_path="value")
-		for area in context.screen.areas:
-			area.tag_redraw()
-		return {'FINISHED'}
-
 class SelectShapeTop(bpy.types.Operator):
 	bl_idname = "object.select_shape_top"
 	bl_label = "Select Top"
-	bl_description = "Select top shape key"
+	bl_description = "Select the top shape key"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -87,7 +65,7 @@ class SelectShapeTop(bpy.types.Operator):
 class SelectShapeBottom(bpy.types.Operator):
 	bl_idname = "object.select_shape_bottom"
 	bl_label = "Select Bottom"
-	bl_description = "Select bottom shape key"
+	bl_description = "Select the bottom shape key"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -104,37 +82,13 @@ class SelectShapeBottom(bpy.types.Operator):
 		context.active_object.active_shape_key_index = len(context.active_object.data.shape_keys.key_blocks) - 1
 		return {'FINISHED'}
 
-class ShapeKeyApplyRemoveAll(bpy.types.Operator):
-	bl_idname = "object.shape_key_apply_remove_all"
-	bl_label = "Remove all shapes and hold current configuration"
-	bl_description = "Remove all shape key while maintaining shape of current mesh"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	@classmethod
-	def poll(cls, context):
-		ob = context.active_object
-		if (ob):
-			if ob.type in {'MESH','CURVE'}:
-				if (ob.data.shape_keys):
-					if (2 <= len(ob.data.shape_keys.key_blocks)):
-						return True
-		return False
-
-	def execute(self, context):
-		bpy.ops.object.shape_key_add(from_mix=True)
-		bpy.ops.object.shape_key_move(type='DOWN')
-		bpy.ops.object.mode_set(mode='EDIT', toggle=False)
-		bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
-		bpy.ops.object.shape_key_remove(all=True)
-		return {'FINISHED'}
-
 class AddLinkDriverShapeKeys(bpy.types.Operator):
 	bl_idname = "object.add_link_driver_shape_keys"
-	bl_label = "Link shape keys same name by driver"
-	bl_description = "Behavior of selection of other shape key drivers link active object"
+	bl_label = "Link Shape Keys with Same Name by Driver"
+	bl_description = "Add drivers to selected objects' shape keys, and make them follow the active object's shape keys with same name"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	add_shape_key : BoolProperty(name="Add Missing Shapes", default=True)
+	add_shape_key : BoolProperty(name="Add Missing Shapes to Active Object", default=True)
 
 	@classmethod
 	def poll(cls, context):
@@ -178,49 +132,15 @@ class AddLinkDriverShapeKeys(bpy.types.Operator):
 					target.data_path = 'key_blocks["' + shape.name + '"].value'
 		return {'FINISHED'}
 
-class mute_all_shape_keys(bpy.types.Operator):
-	bl_idname = "object.mute_all_shape_keys"
-	bl_label = "Disable/Enable All Shapes"
-	bl_description = "All shape key to disable or enable the"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	items = [
-		('ENABLE', "Enabled", "", 1),
-		('DISABLE', "Disabled", "", 2),
-		]
-	mode : EnumProperty(items=items, name="Mode")
-
-	@classmethod
-	def poll(cls, context):
-		ob = context.active_object
-		if ob:
-			if ob.type in {'MESH','CURVE'}:
-				if ob.data.shape_keys:
-					if len(ob.data.shape_keys.key_blocks):
-						return True
-		return False
-
-	def execute(self, context):
-		ob = context.active_object
-		for key in ob.data.shape_keys.key_blocks:
-			if self.mode == 'ENABLE':
-				key.mute = False
-			elif self.mode == 'DISABLE':
-				key.mute = True
-		return {'FINISHED'}
-
 ################
 # クラスの登録 #
 ################
 
 classes = [
 	CopyShape,
-	InsertKeyframeAllShapes,
 	SelectShapeTop,
 	SelectShapeBottom,
-	ShapeKeyApplyRemoveAll,
 	AddLinkDriverShapeKeys,
-	mute_all_shape_keys
 ]
 
 def register():
@@ -248,17 +168,13 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
+		self.layout.operator(CopyShape.bl_idname, icon='PLUGIN')
+		self.layout.separator()
+		self.layout.operator(AddLinkDriverShapeKeys.bl_idname, icon='PLUGIN')
+		self.layout.separator()
 		self.layout.operator(SelectShapeTop.bl_idname, icon='PLUGIN')
 		self.layout.operator(SelectShapeBottom.bl_idname, icon='PLUGIN')
-		self.layout.separator()
-		self.layout.operator(mute_all_shape_keys.bl_idname, icon='PLUGIN', text="All Disable").mode = 'DISABLE'
-		self.layout.operator(mute_all_shape_keys.bl_idname, icon='PLUGIN', text="All Enable").mode = 'ENABLE'
-		self.layout.separator()
-		self.layout.operator(CopyShape.bl_idname, icon='PLUGIN')
-		self.layout.operator(ShapeKeyApplyRemoveAll.bl_idname, icon='PLUGIN')
-		self.layout.separator()
-		self.layout.operator(InsertKeyframeAllShapes.bl_idname, icon='PLUGIN')
-		self.layout.operator(AddLinkDriverShapeKeys.bl_idname, icon='PLUGIN')
+
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

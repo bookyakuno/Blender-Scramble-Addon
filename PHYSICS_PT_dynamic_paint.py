@@ -9,8 +9,8 @@ import bpy
 
 class copy_dynamic_paint(bpy.types.Operator):
 	bl_idname = "dpaint.copy_dynamic_paint"
-	bl_label = "Copy Dynamic Paint Settings"
-	bl_description = "Dynamic paint on an active object copies to other selected objects"
+	bl_label = "Copy Dynamic Paint Setting"
+	bl_description = "Copy active object's Dynamic paint settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	@classmethod
@@ -24,9 +24,7 @@ class copy_dynamic_paint(bpy.types.Operator):
 					break
 		else:
 			return False
-		if 2 <= len(context.selected_objects):
-			return True
-		return False
+		return True
 	
 	def execute(self, context):
 		override = context.copy()
@@ -116,6 +114,7 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		self.layout.operator(copy_dynamic_paint.bl_idname, icon='COPY_ID')
+		if 2 <= len(context.selected_objects):
+			self.layout.operator(copy_dynamic_paint.bl_idname, icon='COPY_ID')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
