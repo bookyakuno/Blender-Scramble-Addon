@@ -10,8 +10,8 @@ from bpy.props import *
 
 class WorldReset(bpy.types.Operator):
 	bl_idname = "rigidbody.world_reset"
-	bl_label = "Recreate RigidBody World"
-	bl_description = "Keep setting, recreate rigid world"
+	bl_label = "Re-create Rigid Body World"
+	bl_description = "Re-create rigid body world with same settings"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -20,7 +20,7 @@ class WorldReset(bpy.types.Operator):
 			return False
 		return context.scene.rigidbody_world.enabled
 	def execute(self, context):
-		group = context.scene.rigidbody_world.group
+		collection = context.scene.rigidbody_world.collection
 		constraints = context.scene.rigidbody_world.constraints
 		time_scale = context.scene.rigidbody_world.time_scale
 		steps_per_second = context.scene.rigidbody_world.steps_per_second
@@ -32,7 +32,7 @@ class WorldReset(bpy.types.Operator):
 		bpy.ops.rigidbody.world_remove()
 		bpy.ops.rigidbody.world_add()
 
-		context.scene.rigidbody_world.group = group
+		context.scene.rigidbody_world.collection = collection
 		context.scene.rigidbody_world.constraints = constraints
 		context.scene.rigidbody_world.time_scale = time_scale
 		context.scene.rigidbody_world.steps_per_second = steps_per_second
@@ -44,11 +44,12 @@ class WorldReset(bpy.types.Operator):
 
 class SyncFrames(bpy.types.Operator):
 	bl_idname = "rigidbody.sync_frames"
-	bl_label = "Set start/end frames rigid body world"
-	bl_description = "Start / end frame rigid world of sets to start / end frame rendering"
+	bl_label = "Match Rigid Body World's Start/End to Rendering's ones"
+	bl_description = "Change rigid body world's start / end frames to the rendering's start / end frames"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	frame_margin : IntProperty(name="Margin", default=0, min=-999, max=999, soft_min=-999, soft_max=999)
+	startOffset : IntProperty(name="Start Offset", default=0, step=1)
+	endOffset : IntProperty(name="End Offset", default=0, step=1)
 
 	@classmethod
 	def poll(cls, context):
@@ -58,13 +59,25 @@ class SyncFrames(bpy.types.Operator):
 		return False
 
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_dialog(self, width=310)
+	def draw(self, context):
+		box = self.layout.box()
+		sp = box.split(factor=0.55)
+		row = sp.row()
+		row.label(text="Start Frame")
+		row.label(text=f":  {context.scene.frame_start} + {self.startOffset}")
+		sp.prop(self, 'startOffset')
+		sp = box.split(factor=0.55)
+		row = sp.row()
+		row.label(text="End Frame")
+		row.label(text=f":  {context.scene.frame_end} + {self.endOffset}")
+		sp.prop(self, 'endOffset')
 
 	def execute(self, context):
 		rigidbody_world = context.scene.rigidbody_world
 		point_cache = rigidbody_world.point_cache
-		point_cache.frame_start = context.scene.frame_start - self.frame_margin
-		point_cache.frame_end = context.scene.frame_end + self.frame_margin
+		point_cache.frame_start = context.scene.frame_start + self.startOffset
+		point_cache.frame_end = context.scene.frame_end + self.endOffset
 		for area in context.screen.areas:
 			area.tag_redraw()
 		return {'FINISHED'}
@@ -102,16 +115,14 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		row = self.layout.row(align=True)
-		row.operator(WorldReset.bl_idname, icon='PLUGIN')
-		op = row.operator('wm.context_set_string', icon='PHYSICS', text="")
-		op.data_path = 'space_data.context'
-		op.value = 'PHYSICS'
+		row = self.layout.split(factor=0.4)
+		row.use_property_split = False
+		row.operator(WorldReset.bl_idname, icon='PLUGIN', text="Re-create")
 		if context.scene.rigidbody_world:
 			if context.scene.rigidbody_world.point_cache:
-				row = self.layout.row(align=True)
-				row.prop(context.scene.rigidbody_world.point_cache, 'frame_start')
-				row.prop(context.scene.rigidbody_world.point_cache, 'frame_end')
-				row.operator('rigidbody.sync_frames', icon='LINKED', text="")
+				row_item = row.row(align=True)
+				row_item.prop(context.scene.rigidbody_world.point_cache, 'frame_start')
+				row_item.prop(context.scene.rigidbody_world.point_cache, 'frame_end')
+				row_item.operator(SyncFrames.bl_idname, icon='LINKED', text="")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

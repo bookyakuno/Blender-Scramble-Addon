@@ -9,39 +9,10 @@ from bpy.props import *
 # オペレーター #
 ################
 
-class RemoveEmptyVertexGroups(bpy.types.Operator):
-	bl_idname = "mesh.remove_empty_vertex_groups"
-	bl_label = "Delete empty vertex groups"
-	bl_description = "Remove weights assigned to mesh vertex groups"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	@classmethod
-	def poll(cls, context):
-		ob = context.active_object
-		if (ob):
-			if (ob.type == 'MESH'):
-				if (len(ob.vertex_groups)):
-					return True
-		return False
-
-	def execute(self, context):
-		obj = context.active_object
-		if (obj.type == "MESH"):
-			for vg in obj.vertex_groups:
-				for vert in obj.data.vertices:
-					try:
-						if (vg.weight(vert.index) > 0.0):
-							break
-					except RuntimeError:
-						pass
-				else:
-					obj.vertex_groups.remove(vg)
-		return {'FINISHED'}
-
 class AddOppositeVertexGroups(bpy.types.Operator):
 	bl_idname = "mesh.add_opposite_vertex_groups"
-	bl_label = "Add empty mirroring vertex group"
-	bl_description = ". L... R, add an empty pair of bones according to mandate rule in Miller\'s new born"
+	bl_label = "Add Group with Left-Right-Flipped name"
+	bl_description = "For each vertex group with left-right suffixes, add an empty group with the suffix"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -55,36 +26,28 @@ class AddOppositeVertexGroups(bpy.types.Operator):
 
 	def execute(self, context):
 		obj = context.active_object
-		if (obj.type == "MESH"):
-			vgs = obj.vertex_groups[:]
-			for vg in vgs:
-				oldName = vg.name
-				newName = re.sub(r'([_\.-])L$', r'\1R', vg.name)
-				if (oldName == newName):
-					newName = re.sub(r'([_\.-])R$', r'\1L', vg.name)
-					if (oldName == newName):
-						newName = re.sub(r'([_\.-])l$', r'\1r', vg.name)
-						if (oldName == newName):
-							newName = re.sub(r'([_\.-])r$', r'\1l', vg.name)
-							if (oldName == newName):
-								newName = re.sub(r'[lL][eE][fF][tT]$', r'Right', vg.name)
-								if (oldName == newName):
-									newName = re.sub(r'[rR][iI][gG][hH][tT]$', r'Left', vg.name)
-									if (oldName == newName):
-										newName = re.sub(r'^[lL][eE][fF][tT]', r'Right', vg.name)
-										if (oldName == newName):
-											newName = re.sub(r'^[rR][iI][gG][hH][tT]', r'Left', vg.name)
-				for v in vgs:
-					if (newName.lower() == v.name.lower()):
-						break
-				else:
-					obj.vertex_groups.new(name=newName)
+		vgs = obj.vertex_groups[:]
+		for vg in vgs:
+			oldName = vg.name
+			if oldName[-4:] in ['Left', 'left'] and oldName[-5] in ['.', '_', '-'] :
+				newName = oldName[:-4] + oldName[-4:].replace('Left', 'Right').replace('left', 'right')
+			elif oldName[-5:] in ['Right', 'right'] and oldName[-6] in ['.', '_', '-'] :
+				newName = oldName[:-5] + oldName[-5:].replace('Right', 'Left').replace('right', 'left')
+			elif oldName[-1] in ['L', 'l'] and oldName[-2] in ['.', '_', '-'] :
+				newName = oldName[:-1] + oldName[-1].replace('L', 'R').replace('l', 'r')
+			elif oldName[-1] in ['R', 'r'] and oldName[-2] in ['.', '_', '-'] :
+				newName = oldName[:-1] + oldName[-1].replace('R', 'L').replace('r', 'l')
+			for v in vgs:
+				if (newName.lower() == v.name.lower()):
+					break
+			else:
+				obj.vertex_groups.new(name=newName)
 		return {'FINISHED'}
 
 class SelectVertexGroupsTop(bpy.types.Operator):
 	bl_idname = "mesh.select_vertex_groups_top"
 	bl_label = "Select Top"
-	bl_description = "Select item at top of vertex groups"
+	bl_description = "Select the top vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -99,10 +62,11 @@ class SelectVertexGroupsTop(bpy.types.Operator):
 	def execute(self, context):
 		context.active_object.vertex_groups.active_index = 0
 		return {'FINISHED'}
+
 class SelectVertexGroupsBottom(bpy.types.Operator):
 	bl_idname = "mesh.select_vertex_groups_bottom"
 	bl_label = "Select Bottom"
-	bl_description = "Select item at bottom of vertex groups"
+	bl_description = "Select the bottom vertex groups"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -120,8 +84,8 @@ class SelectVertexGroupsBottom(bpy.types.Operator):
 
 class MoveVertexGroupTop(bpy.types.Operator):
 	bl_idname = "mesh.move_vertex_group_top"
-	bl_label = "To Top"
-	bl_description = "Move to top active vertex groups"
+	bl_label = "Move to Top"
+	bl_description = "Move the active vertex groups to top"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -140,8 +104,8 @@ class MoveVertexGroupTop(bpy.types.Operator):
 
 class MoveVertexGroupBottom(bpy.types.Operator):
 	bl_idname = "mesh.move_vertex_group_bottom"
-	bl_label = "To Bottom"
-	bl_description = "Move to bottom vertex group active"
+	bl_label = "Move to Bottom"
+	bl_description = "Move the active vertex groups to bottom"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -158,13 +122,11 @@ class MoveVertexGroupBottom(bpy.types.Operator):
 			bpy.ops.object.vertex_group_move(direction='DOWN')
 		return {'FINISHED'}
 
-class RemoveSpecifiedStringVertexGroups(bpy.types.Operator):
-	bl_idname = "mesh.remove_specified_string_vertex_groups"
-	bl_label = "Delete vertex groups contain specific text"
-	bl_description = "Removes all vertex group names contains specified string"
+class CopyMirrorVertexGroups(bpy.types.Operator):
+	bl_idname = "mesh.copy_mirror_vertex_groups"
+	bl_label = "Add Mirrored Vertex Group"
+	bl_description = "For the active vertex group, add its copy with flipped weight and name"
 	bl_options = {'REGISTER', 'UNDO'}
-
-	string : StringProperty(name="Part of name deleteing", default="")
 
 	@classmethod
 	def poll(cls, context):
@@ -177,32 +139,45 @@ class RemoveSpecifiedStringVertexGroups(bpy.types.Operator):
 
 	def execute(self, context):
 		obj = context.active_object
-		count = 0
-		if (obj.type == "MESH"):
-			for vg in obj.vertex_groups[:]:
-				if (self.string in vg.name):
-					obj.vertex_groups.remove(vg)
-					count += 1
-			self.report(type={'INFO'}, message=str(count)+" removed vertex groups")
-		else:
-			self.report(type={'ERROR'}, message="Try run on mesh object")
-			return {'CANCELLED'}
+		source_group = obj.vertex_groups.active
+		oldName = source_group.name
+		if oldName[-4:] in ['Left', 'left'] and oldName[-5] in ['.', '_', '-'] :
+			newName = oldName[:-4] + oldName[-4:].replace('Left', 'Right').replace('left', 'right')
+		elif oldName[-5:] in ['Right', 'right'] and oldName[-6] in ['.', '_', '-'] :
+			newName = oldName[:-5] + oldName[-5:].replace('Right', 'Left').replace('right', 'left')
+		elif oldName[-1] in ['L', 'l'] and oldName[-2] in ['.', '_', '-'] :
+			newName = oldName[:-1] + oldName[-1].replace('L', 'R').replace('l', 'r')
+		elif oldName[-1] in ['R', 'r'] and oldName[-2] in ['.', '_', '-'] :
+			newName = oldName[:-1] + oldName[-1].replace('R', 'L').replace('r', 'l')
+		vert_dic = {}
+		for vert in obj.data.vertices:
+			try:
+				vert_dic[vert.index] = source_group.weight(vert.index)
+			except RuntimeError:
+				pass
+		bpy.ops.object.vertex_group_copy()
+		bpy.ops.object.vertex_group_mirror(all_groups=True, use_topology=False)
+		obj.vertex_groups.active.name = newName
+		obj.vertex_groups.active = source_group
+		bpy.ops.object.vertex_group_clean()
+		for vert in obj.data.vertices:
+			try:
+				source_group.add([vert.index], vert_dic[vert.index], 'REPLACE')
+			except KeyError:
+				source_group.remove([vert.index])
 		return {'FINISHED'}
-	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
 
 ################
 # クラスの登録 #
 ################
 
 classes = [
-	RemoveEmptyVertexGroups,
 	AddOppositeVertexGroups,
 	SelectVertexGroupsTop,
 	SelectVertexGroupsBottom,
 	MoveVertexGroupTop,
 	MoveVertexGroupBottom,
-	RemoveSpecifiedStringVertexGroups
+	CopyMirrorVertexGroups,
 ]
 
 def register():
@@ -230,24 +205,15 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
+		self.layout.operator(CopyMirrorVertexGroups.bl_idname, icon='MOD_MIRROR')
+		self.layout.operator(AddOppositeVertexGroups.bl_idname, icon='PLUGIN')
+		self.layout.separator()
 		self.layout.operator(SelectVertexGroupsTop.bl_idname, icon='PLUGIN')
 		self.layout.operator(SelectVertexGroupsBottom.bl_idname, icon='PLUGIN')
 		self.layout.separator()
-		self.layout.operator(MoveVertexGroupTop.bl_idname, icon='PLUGIN')
-		self.layout.operator(MoveVertexGroupBottom.bl_idname, icon='PLUGIN')
-		self.layout.separator()
-		operator = self.layout.operator('object.vertex_group_normalize_all', icon='PLUGIN')
-		operator.group_select_mode = 'ALL'
-		operator.lock_active = False
-		operator = self.layout.operator('object.vertex_group_clean', icon='PLUGIN')
-		operator.group_select_mode = 'ALL'
-		operator.limit = 0
-		operator.keep_single = False
-		self.layout.separator()
-		self.layout.operator(RemoveSpecifiedStringVertexGroups.bl_idname, icon='PLUGIN')
-		self.layout.operator(RemoveEmptyVertexGroups.bl_idname, icon='PLUGIN')
-		self.layout.separator()
-		self.layout.operator(AddOppositeVertexGroups.bl_idname, icon='PLUGIN')
+		self.layout.operator(MoveVertexGroupTop.bl_idname, icon='TRIA_UP_BAR')
+		self.layout.operator(MoveVertexGroupBottom.bl_idname, icon='TRIA_DOWN_BAR')
+
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

@@ -9,14 +9,12 @@ import bpy
 
 class MakeLinkClothSettings(bpy.types.Operator):
 	bl_idname = "object.make_link_cloth_settings"
-	bl_label = "Link Cloth Setting"
-	bl_description = "Cloth simulation for active object copies to other selected objects"
+	bl_label = "Copy Cloth Setting"
+	bl_description = "Copy active object's Cloth simulation settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	@classmethod
 	def poll(cls, context):
-		if (len(context.selected_objects) < 2):
-			return False
 		for mod in context.object.modifiers:
 			if (mod.type == 'CLOTH'):
 				break

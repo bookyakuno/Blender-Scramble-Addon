@@ -10,7 +10,7 @@ import bpy
 class RemoveNoAssignMaterial(bpy.types.Operator):
 	bl_idname = "material.remove_no_assign_material"
 	bl_label = "Remove Unassigned Material"
-	bl_description = "For each selected objects, remove all materials that has not assigned to any faces of the object"
+	bl_description = "For each selected objects, remove all materials that has not assigned to any faces of the objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -162,7 +162,7 @@ class MoveMaterialSlotTop(bpy.types.Operator):
 class MoveMaterialSlotBottom(bpy.types.Operator):
 	bl_idname = "material.move_material_slot_bottom"
 	bl_label = "Move to Bottom"
-	bl_description = "Move active material slot  to the bottom of list"
+	bl_description = "Move active material slot to the bottom of list"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
