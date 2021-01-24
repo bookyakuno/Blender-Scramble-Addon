@@ -11,8 +11,8 @@ from bpy.props import *
 bl_info = {
 	"name" : "Scramble Addon",
 	"author" : "Saidenka, Bookyakuno, nikogoli",
-	"version" : (1, 0, 8),
-	"blender" : (2, 90, 0),
+	"version" : (1, 0, 9),
+	"blender" : (2, 91, 0),
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",
 	"warning" : "",
