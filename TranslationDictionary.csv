@@ -24,7 +24,7 @@
 "接尾辞の反転に失敗しました","Flipping the suffix failed"
 "クリップボードへ","To Clipboard"
 "ボーン名をクリップボードにコピー","Copy Bone Name to Clipboard"
-"ボーン名をクリップボードにコピーします","Copy the active bone's name to Clipboard"
+"アクティブなボーン名をクリップボードにコピーします","Copy the active bone's name to Clipboard"
 "オブジェクト名も含める","Contain Object Name"
 
 
@@ -52,7 +52,7 @@
 "","======= BONE_PT_relations ======="
 
 "関係設定をコピー","Copy Relations Settings"
-"アクティブなボーンの関係設定を、他の選択ボーンにコピーします","Copy axtive bone's relations settings to other selected bones"
+"アクティブなボーンの関係設定を、他の選択ボーンにコピーします","Copy active bone's relations settings to other selected bones"
 
 
 
@@ -81,8 +81,8 @@
 "","======= DATA_PT_bone_groups ======="
 
 "表示","Show"
-"このボーングループのボーンを表示","Show bone in the bone group"
-"このボーングループのボーンのみ表示","Show only bone in the bones group"
+"このボーングループのボーンを表示","Show Bones in the Bone Group"
+"このボーングループのボーンのみ表示","Show Only Bones in the Bones Group"
 "アクティブなボーングループのボーンを表示、もしくは隠します","Show or hide the bones in the active Bone Group"
 "アクティブのみ表示","Show Only Active"
 "アクティブのみ隠す","Hide Only Active"
@@ -414,6 +414,7 @@
 "下","Bottom"
 "左","Left"
 "右","Right"
+"中央","Center"
 "右上","Top Right"
 "右下","Bottom Right"
 "左下","Bottom Left"
@@ -1178,7 +1179,7 @@
 "対称化","Symmetrized"
 "制限なし","No Limit"
 "全て制限","Limit All"
-"ウェイトコピー用メッシュを作成","Create mesh for weight copy"
+"ウェイトコピー用メッシュを作成","Create Mesh for Weight Copy"
 "選択中のボーンのウェイトコピーで使用するメッシュを作成します","Creates mesh to use with copy of selected bone weight"
 "ウェイトの位置","Position of Weight"
 "ボーン名を変更","Change Bone Name"
