@@ -11,15 +11,15 @@ from bpy.props import *
 
 class SelectBoundBoxSize(bpy.types.Operator):
 	bl_idname = "object.select_bound_box_size"
-	bl_label = "Compare size and select objects"
-	bl_description = "Select maximum objects larger or smaller objects"
+	bl_label = "Select (Object Size)"
+	bl_description = "Select objects based on their size"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [
-		('LARGE', "Select Big", "", 1),
-		('SMALL', "Select Small", "", 2),
-		]
-	mode : EnumProperty(items=items, name="Select Mode")
+	mode : EnumProperty(name="Select Mode", items=[
+		('MORE_L', "Larger than Active", "", 1),
+		('MORE_S', "Smaller than Active", "", 2),
+		('MOST_L', "From Largest", "", 3),
+		('MOST_S', "From Smallest", "", 4)])
 	items = [
 		('MESH', "Mesh", "", 1),
 		('CURVE', "Curve", "", 2),
@@ -30,68 +30,49 @@ class SelectBoundBoxSize(bpy.types.Operator):
 		('LATTICE', "Lattice", "", 7),
 		('ALL', "All", "", 8),
 		]
-	select_type : EnumProperty(items=items, name="Select Type", default='MESH')
-	threshold : FloatProperty(name="Selection Range", default=50, min=0, max=100, soft_min=0, soft_max=100, step=100, precision=1, subtype='PERCENTAGE')
+	select_type : EnumProperty(items=items, name="Type", default='MESH')
+	number : IntProperty(name="Number", default=1, min=1, max=100, soft_min=1, soft_max=100)
 
-	@classmethod
-	def poll(cls, context):
-		for obj in context.selectable_objects:
-			return True
-		return False
+	def draw(self, context):
+		layout = self.layout
+		layout.use_property_split = True
+		for p in ['mode', 'select_type', 'number']:
+			row = layout.row()
+			row.enabled = not (p == 'number' and self.mode not in ['MOST_L', 'MOST_S'])
+			row.prop(self, p)
 
-	def execute(self, context):
-		#context.scene.update()
-		max_volume = -1
-		min_volume = 999999999999999
-		min_obj = None
-		objs = []
-		for obj in context.visible_objects:
-			if (self.select_type != 'ALL'):
-				if (obj.type != self.select_type):
-					continue
-			bound_box = obj.bound_box[:]
-			bound_box0 = mathutils.Vector(bound_box[0][:])
-			x = (bound_box0 - mathutils.Vector(bound_box[4][:])).length * obj.scale.x
-			y = (bound_box0 - mathutils.Vector(bound_box[3][:])).length * obj.scale.y
-			z = (bound_box0 - mathutils.Vector(bound_box[1][:])).length * obj.scale.z
-			volume = x + y + z
-			objs.append((obj, volume))
-			if (max_volume < volume):
-				max_volume = volume
-			if (volume < min_volume):
-				min_volume = volume
-				min_obj = obj
-		if (self.mode == 'LARGE'):
-			threshold_volume = max_volume * (1.0 - (self.threshold * 0.01))
-		elif (self.mode == 'SMALL'):
-			threshold_volume = max_volume * (self.threshold * 0.01)
-		for obj, volume in objs:
-			if (self.mode == 'LARGE'):
-				if (threshold_volume <= volume):
-					obj.select_set(True)
-			elif (self.mode == 'SMALL'):
-				if (volume <= threshold_volume):
-					obj.select_set(True)
-		if (min_obj and self.mode == 'SMALL'):
-			min_obj.select_set(True)
-		return {'FINISHED'}
-
-class UnselectUnactiveObjects(bpy.types.Operator):
-	bl_idname = "object.unselect_unactive_objects"
-	bl_label = "Non-active to Non-select"
-	bl_description = "Uncheck everything except for active object"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	@classmethod
-	def poll(cls, context):
-		if context.active_object:
-			return True
-		return False
+	def get_bbox_size(self, item):
+		bb = item.bound_box
+		origin = mathutils.Vector(bb[0])
+		x = (origin-mathutils.Vector(bb[4])).length * item.scale.x
+		y = (origin-mathutils.Vector(bb[3])).length * item.scale.y
+		z = (origin-mathutils.Vector(bb[1])).length * item.scale.z
+		return x+y+z
 
 	def execute(self, context):
-		for ob in bpy.context.selected_objects:
-			ob.select_set(False)
-		context.active_object.select_set(True)
+		if self.select_type == 'ALL':
+			targets = context.visible_objects
+		else:
+			targets = [ob for ob in context.visible_objects if ob.type== self.select_type]
+		sizes = [[ob, self.get_bbox_size(ob)] for ob in targets]
+		sorted_targets = [x[0] for x in sorted(sizes, key=lambda x:x[1])]
+		if self.mode in ['MORE_L', 'MORE_S']:
+			if not context.active_object:
+				return {'CANCELLED'}
+			active_idx = sorted_targets.index(context.active_object)
+			if self.mode == 'MORE_L':
+				results = sorted_targets[active_idx:]
+			elif self.mode == 'MORE_S':
+				results = sorted_targets[:active_idx]
+		elif self.mode in ['MOST_L', 'MOST_S']:
+			if self.mode == 'MOST_L':
+				results = sorted_targets[self.number*-1:]
+				context.active_object.select_set(False)
+			elif self.mode == 'MOST_S':
+				results = sorted_targets[:self.number]
+				context.active_object.select_set(False)
+		for ob in results:
+			ob.select_set(True)
 		return {'FINISHED'}
 
 ############################
@@ -100,8 +81,8 @@ class UnselectUnactiveObjects(bpy.types.Operator):
 
 class SelectGroupedName(bpy.types.Operator):
 	bl_idname = "object.select_grouped_name"
-	bl_label = "Select object same name"
-	bl_description = "Select visible object of active object with same name, such as (X.001 X X.002)"
+	bl_label = "Objects Sharing Same Name"
+	bl_description = "Select objects which names are same as active object except dot-number"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -114,15 +95,15 @@ class SelectGroupedName(bpy.types.Operator):
 		name_base = context.active_object.name
 		if (re.search(r'\.\d+$', name_base)):
 			name_base = re.search(r'^(.*)\.\d+$', name_base).groups()[0]
-		for obj in context.selectable_objects:
+		for obj in context.visible_objects:
 			if (re.search('^'+name_base+r'\.\d+$', obj.name) or name_base == obj.name):
 				obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectGroupedMaterial(bpy.types.Operator):
 	bl_idname = "object.select_grouped_material"
-	bl_label = "Select objects of same material structure"
-	bl_description = "Select active object material structure and same visible objects"
+	bl_label = "Objects All Materials are Same"
+	bl_description = "Select objects which have exactly the same materials as active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -132,23 +113,18 @@ class SelectGroupedMaterial(bpy.types.Operator):
 		return False
 
 	def execute(self, context):
-		def GetMaterialList(slots):
-			list = []
-			for slot in slots:
-				if (slot.material):
-					list.append(slot.material.name)
-			return list
-		activeMats = GetMaterialList(context.active_object.material_slots)
-		if (0 < len(activeMats)):
-			for obj in context.selectable_objects:
-				if (activeMats == GetMaterialList(obj.material_slots)):
+		activeMats = [s.material for s in context.active_object.material_slots]
+		if activeMats:
+			for obj in context.visible_objects:
+				obj_mats = [s.material for s in obj.material_slots]
+				if set(activeMats) == set(obj_mats):
 					obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectGroupedModifiers(bpy.types.Operator):
 	bl_idname = "object.select_grouped_modifiers"
-	bl_label = "Select same modifier structure object"
-	bl_description = "Select same modifier of active objects visible objects"
+	bl_label = "Objects All Modifiers are Same"
+	bl_description = "Select objects which have exactly the same modifiers as active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -158,142 +134,65 @@ class SelectGroupedModifiers(bpy.types.Operator):
 		return False
 
 	def execute(self, context):
-		def GetModifiersString(obj):
-			str = ""
-			for mod in obj.modifiers:
-				str = str + mod.type
-			return str
-		active_modifiers = GetModifiersString(context.active_object)
-		active_type = context.active_object.type
-		for obj in context.selectable_objects:
-			if (GetModifiersString(obj) == active_modifiers and active_type == obj.type):
-				obj.select_set(True)
+		active_modis = [mod.type for mod in context.active_object.modifiers]
+		for obj in context.visible_objects:
+				obj_modis = [mod.type for mod in obj.modifiers]
+				if set(active_modis) == set(obj_modis):
+					obj.select_set(True)
 		return {'FINISHED'}
 
 class SelectGroupedSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.select_grouped_subsurf_level"
-	bl_label = "Select same subsurf level object"
-	bl_description = "Select Subsurf levels of active objects have same visible objects"
+	bl_label = "Objects with Same Number of Subdivisions"
+	bl_description = "Select objects which use same number of subdivisions of subdivision surface modifier as active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
-			return True
+			if 'SUBSURF' in [mod.type for mod in context.active_object.modifiers]:
+				return True
 		return False
 
 	def execute(self, context):
-		def GetSubsurfLevel(obj):
-			level = 0
-			for mod in obj.modifiers:
-				if (mod.type == 'SUBSURF'):
-					level += mod.levels
-			return level
-		active_subsurf_level = GetSubsurfLevel(context.active_object)
-		active_type = context.active_object.type
-		for obj in context.selectable_objects:
-			if (GetSubsurfLevel(obj) == active_subsurf_level and active_type == obj.type):
-				obj.select_set(True)
+		for mod in context.active_object.modifiers:
+			if (mod.type == 'SUBSURF'):
+				active_level = mod.levels
+		for obj in context.visible_objects:
+			mod_types = [mod.type for mod in obj.modifiers]
+			try:
+				obj_level = obj.modifiers[mod_types.index('SUBSURF')].levels
+				if active_level == obj_level:
+					obj.select_set(True)
+			except ValueError:
+				continue
 		return {'FINISHED'}
 
 class SelectGroupedArmatureTarget(bpy.types.Operator):
 	bl_idname = "object.select_grouped_armature_target"
-	bl_label = "Select objects that transform in same armature"
-	bl_description = "Select visible objects are transformed in an active object with same armature"
+	bl_label = "Objects Referring Same Armature"
+	bl_description = "Select objects which refer the same armature object as active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
 	def poll(cls, context):
 		if context.active_object:
-			return True
+			if 'ARMATURE' in [mod.type for mod in context.active_object.modifiers]:
+				return True
 		return False
 
 	def execute(self, context):
-		def GetArmatureTarget(obj):
-			target = []
-			for mod in obj.modifiers:
-				if (mod.type == 'ARMATURE'):
-					if (mod.object):
-						target.append(mod.object.name)
-					else:
-						target.append("")
-			return set(target)
-		active_armature_targets = GetArmatureTarget(context.active_object)
-		if (len(active_armature_targets) == 0):
-			self.report(type={"ERROR"}, message="Armtuamodifaia has no active object")
-			return {"CANCELLED"}
-		active_type = context.active_object.type
-		for obj in context.selectable_objects:
-			if (len(GetArmatureTarget(obj).intersection(active_armature_targets)) == len(active_armature_targets) and active_type == obj.type):
-				obj.select_set(True)
-		return {'FINISHED'}
-
-class SelectGroupedSizeThan(bpy.types.Operator):
-	bl_idname = "object.select_grouped_size_than"
-	bl_label = "Compare size and select objects"
-	bl_description = "Greater than active object, or select additional small objects"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	items = [
-		('LARGER', "Select Bigger", "", 1),
-		('SMALLER', "Select Smaller", "", 2),
-		]
-	mode : EnumProperty(items=items, name="Select Mode")
-	select_same_size : BoolProperty(name="Select Same Size", default=True)
-	items = [
-		('MESH', "Mesh", "", 1),
-		('CURVE', "Curve", "", 2),
-		('SURFACE', "Surface", "", 3),
-		('META', "Metaballs", "", 4),
-		('FONT', "Text", "", 5),
-		('ARMATURE', "Armature", "", 6),
-		('LATTICE', "Lattice", "", 7),
-		('ALL', "All", "", 8),
-		('SAME', "Same Type", "", 9),
-		]
-	select_type : EnumProperty(items=items, name="Select Type", default='SAME')
-	size_multi : FloatProperty(name="Standard Size Offset", default=1.0, min=0, max=10, soft_min=0, soft_max=10, step=10, precision=3)
-
-	@classmethod
-	def poll(cls, context):
-		if context.active_object:
-			return True
-		return False
-
-	def execute(self, context):
-		def GetSize(obj):
-			bound_box = obj.bound_box[:]
-			bound_box0 = mathutils.Vector(bound_box[0][:])
-			bound_box0 = mathutils.Vector(bound_box[0][:])
-			x = (bound_box0 - mathutils.Vector(bound_box[4][:])).length * obj.scale.x
-			y = (bound_box0 - mathutils.Vector(bound_box[3][:])).length * obj.scale.y
-			z = (bound_box0 - mathutils.Vector(bound_box[1][:])).length * obj.scale.z
-			return x + y + z
-
-		active_obj = context.active_object
-		if (not active_obj):
-			self.report(type={'ERROR'}, message="There is no active object")
-			return {'CANCELLED'}
-		#context.scene.update()
-		active_obj_size = GetSize(active_obj) * self.size_multi
-		for obj in context.selectable_objects:
-			if (self.select_type != 'ALL'):
-				if (self.select_type == 'SAME'):
-					if (obj.type != active_obj.type):
-						continue
-				else:
-					if (obj.type != self.select_type):
-						continue
-			size = GetSize(obj)
-			if (self.mode == 'LARGER'):
-				if (active_obj_size < size):
+		for mod in context.active_object.modifiers:
+			if (mod.type == 'ARMATURE'):
+				active_target = mod.object
+		for obj in context.visible_objects:
+			mod_types = [mod.type for mod in obj.modifiers]
+			try:
+				obj_target = obj.modifiers[mod_types.index('ARMATURE')].object
+				if active_target == obj_target:
 					obj.select_set(True)
-			elif (self.mode == 'SMALLER'):
-				if (size < active_obj_size):
-					obj.select_set(True)
-			if (self.select_same_size):
-				if (active_obj_size == size):
-					obj.select_set(True)
+			except ValueError:
+				continue
 		return {'FINISHED'}
 
 ##########################
@@ -302,16 +201,9 @@ class SelectGroupedSizeThan(bpy.types.Operator):
 
 class SelectMeshFaceOnly(bpy.types.Operator):
 	bl_idname = "object.select_mesh_face_only"
-	bl_label = "Select face exist mesh"
+	bl_label = "Mesh with Face"
 	bl_description = "Select mesh more than one face"
 	bl_options = {'REGISTER', 'UNDO'}
-
-	@classmethod
-	def poll(cls, context):
-		for obj in context.selectable_objects:
-			if (obj.type == 'MESH'):
-				return True
-		return False
 
 	def execute(self, context):
 		for obj in context.selectable_objects:
@@ -323,16 +215,9 @@ class SelectMeshFaceOnly(bpy.types.Operator):
 
 class SelectMeshEdgeOnly(bpy.types.Operator):
 	bl_idname = "object.select_mesh_edge_only"
-	bl_label = "Select edge only mesh"
-	bl_description = "Terms, select only side mesh"
+	bl_label = "Mesh with Only Edges"
+	bl_description = "Select objects which meshes have only edges"
 	bl_options = {'REGISTER', 'UNDO'}
-
-	@classmethod
-	def poll(cls, context):
-		for obj in context.selectable_objects:
-			if (obj.type == 'MESH'):
-				return True
-		return False
 
 	def execute(self, context):
 		for obj in context.selectable_objects:
@@ -344,16 +229,9 @@ class SelectMeshEdgeOnly(bpy.types.Operator):
 
 class SelectMeshVertexOnly(bpy.types.Operator):
 	bl_idname = "object.select_mesh_vertex_only"
-	bl_label = "Select only vertices of mesh"
-	bl_description = "Surfaces and edges, select mesh vertices only"
+	bl_label = "Mesh with Only Vertices"
+	bl_description = "Select objects which meshes have only vertices"
 	bl_options = {'REGISTER', 'UNDO'}
-
-	@classmethod
-	def poll(cls, context):
-		for obj in context.selectable_objects:
-			if (obj.type == 'MESH'):
-				return True
-		return False
 
 	def execute(self, context):
 		for obj in context.selectable_objects:
@@ -365,16 +243,9 @@ class SelectMeshVertexOnly(bpy.types.Operator):
 
 class SelectMeshNone(bpy.types.Operator):
 	bl_idname = "object.select_mesh_none"
-	bl_label = "Select mesh even non vertex"
-	bl_description = "Surface and edge and select mesh object vertex is not empty"
+	bl_label = "Mesh with No Vertex"
+	bl_description = "Select objects which meshes have no vertex"
 	bl_options = {'REGISTER', 'UNDO'}
-
-	@classmethod
-	def poll(cls, context):
-		for obj in context.selectable_objects:
-			if (obj.type == 'MESH'):
-				return True
-		return False
 
 	def execute(self, context):
 		for obj in context.selectable_objects:
@@ -390,43 +261,39 @@ class SelectMeshNone(bpy.types.Operator):
 
 class SelectGroupedEX(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_select_object_grouped_ex"
-	bl_label = "Select by relation (Extra)"
-	bl_description = "Select all visible objects grouped by properties"
+	bl_label = "Select Grouped (Extra)"
 
 	def draw(self, context):
-		column = self.layout.column()
-		column.operator("object.select_grouped", text="Child").type = 'CHILDREN_RECURSIVE'
-		column.operator("object.select_grouped", text="Immediate Children").type = 'CHILDREN'
-		column.operator("object.select_grouped", text="Parent").type = 'PARENT'
-		column.operator("object.select_grouped", text="Brother").type = 'SIBLINGS'
-		column.operator("object.select_grouped", text="Type").type = 'TYPE'
-		column.operator("object.select_grouped", text="Collection").type = 'COLLECTION'
-		column.operator("object.select_grouped", text="Path").type = 'PASS'
-		column.operator("object.select_grouped", text="Hook").type = 'HOOK'
-		column.operator("object.select_grouped", text="Keying Set").type = 'KEYINGSET'
-		column.operator("object.select_grouped", text="Light Type").type = 'LIGHT_TYPE'
-		column.separator()
-		column.operator(SelectGroupedSizeThan.bl_idname, text="Bigger Than", icon='PLUGIN').mode = 'LARGER'
-		column.operator(SelectGroupedSizeThan.bl_idname, text="Smaller Than", icon='PLUGIN').mode = 'SMALLER'
-		column.separator()
-		column.operator(SelectGroupedName.bl_idname, text="Object Name", icon='PLUGIN')
-		column.operator(SelectGroupedMaterial.bl_idname, text="Material", icon='PLUGIN')
-		column.operator(SelectGroupedModifiers.bl_idname, text="Modifier", icon='PLUGIN')
-		column.operator(SelectGroupedSubsurfLevel.bl_idname, text="Subsurf Level", icon='PLUGIN')
-		column.operator(SelectGroupedArmatureTarget.bl_idname, text="Same Armature Transform", icon='PLUGIN')
-		if (not context.object):
-			column.enabled = False
+		for item in bpy.ops.object.select_grouped.get_rna_type().properties["type"].enum_items:
+			self.layout.operator('object.select_grouped', text=item.name).type = item.identifier
+		self.layout.separator()
+		self.layout.operator(SelectGroupedName.bl_idname, icon='PLUGIN')
+		self.layout.operator(SelectGroupedMaterial.bl_idname, icon='PLUGIN')
+		self.layout.operator(SelectGroupedModifiers.bl_idname, icon='PLUGIN')
+		self.layout.operator(SelectGroupedSubsurfLevel.bl_idname, icon='PLUGIN')
+		self.layout.operator(SelectGroupedArmatureTarget.bl_idname, icon='PLUGIN')
 
 class SelectMesh(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_select_object_mesh"
-	bl_label = "Select characteristics of mesh"
-	bl_description = "Ability to select mesh object visualization menu"
+	bl_label = "Select (Special Mesh)"
 
 	def draw(self, context):
-		self.layout.operator(SelectMeshFaceOnly.bl_idname, text="Face Only", icon='PLUGIN')
-		self.layout.operator(SelectMeshEdgeOnly.bl_idname, text="Edge Only", icon='PLUGIN')
-		self.layout.operator(SelectMeshVertexOnly.bl_idname, text="Only Vertex", icon='PLUGIN')
-		self.layout.operator(SelectMeshNone.bl_idname, text="Without Even Vertex", icon='PLUGIN')
+		self.layout.operator(SelectMeshFaceOnly.bl_idname, icon='PLUGIN')
+		self.layout.operator(SelectMeshEdgeOnly.bl_idname, icon='PLUGIN')
+		self.layout.operator(SelectMeshVertexOnly.bl_idname, icon='PLUGIN')
+		self.layout.operator(SelectMeshNone.bl_idname, icon='PLUGIN')
+
+class SelectSizeMenu(bpy.types.Menu):
+	bl_idname = "VIEW3D_MT_select_bound_box_size"
+	bl_label = "Select (Object Size)"
+
+	def draw(self, context):
+		for ps in [
+				('MORE_L', "Larger than Active"),
+				('MORE_S', "Smaller than Active"),
+				('MOST_L', "From Largest"),
+				('MOST_S', "From Smallest")]:
+			self.layout.operator(SelectBoundBoxSize.bl_idname, icon='PLUGIN', text=ps[1]).mode = ps[0]
 
 ################
 # クラスの登録 #
@@ -434,19 +301,18 @@ class SelectMesh(bpy.types.Menu):
 
 classes = [
 	SelectBoundBoxSize,
-	UnselectUnactiveObjects,
 	SelectGroupedName,
 	SelectGroupedMaterial,
 	SelectGroupedModifiers,
 	SelectGroupedSubsurfLevel,
 	SelectGroupedArmatureTarget,
-	SelectGroupedSizeThan,
 	SelectMeshFaceOnly,
 	SelectMeshEdgeOnly,
 	SelectMeshVertexOnly,
 	SelectMeshNone,
 	SelectGroupedEX,
-	SelectMesh
+	SelectMesh,
+	SelectSizeMenu
 ]
 
 def register():
@@ -474,13 +340,9 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.operator(UnselectUnactiveObjects.bl_idname, icon='PLUGIN')
-		self.layout.separator()
-		self.layout.operator(SelectBoundBoxSize.bl_idname, text="Select Small", icon='PLUGIN').mode = 'SMALL'
-		self.layout.operator(SelectBoundBoxSize.bl_idname, text="Select Big", icon='PLUGIN').mode = 'LARGE'
-		self.layout.separator()
-		self.layout.menu(SelectMesh.bl_idname, icon='PLUGIN')
 		self.layout.menu(SelectGroupedEX.bl_idname, icon='PLUGIN')
+		self.layout.menu(SelectSizeMenu.bl_idname, icon='PLUGIN')
+		self.layout.menu(SelectMesh.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

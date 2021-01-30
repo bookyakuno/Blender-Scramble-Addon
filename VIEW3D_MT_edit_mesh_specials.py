@@ -10,8 +10,8 @@ from bpy.props import *
 
 class PaintSelectedVertexColor(bpy.types.Operator):
 	bl_idname = "mesh.paint_selected_vertex_color"
-	bl_label = "Paint out selected vertex color"
-	bl_description = "Active vertex colors for selected vertices with specified color fills"
+	bl_label = "Fill Selected Vertices' Vertex Color"
+	bl_description = "Fill selected vertices with designated color at active vertex color"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	color : FloatVectorProperty(name="Color", default=(1, 1, 1), step=1, precision=3, subtype='COLOR_GAMMA', min=0, max=1, soft_min=0, soft_max=1)
@@ -33,8 +33,8 @@ class PaintSelectedVertexColor(bpy.types.Operator):
 
 class SelectTopShape(bpy.types.Operator):
 	bl_idname = "mesh.select_top_shape"
-	bl_label = "Select shape at top"
-	bl_description = "Schipke is at top of list, select"
+	bl_label = "Show Base Shape"
+	bl_description = "Show base shape of active object's shape keys in viewport"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -43,69 +43,96 @@ class SelectTopShape(bpy.types.Operator):
 
 class ToggleShowCage(bpy.types.Operator):
 	bl_idname = "mesh.toggle_show_cage"
-	bl_label = "Transition modifiers apply to editing cage"
-	bl_description = "Toggles whether to apply modifiers to total en bloc spondylectomy in editing"
+	bl_label = "Switch Display Method of Modifiers' Results"
+	bl_description = "Switch display method of meshes or their vertices which are created by modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
+	mode_item = [
+		("NON","Vertices: Hide,   Meshes: Hide","",1),("EDIT","Vertices: Hide,   Meshes: Show","",2),("BOTH","Vertices: Show,   Meshes: Show","",3)
+	]
+	mode : EnumProperty(name="Target", items=mode_item)
+
+	def __init__(self):
+		mods = bpy.context.active_object.modifiers
+		edit_bools = [mod.show_in_editmode for mod in mods]
+		cage_bools = [mod.show_on_cage for mod in mods]
+		if sum(edit_bools)==0 and sum(cage_bools)==0:
+			self.mode = self.mode_display = 'EDIT'
+		elif sum(edit_bools)>=1 and sum(cage_bools)>=1:
+			self.mode = 'NON'
+		else:
+			self.mode = 'BOTH'
+	def draw(self, layout):
+		self.layout.prop(self, 'mode', expand=True)
+
 	def execute(self, context):
+		dic = {
+			'NON':[False,False,"Adjusting edit cage: Disabled, Display in edit mode: Disabled"],
+			'EDIT':[False,True,"Adjusting edit cage: Disabled, Display in edit mode: Enabled"],
+			'BOTH':[True,True,"Adjusting edit cage: Enabled, Display in edit mode: Enabled"]
+		}
 		activeObj = context.active_object
-		nowMode = 0
+		items = dic[self.mode]
 		for modi in activeObj.modifiers:
-			if (modi.show_in_editmode and nowMode <= 0):
-				nowMode = 1
-			if (modi.show_on_cage and nowMode <= 1):
-				nowMode = 2
-		newMode = nowMode + 1
-		if (newMode >= 3):
-			newMode = 0
-		for modi in activeObj.modifiers:
-			if (newMode == 0):
-				modi.show_in_editmode = False
-				modi.show_on_cage = False
-			if (newMode == 1):
-				modi.show_in_editmode = True
-				modi.show_on_cage = False
-			if (newMode == 2):
-				modi.show_in_editmode = True
-				modi.show_on_cage = True
-		if (newMode == 0):
-			self.report(type={'INFO'}, message="Display / adaptation of cage both have been cleared")
-		if (newMode == 1):
-			self.report(type={'INFO'}, message="On only cage view")
-		if (newMode == 2):
-			self.report(type={'INFO'}, message="Show cage / adaptation, both turned")
+			modi.show_on_cage = items[0]
+			modi.show_in_editmode = items[1]
+			self.report(type={'INFO'}, message=items[2])
 		return {'FINISHED'}
 
 class ToggleMirrorModifier(bpy.types.Operator):
 	bl_idname = "mesh.toggle_mirror_modifier"
-	bl_label = "Toggle Mirror Modifiers"
-	bl_description = "Delete if not Miller modifier added, Yes"
+	bl_label = "Switch Display of Mirror Modifiers"
+	bl_description = "Switch display state of mirror modifiers (and add it if not exist)"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	use_x : BoolProperty(name="X Axis", default=True)
 	use_y : BoolProperty(name="Y Axis", default=False)
 	use_z : BoolProperty(name="Z Axis", default=False)
-	use_mirror_merge : BoolProperty(name="Combine", default=True)
+	use_mirror_merge : BoolProperty(name="Merge", default=True)
+	merge_threshold : FloatProperty(name="Merge Distance", default=0.001, min=0, max=1, soft_min=0, soft_max=1, step=0.01, precision=6)
 	use_clip : BoolProperty(name="Clipping", default=False)
-	use_mirror_vertex_groups : BoolProperty(name="Vertex Group Mirror", default=False)
 	use_mirror_u : BoolProperty(name="Texture U Mirror", default=False)
 	use_mirror_v : BoolProperty(name="Texture V Mirror", default=False)
-	merge_threshold : FloatProperty(name="Combine Distance", default=0.001, min=0, max=1, soft_min=0, soft_max=1, step=0.01, precision=6)
-	is_top : BoolProperty(name="Add Top", default=True)
+	use_mirror_vertex_groups : BoolProperty(name="Vertex Groups", default=True)
+	is_top : BoolProperty(name="Add at Top", default=True)
+	toggle : BoolProperty(name="Enabled / Disabled", default=True)
+	is_add : BoolProperty(name="Add or not", default=False)
+
+	def draw(self, context):
+		row = self.layout.row()
+		row.prop(self, 'toggle', toggle=1)
+		row.alignment = 'CENTER'
+		if self.is_add:
+			self.layout.separator()
+			row = self.layout.row()
+			row.use_property_split = True
+			row.prop(self, 'is_top')
+			box = self.layout.box()
+			row = box.row()
+			for p in ['use_x','use_y','use_z',]:
+				row.prop(self, p)
+			box.prop(self, 'use_clip')
+			row = box.row()
+			row.prop(self, 'use_mirror_merge')
+			row.prop(self, 'merge_threshold')
+			row = box.row()
+			row.prop(self, 'use_mirror_u')
+			row.prop(self, 'use_mirror_v')
+			box.prop(self, 'use_mirror_vertex_groups')
 
 	def execute(self, context):
-		activeObj = context.active_object
-		is_mirrored = False
-		for mod in activeObj.modifiers:
-			if (mod.type == 'MIRROR'):
-				is_mirrored = True
-				break
-		if (is_mirrored):
-			for mod in activeObj.modifiers:
-				if (mod.type == 'MIRROR'):
-					activeObj.modifiers.remove(mod)
+		self.toggle = True
+		modis = context.active_object.modifiers
+		mir_mods = [mod.name for mod in modis if mod.type=='MIRROR']
+		if mir_mods:
+			for nam in mir_mods:
+				if not modis[nam].show_in_editmode:
+					modis[nam].show_viewport = modis[nam].show_in_editmode = True
+				else:
+					modis[nam].show_viewport = not modis[nam].show_viewport
+			self.is_add = False
 		else:
-			new_mod = activeObj.modifiers.new("Mirror", 'MIRROR')
+			new_mod = modis.new("Mirror", 'MIRROR')
 			new_mod.use_axis = [self.use_x, self.use_y, self.use_z]
 			new_mod.use_mirror_merge = self.use_mirror_merge
 			new_mod.use_clip = self.use_clip
@@ -114,70 +141,71 @@ class ToggleMirrorModifier(bpy.types.Operator):
 			new_mod.use_mirror_v = self.use_mirror_v
 			new_mod.merge_threshold = self.merge_threshold
 			if (self.is_top):
-				for i in range(len(activeObj.modifiers)):
+				for i in range(len(modis)):
 					bpy.ops.object.modifier_move_up(modifier=new_mod.name)
+			self.is_add = True
 		return {'FINISHED'}
-	def invoke(self, context, event):
-		activeObj = context.active_object
-		for mod in activeObj.modifiers:
-			if (mod.type == 'MIRROR'):
-				self.execute(context)
-				return {'RUNNING_MODAL'}
-		return context.window_manager.invoke_props_dialog(self)
 
 class SelectedVertexGroupAverage(bpy.types.Operator):
 	bl_idname = "mesh.selected_vertex_group_average"
-	bl_label = "Fill selected vertices average weight"
-	bl_description = "Fills selected vertex, vertices weighted average"
+	bl_label = "Average Selected Vertices' Weight"
+	bl_description = "Change selected vertices' weight to their average value"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	strength : FloatProperty(name="Mix Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
+	all_group : BoolProperty(name="Apply to All Groups", default=True)
+	target : StringProperty(name="Target", default="")
+	strength : FloatProperty(name="Original Values' Effect", default=0, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
 
-	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
-	def execute(self, context):
+	@classmethod
+	def poll(cls, context):
 		obj = context.active_object
 		if len(obj.vertex_groups) == 0:
-			self.report(type={'ERROR'}, message="This object has no vertex_group")
-			return {'CANCELLED'}		
-		if (obj.type == "MESH"):
-			pre_mode = obj.mode
-			bpy.ops.object.mode_set(mode='OBJECT')
-			vert_groups = []
-			for vg in obj.vertex_groups:
-				vert_groups.append([])
-			selected_verts = []
-			for vert in obj.data.vertices:
-				if (vert.select):
-					selected_verts.append(vert)
-					for i in range(len(vert_groups)):
-						for vge in vert.groups:
-							if (i == vge.group):
-								vert_groups[vge.group].append(vge.weight)
-								break
-						else:
-							vert_groups[i].append(0)
-			vert_groups_average = []
-			for weights in vert_groups:
-				vert_groups_average.append(0)
-				for weight in weights:
-					vert_groups_average[-1] += weight
-				vert_groups_average[-1] /= len(weights)
-			i = 0
-			for vg in obj.vertex_groups:
-				for vert in selected_verts:
-					pre_weight = 0
-					for vge in vert.groups:
-						if (obj.vertex_groups[vge.group].name == vg.name):
-							pre_weight = vge.weight
-							break
-					weight = (vert_groups_average[i] * self.strength) + (pre_weight * (1 - self.strength))
-					vg.add([vert.index], weight, "REPLACE")
-				i += 1
+			return False
+		if not obj.type == "MESH":
+			return False
+		return True
+	def __init__(self):
+		idx = bpy.context.active_object.vertex_groups.active_index
+		self.target = bpy.context.active_object.vertex_groups[idx].name
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, 'all_group')
+		row = self.layout.row()
+		row.enabled = not self.all_group
+		row.prop_search(self, 'target', context.active_object, "vertex_groups", text="Target", translate=True, icon='GROUP_VERTEX')
+		row = self.layout.split(factor=0.55)
+		row.label(text="Original Values' Effect")
+		row.prop(self, 'strength', text="")
+
+	def execute(self, context):
+		obj = context.active_object
+		pre_mode = obj.mode
+		bpy.ops.object.mode_set(mode='OBJECT')
+		vg_dic = {idx: dict() for idx, vg in enumerate(obj.vertex_groups)}
+		selected_verts = [v for v in obj.data.vertices if v.select]
+		if (len(selected_verts) <= 0):
 			bpy.ops.object.mode_set(mode=pre_mode)
-		else:
-			self.report(type={"ERROR"}, message="This is not mesh object")
+			self.report(type={'ERROR'}, message="Need to select at least one vertex")
 			return {'CANCELLED'}
+		for v in selected_verts:
+			for vge in v.groups:
+				belonged_vg_dic = vg_dic[vge.group]
+				belonged_vg_dic[v.index] = vge.weight
+		if self.all_group:
+			keys = list(vg_dic.keys())
+		else:
+			keys = [obj.vertex_groups.find(self.target)]
+		for key in keys:
+			v_group = obj.vertex_groups[key]
+			counts = len(list(vg_dic[key].keys()))
+			weight = sum(list(vg_dic[key].values()))
+			average = weight/counts
+			for vert_idx in vg_dic[key].keys():
+				pre_weight = vg_dic[key][vert_idx]
+				new_weight = pre_weight*self.strength + average*(1-self.strength)
+				v_group.add([vert_idx], new_weight, 'REPLACE')
+		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
 ################
@@ -218,7 +246,7 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.operator(SelectTopShape.bl_idname, icon="PLUGIN")
 		self.layout.separator()
-		self.layout.prop(context.object.data, "use_mirror_x", icon="PLUGIN", text="X axis mirror edit")
+		self.layout.prop(context.object.data, "use_mirror_x", icon="PLUGIN", text="X-Axis Mirror")
 		self.layout.operator(ToggleMirrorModifier.bl_idname, icon="PLUGIN")
 		self.layout.operator(ToggleShowCage.bl_idname, icon="PLUGIN")
 		self.layout.separator()

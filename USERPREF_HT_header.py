@@ -45,7 +45,7 @@ _KEYMAP_DIC = {
 	'Eyedropper Modal Map': ['Eyedropper Modal Map',],
 	'Eyedropper ColorRamp PointSampling Map': ['Eyedropper ColorRamp PointSampling Map',],
 }
-# 以下は存在するがパネルでの表示がない項目 (at 2.83)
+# 以下は存在するがパネルでの表示がない項目 (at 2.90)
 	#'Clip Time Scrub', 'Gizmos', 'Generic Gizmo',
 	#'Generic Gizmo Click Drag', 'Generic Gizmo Drag',
 	#'Generic Gizmo Maybe Drag', 'Generic Gizmo Select',

@@ -883,7 +883,7 @@ class AllSetPhysicsFrames(bpy.types.Operator):
 	startOffset : IntProperty(name="Start Offset", default=0, step=1)
 	endOffset : IntProperty(name="End Offset", default=0, step=1)
 
-	isRigidBody : BoolProperty(name="RigidBody", default=True)
+	isRigidBody : BoolProperty(name="Rigid Body", default=True)
 	isCloth : BoolProperty(name="Cloth", default=True)
 	isSoftBody : BoolProperty(name="Soft Body", default=True)
 	isFluid : BoolProperty(name="Fluid", default=True)
