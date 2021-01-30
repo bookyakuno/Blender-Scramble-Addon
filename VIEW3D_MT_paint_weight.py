@@ -10,160 +10,178 @@ from bpy.props import *
 
 class MargeSelectedVertexGroup(bpy.types.Operator):
 	bl_idname = "paint.marge_selected_vertex_group"
-	bl_label = "Combine Weights"
-	bl_description = "Weight of selected bone and same vertex group merges"
+	bl_label = "Add Designated Bone's Weight"
+	bl_description = "Add to active vertex group the weight of vertex group linked to designated bone"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isNewVertGroup : BoolProperty(name="Create new vertex group", default=False)
-	ext : StringProperty(name="End of new vertex group name", default="... Such as combine")
-	items = [
-		('1', "Merge selected bones' weight", "", 1),
-		('2', "Select another bone and merge their weight", "", 2),
-		]
-	method : EnumProperty(items=items, name="Select manually or not")
-	vgroup_name : StringProperty(name="Vertex group to merge", default="")
+	crate_newvg : BoolProperty(name="Create new vertex group", default=False)
+	target : StringProperty(name="Target", default="")
+	new_name : StringProperty(name="Name", default="")
 
+	@classmethod
+	def poll(cls, context):
+		if context.active_object.vertex_groups.active_index == -1:
+			return False
+		return True
+	def __init__(self):
+		idx = bpy.context.active_object.vertex_groups.active_index
+		self.target = bpy.context.active_object.vertex_groups[0].name
+		self.new_name = f"{bpy.context.active_object.vertex_groups[idx].name}_merged"
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
-		self.layout.prop(self, "method", text="Method")
-		if self.method == '2':
-			self.layout.prop_search(self, "vgroup_name", context.active_object, "vertex_groups", text="Select group to merge", translate=True, icon='GROUP_VERTEX')
+		self.layout.prop_search(self, 'target', context.active_object, "vertex_groups", text="Target", translate=True, icon='GROUP_VERTEX')
 		row = self.layout.row()
-		row.prop(self, "isNewVertGroup")
-		row.prop(self, "ext")
+		row.use_property_split = True
+		row.prop(self, 'crate_newvg')
+		row = self.layout.row()
+		row.use_property_split = True
+		row.enabled = self.crate_newvg
+		row.prop(self, 'new_name')
+
 	def execute(self, context):
 		obj = context.active_object
-		me = obj.data
-		if (self.isNewVertGroup):
-			newVg = obj.vertex_groups.new(name=context.active_pose_bone.name+self.ext)
+		if (self.crate_newvg):
+			newVg = obj.vertex_groups.new(name=self.new_name)
 		else:
-			newVg = obj.vertex_groups[context.active_pose_bone.name]
-		boneNames = []
-		if (self.method == '2' and not self.vgroup_name) or (self.method == '1' and len(context.selected_pose_bones) <= 1):
-			self.report(type={"ERROR"}, message="Please select two or more bones")
-			return {"CANCELLED"}
-		for bone in context.selected_pose_bones:
-			boneNames.append(bone.name)
-		if self.vgroup_name and not self.vgroup_name in boneNames:
-			boneNames.append(self.vgroup_name)
-		for vert in me.vertices:
+			newVg = obj.vertex_groups[obj.vertex_groups.active_index]
+		target_vg_idx = obj.vertex_groups.find(self.target)
+		for vert in obj.data.vertices:
 			for vg in vert.groups:
-				if (self.isNewVertGroup or newVg.name != obj.vertex_groups[vg.group].name):
-					if (obj.vertex_groups[vg.group].name in boneNames):
-						newVg.add([vert.index], vg.weight, 'ADD')
+				if vg.group == target_vg_idx:
+					newVg.add([vert.index], vg.weight, 'ADD')
 		bpy.ops.object.mode_set(mode="WEIGHT_PAINT")
 		obj.vertex_groups.active_index = newVg.index
 		return {'FINISHED'}
 
 class RemoveSelectedVertexGroup(bpy.types.Operator):
 	bl_idname = "paint.remove_selected_vertex_group"
-	bl_label = "Subtraction Weights"
-	bl_description = "Subtracts weight of selected bone and same vertex groups"
+	bl_label = "Subtract Designated Bone's Weight"
+	bl_description = "Subtract the weight of vertex group linked to designated bone from active vertex group"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [
-		('1', "Subtract selected bones' weight from active one's", "", 1),
-		('2', "Select another bone and subtract its weight", "", 2),
-		]
-	method : EnumProperty(items=items, name="Select manually or not")
-	vgroup_name : StringProperty(name="Vertex group to merge", default="")
+	target : StringProperty(name="Target", default="")
 
+	@classmethod
+	def poll(cls, context):
+		if context.active_object.vertex_groups.active_index == -1:
+			return False
+		return True
+	def __init__(self):
+		self.target = bpy.context.active_object.vertex_groups[0].name
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
-		self.layout.prop(self, "method", text="Method")
-		if self.method == '2':
-			self.layout.prop_search(self, "vgroup_name", context.active_object, "vertex_groups", text="Select group to merge", translate=True, icon='GROUP_VERTEX')
+		self.layout.prop_search(self, 'target', context.active_object, "vertex_groups", text="Target", translate=True, icon='GROUP_VERTEX')
+
 	def execute(self, context):
 		obj = context.active_object
-		me = obj.data
-		newVg = obj.vertex_groups[context.active_pose_bone.name]
-		boneNames = []
-		if (self.method == '2' and not self.vgroup_name) or (self.method == '1' and len(context.selected_pose_bones) <= 1):
-			self.report(type={"ERROR"}, message="Please select two or more bones")
-			return {"CANCELLED"}
-		for bone in context.selected_pose_bones:
-			boneNames.append(bone.name)
-		if self.vgroup_name and not self.vgroup_name in boneNames:
-			boneNames.append(self.vgroup_name)
-		for vert in me.vertices:
+		newVg = obj.vertex_groups[obj.vertex_groups.active_index]
+		target_vg_idx = obj.vertex_groups.find(self.target)
+		for vert in obj.data.vertices:
 			for vg in vert.groups:
-				if (newVg.name != obj.vertex_groups[vg.group].name):
-					if (obj.vertex_groups[vg.group].name in boneNames):
-						newVg.add([vert.index], vg.weight, 'SUBTRACT')
+				if vg.group == target_vg_idx:
+					newVg.add([vert.index], vg.weight, 'SUBTRACT')
 		bpy.ops.object.mode_set(mode="WEIGHT_PAINT")
 		return {'FINISHED'}
 
 class VertexGroupAverageAll(bpy.types.Operator):
-	bl_idname = "mesh.vertex_group_average_all"
-	bl_label = "Fill average weight of all vertices"
-	bl_description = "In average weight of all, fills all vertices"
+	bl_idname = "paint.vertex_group_average_all"
+	bl_label = "Average All Vertices' Weight"
+	bl_description ="Change all vertices' weight to their average value"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	strength : FloatProperty(name="Strength", default=1, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
+	all_group : BoolProperty(name="Apply to All Groups", default=True)
+	target : StringProperty(name="Target", default="")
+	strength : FloatProperty(name="Original Values' Effect", default=0, min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3)
+
+	@classmethod
+	def poll(cls, context):
+		if context.active_object.vertex_groups.active_index == -1:
+			return False
+		return True
+	def __init__(self):
+		idx = bpy.context.active_object.vertex_groups.active_index
+		self.target = bpy.context.active_object.vertex_groups[idx].name
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		self.layout.prop(self, 'all_group')
+		row = self.layout.row()
+		row.enabled = not self.all_group
+		row.prop_search(self, 'target', context.active_object, "vertex_groups", text="Target", translate=True, icon='GROUP_VERTEX')
+		row = self.layout.split(factor=0.55)
+		row.label(text="Original Values' Effect")
+		row.prop(self, 'strength', text="")
 
 	def execute(self, context):
-		for obj in context.selected_objects:
-			if (obj.type == "MESH"):
-				vgs = []
-				for i in range(len(obj.vertex_groups)):
-					vgs.append([])
-				vertCount = 0
-				for vert in obj.data.vertices:
-					for vg in vert.groups:
-						vgs[vg.group].append(vg.weight)
-					vertCount += 1
-				vg_average = []
-				for vg in vgs:
-					vg_average.append(0)
-					for w in vg:
-						vg_average[-1] += w
-					vg_average[-1] /= vertCount
-				i = 0
-				for vg in obj.vertex_groups:
-					for vert in obj.data.vertices:
-						for g in vert.groups:
-							if (obj.vertex_groups[g.group] == vg):
-								w = g.weight
-								break
-						else:
-							w = 0
-						w = (vg_average[i] * self.strength) + (w * (1-self.strength))
-						vg.add([vert.index], w, "REPLACE")
-					i += 1
-		bpy.ops.object.mode_set(mode="WEIGHT_PAINT")
+		obj = context.active_object
+		pre_mode = obj.mode
+		bpy.ops.object.mode_set(mode='OBJECT')
+		vg_dic = {idx: dict() for idx, vg in enumerate(obj.vertex_groups)}
+		selected_verts = obj.data.vertices
+		for v in selected_verts:
+			for vge in v.groups:
+				belonged_vg_dic = vg_dic[vge.group]
+				belonged_vg_dic[v.index] = vge.weight
+		if self.all_group:
+			keys = list(vg_dic.keys())
+		else:
+			keys = [obj.vertex_groups.find(self.target)]
+		for key in keys:
+			v_group = obj.vertex_groups[key]
+			counts = len(list(vg_dic[key].keys()))
+			weight = sum(list(vg_dic[key].values()))
+			average = weight/counts
+			for vert_idx in vg_dic[key].keys():
+				pre_weight = vg_dic[key][vert_idx]
+				new_weight = pre_weight*self.strength + average*(1-self.strength)
+				v_group.add([vert_idx], new_weight, 'REPLACE')
+		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
 class ApplyDynamicPaint(bpy.types.Operator):
 	bl_idname = "mesh.apply_dynamic_paint"
-	bl_label = "Paint objects overlap"
-	bl_description = "I painted weight of portion that overlaps other selected objects"
+	bl_label = "Set Weight to Overlapping Area"
+	bl_description = "Set weight to vertices at areas where active object overlaps selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	isNew : BoolProperty(name="To new vertex group", default=False)
+	is_new : BoolProperty(name="Create new vertex group", default=False)
+	new_name : StringProperty(name="Name", default="Overlapping Area")
 	distance : FloatProperty(name="Distance", default=1.0, min=0, max=100, soft_min=0, soft_max=100, step=10, precision=3)
 	items = [
 		("ADD", "Add", "", 1),
-		("SUBTRACT", "Sub", "", 2),
+		("SUBTRACT", "Subtract", "", 2),
 		("REPLACE", "Replace", "", 3),
 		]
-	mode : EnumProperty(items=items, name="Fill Method")
+	mode : EnumProperty(items=items, name="Method")
+
+	@classmethod
+	def poll(cls, context):
+		if not context.selected_objects or len(context.selected_objects) < 2:
+			return False
+		if context.active_object.vertex_groups.active_index == -1:
+			return False
+		return True
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		layout = self.layout
+		layout.use_property_split = True
+		for p in ['mode','distance','is_new']:
+			layout.prop(self, p)
+		row = layout.row()
+		row.enabled = self.is_new
+		row.prop(self, 'new_name')
 
 	def execute(self, context):
 		activeObj = context.active_object
-		preActiveVg = activeObj.vertex_groups.active
-		isNew = self.isNew
-		if (not preActiveVg):
-			isNew = True
-		brushObjs = []
-
-		for obj in context.selected_objects:
-			if (activeObj.name != obj.name):
-				brushObjs.append(obj)
-
+		if len(activeObj.vertex_groups) == 0 or self.is_new:
+			target_vg = activeObj.vertex_groups.new(name=self.new_name)
+		else:
+			target_vg = activeObj.vertex_groups.active
 		bpy.ops.object.mode_set(mode="OBJECT")
-
+		brushObjs = list(set(context.selected_objects) - {activeObj})
 		for obj in brushObjs:
 			bpy.context.view_layer.objects.active = obj
 			bpy.ops.object.modifier_add(type='DYNAMIC_PAINT')
@@ -178,27 +196,25 @@ class ApplyDynamicPaint(bpy.types.Operator):
 		activeObj.modifiers[-1].canvas_settings.canvas_surfaces[-1].surface_type = 'WEIGHT'
 		bpy.ops.dpaint.output_toggle(output='A')
 		dpVg = activeObj.vertex_groups[-1]
-		# mod_soft_body = activeObj.modifiers.new(name="Soft Body", type='SOFT_BODY')
-
-		#"Dynamic Paint weight group isn't updated unless weight has been assigned" というバグが2.80にある(あった?)
-		#おそらくこれに関連し、スクリプト経由でダイナミックペイントを適用する際に
-		#何もしない場合、作成される頂点グループ dp_weight の中身がリセットされる
-		#これに対応するため、ここではソフトボディに関連付けして中身を固定している
-
-		bpy.ops.object.modifier_add(type='SOFT_BODY')
+		#"Dynamic Paint weight group isn't updated unless weight has been assigned" というバグが2.80にある
+		#おそらくこれに関連し、スクリプト経由でダイナミックペイントを適用する場合、
+		#作成される頂点グループ dp_weight の中身がリセットされるので対処する
+		bpy.ops.object.modifier_add(type='SOFT_BODY')#ソフトボディ追加(対処1-1)
 		activeObj.modifiers[-2].settings.vertex_group_mass = dpVg.name
-		bpy.ops.object.modifier_apply(modifier=activeObj.modifiers[-1].name)
-		activeObj.modifiers.remove(activeObj.modifiers[-1])#ソフトボディ除去削除
-
-		if (not isNew):
-			me = activeObj.data
-			for vert in me.vertices:
-				for vg in vert.groups:
-					if (activeObj.vertex_groups[vg.group].name == dpVg.name):
-						preActiveVg.add([vert.index], vg.weight, self.mode)
+		print(activeObj.modifiers[-1].name)#ソフトボディに関連付けて dp_weight の中身を固定(対処1-2)
+		bpy.ops.object.modifier_apply(modifier=activeObj.modifiers[-1].name)#ダイナミックペイントを適用
+		activeObj.modifiers.remove(activeObj.modifiers[-1])#ソフトボディを除去(後始末)
+		dpVg_idx = activeObj.vertex_groups.find(dpVg.name)
+		for vert in activeObj.data.vertices:
+			for vg in vert.groups:
+				if vg.group == dpVg_idx:
+					if target_vg.name == self.new_name:
+						target_vg.add([vert.index], vg.weight, 'REPLACE')
 						break
-			activeObj.vertex_groups.remove(dpVg)
-			activeObj.vertex_groups.active_index = preActiveVg.index
+					else:
+						target_vg.add([vert.index], vg.weight, self.mode)
+		activeObj.vertex_groups.remove(dpVg)
+		activeObj.vertex_groups.active_index = target_vg.index
 		bpy.ops.object.mode_set(mode='WEIGHT_PAINT')
 		for obj in brushObjs:
 			obj.modifiers.remove(obj.modifiers[-1])
@@ -207,40 +223,41 @@ class ApplyDynamicPaint(bpy.types.Operator):
 
 class BlurWeight(bpy.types.Operator):
 	bl_idname = "mesh.blur_weight"
-	bl_label = "Vertex Group Blur"
-	bl_description = "Blurs active or all vertex groups"
+	bl_label = "Blur Weight (Active Group)"
+	bl_description = "Blur active or all vertex groups' weight"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [
-		('ACTIVE', "Active Only", "", 1),
-		('ALL', "All", "", 2),
-		]
-	mode : EnumProperty(items=items, name="Target", default='ACTIVE')
-	blur_count : IntProperty(name="Repeat Count", default=10, min=1, max=100, soft_min=1, soft_max=100, step=1)
-	use_clean : BoolProperty(name="Remove weight of 0.0", default=True)
+	all_group : BoolProperty(name="Apply to All Groups", default=False)
+	blur_count : IntProperty(name="Strength", default=10, min=1, max=100, soft_min=1, soft_max=100, step=1)
+	use_clean : BoolProperty(name="Remove Zero-Weight Vertices", default=True)
 
+	@classmethod
+	def poll(cls, context):
+		if context.active_object.vertex_groups.active_index == -1:
+			return False
+		return True
+	def draw(self, context):
+		for p in ['all_group', 'blur_count']:
+			row = self.layout.row()
+			row.use_property_split = True
+			row.prop(self, p)
+		row = self.layout.split(factor=0.25)
+		row.label(text="")
+		row.prop(self, 'use_clean')
 
 	def execute(self, context):
 		activeObj = context.active_object
-		if (not activeObj):
-			self.report(type={'ERROR'}, message="There is no active object")
-			return {'CANCELLED'}
-		if (activeObj.type != 'MESH'):
-			self.report(type={'ERROR'}, message="Try run on mesh object")
-			return {'CANCELLED'}
 		pre_mode = activeObj.mode
 		bpy.ops.object.mode_set(mode='OBJECT')
 		me = activeObj.data
-		target_weights = []
-		if (self.mode == 'ACTIVE'):
-			target_weights.append(activeObj.vertex_groups.active)
-		elif (self.mode == 'ALL'):
-			for vg in activeObj.vertex_groups:
-				target_weights.append(vg)
+		if not self.all_group:
+			target_groups = [activeObj.vertex_groups.active]
+		else:
+			target_groups = activeObj.vertex_groups
 		bm = bmesh.new()
 		bm.from_mesh(me)
 		for count in range(self.blur_count):
-			for vg in target_weights:
+			for vg in target_groups:
 				vg_index = vg.index
 				new_weights = []
 				for vert in bm.verts:
@@ -319,8 +336,8 @@ def menu(self, context):
 		self.layout.operator(MargeSelectedVertexGroup.bl_idname, icon="PLUGIN")
 		self.layout.operator(RemoveSelectedVertexGroup.bl_idname, icon="PLUGIN")
 		self.layout.separator()
-		self.layout.operator(BlurWeight.bl_idname, text="Blur Active", icon="PLUGIN").mode = 'ACTIVE'
-		self.layout.operator(BlurWeight.bl_idname, text="Blur All", icon="PLUGIN").mode = 'ALL'
+		self.layout.operator(BlurWeight.bl_idname, icon="PLUGIN")
+		self.layout.operator(BlurWeight.bl_idname, text="Blur Weight (All Groups)", icon="PLUGIN").all_group = True
 		self.layout.separator()
 		self.layout.operator(VertexGroupAverageAll.bl_idname, icon="PLUGIN")
 		self.layout.separator()

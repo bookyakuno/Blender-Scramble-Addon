@@ -17,7 +17,7 @@ class copy_bone_relations_settings(bpy.types.Operator):
 	layers : BoolProperty(name="Layer", default=True)
 
 	parent : BoolProperty(name="Parent", default=True)
-	use_connect : BoolProperty(name="Connection", default=True)
+	use_connect : BoolProperty(name="Connected", default=True)
 	use_inherit_rotation : BoolProperty(name="Inherit Rotation", default=True)
 	use_inherit_scale : BoolProperty(name="Inherit Scale", default=True)
 	use_local_location : BoolProperty(name="Local Location", default=True)

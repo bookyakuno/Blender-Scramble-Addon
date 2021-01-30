@@ -23,9 +23,9 @@ class CopyDisplaySetting(bpy.types.Operator):
 	copy_show_texture_space : BoolProperty(name="Texture Space", default=True)
 	copy_show_shadows : BoolProperty(name="Shadow", default=True)
 	copy_show_in_front : BoolProperty(name="In Front", default=True)
-	#copy_show_transparent : BoolProperty(name="Display Color with Alpha", default=True)
 	copy_display_type : BoolProperty(name="Display As", default=True)
 	copy_color : BoolProperty(name="Object Color", default=True)
+	only_same : BoolProperty(name="Copy to only same type", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -37,6 +37,7 @@ class CopyDisplaySetting(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def draw(self, context):
+		obj = context.active_object
 		row = self.layout.row()
 		column = row.column().box()
 		column.prop(self, 'copy_show_name')
@@ -48,8 +49,7 @@ class CopyDisplaySetting(bpy.types.Operator):
 		column.prop(self, 'copy_show_in_front')
 		column = row.column()
 		box = column.box()
-		box .prop(self, 'copy_color')
-		#box .prop(self, 'copy_show_transparent')
+		box.prop(self, 'copy_color')
 		column.separator()
 		box = column.box()
 		box.prop(self, 'copy_display_type')
@@ -57,35 +57,29 @@ class CopyDisplaySetting(bpy.types.Operator):
 		box = column.box()
 		box.prop(self, 'copy_show_bounds')		
 		box.prop(self, 'copy_display_bounds_type')
+		column.separator()
+		column.prop(self, 'only_same')
+		row = column.row(align=True)
+		row.label(text="Type")
+		row.label(text=obj.type)
 
 	def execute(self, context):
+		ps = [
+			'show_name','show_axis','show_wire',
+			'show_all_edges','show_texture_space',
+			'show_shadows','show_in_front','color',
+			'display_type','show_bounds','display_bounds_type']
 		active_obj = context.active_object
-		for obj in context.selected_objects:
-			if (obj.name != active_obj.name):
-				if (self.copy_show_name):
-					obj.show_name = active_obj.show_name
-				if (self.copy_show_axis):
-					obj.show_axis = active_obj.show_axis
-				if (self.copy_show_wire):
-					obj.show_wire = active_obj.show_wire
-				if (self.copy_show_all_edges):
-					obj.show_all_edges = active_obj.show_all_edges
-				if (self.copy_show_bounds):
-					obj.show_bounds = active_obj.show_bounds
-				if (self.copy_display_bounds_type):
-					obj.display_bounds_type = active_obj.display_bounds_type
-				if (self.copy_show_texture_space):
-					obj.show_texture_space = active_obj.show_texture_space
-				if (self.copy_show_in_front):
-					obj.show_in_front = active_obj.show_in_front
-				if (self.copy_show_shadows):
-					obj.copy_show_shadows = active_obj.copy_show_shadows
-				#if (self.copy_show_transparent):
-				#	obj.show_transparent = active_obj.show_transparent
-				if (self.copy_display_type):
-					obj.display_type = active_obj.display_type
-				if (self.copy_color):
-					obj.color = active_obj.color[:]
+		other_objs = list(set(context.selected_objects) - {active_obj})
+		for obj in other_objs:
+			if not self.only_same or obj.type==active_obj.type:
+				print(obj.type==active_obj.type)
+				for p in ps:
+					if eval(f"self.copy_{p}"):
+						if p == 'show_shadows':
+							exec(f"obj.display.{p} = active_obj.display.{p}")
+						else:
+							exec(f"obj.{p} = active_obj.{p}")
 		return {'FINISHED'}
 
 ################

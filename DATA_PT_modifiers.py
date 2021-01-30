@@ -297,18 +297,15 @@ class ApplyBoolean(bpy.types.Operator):
 
 class SetRenderSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.set_render_subsurf_level"
-	bl_label = "Set number of subdivisions when rendering"
+	bl_label = "Set Number of Subdivisions When Rendering"
 	bl_description = "Set 'number of subdivisions when rendering' property of the selected objects' Subdivision Surface modifiers"
 	bl_property = "level_enum"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	level : IntProperty(name="Number of Subdivisions", default=6, min=0, max=10)
-	is_more: BoolProperty(name="more", default=False)
+	is_more: BoolProperty(name="5 <", default=False)
 
-	items = [
-		("1", "1", "", 1), ("2", "2", "", 2), ("3", "3", "", 3),
-		("4", "4", "", 4), ("5", "5", "", 5)
-		]
+	items = [(str(i+1),str(i+1),"",i) for i in range(5)]
 	level_enum : EnumProperty(items=items, name="preset_level", default="2")
 
 	@classmethod
@@ -318,9 +315,8 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 				if mod.type == 'SUBSURF':
 					return True
 		return False
-
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self, width=350)
+		return context.window_manager.invoke_props_popup(self, event)
 	def draw(self, context):
 		sp = self.layout.split(factor=0.75)
 		row = sp.split(factor=0.8)
@@ -344,6 +340,51 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 						modi.show_expanded = True
 		return {'FINISHED'}
 
+class SetViewportSubsurfLevel(bpy.types.Operator):
+	bl_idname = "object.set_viewport_subsurf_level"
+	bl_label = "Set Number of Subdivisions in Viewport"
+	bl_description = "Set 'number of subdivisions' property of the selected objects' Subdivision Surface modifiers"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	level : IntProperty(name="Number of Subdivisions", default=6, min=0, max=10)
+	is_more: BoolProperty(name="5 <", default=False)
+
+	items = [(str(i+1),str(i+1),"",i) for i in range(5)]
+	level_enum : EnumProperty(items=items, name="preset_level", default="2")
+
+	@classmethod
+	def poll(cls, context):
+		for obj in context.selected_objects:
+			for mod in obj.modifiers:
+				if mod.type == 'SUBSURF':
+					return True
+		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_popup(self, event)
+
+	def draw(self, context):
+		sp = self.layout.split(factor=0.75)
+		row = sp.split(factor=0.8)
+		row.row().prop(self, 'level_enum', expand=True)
+		row.prop(self, 'is_more')
+		row = sp.row()
+		row.prop(self, 'level', text="")
+		row.enabled = self.is_more
+
+	def execute(self, context):
+		if self.is_more:
+			level = self.level
+		else:
+			level = int(self.level_enum)
+		for obj in context.selected_objects:
+			if obj.type in ['MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE']:
+				for modi in obj.modifiers:
+					if modi.type == 'SUBSURF':
+						modi.levels = level
+						modi.show_expanded = False
+						modi.show_expanded = True
+		return {'FINISHED'}
+
 class EqualizeSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.equalize_subsurf_level"
 	bl_label = "Match number of subdivisions in viewport and rendering"
@@ -354,7 +395,7 @@ class EqualizeSubsurfLevel(bpy.types.Operator):
 		('ToRender', "Match to Rendering", "", 1),
 		('ToPreview', "Match to Preview", "", 2),
 		]
-	mode : EnumProperty(items=items, name="How to set up")
+	mode : EnumProperty(items=items, name="Method")
 
 	@classmethod
 	def poll(cls, context):
@@ -388,7 +429,7 @@ class SetSubsurfOptimalDisplay(bpy.types.Operator):
 	bl_description = "Set 'Optimal Display' property of the selected objects' Subdivision Surface modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [('1', "Enable", "", 1),('0', "Disable", "", 2)]
+	items = [('1', "Enabled", "", 1),('0', "Disabled", "", 2)]
 	is_use : EnumProperty(items=items, name="Optimized View")
 
 	@classmethod
@@ -667,9 +708,10 @@ class SubsurfMenu(bpy.types.Menu):
 	bl_description = "Manipulate Subdivision Surface modifier"
 
 	def draw(self, context):
-		self.layout.operator(AddSubsurf.bl_idname, icon='PLUGIN')
-		self.layout.operator(DeleteSubsurf.bl_idname, icon='PLUGIN')
+		self.layout.operator(AddSubsurf.bl_idname, icon='MODIFIER')
+		self.layout.operator(DeleteSubsurf.bl_idname, icon='CANCEL')
 		self.layout.separator()
+		self.layout.operator(SetViewportSubsurfLevel.bl_idname, icon='PLUGIN')
 		self.layout.operator(SetRenderSubsurfLevel.bl_idname, icon='PLUGIN')
 		self.layout.operator(EqualizeSubsurfLevel.bl_idname, icon='PLUGIN')
 		self.layout.operator(SetSubsurfOptimalDisplay.bl_idname, icon='PLUGIN')
@@ -720,6 +762,7 @@ classes = [
 	AddBoolean,
 	ApplyBoolean,
 	SetRenderSubsurfLevel,
+	SetViewportSubsurfLevel,
 	EqualizeSubsurfLevel,
 	SetSubsurfOptimalDisplay,
 	DeleteSubsurf,

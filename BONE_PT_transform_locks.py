@@ -105,7 +105,7 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		if 'selected_pose_bones' in dir(context):
+		if context.selected_pose_bones:
 			if 2 <= len(context.selected_pose_bones):
 				self.layout.operator(copy_transform_lock_settings.bl_idname, icon='COPY_ID')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):

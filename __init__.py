@@ -455,8 +455,8 @@ def register():
 	bpy.types.VIEW3D_MT_make_links.append(VIEW3D_MT_make_links.menu)
 	VIEW3D_MT_object.register()
 	bpy.types.VIEW3D_MT_object.append(VIEW3D_MT_object.menu)
-	VIEW3D_MT_object_apply.register()
-	bpy.types.VIEW3D_MT_object_apply.append(VIEW3D_MT_object_apply.menu)
+	#VIEW3D_MT_object_apply.register() #廃止
+	#bpy.types.VIEW3D_MT_object_apply.append(VIEW3D_MT_object_apply.menu)
 	VIEW3D_MT_object_showhide.register()
 	bpy.types.VIEW3D_MT_object_showhide.append(VIEW3D_MT_object_showhide.menu)
 	VIEW3D_MT_object_specials.register()
@@ -469,7 +469,7 @@ def register():
 	bpy.types.VIEW3D_MT_pose_showhide.append(VIEW3D_MT_pose_showhide.menu)
 	VIEW3D_MT_pose_specials.register()
 	bpy.types.VIEW3D_MT_pose_context_menu.append(VIEW3D_MT_pose_specials.menu)
-	#VIEW3D_MT_select_edit_armature.register()#クラスなしのためregister()は未定義
+	VIEW3D_MT_select_edit_armature.register()
 	bpy.types.VIEW3D_MT_select_edit_armature.append(VIEW3D_MT_select_edit_armature.menu)
 	VIEW3D_MT_select_edit_mesh.register()
 	bpy.types.VIEW3D_MT_select_edit_mesh.append(VIEW3D_MT_select_edit_mesh.menu)
@@ -648,8 +648,8 @@ def unregister():
 	bpy.types.VIEW3D_MT_make_links.remove(VIEW3D_MT_make_links.menu)
 	VIEW3D_MT_object.unregister()
 	bpy.types.VIEW3D_MT_object.remove(VIEW3D_MT_object.menu)
-	VIEW3D_MT_object_apply.unregister()
-	bpy.types.VIEW3D_MT_object_apply.remove(VIEW3D_MT_object_apply.menu)
+	#VIEW3D_MT_object_apply.unregister() #廃止
+	#bpy.types.VIEW3D_MT_object_apply.remove(VIEW3D_MT_object_apply.menu)
 	VIEW3D_MT_object_showhide.unregister()
 	bpy.types.VIEW3D_MT_object_showhide.remove(VIEW3D_MT_object_showhide.menu)
 	VIEW3D_MT_object_specials.unregister()
@@ -662,7 +662,7 @@ def unregister():
 	bpy.types.VIEW3D_MT_pose_showhide.remove(VIEW3D_MT_pose_showhide.menu)
 	VIEW3D_MT_pose_specials.unregister()
 	bpy.types.VIEW3D_MT_pose_context_menu.remove(VIEW3D_MT_pose_specials.menu)
-	#VIEW3D_MT_select_edit_armature.unregister()#クラスなしのためunregister()は未定義
+	VIEW3D_MT_select_edit_armature.unregister()
 	bpy.types.VIEW3D_MT_select_edit_armature.remove(VIEW3D_MT_select_edit_armature.menu)
 	VIEW3D_MT_select_edit_mesh.unregister()
 	bpy.types.VIEW3D_MT_select_edit_mesh.remove(VIEW3D_MT_select_edit_mesh.menu)
