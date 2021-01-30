@@ -233,8 +233,8 @@
 "全てのシェイプキーを統合したものをベースキーとし、元のベースキーを新しいシェイプキーに設定します","Merge all shape keys into a new basis key and set the original basis key as a new shape key"
 "ベース以外の全てのキーを1つに統合","Merge All Non-Basis Keys into One"
 "ベースキー以外の全てのシェイプキーを統合し、新しいシェイプキーを作成します","Merge all non-basis shape keys into a new key"
-"アクティブより上のキーを1つに統合","Merge Non-Basis Keys Above Active into One"
-"アクティブなシェイプキーよりも上に位置するベースキー以外のシェイプキーを統合し、新しいシェイプキーを作成します","Merge non-basis shape keys above the active key into a new one"
+"アクティブまでのキーを1つに統合","Merge Active and Above Non-Basis Keys into One"
+"一番上からアクティブなものまでのベースキー以外のシェイプキーを統合し、新しいシェイプキーを作成します","Merge active and above non-basis shape keys into a new one"
 "全てのシェイプキーを無効化、もしくは有効化します","Enable or disable all shape keys"
 "全シェイプを無効化/有効化","Disable / Enable All Shapes"
 
