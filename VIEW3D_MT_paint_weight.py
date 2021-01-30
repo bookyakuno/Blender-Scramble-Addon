@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「ウェイトペイント」モード > 「ウェイト」メニュー
-# "3D View" Area > "Weight Paint" Mode > "Weights" Menu
+# 「3Dビュー」エリア > メッシュの「ウェイトペイント」モード > 「ウェイト」メニュー
+# "3D View" Area > "Weight Paint" Mode with Mesh > "Weights" Menu
 
 import bpy, bmesh
 from bpy.props import *

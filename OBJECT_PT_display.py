@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「オブジェクト」タブ > 「表示」パネル
-# "Propaties" Area > "Object" Tab > "Display" Panel
+# 「プロパティ」エリア > 「オブジェクト」タブ > 「ビューポート表示」パネル
+# "Propaties" Area > "Object" Tab > "Viewport Display" Panel
 
 import bpy
 from bpy.props import *

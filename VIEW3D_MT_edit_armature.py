@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「アーマチュア編集」モード > 「アーマチュア」メニュー
-# "3D View" Area > "Armature Editor" Mode > "Armature" Menu
+# 「3Dビュー」エリア > アーマチュアの「編集」モード > 「アーマチュア」メニュー
+# "3D View" Area > "Edit" Mode with Armature > "Armature" Menu
 
 import bpy
 

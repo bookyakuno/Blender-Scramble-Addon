@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「メッシュ編集」モード > 「Ctrl + V」キー
-# "3D View" Area > "Mesh Editor" Mode > "Ctrl + V" Key
+# 「3Dビュー」エリア > メッシュの「編集」モード > 「頂点」メニュー
+# "3D View" Area > "Edit" Mode with Mesh > "Vertex" Menu
 
 import bpy
 from bpy.props import *

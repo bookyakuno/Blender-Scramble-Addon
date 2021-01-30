@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「テクスチャ」タブ > 「画像」パネル
-# "Propaties" Area > "Texture" Tab > "Image" Panel
+# 「プロパティ」エリア > 「アクティブツールとワークスペースの設定」タブ > 「テクスチャスロット」パネル
+# "Propaties" Area > "Active Tool and Workspace Settings" Tab > "Texture Slots" Panel
 
 import bpy
 import os

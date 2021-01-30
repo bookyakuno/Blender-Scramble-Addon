@@ -1,5 +1,5 @@
-# 「UV/画像エディター」エリア > 「選択」メニュー
-# "UV/Image Editor" Area > "Select" Menu
+# 「UVエディター」エリア > 「選択」メニュー
+# "UV Editor" Area > "Select" Menu
 
 import bpy
 import bmesh

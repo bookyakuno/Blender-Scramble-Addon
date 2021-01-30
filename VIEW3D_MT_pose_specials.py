@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「ポーズ」モード > 「W」キー
-# "3D View" Area > "Pose" Mode > "W" Key
+# 「3Dビュー」エリア > 「ポーズ」モード > 「ポーズコンテクストメニュー」 (Wキー)
+# "3D View" Area > "Pose" Mode > "Pose Context Menu" (W Key)
 
 import bpy
 import re, math

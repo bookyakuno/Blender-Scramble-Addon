@@ -1,5 +1,5 @@
-# 「ユーザー設定」エリア > 「ファイル」タブ
-# "User Prefences" Area > "File" Tab
+# 「ユーザー設定」エリア > 「ファイルパス」タブ
+# "User Preferences" Area > "File Paths" Tab
 
 import bpy
 from bpy.props import *

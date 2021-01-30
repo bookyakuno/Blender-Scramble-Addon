@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「オブジェクト」モード > 「W」キー
-# "3D View" Area > "Object" Mode > "W" Key
+# 「3Dビュー」エリア > 「オブジェクト」モード > 「オブジェクトコンテクストメニュー」 (Wキー)
+# "3D View" Area > "Object" Mode > "Object Context Menu" (W Key)
 
 import bpy, bmesh, mathutils, math
 import re, random

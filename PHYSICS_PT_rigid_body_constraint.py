@@ -1,4 +1,4 @@
-# 「プロパティ」エリア > 「物理演算」タブ > 「剛体コンストレイント」パネル
+# 「プロパティ」エリア > 「物理演算」タブ > 「リジッドボディコンストレイント」パネル
 # "Propaties" Area > "Physics" Tab > "Rigid Body Constraint" Panel
 
 import bpy

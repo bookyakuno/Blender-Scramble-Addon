@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「レンダー」タブ > 「ベイク」パネル
-# "Propaties" Area > "Render" Tab > "Bake" Panel
+# 「プロパティ」エリア > 「レンダー」タブ > 「ベイク」パネル (Cyclesのみ)
+# "Propaties" Area > "Render" Tab > "Bake" Panel (Cycles Only)
 
 import bpy
 from bpy.props import *

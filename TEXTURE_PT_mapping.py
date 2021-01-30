@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「テクスチャ」タブ > 「マッピング」パネル
-# "Propaties" Area > "Texture" Tab > "Mapping" Panel
+# 「プロパティ」エリア > 「アクティブツールとワークスペースの設定」タブ > 「テクスチャスロット」パネル
+# "Propaties" Area > "Active Tool and Workspace Settings" Tab > "Texture Slots" Panel
 
 import bpy
 from bpy.props import *
