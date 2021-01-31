@@ -11,7 +11,7 @@ from bpy.props import *
 class MargeSelectedVertexGroup(bpy.types.Operator):
 	bl_idname = "paint.marge_selected_vertex_group"
 	bl_label = "Add Designated Bone's Weight"
-	bl_description = "Add to active vertex group the weight of vertex group linked to designated bone"
+	bl_description = "Add the weight of vertex group linked to designated bone to active vertex group"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	crate_newvg : BoolProperty(name="Create new vertex group", default=False)
@@ -161,6 +161,22 @@ class ApplyDynamicPaint(bpy.types.Operator):
 		if not context.selected_objects or len(context.selected_objects) < 2:
 			return False
 		if context.active_object.vertex_groups.active_index == -1:
+			return False
+		return True
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		layout = self.layout
+		layout.use_property_split = True
+		for p in ['mode','distance','is_new']:
+			layout.prop(self, p)
+		row = layout.row()
+		row.enabled = self.is_new
+		row.prop(self, 'new_name')
+
+	@classmethod
+	def poll(cls, context):
+		if not context.selected_objects or len(context.selected_objects) < 2:
 			return False
 		return True
 	def invoke(self, context, event):

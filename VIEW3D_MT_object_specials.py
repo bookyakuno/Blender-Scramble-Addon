@@ -950,7 +950,6 @@ class ObjectNameMenu(bpy.types.Menu):
 		self.layout.operator('object.data_name_to_object_name', icon="PLUGIN").apply_selected = True#OBJECT_PT_context_object で定義
 		self.layout.operator('object.object_name_to_data_name', icon="PLUGIN").apply_selected = True#OBJECT_PT_context_object で定義
 
-
 class SpecialsMenu(bpy.types.Menu):
 	bl_idname = "VIEW3D_MT_object_specials_specials"
 	bl_label = "Advanced Manipulation"

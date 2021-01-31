@@ -98,7 +98,6 @@ if "bpy" in locals():
 	"VIEW3D_MT_view",
 	"VIEW3D_MT_view_align",
 	"VIEW3D_MT_view_align_selected",
-	"VIEW3D_PT_addon_sidebar",
 	"VIEW3D_PT_imapaint_tools_missing",
 	"VIEW3D_PT_layers",
 	"VIEW3D_PT_slots_projectpaint",
@@ -114,7 +113,7 @@ if "bpy" in locals():
 	"PHYSICS_PT_field",
 	"PHYSICS_PT_softbody",
 	"PHYSICS_PT_cloth",
-	"BONE_PT_transform_locks",
+	#"BONE_PT_transform_locks",
 	"BONE_PT_relations",
 	]
 	for module in reloadable_modules:
@@ -195,7 +194,6 @@ else:
 	VIEW3D_MT_view,
 	VIEW3D_MT_view_align,
 	VIEW3D_MT_view_align_selected,
-	VIEW3D_PT_addon_sidebar,
 	VIEW3D_PT_imapaint_tools_missing,
 	VIEW3D_PT_layers,
 	VIEW3D_PT_slots_projectpaint,
@@ -211,7 +209,7 @@ else:
 	PHYSICS_PT_field,
 	PHYSICS_PT_softbody,
 	PHYSICS_PT_cloth,
-	BONE_PT_transform_locks,
+	#BONE_PT_transform_locks,
 	BONE_PT_relations,
 	)
 	#from . import ***
@@ -225,13 +223,12 @@ class AddonPreferences(bpy.types.AddonPreferences):
 	tab_addon_menu            : EnumProperty(name="Tab", description="", items=[
 	('DISPLAY', "Display", ""),
 	 # ('KEYMAP', "Keymap", ""),
-	('EXTERNAL_APP', "External app", ""),
+	('EXTERNAL_APP', "External Editors", ""),
 	('LINK', "Link", "")
 	], default='DISPLAY')
 
 	disabled_menu : StringProperty(name="Invalid Menu", default="")
-	use_disabled_menu : BoolProperty(name="Enable 'On/Off additional items' Button", default=False)
-	view_savedata : StringProperty(name="View Save Data", default="")
+	use_disabled_menu : BoolProperty(name="Display 'On/Off Additional Items' Button", default=False)
 	key_config_xml_path : StringProperty(name="XML Config Path", default="BlenderKeyConfig.xml")
 
 	image_editor_path_1 : StringProperty(name="Path of Image Edit Software 1", default="", subtype='FILE_PATH')
@@ -253,8 +250,6 @@ class AddonPreferences(bpy.types.AddonPreferences):
 			box.prop(self, 'use_disabled_menu')
 			box.prop(self, 'disabled_menu')
 			box = layout.box()
-			box.prop(self, 'view_savedata')
-			box = layout.box()
 			box.prop(self, 'key_config_xml_path')
 
 
@@ -265,7 +260,7 @@ class AddonPreferences(bpy.types.AddonPreferences):
 			box.prop(self, 'image_editor_path_2')
 			box.prop(self, 'image_editor_path_3')
 			box = layout.box()
-			box.label(text="Eext Editoer",icon="TEXT")
+			box.label(text="Text Editor",icon="TEXT")
 			box.prop(self, 'text_editor_path_1')
 			box.prop(self, 'text_editor_path_2')
 			box.prop(self, 'text_editor_path_3')
@@ -282,8 +277,8 @@ class AddonPreferences(bpy.types.AddonPreferences):
 # 追加メニューの有効/無効
 class ToggleMenuEnable(bpy.types.Operator):
 	bl_idname = "wm.toggle_menu_enable"
-	bl_label = "On/Off Additional Items"
-	bl_description = "Extra menu of ScrambleAddon toggle Enable/Disable"
+	bl_label = "Toggle Display of 'On/Off Additional Items'"
+	bl_description = "Show or hide 'turn on/off additional items' buttons displayed at end of menus added by the add-on"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	id : StringProperty()
@@ -487,7 +482,6 @@ def register():
 	bpy.types.VIEW3D_MT_view_align.append(VIEW3D_MT_view_align.menu)
 	VIEW3D_MT_view_align_selected.register()
 	bpy.types.VIEW3D_MT_view_align_selected.append(VIEW3D_MT_view_align_selected.menu)
-	VIEW3D_PT_addon_sidebar.register()#menuなし
 	#===　廃止したもの　===
 	#VIEW3D_PT_imapaint_tools_missing.register()
 	#bpy.types.VIEW3D_PT_imapaint_tools_missing.append(VIEW3D_PT_imapaint_tools_missing.menu)
@@ -498,12 +492,10 @@ def register():
 	#=========
 	#VIEW3D_PT_layers.register()#クラスなし
 	bpy.types.VIEW3D_PT_collections.append(VIEW3D_PT_layers.menu)
-	#=== VIEW3D_PT_addon_sidebarの中で使用するので以下の2つはメニューを登録しない ===
-	#VIEW3D_PT_transform_orientations.register()#クラスなし
-	#bpy.types.VIEW3D_PT_transform_orientations.append(VIEW3D_PT_transform_orientations.menu)
-	#VIEW3D_PT_view3d_name.register()#クラスなし
-	#bpy.types.VIEW3D_PT_tools_object_options.append(VIEW3D_PT_view3d_name.menu)
-	#========
+	VIEW3D_PT_transform_orientations.register()
+	#bpy.types.VIEW3D_PT_transform_orientations.append(VIEW3D_PT_transform_orientations.menu)#パネルなので、メニューは登録しない
+	VIEW3D_PT_view3d_name.register()
+	#bpy.types.VIEW3D_PT_tools_object_options.append(VIEW3D_PT_view3d_name.menu)#パネルなので、メニューは登録しない
 	#VIEW3D_PT_view3d_cursor.register()#クラスなし
 	bpy.types.VIEW3D_PT_view3d_cursor.append(VIEW3D_PT_view3d_cursor.menu)
 	VIEW3D_PT_view3d_properties.register()
@@ -520,8 +512,8 @@ def register():
 	bpy.types.PHYSICS_PT_softbody.append(PHYSICS_PT_softbody.menu)
 	PHYSICS_PT_cloth.register()
 	bpy.types.PHYSICS_PT_cloth.append(PHYSICS_PT_cloth.menu)
-	BONE_PT_transform_locks.register()
-	bpy.types.BONE_PT_transform.append(BONE_PT_transform_locks.menu)
+	#BONE_PT_transform_locks.register() #BONE_PT_transform に統合
+	#bpy.types.BONE_PT_transform.append(BONE_PT_transform_locks.menu)
 	BONE_PT_relations.register()
 	bpy.types.BONE_PT_relations.append(BONE_PT_relations.menu)
 	#bpy.types.***.append(***.menu)
@@ -680,7 +672,6 @@ def unregister():
 	bpy.types.VIEW3D_MT_view_align.remove(VIEW3D_MT_view_align.menu)
 	VIEW3D_MT_view_align_selected.unregister()
 	bpy.types.VIEW3D_MT_view_align_selected.remove(VIEW3D_MT_view_align_selected.menu)
-	VIEW3D_PT_addon_sidebar.unregister()#menuなし
 	#===　廃止したもの　===
 	#VIEW3D_PT_imapaint_tools_missing.unregister()
 	#bpy.types.VIEW3D_PT_imapaint_tools_missing.remove(VIEW3D_PT_imapaint_tools_missing.menu)
@@ -691,12 +682,10 @@ def unregister():
 	#========
 	#VIEW3D_PT_layers.unregister()#クラスなし
 	bpy.types.VIEW3D_PT_collections.remove(VIEW3D_PT_layers.menu)
-	#=== VIEW3D_PT_addon_sidebarの中で使用するので以下の2つはメニューを登録解除しない ===
-	#VIEW3D_PT_transform_orientations.unregister()#クラスなし
-	#bpy.types.VIEW3D_PT_transform_orientations.remove(VIEW3D_PT_transform_orientations.menu)
-	#VIEW3D_PT_view3d_name.unregister()#クラスなし
-	#bpy.types.VIEW3D_PT_tools_object_options.remove(VIEW3D_PT_view3d_name.menu)
-	#========
+	VIEW3D_PT_transform_orientations.unregister()
+	#bpy.types.VIEW3D_PT_transform_orientations.remove(VIEW3D_PT_transform_orientations.menu)#パネルなので、メニューは登録解除しない
+	VIEW3D_PT_view3d_name.unregister()
+	#bpy.types.VIEW3D_PT_tools_object_options.remove(VIEW3D_PT_view3d_name.menu)#パネルなので、メニューは登録解除しない
 	#VIEW3D_PT_view3d_cursor.unregister()#クラスなし
 	bpy.types.VIEW3D_PT_view3d_cursor.remove(VIEW3D_PT_view3d_cursor.menu)
 	VIEW3D_PT_view3d_properties.unregister()
@@ -713,8 +702,8 @@ def unregister():
 	bpy.types.PHYSICS_PT_softbody.remove(PHYSICS_PT_softbody.menu)
 	PHYSICS_PT_cloth.unregister()
 	bpy.types.PHYSICS_PT_cloth.remove(PHYSICS_PT_cloth.menu)
-	BONE_PT_transform_locks.unregister()
-	bpy.types.BONE_PT_transform.remove(BONE_PT_transform_locks.menu)
+	#BONE_PT_transform_locks.unregister() #BONE_PT_transform に統合
+	#bpy.types.BONE_PT_transform.remove(BONE_PT_transform_locks.menu)
 	BONE_PT_relations.unregister()
 	bpy.types.BONE_PT_relations.remove(BONE_PT_relations.menu)
 	#bpy.types.***.remove(***.menu)

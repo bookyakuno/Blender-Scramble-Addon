@@ -16,7 +16,7 @@ class AddSphereOnlySquare(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}
 
 	level : IntProperty(name="Number of Subdivisions", default=2, step=1, min=1, max=6, soft_min=1, soft_max=6)
-	radius : FloatProperty(name="Radius (roughly)", default=1.0, step=10, precision=3, min=0.001, max=100, soft_min=0.001, soft_max=100)
+	radius : FloatProperty(name="Radius", default=1.0, step=10, precision=3, min=0.001, max=100, soft_min=0.001, soft_max=100)
 	view_align : BoolProperty(name="Align View", default=False)
 	location : FloatVectorProperty(name="Location", default=(0.0, 0.0, 0.0), step=10, precision=3, subtype='XYZ', min=-100, max=100, soft_min=-100, soft_max=100)
 	rotation : IntVectorProperty(name="Rotation", default=(0, 0, 0), step=1, subtype='XYZ', min=-360, max=360, soft_min=-360, soft_max=360)

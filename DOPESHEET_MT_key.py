@@ -24,7 +24,7 @@ class CreanEX(bpy.types.Operator):
 	bl_description = "Remove Value-overlapping keyframes of the displayed objects' actions"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	keep_fcurves : BoolProperty(name="Except One Key", default=False)
+	keep_fcurves : BoolProperty(name="Keep At Least One Key", default=False)
 	threshold : FloatProperty(name="Threshold", default=0.00001, min=0, max=1, soft_min=0, soft_max=1, step=0.001, precision=5)
 
 	def execute(self, context):
@@ -63,7 +63,7 @@ class CreanEX(bpy.types.Operator):
 						action.fcurves.remove(fcurve)
 				else:
 					nam = action.name + "'s " + fcurve.data_path + " "
-					self.report(type={'ERROR'}, message= nam + "is ignored because it has f-curve modifiers")
+					self.report(type={'ERROR'}, message= nam + "is ignored")
 		for area in context.screen.areas:
 			area.tag_redraw()
 		return {'FINISHED'}

@@ -73,7 +73,7 @@ class ChangeUserPreferencesTab(bpy.types.Operator):
 		tabs = ['INTERFACE', 'THEMES', 'VIEWPORT', 'LIGHTS', 'EDITING', 'ANIMATION', 'ADDONS', 'INPUT', 'NAVIGATION', 'KEYMAP', 'SYSTEM', 'SAVE_LOAD', 'FILE_PATHS', 'EXPERIMENTAL']
 		now_tab = context.preferences.active_section
 		if (now_tab not in tabs):
-			self.report(type={'ERROR'}, message="Active tab is undefined value")
+			self.report(type={'ERROR'}, message="Invalid Value")
 			return {'CANCELLED'}
 		if (self.is_left):
 			tabs.reverse()
@@ -119,7 +119,7 @@ class SearchKeyBind(bpy.types.Operator):
 
 class ClearFilterText(bpy.types.Operator):
 	bl_idname = "ui.clear_filter_text"
-	bl_label = "Clear Search Shortcuts"
+	bl_label = "Clear Target Key-Binding"
 	bl_description = "Set empty value as target key-binding for filtering"
 	bl_options = {'REGISTER'}
 
@@ -137,7 +137,7 @@ class ClearFilterText(bpy.types.Operator):
 class CloseKeyMapItems(bpy.types.Operator):
 	bl_idname = "ui.close_key_map_items"
 	bl_label = "Close All Children"
-	bl_description = "Close all keymap Children"
+	bl_description = "Close All Keymap Children"
 	bl_options = {'REGISTER'}
 
 	@classmethod
@@ -452,15 +452,10 @@ class ShowEmptyShortcuts(bpy.types.Operator):
 class ImportKeyConfigXml(bpy.types.Operator):
 	bl_idname = "file.import_key_config_xml"
 	bl_label = "Import Keymap from XML File"
-	bl_description = "game reads in XML format"
+	bl_description = "Import key bindings from XML file"
 	bl_options = {'REGISTER'}
 
 	filepath : StringProperty(subtype='FILE_PATH')
-	items = [
-		('RESET', "Reset", "", 1),
-		('ADD', "Add", "", 2),
-		]
-	mode : EnumProperty(items=items, name="Mode", default='ADD')
 
 	def execute(self, context):
 		context.preferences.addons[__name__.partition('.')[0]].preferences.key_config_xml_path = self.filepath
@@ -488,9 +483,6 @@ class ImportKeyConfigXml(bpy.types.Operator):
 				key_map = key_config.keymaps[key_map_name]
 				if (key_map.is_modal):
 					continue
-				if (self.mode == 'RESET'):
-					for key_map_item in key_map.keymap_items:
-						key_map.keymap_items.remove(key_map_item)
 				for key_map_item_elem in key_map_elem.findall('KeyMapItem'):
 					active = True
 					if ('Active' in key_map_item_elem.attrib):
@@ -555,7 +547,7 @@ class ImportKeyConfigXml(bpy.types.Operator):
 class ExportKeyConfigXml(bpy.types.Operator):
 	bl_idname = "file.export_key_config_xml"
 	bl_label = "Export Keymap as XML File"
-	bl_description = "Export kye bindings as XML file"
+	bl_description = "Export key bindings as XML file"
 	bl_options = {'REGISTER'}
 
 	filepath : StringProperty(subtype='FILE_PATH')
@@ -657,12 +649,17 @@ class MoveKeyBindCategory(bpy.types.Operator):
 			return {'CANCELLED'}
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
-		box = self.layout.box()
-		box.label(text="Move to")
-		row = box.row(align=True)
-		row.prop(self, 'key_area', text="")
-		row.label(text="", icon='TRIA_RIGHT')
-		row.prop(self, 'key_sub_area', text="")
+		row = self.layout.split(factor=0.15)
+		row.column().label(text="Move to")
+		box = row.column().box()
+		sp = box.split(factor=0.1)
+		sp.label(text="", icon='TRIA_DOWN')
+		sp.prop(self, 'key_area', text="")
+		sp = box.split(factor=0.1)
+		sp.label(text="")
+		spsp = sp.split(factor=0.15)
+		spsp.label(text="", icon='TRIA_RIGHT')
+		spsp.prop(self, 'key_sub_area', text="")
 		row = self.layout.row()
 		row.use_property_split =True
 		row.prop(self, 'source_delete')

@@ -38,7 +38,7 @@ class CopyDisplaySetting(bpy.types.Operator):
 
 	def draw(self, context):
 		obj = context.active_object
-		row = self.layout.row()
+		row = self.layout.split(factor=0.45)
 		column = row.column().box()
 		column.prop(self, 'copy_show_name')
 		column.prop(self, 'copy_show_axis')

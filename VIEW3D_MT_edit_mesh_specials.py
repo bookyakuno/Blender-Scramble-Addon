@@ -91,17 +91,20 @@ class ToggleMirrorModifier(bpy.types.Operator):
 	use_mirror_merge : BoolProperty(name="Merge", default=True)
 	merge_threshold : FloatProperty(name="Merge Distance", default=0.001, min=0, max=1, soft_min=0, soft_max=1, step=0.01, precision=6)
 	use_clip : BoolProperty(name="Clipping", default=False)
-	use_mirror_u : BoolProperty(name="Texture U Mirror", default=False)
-	use_mirror_v : BoolProperty(name="Texture V Mirror", default=False)
+	use_mirror_u : BoolProperty(name="Mirror U", default=False)
+	use_mirror_v : BoolProperty(name="Mirror V", default=False)
 	use_mirror_vertex_groups : BoolProperty(name="Vertex Groups", default=True)
 	is_top : BoolProperty(name="Add at Top", default=True)
-	toggle : BoolProperty(name="Enabled / Disabled", default=True)
-	is_add : BoolProperty(name="Add or not", default=False)
+	toggle : BoolProperty(name="Toggle", default=False)
+	all_show : BoolProperty(name="Show All", default=False)
+	all_hide : BoolProperty(name="Hide All", default=False)
+	is_add : BoolProperty(name="Add or not", default=False, options={'HIDDEN'})
 
 	def draw(self, context):
 		row = self.layout.row()
+		row.prop(self, 'all_show', icon='HIDE_OFF', toggle=1)
+		row.prop(self, 'all_hide', icon='HIDE_ON', toggle=1)
 		row.prop(self, 'toggle', toggle=1)
-		row.alignment = 'CENTER'
 		if self.is_add:
 			self.layout.separator()
 			row = self.layout.row()
@@ -126,9 +129,13 @@ class ToggleMirrorModifier(bpy.types.Operator):
 		mir_mods = [mod.name for mod in modis if mod.type=='MIRROR']
 		if mir_mods:
 			for nam in mir_mods:
-				if not modis[nam].show_in_editmode:
-					modis[nam].show_viewport = modis[nam].show_in_editmode = True
-				else:
+				if modis[nam].show_in_editmode:
+					modis[nam].show_in_editmode = True
+				if self.all_hide:
+					modis[nam].show_viewport = False
+				elif self.all_show or not modis[nam].show_in_editmode:
+					modis[nam].show_viewport = True
+				elif self.toggle:
 					modis[nam].show_viewport = not modis[nam].show_viewport
 			self.is_add = False
 		else:
@@ -144,6 +151,7 @@ class ToggleMirrorModifier(bpy.types.Operator):
 				for i in range(len(modis)):
 					bpy.ops.object.modifier_move_up(modifier=new_mod.name)
 			self.is_add = True
+		self.toggle = self.all_show = self.all_hide = False
 		return {'FINISHED'}
 
 class SelectedVertexGroupAverage(bpy.types.Operator):
