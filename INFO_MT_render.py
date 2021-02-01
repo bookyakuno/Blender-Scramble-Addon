@@ -114,8 +114,8 @@ class SyncAllSubsurfRenderLevels(bpy.types.Operator):
 
 class SimplifyRenderPanel(bpy.types.Operator):
 	bl_idname = "render.siplify_render_panel"
-	bl_label = "Change 'Simpify' Settings"
-	bl_description = "Change render's 'simpify' settings"
+	bl_label = "Change 'Simplify' Settings"
+	bl_description = "Change render's 'simplify' settings"
 
 	item = [('0',"Disabled", "", 1), ('1',"Enabled", "", 2)]
 	is_use : EnumProperty(name="Method", items=item)
