@@ -606,7 +606,7 @@
 "テクスチャスロットを削除","Remove Active Texture Slot"
 "アクティブなテクスチャスロットを削除します","Remove active texture slot"
 "ベースカラーとして画像を追加","Add Image as Base Color"
-"ベースカラーとして画像をテクスチャスロットに追加します","Add an image as base color in texture paint slots"
+"指定した画像をベースカラーとしてテクスチャスロットに追加します","Add an image as base color in texture paint slots"
 "外部の画像ファイルを使用","Use External Image File"
 "外部の画像ファイルをベースカラーとしてテクスチャスロットに追加します","Add an external image file as base color in texture paint slots"
 "画像エディターに表示","Show in Image Editor"
