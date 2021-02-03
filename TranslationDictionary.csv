@@ -135,7 +135,7 @@
 "アクティブなオブジェクトにおいて、全てのモディファイアのパネル展開状態を切り替えます","Toggle all modifier panels' expansion-states of the active object"
 "表示設定","Display Setting"
 "モディファイアのビューとレンダリングでの表示設定を変更","Change Modifiers' Display in Viewport and Rendering"
-"選択された各オブジェクトの全てのモディファイアの、ビューとレンダリングにおける表示設定を変更します","Change display settingsof all the selected objects' modifiers in viewport and during rendering"
+"選択された各オブジェクトの全てのモディファイアの、ビューとレンダリングにおける表示設定を変更します","Change display settings of all the selected objects' modifiers in viewport and during rendering"
 "「レンダリングで使用するもの」のみ表示","Show Only 'Used-during-Rendering'"
 "「ビューポートで表示されるもの」のみ表示","Show Only 'Displayed-in-Viewport'"
 "サブサーフ","Subsurf"

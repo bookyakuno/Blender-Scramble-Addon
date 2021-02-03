@@ -79,7 +79,7 @@ class ToggleApplyModifiersView(bpy.types.Operator):
 class SyncShowModifiers(bpy.types.Operator):
 	bl_idname = "object.sync_show_modifiers"
 	bl_label = "Change Modifiers' Display in Viewport and Rendering"
-	bl_description = "Change display settingsof all the selected objects' modifiers in viewport and during rendering"
+	bl_description = "Change display settings of all the selected objects' modifiers in viewport and during rendering"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	change_view : BoolProperty(name="Viewport", default=True)
