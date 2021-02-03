@@ -76,7 +76,7 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		row = self.layout.split(factor=0.4)
 		row.use_property_split = False
-		row.operator(CopySetting.bl_idname, icon='LINKED', text="Copy Setting")
+		row.operator(CopySetting.bl_idname, icon='COPY_ID', text="Copy Setting")
 		if context.scene.rigidbody_world:
 			if context.scene.rigidbody_world.point_cache:
 				row_item = row.row(align=True)
