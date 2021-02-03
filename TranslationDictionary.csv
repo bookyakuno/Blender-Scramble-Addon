@@ -149,7 +149,7 @@
 "細分化数","Number of Subdivisions"
 "レンダリング時の細分化数を設定","Set Number of Subdivisions When Rendering"
 "選択された各オブジェクトにおいて、サブディビジョンサーフェスモディファイアのレンダリング時の細分化数を設定します","Set 'number of subdivisions when rendering' property of the selected objects' Subdivision Surface modifiers"
-"ビューポートとレンダリングの細分化数を揃える","Match number of subdivisions in viewport and rendering"
+"ビューポートとレンダリングの細分化数を揃える","Match Number of Subdivisions in Viewport and Rendering"
 "選択された各オブジェクトにおいて、サブディビジョンサーフェスモディファイアの細分化数をプレビュー時とレンダリング時のどちらかの状態に一致させます","Match number of subdivisions in viewport to that during rendering, or vice verse, in each selected objects"
 "使用する細分化数","Use Number"
 "レンダリングの数","during Rendering"

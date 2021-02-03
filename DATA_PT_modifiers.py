@@ -397,7 +397,7 @@ class SetViewportSubsurfLevel(bpy.types.Operator):
 
 class EqualizeSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.equalize_subsurf_level"
-	bl_label = "Match number of subdivisions in viewport and rendering"
+	bl_label = "Match Number of Subdivisions in Viewport and Rendering"
 	bl_description = "Match number of subdivisions in viewport to that during rendering, or vice verse, in each selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
