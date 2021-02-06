@@ -161,16 +161,9 @@ class SetIkPoleAngle(bpy.types.Operator):
 # サブメニュー #
 ################
 
-class SubMenu(bpy.types.Menu):
-	bl_idname = "BONE_MT_constraints_sub"
-	bl_label = "Individual processing"
-
-	def draw(self, context):
-		self.layout.menu(IKMenu.bl_idname, icon='PLUGIN')
-
 class IKMenu(bpy.types.Menu):
 	bl_idname = "BONE_MT_constraints_ik"
-	bl_label = "IK"
+	bl_label = "Manipulate IK"
 
 	def draw(self, context):
 		self.layout.operator(SetIkChainLength.bl_idname, icon='PLUGIN')
@@ -186,7 +179,6 @@ classes = [
 	SetIkChainLength,
 	SetIkPoleTarget,
 	SetIkPoleAngle,
-	SubMenu,
 	IKMenu
 ]
 
@@ -216,6 +208,6 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		row = self.layout.row()
 		row.operator(QuickChildConstraint.bl_idname, icon='CONSTRAINT_BONE')
-		row.menu(SubMenu.bl_idname, icon='PLUGIN')
+		row.menu(IKMenu.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

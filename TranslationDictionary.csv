@@ -10,6 +10,7 @@
 "IKのポール角度を設定","Set Pole Angle of IK"
 "選択したボーンの位置がレスト位置と同じになるように、IKのポール角度を設定します","Set pole angle of the selected bone so that its location is equal to the rest position's one"
 "個別処理","Individual processing"
+"IK操作","Manipulate IK"
 
 
 
