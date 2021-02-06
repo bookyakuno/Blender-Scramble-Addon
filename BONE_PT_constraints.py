@@ -42,7 +42,7 @@ class QuickChildConstraint(bpy.types.Operator):
 
 class SetIkChainLength(bpy.types.Operator):
 	bl_idname = "pose.set_ik_chain_length"
-	bl_label = "Set Chain Length of IK"
+	bl_label = "Set IK Chain to Selected Bone"
 	bl_description = "Set chain length of the active bone's IK so that the chain's end is the selected bone"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -84,7 +84,7 @@ class SetIkChainLength(bpy.types.Operator):
 
 class SetIkPoleTarget(bpy.types.Operator):
 	bl_idname = "pose.set_ik_pole_target"
-	bl_label = "Set Pole Target of IK"
+	bl_label = "Set Selected Bone as IK's Pole Target"
 	bl_description = "Set the selected bone as Pole Target of the active bone's IK"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -110,7 +110,7 @@ class SetIkPoleTarget(bpy.types.Operator):
 
 class SetIkPoleAngle(bpy.types.Operator):
 	bl_idname = "pose.set_ik_pole_angle"
-	bl_label = "Set Pole Angle of IK"
+	bl_label = "Set IK's Pole Angle Based on Selected"
 	bl_description = "Set pole angle of the selected bone so that its location is equal to the rest position's one"
 	bl_options = {'REGISTER', 'UNDO'}
 

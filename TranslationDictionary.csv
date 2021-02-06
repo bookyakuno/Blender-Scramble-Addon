@@ -2,15 +2,15 @@
 
 "クイック・チャイルド","Quick child"
 "第二選択ボーンを親として、アクティブなボーンにチャイルドコンストレイントを追加します","Add child constraint to the active bone setting the selected bone as parent"
-"IKのチェーンの長さを設定","Set Chain Length of IK"
-"第二選択ボーンが終端になるように、アクティブなボーンのIKのチェーン数を設定します","Set chain length of the active bone's IK so that the chain's end is the selected bone"
+"選択ボーンまでをIKチェーンとして設定","Set IK Chain to Selected Bone"
+"第2選択ボーンが終端になるように、アクティブなボーンのIKのチェーン数を設定します","Set chain length of the active bone's IK so that the chain's end is the selected bone"
 "チェーン数の取得に失敗しました","Failed to get chain counts"
-"IKのポールターゲットを設定","Set Pole Target of IK"
-"第二選択ボーンをアクティブなボーンのIKのポールターゲットに設定します","Set the selected bone as Pole Target of the active bone's IK"
-"IKのポール角度を設定","Set Pole Angle of IK"
+"選択ボーンをIKのポールターゲットとして設定","Set Selected Bone as IK's Pole Target"
+"第2選択ボーンをアクティブなボーンのIKのポールターゲットに設定します","Set the selected bone as Pole Target of the active bone's IK"
+"選択ボーンを基準にIKのポール角度を設定","Set IK's Pole Angle Based on Selected"
 "選択したボーンの位置がレスト位置と同じになるように、IKのポール角度を設定します","Set pole angle of the selected bone so that its location is equal to the rest position's one"
 "個別処理","Individual processing"
-"IK操作","Manipulate IK"
+"IKを操作","Manipulate IK"
 
 
 
