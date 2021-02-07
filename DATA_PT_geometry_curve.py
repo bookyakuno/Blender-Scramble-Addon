@@ -360,15 +360,15 @@ def menu(self, context):
 				box = self.layout.box()
 				sp = box.split(factor=0.4)
 				sp.label(text="Taper Object", icon='PARTICLE_PATH')
-				sp.operator(ActivateTaperObject.bl_idname, text="Activate")
-				sp.operator(ChangeObjectResolution.bl_idname, text="Resolution")
+				sp.operator(ActivateTaperObject.bl_idname, text="Activate", icon='RESTRICT_SELECT_OFF')
+				sp.operator(ChangeObjectResolution.bl_idname, text="Resolution", icon='CURVE_DATA')
 			if data.bevel_object:
 				if not data.taper_object:
 					box = self.layout.box()
 				sp = box.split(factor=0.4)
 				sp.label(text="Bevel Object", icon='OUTLINER_OB_SURFACE')
-				sp.operator(ActivateBevelObject.bl_idname, text="Activate")
-				sp.operator(ChangeObjectResolution.bl_idname, text="Resolution")
+				sp.operator(ActivateBevelObject.bl_idname, text="Activate", icon='RESTRICT_SELECT_OFF')
+				sp.operator(ChangeObjectResolution.bl_idname, text="Resolution", icon='CURVE_DATA')
 		taper_objs = [c.taper_object for c in bpy.data.curves if c.taper_object]
 		bevel_objs = [c.bevel_object for c in bpy.data.curves if c.bevel_object]
 		if context.active_object in taper_objs + bevel_objs:
