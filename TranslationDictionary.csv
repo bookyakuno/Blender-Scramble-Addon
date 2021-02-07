@@ -1092,6 +1092,7 @@
 "選択を許可 (全て)","Allow Selecting (All)"
 "全てのオブジェクトを選択可能に変更します","Make all objects selectable"
 "全てを選択不可能に","Make All Unselectble"
+"オブジェクト名を変更","Change Object Name"
 "オブジェクト名を正規表現で置換","Rename Objects by Regular Expression"
 "選択されたオブジェクトの名前を、正規表現を使って置換します","Replace selected objects' names by using regular expression"
 "オブジェクト名に接頭辞/接尾辞を追加","Add Prefix / Suffix to Objects Names"
