@@ -1350,7 +1350,7 @@
 "原点がビューの中心になるように、視点を移動します","Center the view so that origin in the middle of the view"
 "原点を視点の中心に & 3Dカーソルを移動","Center View to Origin & Move 3D Cursor"
 "原点がビューの中心になるように、視点を移動し、3Dカーソルを原点に移動します","Center the view so that origin in the middle of the view, and move 3D cursor to origin"
-"マウス位置を視点の中心に& 3Dカーソルを移動","Center View to Mouse & Move 3D Cursor"
+"マウス位置を視点の中心に & 3Dカーソルを移動","Center View to Mouse & Move 3D Cursor"
 "マウス位置がビューの中心になるように視点を移動し、3Dカーソルをマウス位置へ移動します","Center the view to the mouse cursor and move 3D cursor there"
 "マウス位置を視点の中心に & オブジェクトを選択","Center View to Mouse & Select Object"
 "マウス位置のオブジェクトを選択し、ビューの中心になるように視点を移動します","Select object under the mouse cursor, and center the view so that it in the middle of the view"
