@@ -151,11 +151,11 @@ class SeparateMaterialEX(bpy.types.Operator):
 
 class SeparateLooseEX(bpy.types.Operator):
 	bl_idname = "mesh.separate_loose_ex"
-	bl_label = "By Loose Parts (Non-Selected)"
+	bl_label = "By Loose Parts"
 	bl_description = "Separate each not-selected / selected isolated part to another object"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	sep_selected : BoolProperty(name="Separate selected", default=False, options={'HIDDEN'})
+	sep_selected : BoolProperty(name="Selected", default=False)
 	is_dupli : BoolProperty(name="Duplicate and Separate", default=False)
 	end_method : EnumProperty(name="Mode", items=[
 		("EDIT","Edit: Original","",1),
@@ -164,9 +164,10 @@ class SeparateLooseEX(bpy.types.Operator):
 		])
 
 	def draw(self, context):
-		row = self.layout.row()
-		row.use_property_split = True
-		row.prop(self, 'is_dupli')
+		for p in ['sep_selected', 'is_dupli']:
+			row = self.layout.row()
+			row.use_property_split = True
+			row.prop(self, p)
 		row = self.layout.split(factor=0.15)
 		row.label(text="Mode")
 		row.prop(self, 'end_method', text="")
@@ -223,7 +224,7 @@ class SeparateEXMenu(bpy.types.Menu):
 		self.layout.menu(SeparateMatEXMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		self.layout.operator("mesh.separate", text="By Loose Parts").type = 'LOOSE'
-		self.layout.operator(SeparateLooseEX.bl_idname, icon="PLUGIN").sep_selected = False
+		self.layout.operator(SeparateLooseEX.bl_idname, text="By Loose Parts (Non-Selected)", icon="PLUGIN").sep_selected = False
 		self.layout.operator(SeparateLooseEX.bl_idname, text="By Loose Parts (Selected)", icon="PLUGIN").sep_selected = True
 
 # メニューのオン/オフの判定
