@@ -663,7 +663,7 @@
 "全てのオブジェクトをまとめて処理します","Manipulate all objects together"
 "「すべての辺を表示」をまとめて設定","Set 'All Edges' Property Together"
 "全てのオブジェクトにおいて、「すべての辺を表示」を設定します","Set 'All Edges' property of all objects"
-"ビューポートでの表示形式をまとめて設定","Set display method in viewport together"
+"ビューポートでの表示形式をまとめて設定","Set Display Method in Viewport Together"
 "指定したタイプの全てのオブジェクトについて、ビューポートでの表示設定をまとめて設定します","Set display method in viewport together for all of the designated type's objects"
 "データ名をオブジェクト名にまとめて揃える","Match All Data Names to Objects' Names"
 "全てのオブジェクトのリンクされたデータを、それぞれのオブジェクト名に一致させます","Change all objects' linked data names to their objects' names"
