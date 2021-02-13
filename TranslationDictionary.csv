@@ -307,7 +307,7 @@
 
 "キーフレームを削除 (確認しない)","Delete KeyFrames (without confirming)"
 "確認用のメーセージを表示せずに、選択した全てのキーフレームを削除します","Remove all selected keyframes without displaying the confirmation message"
-"値が重複するキーフレームを削除","Delete Value-overlapping keyframes"
+"値が重複するキーフレームを削除","Delete Value-overlapping Keyframes"
 "表示状態の各オブジェクトのアクションにおいて、値が重複したキーフレームを削除します","Remove Value-overlapping keyframes of the displayed objects' actions"
 "キーを1つは残す","Keep At Least One Key"
 
