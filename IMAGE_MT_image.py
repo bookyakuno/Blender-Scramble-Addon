@@ -126,7 +126,7 @@ class FillColor(bpy.types.Operator):
 	bl_description = "Fill the active image with specified color"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	color : FloatVectorProperty(name="Color", description="Fill Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
+	color : FloatVectorProperty(name="Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
 
 	@classmethod
 	def poll(cls, context):
@@ -158,10 +158,10 @@ class FillColor(bpy.types.Operator):
 class FillTransparency(bpy.types.Operator):
 	bl_idname = "image.fill_transparency"
 	bl_label = "Fill Transparent Part"
-	bl_description = "transparent parts of image are active in specified color fills"
+	bl_description = "Fill the active image's transparent parts with specified color"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	color : FloatVectorProperty(name="Fill Color",  default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
+	color : FloatVectorProperty(name="Color", default=(1, 1, 1, 1), min=0, max=1, soft_min=0, soft_max=1, step=10, precision=3, subtype='COLOR_GAMMA', size=4)
 
 	@classmethod
 	def poll(cls, context):
@@ -234,7 +234,7 @@ class RenameImageFile(bpy.types.Operator):
 	bl_description = "Rename the image file linked to the active image"
 	bl_options = {'REGISTER'}
 
-	new_name : StringProperty(name="New File Name")
+	new_name : StringProperty(name="New Name")
 
 	@classmethod
 	def poll(cls, context):
@@ -268,7 +268,7 @@ class BlurImage(bpy.types.Operator):
 	bl_description = "Blur the active image (Caution：it takes some time)"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	strength : IntProperty(name="Blur Strength", default=10, min=1, max=100, soft_min=1, soft_max=100)
+	strength : IntProperty(name="Strength", default=10, min=1, max=100, soft_min=1, soft_max=100)
 
 	@classmethod
 	def poll(cls, context):
@@ -472,7 +472,7 @@ class ExternalEditEX(bpy.types.Operator):
 	def execute(self, context):
 		img = context.edit_image
 		if img.filepath == "":
-			self.report(type={'ERROR'}, message="Please save the image as an external file such as ~.png")
+			self.report(type={'ERROR'}, message="Please save the image as an external file")
 			return {'CANCELLED'}
 		path = bpy.path.abspath(img.filepath)
 		pre_path = context.preferences.filepaths.image_editor
@@ -624,7 +624,7 @@ class NewUVChecker(bpy.types.Operator):
 		('UVCheckerMap16-512.png', "16 (512x512)", "", 33),
 		('UVCheckerMap17-512.png', "17 (512x512)", "", 34),
 		]
-	image_name : EnumProperty(items=items, name="Image File")
+	image_name : EnumProperty(items=items, name="File")
 	name : StringProperty(name="Name", default="UVCheckerMap")
 
 	def invoke(self, context, event):
@@ -705,7 +705,7 @@ class ResizeBlur(bpy.types.Operator):
 	bl_description = "Blur the active image"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	size : FloatProperty(name="Blur Strength", default=50, min=1, max=99, soft_min=1, soft_max=99, step=0, precision=0, subtype='PERCENTAGE')
+	size : FloatProperty(name="Strength", default=50, min=1, max=99, soft_min=1, soft_max=99, step=0, precision=0, subtype='PERCENTAGE')
 	count : IntProperty(name="Number of Blurring", default=10, min=1, max=100, soft_min=1, soft_max=100)
 
 	@classmethod

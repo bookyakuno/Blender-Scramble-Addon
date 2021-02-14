@@ -11,8 +11,8 @@ from bpy.props import *
 
 class SetRenderResolutionPercentage(bpy.types.Operator):
 	bl_idname = "render.set_render_resolution_percentage"
-	bl_label = "Set multi of resolution"
-	bl_description = "Set to be rendered settings resolution percentage?"
+	bl_label = "Set Rendering Image's Size (%)"
+	bl_description = "Set rendering's size as a percentage of the resolution settings"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	size : IntProperty(name="Render Size (%)", default=100, min=1, max=1000, soft_min=1, soft_max=1000, step=1)
@@ -82,9 +82,6 @@ class SetAllSubsurfRenderLevels(bpy.types.Operator):
 						mod.render_levels = self.levels
 					elif (self.mode == 'RELATIVE'):
 						mod.render_levels += self.levels
-					else:
-						self.report(type={'ERROR'}, message="Invalid Setting Value")
-						return {'CANCELLED'}
 		for area in context.screen.areas:
 			area.tag_redraw()
 		return {'FINISHED'}
@@ -214,19 +211,7 @@ class SlotsRenderMenu(bpy.types.Menu):
 	def draw(self, context):
 		for i in range(max([len(im.render_slots) for im in bpy.data.images])):
 			self.layout.operator(SetRenderSlot.bl_idname, text="Slot"+str(i+1)).slot = i
-"""
-class ShadeingMenu(bpy.types.Menu):
-	bl_idname = "INFO_MT_render_shadeing"
-	bl_label = "Used Shading"
-	bl_description = "Oon/Off shading"
 
-	def draw(self, context):
-		self.layout.prop(context.scene.render, 'use_textures', icon="PLUGIN")
-		self.layout.prop(context.scene.render, 'use_shadows', icon="PLUGIN")
-		self.layout.prop(context.scene.render, 'use_sss', icon="PLUGIN")
-		self.layout.prop(context.scene.render, 'use_envmaps', icon="PLUGIN")
-		self.layout.prop(context.scene.render, 'use_raytrace', icon="PLUGIN")
-"""
 class SubsurfMenu(bpy.types.Menu):
 	bl_idname = "INFO_MT_render_subsurf"
 	bl_label = "Set Subsurfs' Subdivisions when Rendering"
@@ -236,7 +221,7 @@ class SubsurfMenu(bpy.types.Menu):
 		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="+1 Subdivisions", icon="PLUGIN")
 		operator.mode = 'RELATIVE'
 		operator.levels = 1
-		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text=" -1  Subdivisions", icon="PLUGIN")
+		operator = self.layout.operator(SetAllSubsurfRenderLevels.bl_idname, text="-1 Subdivisions", icon="PLUGIN")
 		operator.mode = 'RELATIVE'
 		operator.levels = -1
 		self.layout.separator()
@@ -268,7 +253,6 @@ classes = [
 	RenderResolutionPercentageMenu,
 	SimplifyRenderPanel,
 	SlotsRenderMenu,
-	#ShadeingMenu,
 	SubsurfMenu
 ]
 
@@ -312,7 +296,6 @@ def menu(self, context):
 		self.layout.prop(context.scene, 'frame_step', text="Frame Step", icon="PLUGIN")
 		self.layout.prop(context.scene.render, 'fps', text="FPS", icon="PLUGIN")
 		self.layout.separator()
-		#self.layout.prop(context.scene.render, 'use_antialiasing', text="Use Anti-aliasing", icon="PLUGIN")
 		if context.scene.render.engine == "CYCLES":
 			self.layout.prop(context.scene.world.light_settings, 'use_ambient_occlusion', text="Use AO", icon="PLUGIN")
 		elif context.scene.render.engine == "BLENDER_EEVEE":
@@ -321,7 +304,6 @@ def menu(self, context):
 			self.layout.prop(context.scene.eevee, 'use_shadow_high_bitdepth', text="Use High Bitdepth Shadows", icon="PLUGIN")
 			self.layout.prop(context.scene.eevee, 'use_soft_shadows', text="Use Soft Shadows", icon="PLUGIN")
 		self.layout.prop(context.scene.render, 'use_freestyle', text="Use FreeStyle", icon="PLUGIN")
-		#self.layout.menu(ShadeingMenu.bl_idname, icon="PLUGIN")
 		self.layout.separator()
 		if context.scene.render.engine == "CYCLES":
 			if (context.scene.render.threads_mode == 'AUTO'):
@@ -330,8 +312,6 @@ def menu(self, context):
 				text = f"{ToggleThreadsMode.bl_label} (Now: Fixed)"
 			self.layout.operator(ToggleThreadsMode.bl_idname, text=text, icon="PLUGIN")
 		self.layout.menu(SubsurfMenu.bl_idname, icon="PLUGIN")
-		#self.layout.prop_menu_enum(context.scene.render, 'antialiasing_samples', text="Anti-aliasing Samples", icon="PLUGIN")
-		#self.layout.prop(context.scene.world.light_settings, 'samples', text="AO Samples", icon="PLUGIN")
 		self.layout.separator()
 		self.layout.operator(SimplifyRenderPanel.bl_idname, icon="PLUGIN")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):

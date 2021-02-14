@@ -27,9 +27,6 @@ class ChangeContextTab(bpy.types.Operator):
 				else:
 					continue
 				break
-		if (not space_data):
-			self.report(type={'ERROR'}, message="Cannot find properties area")
-			return {'CANCELLED'}
 		now_tab = space_data.context
 		tabs = [
 		'TOOL',
@@ -50,7 +47,7 @@ class ChangeContextTab(bpy.types.Operator):
 		'TEXTURE',
 		]
 		if (now_tab not in tabs):
-			self.report(type={'ERROR'}, message="Unexpected Tab Now")
+			self.report(type={'ERROR'}, message="Invalid Value")
 			return {'CANCELLED'}
 		if (self.is_left):
 			tabs.reverse()

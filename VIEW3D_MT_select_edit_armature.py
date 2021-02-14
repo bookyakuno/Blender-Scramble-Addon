@@ -10,8 +10,8 @@ from bpy.props import *
 
 class SelectOneAndPathForEdit(bpy.types.Operator):
 	bl_idname = "armature.select_one_and_path"
-	bl_label = "Select Bones to Cursor"
-	bl_description = "Select bones which exist between selected bones and cursor position"
+	bl_label = "Select Bones to Mouse"
+	bl_description = "Select bones which exist between selected bones and mouse position"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod

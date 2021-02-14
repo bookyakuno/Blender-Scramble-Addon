@@ -24,7 +24,7 @@ def menu(self, context):
 		if (context.object):
 			if (context.object.type == 'ARMATURE'):
 				self.layout.separator(factor=1.0)
-				self.layout.label(text="Bone Layer")
+				self.layout.label(text="Layers of Armature")
 				col = self.layout.column()
 				col.use_property_split = False
 				col.use_property_decorate = False

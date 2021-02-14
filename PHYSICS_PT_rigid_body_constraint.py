@@ -58,20 +58,20 @@ class CopyConstraintSetting(bpy.types.Operator):
 
 class ClearConstraintLimits(bpy.types.Operator):
 	bl_idname = "rigidbody.clear_constraint_limits"
-	bl_label = "Reset Rigid Body Constraint's Limit Setting"
+	bl_label = "Initialize Rigid Body Constraint's Limit Setting"
 	bl_description = "Initialize 'Limits' settings of the active object's rigid body constraint"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	mode : StringProperty(name="Mode", default='', options={'SKIP_SAVE', 'HIDDEN'})
 	skip_invoke : BoolProperty(name="Skip invoke_dialog", default=False, options={'SKIP_SAVE', 'HIDDEN'})
 
-	is_lin_x : BoolProperty(name="X Move", default=True, options={'SKIP_SAVE'})
-	is_lin_y : BoolProperty(name="Y Move", default=True, options={'SKIP_SAVE'})
-	is_lin_z : BoolProperty(name="Z Move", default=True, options={'SKIP_SAVE'})
+	is_lin_x : BoolProperty(name="X", default=True, options={'SKIP_SAVE'})
+	is_lin_y : BoolProperty(name="Y", default=True, options={'SKIP_SAVE'})
+	is_lin_z : BoolProperty(name="Z", default=True, options={'SKIP_SAVE'})
 
-	is_ang_x : BoolProperty(name="X Rot", default=True, options={'SKIP_SAVE'})
-	is_ang_y : BoolProperty(name="Y Rot", default=True, options={'SKIP_SAVE'})
-	is_ang_z : BoolProperty(name="Z Rot", default=True, options={'SKIP_SAVE'})
+	is_ang_x : BoolProperty(name="X", default=True, options={'SKIP_SAVE'})
+	is_ang_y : BoolProperty(name="Y", default=True, options={'SKIP_SAVE'})
+	is_ang_z : BoolProperty(name="Z", default=True, options={'SKIP_SAVE'})
 
 	def invoke(self, context, event):
 		if self.skip_invoke:
@@ -84,14 +84,14 @@ class ClearConstraintLimits(bpy.types.Operator):
 		box.label(text="Settings to Initialize")
 		row = box.row()
 		row.label(text="Linear")
-		row.prop(self, 'is_lin_x', text="X")
-		row.prop(self, 'is_lin_y', text="Y")
-		row.prop(self, 'is_lin_z', text="Z")
+		row.prop(self, 'is_lin_x')
+		row.prop(self, 'is_lin_y')
+		row.prop(self, 'is_lin_z')
 		row = box.row()
 		row.label(text="Angular")
-		row.prop(self, 'is_ang_x', text="X")
-		row.prop(self, 'is_ang_y', text="Y")
-		row.prop(self, 'is_ang_z', text="Z")
+		row.prop(self, 'is_ang_x')
+		row.prop(self, 'is_ang_y')
+		row.prop(self, 'is_ang_z')
 
 	def execute(self, context):
 		rigid_const = context.active_object.rigid_body_constraint
@@ -110,34 +110,34 @@ class ClearConstraintLimits(bpy.types.Operator):
 
 class ReverseConstraintLimits(bpy.types.Operator):
 	bl_idname = "rigidbody.reverse_constraint_limits"
-	bl_label = "Reverse Rigid Body Constraint's Limit Setting"
-	bl_description = "Reverse Minimum abd Maximum values in the 'Limits' settings of the active object's rigid body constraint"
+	bl_label = "Invert Rigid Body Constraint's Limit Setting"
+	bl_description = "Invert Minimum and Maximum values in the 'Limits' settings of the active object's rigid body constraint"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	is_lin_x : BoolProperty(name="X Move", default=False, options={'SKIP_SAVE'})
-	is_lin_y : BoolProperty(name="Y Move", default=False, options={'SKIP_SAVE'})
-	is_lin_z : BoolProperty(name="Z Move", default=False, options={'SKIP_SAVE'})
+	is_lin_x : BoolProperty(name="X", default=False, options={'SKIP_SAVE'})
+	is_lin_y : BoolProperty(name="Y", default=False, options={'SKIP_SAVE'})
+	is_lin_z : BoolProperty(name="Z", default=False, options={'SKIP_SAVE'})
 
-	is_ang_x : BoolProperty(name="X Rot", default=False, options={'SKIP_SAVE'})
-	is_ang_y : BoolProperty(name="Y Rot", default=False, options={'SKIP_SAVE'})
-	is_ang_z : BoolProperty(name="Z Rot", default=False, options={'SKIP_SAVE'})
+	is_ang_x : BoolProperty(name="X", default=False, options={'SKIP_SAVE'})
+	is_ang_y : BoolProperty(name="Y", default=False, options={'SKIP_SAVE'})
+	is_ang_z : BoolProperty(name="Z", default=False, options={'SKIP_SAVE'})
 
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def draw(self, context):
 		box = self.layout.box()
-		box.label(text="Settings to Reverse")
+		box.label(text="Settings to Invert")
 		row = box.row()
 		row.label(text="Linear")
-		row.prop(self, 'is_lin_x', text="X")
-		row.prop(self, 'is_lin_y', text="Y")
-		row.prop(self, 'is_lin_z', text="Z")
+		row.prop(self, 'is_lin_x')
+		row.prop(self, 'is_lin_y')
+		row.prop(self, 'is_lin_z')
 		row = box.row()
 		row.label(text="Angular")
-		row.prop(self, 'is_ang_x', text="X")
-		row.prop(self, 'is_ang_y', text="Y")
-		row.prop(self, 'is_ang_z', text="Z")
+		row.prop(self, 'is_ang_x')
+		row.prop(self, 'is_ang_y')
+		row.prop(self, 'is_ang_z')
 
 	def execute(self, context):
 		rigid_const = context.active_object.rigid_body_constraint
@@ -194,10 +194,10 @@ def menu(self, context):
 					row = self.layout.box().row(align=True)
 					row.label(text="Limits Settings")
 					row.operator(ClearConstraintLimits.bl_idname, icon='RECOVER_LAST', text="Initialize")
-					row.operator(ReverseConstraintLimits.bl_idname, icon='ARROW_LEFTRIGHT', text="Reverse")
+					row.operator(ReverseConstraintLimits.bl_idname, icon='ARROW_LEFTRIGHT', text="Invert")
 				elif context.active_object.rigid_body_constraint.type == 'FIXED':
 					row = self.layout.box().split(factor=0.25, align=True)
-					row.label(text="Set Type")
+					row.label(text="Change Type")
 					op1 = row.operator(ClearConstraintLimits.bl_idname, icon='IPO_LINEAR', text="Generic")
 					op1.mode, op1.skip_invoke = ['GENERIC', True]
 					op2 = row.operator(ClearConstraintLimits.bl_idname, icon='DRIVER', text="Generic Spring")

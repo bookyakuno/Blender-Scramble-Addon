@@ -95,9 +95,7 @@ def menu(self, context):
 		row.label(text="Display Method for Result")
 		row = row.row(align=True)
 		row.prop(context.preferences.view, "render_display_type", text="")
-		row.prop(bpy.context.scene.render, "use_lock_interface", icon_only=True)
+		row.prop(context.scene.render, "use_lock_interface", icon_only=True)
 		self.layout.operator(RenderBackground.bl_idname, icon='CONSOLE')
-
-
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

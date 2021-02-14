@@ -129,18 +129,17 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		row = self.layout.split(factor=0.55)
-		#row.alignment = 'RIGHT'
+		row = self.layout.split(factor=0.5)
 		box = row.box().row(align=True)
 		box.label(text="To Clipboard", icon='COPYDOWN')
-		box.operator('object.copy_object_name', icon='OBJECT_DATAMODE', text="")
+		box.operator(CopyObjectName.bl_idname, icon='OBJECT_DATAMODE', text="")
 		if (context.active_bone or context.active_pose_bone):
 			box.operator('object.copy_bone_name', icon='BONE_DATA', text="")# BONE_PT_context_bone.py で定義
-		box.operator('object.copy_data_name', icon='EDITMODE_HLT', text="")
+		box.operator(CopyDataName.bl_idname, icon='EDITMODE_HLT', text="")
 		box = row.box().row(align=True)
-		box.label(text="Match Names", icon='LINKED')
-		box.operator('object.object_name_to_data_name', icon='TRIA_DOWN_BAR', text="")
-		box.operator('object.data_name_to_object_name', icon='TRIA_UP_BAR', text="")
+		box.label(text="Use Same Name", icon='LINKED')
+		box.operator(ObjectNameToDataName.bl_idname, icon='TRIA_DOWN_BAR', text="")
+		box.operator(DataNameToObjectName.bl_idname, icon='TRIA_UP_BAR', text="")
 		self.layout.template_ID(context.object, 'data')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

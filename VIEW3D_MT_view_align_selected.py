@@ -10,8 +10,8 @@ from bpy.props import *
 
 class Viewnumpad7AlignEX(bpy.types.Operator):
 	bl_idname = "view3d.viewnumpad_7_align_ex"
-	bl_label = "View Front"
-	bl_description = "watch face from selected surface normal direction"
+	bl_label = "Align View to Active Face"
+	bl_description = "Rotate view based on active face's normal direction"
 	bl_options = {'REGISTER', 'UNDO'}
 	items = [
 		("FRONT", "Front", "", 1),
@@ -22,7 +22,7 @@ class Viewnumpad7AlignEX(bpy.types.Operator):
 		("BOTTOM", "Bottom", "", 6),
 	]
 
-	method : EnumProperty(name="View Method", items=items)
+	method : EnumProperty(name="Direction", items=items)
 	
 	def execute(self, context):
 		pre_smooth_view = context.preferences.view.smooth_view

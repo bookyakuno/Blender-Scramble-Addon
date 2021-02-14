@@ -13,7 +13,7 @@ _STORE_ITEMS = [] #保存用グローバル変数：EnumPropertyの動的なitem
 class CreateCustomShape(bpy.types.Operator):
 	bl_idname = "pose.create_custom_shape"
 	bl_label = "Create Custom Shape"
-	bl_description = "Creates choice bone shape"
+	bl_description = "Creates custom shapes of selected bones"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	name : StringProperty(name="Name", default="CustomShape")
@@ -539,7 +539,7 @@ class RemoveBoneNameSerialNumbers(bpy.types.Operator):
 class SetRigidBodyBone(bpy.types.Operator):
 	bl_idname = "pose.set_rigid_body_bone"
 	bl_label = "Create Chain-like Rigid Body Objects"
-	bl_description = "Sets by RigidBody physics led of selected bone set,"
+	bl_description = "Create rigid body objects from selected bones, and make these bones follow the objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	shape_size : FloatProperty(name="Size", default=0.1, min=0, max=10, soft_min=0, soft_max=10, step=1, precision=3)

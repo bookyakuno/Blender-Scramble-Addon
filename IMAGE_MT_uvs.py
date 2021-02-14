@@ -111,13 +111,13 @@ class ConvertMesh(bpy.types.Operator):
 		bpy.context.view_layer.objects.active = new_obj
 		return {'FINISHED'}
 
-class scale_uv_parts(bpy.types.Operator):
+class ScaleUvParts(bpy.types.Operator):
 	bl_idname = "uv.scale_uv_parts"
 	bl_label = "Resize UV Islands"
 	bl_description = "Resize UV island using their median points as scaling pivots"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	scale : FloatProperty(name="Scale Factor", default=0.9, min=0, max=10, soft_min=0, soft_max=10, step=3, precision=2)
+	scale : FloatProperty(name="Scale Factor", default=90, min=0, max=300, soft_min=0, soft_max=1000, subtype='PERCENTAGE')
 	items = [
 		('MEDIAN', "Median Point", "", 1),
 		('CENTER', "Bounding Box Center", "", 2),
@@ -145,7 +145,7 @@ class scale_uv_parts(bpy.types.Operator):
 					alreadys.append(id)
 					loop[uv_lay].select = True
 					bpy.ops.uv.select_linked()
-					bpy.ops.transform.resize(value=(self.scale, self.scale, self.scale))
+					bpy.ops.transform.resize(value=(self.scale/100, self.scale/100, self.scale/100))
 					for f in bm.faces:
 						for l in f.loops:
 							if l[uv_lay].select:
@@ -164,7 +164,7 @@ class scale_uv_parts(bpy.types.Operator):
 
 classes = [
 	ConvertMesh,
-	scale_uv_parts
+	ScaleUvParts
 ]
 
 def register():
@@ -192,7 +192,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.operator(scale_uv_parts.bl_idname, icon='PLUGIN')
+		self.layout.operator(ScaleUvParts.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.operator(ConvertMesh.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):

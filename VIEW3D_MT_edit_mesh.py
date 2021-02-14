@@ -111,7 +111,6 @@ class EditMeshShortcutMenu(bpy.types.Menu):
 		self.layout.operator(SelectModePieOperator.bl_idname, icon="PLUGIN")
 		self.layout.operator(ProportionalPieOperator.bl_idname, icon="PLUGIN")		
 
-
 ################
 # クラスの登録 #
 ################

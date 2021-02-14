@@ -155,9 +155,9 @@ class TogglePanelsC(bpy.types.Operator):
 			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		return {'FINISHED'}
 
-class panel_pie_operator(bpy.types.Operator):
+class PanelPieOperator(bpy.types.Operator):
 	bl_idname = "image.panel_pie_operator"
-	bl_label = "Pie menu : Sidebar/Toolbar"
+	bl_label = "Pie Menu : Sidebar/Toolbar"
 	bl_description = "Toggle sidebar and toolbar's display states"
 	bl_options = {'MACRO'}
 
@@ -169,15 +169,15 @@ class PanelPie(bpy.types.Menu): #
 	bl_label = "Pie menu : Sidebar/Toolbar"
 
 	def draw(self, context):
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Toolbar", icon='TRIA_LEFT')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Only Toolbar", icon='TRIA_LEFT')
 		op.properties, op.toolshelf = False, True
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Sidebar", icon='TRIA_RIGHT')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Only Sidebar", icon='TRIA_RIGHT')
 		op.properties, op.toolshelf = True, False
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Both Show", icon='ARROW_LEFTRIGHT')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Both Show", icon='ARROW_LEFTRIGHT')
 		op.properties, op.toolshelf = True, True
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Both Hide", icon='RESTRICT_VIEW_ON')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Both Hide", icon='RESTRICT_VIEW_ON')
 		op.properties, op.toolshelf = False, False
-class run_panel_pie(bpy.types.Operator): #
+class RunPanelPie(bpy.types.Operator): #
 	bl_idname = "image.run_panel_pie"
 	bl_label = "Toggle Panels' Display"
 	bl_description = "Toggle sidebar and toolbar's display states"
@@ -218,7 +218,7 @@ class ShortcutsMenu(bpy.types.Menu):
 		self.layout.operator(TogglePanelsB.bl_idname, icon='PLUGIN')
 		self.layout.operator(TogglePanelsC.bl_idname, icon='PLUGIN')
 		self.layout.separator()
-		self.layout.operator(panel_pie_operator.bl_idname, icon='PLUGIN')
+		self.layout.operator(PanelPieOperator.bl_idname, icon='PLUGIN')
 
 ################
 # クラスの登録 #
@@ -229,9 +229,9 @@ classes = [
 	TogglePanelsA,
 	TogglePanelsB,
 	TogglePanelsC,
-	panel_pie_operator,
+	PanelPieOperator,
 	PanelPie,
-	run_panel_pie,
+	RunPanelPie,
 	ShortcutsMenu,
 	Reset2DCursorForPanel
 ]
