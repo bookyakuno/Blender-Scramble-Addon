@@ -1,3 +1,6 @@
+# 「プロパティ」エリア > 「オブジェクトデータ」タブ > 「頂点グループ」パネル
+# "Propaties" Area > "Object Data" Tab > "Vertex Groups" Panel
+
 import bpy
 import re
 from bpy.props import *

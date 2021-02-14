@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > プロパティ > 「トランスフォーム座標系」パネル
-# "3D View" Area > Propaties > "Transform Orientations" Panel
+# 「3Dビュー」エリア > サイドバー > 「ビュー」タブ > 「トランスフォーム座標系」パネル
+# "3D View" Area > Sidebar > "View" Tab > "Transform Orientations" Panel
 
 import bpy
 from bpy.ops import *

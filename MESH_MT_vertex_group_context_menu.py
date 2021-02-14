@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「オブジェクトデータ」タブ > 頂点グループリスト右の▼
-# "Propaties" Area > "Object" Tab > VertexGroups List Right ▼
+# 「プロパティ」エリア > 「オブジェクトデータ」タブ > 頂点グループリスト > V ボタン
+# "Propaties" Area > "Object" Tab > Vertex Groups List > V Button
 
 import bpy
 import re

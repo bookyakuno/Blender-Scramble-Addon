@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「メッシュ編集」モード > 「メッシュ」メニュー > 「表示/隠す」メニュー
-# "3D View" Area > "Mesh Editor" Mode > "Mesh" Menu > "Show/Hide" Menu
+# 「3Dビュー」エリア > メッシュの「編集」モード > 「メッシュ」メニュー > 「表示/隠す」メニュー
+# "3D View" Area > "Edit" Mode with Mesh > "Mesh" Menu > "Show/Hide" Menu
 
 import bpy
 import bmesh

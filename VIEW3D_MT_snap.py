@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「Shift + S」キー
-# "3D View" Area > "Shift + S" Key
+# 「3Dビュー」エリア > 「ビュー」メニュー > 「表示切り替えメニュー」 > 「スナップメニュー (Blender 2.7)」
+# "3D View" Area > "View" Menu > "Toggle Display" Menu > "Snap Menu (Blender 2.7)"
 
 import bpy
 from bpy.props import *

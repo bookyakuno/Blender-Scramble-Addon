@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「アーマチュア編集」モード > 「W」キー
-# "3D View" Area > "Armature Editor" Mode > "W" Key
+# 「3Dビュー」エリア > アーマチュアの「編集」モード > 「アーマチュアコンテクストメニュー」 (Wキー)
+# "3D View" Area > "Edit" Mode with Armature > "Armature Context Menu" (W Key)
 
 import bpy, mathutils
 import re

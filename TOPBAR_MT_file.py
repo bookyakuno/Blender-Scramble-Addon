@@ -420,7 +420,7 @@ class AllOnShowAllEdges(bpy.types.Operator):
 
 class AllSetDrawType(bpy.types.Operator):
 	bl_idname = "object.all_set_display_type"
-	bl_label = "Set display method in viewport together"
+	bl_label = "Set Display Method in Viewport Together"
 	bl_description = "Set display method in viewport together for all of the designated type's objects"
 	bl_options = {'REGISTER', 'UNDO'}
 

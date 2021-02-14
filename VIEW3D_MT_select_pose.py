@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「ポーズ」モード > 「選択」メニュー
-# "3D View" Area > "Pose" Mode > "Select" Menu
+# 「3Dビュー」エリア > アーマチュアの「編集/ポーズ」モード > 「選択」メニュー
+# "3D View" Area > "Edit/Pose" Mode with Armature > "Select" Menu
 
 import bpy
 import re

@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「メッシュ編集」モード > 「U」キー
-# "3D View" Area > "Mesh Edit" Mode > "U" Key
+# 「3Dビュー」エリア > メッシュの「編集」モード > 「UV」メニュー
+# "3D View" Area > "Edit" Mode with Mesh > "UV" Menu
 
 import bpy
 from bpy.props import *

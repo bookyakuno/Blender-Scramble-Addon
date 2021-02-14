@@ -1,4 +1,4 @@
-# 「プロパティ」エリア > 「物理演算」タブ > 「剛体コンストレイント」パネル
+# 「プロパティ」エリア > 「物理演算」タブ > 「リジッドボディコンストレイント」パネル
 # "Propaties" Area > "Physics" Tab > "Rigid Body Constraint" Panel
 
 import bpy
@@ -204,7 +204,7 @@ def menu(self, context):
 					op2.mode, op2.skip_invoke = ['GENERIC_SPRING', True]
 		row = self.layout.split(factor=0.4)
 		row.use_property_split = False
-		row.operator(CopyConstraintSetting.bl_idname, icon='LINKED', text="Copy Setting")
+		row.operator(CopyConstraintSetting.bl_idname, icon='COPY_ID', text="Copy Setting")
 		if context.scene.rigidbody_world:
 			if context.scene.rigidbody_world.point_cache:
 				row_item = row.row(align=True)

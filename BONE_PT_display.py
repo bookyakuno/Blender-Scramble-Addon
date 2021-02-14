@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「ボーン」タブ > 「表示」パネル
-# "Propaties" Area > "Bone" Tab > "Display" Panel
+# 「プロパティ」エリア > 「ボーン」タブ > 「ビューポート表示」パネル
+# "Propaties" Area > "Bone" Tab > "Viewport Display" Panel
 
 import bpy
 

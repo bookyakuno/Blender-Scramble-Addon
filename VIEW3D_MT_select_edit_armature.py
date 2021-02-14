@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「アーマチュア編集」モード > 「選択」メニュー
-# "3D View" Area > "Armature Edit" Mode > "Select" Menu
+# 「3Dビュー」エリア > アーマチュアの「編集」モード > 「選択」メニュー
+# "3D View" Area > "Edit" Mode with Armature > "Select" Menu
 
 import bpy
 from bpy.props import *

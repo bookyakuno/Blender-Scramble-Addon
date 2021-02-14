@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「オブジェクトデータ」タブ > シェイプキーリスト右の▼
-# "Propaties" Area > "Object" Tab > ShapeKeys List Right ▼
+# 「プロパティ」エリア > 「オブジェクトデータ」タブ > シェイプキーリスト > V ボタン
+# "Propaties" Area > "Object" Tab > Shape Keys List > V Button
 
 import bpy
 from bpy.props import *

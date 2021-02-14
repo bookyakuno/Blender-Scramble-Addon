@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「オブジェクト」モード > 「Ctrl + L」キー
-# "3D View" Area > "Object" Mode > "Ctrl + L" Key
+# 「3Dビュー」エリア > 「オブジェクト」モード > 「リンク作成」メニュー (Ctrl+L キー)
+# "3D View" Area > "Object" Mode > "Make Links" Menu (Ctrl + L Key)
 
 import bpy, bmesh
 from bpy.props import *

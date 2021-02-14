@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「メッシュ編集」モード > 「X」キー
-# "3D View" Area > "Mesh Editor" Mode > "X" Key
+# 「3Dビュー」エリア > メッシュの「編集」モード > 「削除」メニュー (Xキー)
+# "3D View" Area > "Edit" Mode with Mesh > "Delete" Menu (X Key)
 
 import bpy
 import bmesh

@@ -1,5 +1,5 @@
 # 「プロパティ」エリア > 「物理演算」タブ > 「ダイナミックペイント」パネル
-# "Propaties" Area > "Physics" Tab > "Dinamic Paint" Panel
+# "Propaties" Area > "Physics" Tab > "Dynamic Paint" Panel
 
 import bpy
 

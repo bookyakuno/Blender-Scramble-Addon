@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > プロパティ > 「ビュー」パネル
-# "3D View" Area > Propaties > "View" Panel
+# 「3Dビュー」エリア > サイドバー > 「ビュー」タブ > 「ビュー」パネル
+# "3D View" Area > Sidebar > "View" Tab > "View" Panel
 
 import bpy
 from bpy.props import *

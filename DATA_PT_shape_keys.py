@@ -257,8 +257,8 @@ class ShapeKeyMergeAll(bpy.types.Operator):
 
 class ShapeKeyMergeAbove(bpy.types.Operator):
 	bl_idname = "object.shape_key_merge_above_keys"
-	bl_label = "Merge Non-Basis Keys Above Active into One"
-	bl_description = "Merge non-basis shape keys above the active key into a new one"
+	bl_label = "Merge Active and Above Non-Basis Keys into One"
+	bl_description = "Merge active and above non-basis shape keys into a new one"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -277,25 +277,27 @@ class ShapeKeyMergeAbove(bpy.types.Operator):
 		me = obj.data
 		name = me.shape_keys.key_blocks[0].name
 		active_idx = obj.active_shape_key_index
+		merged_name = f"{me.shape_keys.key_blocks[1].name} to {me.shape_keys.key_blocks[active_idx].name}"
 		pre_values = []
-		for i in range(active_idx, len(me.shape_keys.key_blocks)):
+		for i in range(active_idx+1, len(me.shape_keys.key_blocks)):
 			pre_values.append(me.shape_keys.key_blocks[i].value)
 			me.shape_keys.key_blocks[i].value = 0.0
 		bpy.ops.object.shape_key_add(from_mix=True)
-		obj.active_shape_key.name = "Merged"
-		while obj.active_shape_key_index != active_idx :
+		obj.active_shape_key.name = merged_name
+		while obj.active_shape_key_index != active_idx+1 :
 			bpy.ops.object.shape_key_move(type='UP')		
 		obj.active_shape_key_index = 0
 		bpy.ops.mesh.copy_shape()
-		while obj.active_shape_key_index != active_idx :
+		while obj.active_shape_key_index != active_idx+1 :
 			bpy.ops.object.shape_key_move(type='UP')
 		obj.active_shape_key_index = 0
-		for i in range(active_idx):
+		for i in range(active_idx+1):
 			bpy.ops.object.shape_key_remove()
 		obj.active_shape_key.name = name
 		me.shape_keys.key_blocks[1].value = 1.0
 		for i in range(2, len(me.shape_keys.key_blocks)):
 			me.shape_keys.key_blocks[i].value = pre_values[i-2]
+		obj.active_shape_key_index = 1
 		return {'FINISHED'}
 
 class MuteAllShapeKeys(bpy.types.Operator):

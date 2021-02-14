@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「マテリアル」タブ > リスト右の▼
-# "Propaties" Area > "Material" Tab > List Right ▼
+# 「プロパティ」エリア > 「マテリアル」タブ > マテリアルリスト > V ボタン
+# "Propaties" Area > "Material" Tab > Material List > V Button
 
 import bpy
 

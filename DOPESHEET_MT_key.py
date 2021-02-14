@@ -20,7 +20,7 @@ class DeleteUnmessage(bpy.types.Operator):
 
 class CreanEX(bpy.types.Operator):
 	bl_idname = "action.crean_ex"
-	bl_label = "Delete Value-overlapping keyframes"
+	bl_label = "Delete Value-overlapping Keyframes"
 	bl_description = "Remove Value-overlapping keyframes of the displayed objects' actions"
 	bl_options = {'REGISTER', 'UNDO'}
 

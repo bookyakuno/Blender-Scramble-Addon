@@ -1,5 +1,5 @@
-# 「ノードエディター」エリア > 「ビュー」メニュー
-# "Node Editor" Area > "View" Menu
+# 「シェーダー/テクスチャノードエディター & コンポジター」エリア > 「ビュー」メニュー
+# "Shader/Texture Node Editor & Compositor" Area > "View" Menu
 
 import bpy
 

@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「アーマチュア編集」モード > 「Shift + W」キー
-# "3D View" Area > "Armature Editor" Mode > "Shift + W" Key
+# 「3Dビュー」エリア > アーマチュアの「編集」モード > 「ボーンオプションを切り替え」メニュー (Shift+W キー)
+# "3D View" Area > "Edit" Mode with Armature > "Toggle Bone Options" Menu (Shift + W Key)
 
 import bpy
 from bpy.props import *

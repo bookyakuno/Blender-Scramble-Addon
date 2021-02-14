@@ -1,5 +1,5 @@
-# 「ノードエディター」エリア > 「ノード」メニュー
-# "Node Editor" Area > "Node" Menu
+# 「シェーダーエディター」エリア > 「ノード」メニュー
+# "Shader Editor" Area > "Node" Menu
 
 import bpy
 from bpy.props import *

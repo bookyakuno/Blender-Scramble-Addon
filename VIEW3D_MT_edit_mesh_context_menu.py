@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「メッシュ編集」モード > 「W」キー
-# "3D View" Area > "Mesh Editor" Mode > "W" Key
+# 「3Dビュー」エリア > メッシュの「編集」モード > 「コンテクストメニュー」 (Wキー)
+# "3D View" Area > "Edit" Mode with Mesh > "Context Menu" (W Key)
 
 import bpy
 from bpy.props import *

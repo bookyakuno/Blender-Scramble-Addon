@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > プロパティパネル > 「アイテム」パネル
-# "3D View" Area > Propaties > "Item" Panel
+# 「3Dビュー」エリア > サイドバー > 「アイテム」タブ > 「アイテム」パネル
+# "3D View" Area > Sidebar > "Item" Tab > "Item" Panel
 
 import bpy
 

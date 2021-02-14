@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「メッシュ編集」モード > 「メッシュ」メニュー
-# "3D View" Area > "Mesh Editor" Mode > "Mesh" Menu
+# 「3Dビュー」エリア > メッシュの「編集」モード > 「メッシュ」メニュー
+# "3D View" Area > "Edit" Mode with Mesh > "Mesh" Menu
 
 import bpy
 from bpy.props import *

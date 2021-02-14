@@ -79,7 +79,7 @@ class ToggleApplyModifiersView(bpy.types.Operator):
 class SyncShowModifiers(bpy.types.Operator):
 	bl_idname = "object.sync_show_modifiers"
 	bl_label = "Change Modifiers' Display in Viewport and Rendering"
-	bl_description = "Change display settingsof all the selected objects' modifiers in viewport and during rendering"
+	bl_description = "Change display settings of all the selected objects' modifiers in viewport and during rendering"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	change_view : BoolProperty(name="Viewport", default=True)
@@ -397,7 +397,7 @@ class SetViewportSubsurfLevel(bpy.types.Operator):
 
 class EqualizeSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.equalize_subsurf_level"
-	bl_label = "Match number of subdivisions in viewport and rendering"
+	bl_label = "Match Number of Subdivisions in Viewport and Rendering"
 	bl_description = "Match number of subdivisions in viewport to that during rendering, or vice verse, in each selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 

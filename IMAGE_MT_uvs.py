@@ -1,5 +1,5 @@
-# 「UV/画像エディター」エリア > 「UV」メニュー
-# "UV/Image Editor" Area > "UV" Menu
+# 「UVエディター」エリア > 「UV」メニュー
+# "UV Editor" Area > "UV" Menu
 
 import bpy, bmesh
 from bpy.props import *

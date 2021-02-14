@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「レンダー」タブ > 「レンダー」パネル
-# "Propaties" Area > "Render" Tab > "Render" Panel
+# 「プロパティ」エリア > 「レンダー」タブ
+# "Propaties" Area > "Render" Tab
 
 import bpy
 from bpy.props import *

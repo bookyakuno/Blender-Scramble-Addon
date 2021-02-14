@@ -77,7 +77,7 @@ class CopyTransformLockSettings(bpy.types.Operator):
 		return False
 
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_dialog(self, width=350)
 
 	def draw(self, context):
 		for p in ['lock_location_', 'lock_rotation_', 'lock_scale_']:

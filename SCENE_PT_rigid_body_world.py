@@ -1,4 +1,4 @@
-# 「プロパティ」エリア > 「シーン」タブ > 「剛体ワールド」パネル
+# 「プロパティ」エリア > 「シーン」タブ > 「リジッドボディワールド」パネル
 # "Propaties" Area > "Scene" Tab > "Rigid Body World" Panel
 
 import bpy

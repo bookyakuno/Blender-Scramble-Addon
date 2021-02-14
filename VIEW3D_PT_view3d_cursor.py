@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > プロパティ > 「3Dカーソル」パネル
-# "3D View" Area > Propaties > "3D Cursor" Panel
+# 「3Dビュー」エリア > サイドバー > 「ビュー」タブ > 「3Dカーソル」パネル
+# "3D View" Area > Sidebar > "View" Tab > "3D Cursor" Panel
 
 import bpy
 

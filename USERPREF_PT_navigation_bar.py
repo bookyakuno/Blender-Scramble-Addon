@@ -1,5 +1,5 @@
-# 「ユーザー設定」エリア > ヘッダー
-# "User Prefences" Area > Header
+# 「ユーザー設定」エリア > ナビゲーションバー
+# "User Preferences" Area > Navigation Bar
 
 import bpy
 from bpy.props import *

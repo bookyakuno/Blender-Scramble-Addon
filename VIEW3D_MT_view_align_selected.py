@@ -1,4 +1,4 @@
-# 「3Dビュー」エリア > 「視点を揃える」メニュー > 「アクティブに視点を揃える」メニュー
+# 「3Dビュー」エリア > 「ビュー」メニュー > 「視点を揃える」メニュー > 「アクティブに視点を揃える」メニュー
 # "3D View" Area > "View" Menu > "Align View" Menu > "Align View to Active" Menu
 
 import bpy
