@@ -36,8 +36,9 @@ class CopyIkSettings(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if (2 <= len(context.selected_pose_bones)):
-			return True
+		if context.selected_pose_bones:
+			if (2 <= len(context.selected_pose_bones)):
+				return True
 		return False
 
 	def draw(self, context):
@@ -50,7 +51,7 @@ class CopyIkSettings(bpy.types.Operator):
 			row.prop(self, 'ik_stiffness_'+axis)
 			row.prop(self, 'use_ik_limit_'+axis)
 			row = box.box().row()
-			row.label(text="Limit Rotation")		
+			row.label(text="Limit Rotation")
 			row.prop(self, 'ik_min_'+axis)
 			row.prop(self, 'ik_max_'+axis)
 
@@ -188,7 +189,7 @@ class CopyIkAxisSetting(bpy.types.Operator):
 		row.prop(self, 'ik_stiffness')
 		row.prop(self, 'use_ik_limit')
 		row = box.box().row()
-		row.label(text="Limit Rotation")		
+		row.label(text="Limit Rotation")
 		row.prop(self, 'ik_min')
 		row.prop(self, 'ik_max')
 

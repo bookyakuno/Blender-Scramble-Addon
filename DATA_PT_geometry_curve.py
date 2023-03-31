@@ -144,9 +144,10 @@ class ActivateTaperObject(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
-		if ob.type == 'CURVE':
-			if ob.data.taper_object:
-				return True
+		if ob:
+			if ob.type == 'CURVE':
+				if ob.data.taper_object:
+					return True
 		return False
 
 	def make_collec_dic(self, layer_collection, dictionary):
@@ -180,9 +181,10 @@ class ActivateBevelObject(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		ob = context.active_object
-		if ob.type == 'CURVE':
-			if ob.data.bevel_object:
-				return True
+		if ob:
+			if ob.type == 'CURVE':
+				if ob.data.bevel_object:
+					return True
 		return False
 
 	def make_collec_dic(self, layer_collection, dictionary):

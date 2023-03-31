@@ -12,16 +12,17 @@ class MakeLinkSoftbodySettings(bpy.types.Operator):
 	bl_label = "Copy Soft Body Setting"
 	bl_description = "Copy active object's Soft Body settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
-		for mod in context.object.modifiers:
-			if (mod.type == 'SOFT_BODY'):
-				break
-		else:
-			return False
+		if context.object:
+			for mod in context.object.modifiers:
+				if (mod.type == 'SOFT_BODY'):
+					break
+			else:
+				return False
 		return True
-	
+
 	def execute(self, context):
 		active_obj = context.active_object
 		active_softbody = None

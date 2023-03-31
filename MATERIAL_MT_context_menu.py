@@ -16,8 +16,9 @@ class RemoveNoAssignMaterial(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		obj = context.active_object
-		if (len(obj.material_slots) <= 0):
-			return False
+		if obj:
+			if (len(obj.material_slots) <= 0):
+				return False
 		return True
 	def execute(self, context):
 		preActiveObj = context.active_object
@@ -52,8 +53,9 @@ class RemoveAllMaterialSlot(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		obj = context.active_object
-		if (len(obj.material_slots) <= 0):
-			return False
+		if obj:
+			if (len(obj.material_slots) <= 0):
+				return False
 		return True
 	def execute(self, context):
 		activeObj = context.active_object
@@ -77,9 +79,10 @@ class RemoveEmptyMaterialSlot(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		obj = context.active_object
-		for slot in obj.material_slots:
-			if (not slot.material):
-				return True
+		if obj:
+			for slot in obj.material_slots:
+				if (not slot.material):
+					return True
 		return False
 	def execute(self, context):
 		activeObj = context.active_object
@@ -102,14 +105,16 @@ class SetTransparentBackSide(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		mat = context.material
-		if (not mat):
-			return False
-		if (mat.node_tree):
-			if (len(mat.node_tree.nodes) >= 2):
+		act = bpy.context.view_layer.objects.active
+		if act:
+			mat = act.active_material
+			if (not mat):
+				return False
+			if (mat.node_tree):
+				if (len(mat.node_tree.nodes) >= 2):
+					return True
+			if (not mat.use_nodes):
 				return True
-		if (not mat.use_nodes):
-			return True
 		return False
 	def execute(self, context):
 		mat = context.material

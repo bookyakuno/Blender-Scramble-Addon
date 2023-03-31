@@ -19,10 +19,11 @@ class CopyFromOtherUV(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if context.active_object.type != 'MESH':
-			return False
-		if len(context.active_object.data.uv_layers) < 2 :
-			return False
+		if context.active_object:
+			if context.active_object.type != 'MESH':
+				return False
+			if len(context.active_object.data.uv_layers) < 2 :
+				return False
 		return True
 	def __init__(self):
 		active = bpy.context.active_object.data.uv_layers.active

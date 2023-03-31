@@ -167,10 +167,11 @@ class SelectedVertexGroupAverage(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		obj = context.active_object
-		if len(obj.vertex_groups) == 0:
-			return False
-		if not obj.type == "MESH":
-			return False
+		if obj:
+			if len(obj.vertex_groups) == 0:
+				return False
+			if not obj.type == "MESH":
+				return False
 		return True
 	def __init__(self):
 		idx = bpy.context.active_object.vertex_groups.active_index

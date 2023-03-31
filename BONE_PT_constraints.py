@@ -48,10 +48,11 @@ class SetIkChainLength(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if len(context.selected_pose_bones) == 2:
-			for const in context.active_pose_bone.constraints:
-				if const.type == 'IK':
-					return True
+		if context.selected_pose_bones:
+			if len(context.selected_pose_bones) == 2:
+				for const in context.active_pose_bone.constraints:
+					if const.type == 'IK':
+						return True
 		return False
 
 	def execute(self, context):
@@ -90,10 +91,11 @@ class SetIkPoleTarget(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if len(context.selected_pose_bones) == 2:
-			for const in context.active_pose_bone.constraints:
-				if const.type == 'IK':
-					return True
+		if context.selected_pose_bones:
+			if len(context.selected_pose_bones) == 2:
+				for const in context.active_pose_bone.constraints:
+					if const.type == 'IK':
+						return True
 		return False
 
 	def execute(self, context):

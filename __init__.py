@@ -11,8 +11,8 @@ from bpy.props import *
 bl_info = {
 	"name" : "Scramble Addon",
 	"author" : "Saidenka, Bookyakuno, nikogoli",
-	"version" : (1, 1, 0),
-	"blender" : (2, 91, 0),
+	"version" : (1, 1, 1),
+	"blender" : (3, 5, 0),
 	"location" : "End of a varied menu",
 	"description" : "Assortment of extended functions of saidenka\'s production",
 	"warning" : "",
@@ -332,8 +332,9 @@ def register():
 	bpy.types.DATA_PT_geometry_curve.append(DATA_PT_geometry_curve.menu)
 	DATA_PT_modifiers.register()
 	bpy.types.DATA_PT_modifiers.append(DATA_PT_modifiers.menu)
-	DATA_PT_pose_library.register()
-	bpy.types.DATA_PT_pose_library.append(DATA_PT_pose_library.menu)
+	if bpy.app.version < (3,5,0):
+		DATA_PT_pose_library.register()
+		bpy.types.DATA_PT_pose_library.append(DATA_PT_pose_library.menu)
 	DATA_PT_shape_keys.register()
 	bpy.types.DATA_PT_shape_keys.prepend(DATA_PT_shape_keys.menu_prepend)
 	DATA_PT_skeleton.register()
@@ -501,8 +502,9 @@ def unregister():
 	bpy.types.DATA_PT_geometry_curve.remove(DATA_PT_geometry_curve.menu)
 	DATA_PT_modifiers.unregister()
 	bpy.types.DATA_PT_modifiers.remove(DATA_PT_modifiers.menu)
-	DATA_PT_pose_library.unregister()
-	bpy.types.DATA_PT_pose_library.remove(DATA_PT_pose_library.menu)
+	if bpy.app.version < (3,5,0):
+		DATA_PT_pose_library.unregister()
+		bpy.types.DATA_PT_pose_library.remove(DATA_PT_pose_library.menu)
 	DATA_PT_shape_keys.unregister()
 	bpy.types.DATA_PT_shape_keys.remove(DATA_PT_shape_keys.menu_prepend)
 	DATA_PT_skeleton.unregister()

@@ -125,8 +125,9 @@ class ClearFilterText(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if (context.space_data.filter_text):
-			return True
+		if bpy.context.area.type == "PREFERENCES":
+			if (context.space_data.filter_text):
+				return True
 		return False
 	def execute(self, context):
 		context.space_data.filter_text = ""

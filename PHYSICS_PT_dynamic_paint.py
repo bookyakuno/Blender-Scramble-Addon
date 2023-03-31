@@ -12,20 +12,21 @@ class CopyDynamicPaint(bpy.types.Operator):
 	bl_label = "Copy Dynamic Paint Setting"
 	bl_description = "Copy active object's Dynamic paint settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
 		active_ob = context.active_object
-		for mod in active_ob.modifiers:
-			if mod.type == 'DYNAMIC_PAINT':
-				if mod.brush_settings:
-					break
-				if mod.canvas_settings:
-					break
-		else:
-			return False
+		if active_ob:
+			for mod in active_ob.modifiers:
+				if mod.type == 'DYNAMIC_PAINT':
+					if mod.brush_settings:
+						break
+					if mod.canvas_settings:
+						break
+			else:
+				return False
 		return True
-	
+
 	def execute(self, context):
 		override = context.copy()
 		active_ob = context.active_object
@@ -53,7 +54,7 @@ class CopyDynamicPaint(bpy.types.Operator):
 				bpy.ops.dpaint.surface_slot_remove(override)
 			for i in source_canvas_settings.canvas_surfaces:
 				bpy.ops.dpaint.surface_slot_add(override)
-			
+
 			for attr_name in dir(source_brush_settings):
 				if attr_name[0] == '_':
 					continue
@@ -64,7 +65,7 @@ class CopyDynamicPaint(bpy.types.Operator):
 					setattr(target.brush_settings, attr_name, value)
 				except AttributeError:
 					pass
-			
+
 			for i, canvas_surface in enumerate(source_canvas_settings.canvas_surfaces):
 				for attr_name in dir(canvas_surface):
 					if attr_name[0] == '_':
@@ -76,7 +77,7 @@ class CopyDynamicPaint(bpy.types.Operator):
 						setattr(target.canvas_settings.canvas_surfaces[i], attr_name, value)
 					except AttributeError:
 						pass
-			
+
 			target.ui_type = source_ui_type
 		for area in context.screen.areas:
 			area.tag_redraw()

@@ -17,8 +17,9 @@ class InvertHide(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if (bpy.context.active_object.type == 'MESH'):
-			return True
+		if bpy.context.active_object:
+			if (bpy.context.active_object.type == 'MESH'):
+				return True
 		return False
 
 	def execute(self, context):
@@ -52,8 +53,9 @@ class HideVertexOnly(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if (bpy.context.active_object.type == 'MESH'):
-			return True
+		if bpy.context.active_object:
+			if (bpy.context.active_object.type == 'MESH'):
+				return True
 		return False
 
 	def execute(self, context):

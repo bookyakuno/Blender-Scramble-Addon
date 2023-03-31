@@ -19,10 +19,11 @@ class ExternalEdit(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if (not context.edit_text):
-			return False
-		if (context.edit_text.filepath == ""):
-			return False
+		if bpy.context.area.type == "TEXT_EDITOR":
+			if (not context.edit_text):
+				return False
+			if (context.edit_text.filepath == ""):
+				return False
 		return True
 	def execute(self, context):
 		path = bpy.path.abspath(context.edit_text.filepath)

@@ -19,6 +19,8 @@ class RenameImageFileName(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
+		if not bpy.context.area.type == "IMAGE_EDITOR":
+			return False
 		if (not context.edit_image):
 			return False
 		if (context.edit_image.filepath == ""):
@@ -165,6 +167,8 @@ class FillTransparency(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
+		if not bpy.context.area.type == "IMAGE_EDITOR":
+			return False
 		if (not context.edit_image):
 			return False
 		if (len(context.edit_image.pixels) <= 0):
@@ -238,6 +242,8 @@ class RenameImageFile(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
+		if not bpy.context.area.type == "IMAGE_EDITOR":
+			return False
 		if (not context.edit_image):
 			return False
 		if (context.edit_image.filepath == ""):
@@ -465,6 +471,8 @@ class ExternalEditEX(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
+		if not bpy.context.area.type == "IMAGE_EDITOR":
+			return False
 		if (not context.edit_image):
 			return False
 		return True
@@ -486,8 +494,8 @@ class ExternalEditEX(bpy.types.Operator):
 		context.preferences.filepaths.image_editor = pre_path
 		return {'FINISHED'}
 
-class Resize(bpy.types.Operator):
-	bl_idname = "image.resize"
+class image_Resize(bpy.types.Operator):
+	bl_idname = "image.image_resize"
 	bl_label = "Resize Image"
 	bl_description = "Resize the active image"
 	bl_options = {'REGISTER', 'UNDO'}
@@ -501,6 +509,7 @@ class Resize(bpy.types.Operator):
 			if self.height != new_height:
 				self.height = new_height
 		return None
+
 	def height_update(self, context):
 		if (self.keep_ratio):
 			img = bpy.context.edit_image
@@ -527,6 +536,7 @@ class Resize(bpy.types.Operator):
 		img = context.edit_image
 		self.width, self.height = img.size[0], img.size[1]
 		return context.window_manager.invoke_props_dialog(self)
+
 	def execute(self, context):
 		img = context.edit_image
 		img.scale(self.width, self.height)
@@ -534,6 +544,7 @@ class Resize(bpy.types.Operator):
 		for area in context.screen.areas:
 			area.tag_redraw()
 		return {'FINISHED'}
+
 
 class Duplicate(bpy.types.Operator):
 	bl_idname = "image.duplicate"
@@ -955,7 +966,7 @@ class EditMenu(bpy.types.Menu):
 	def draw(self, context):
 		self.layout.operator(Duplicate.bl_idname, icon='PLUGIN')
 		self.layout.operator(Clipping.bl_idname, icon='PLUGIN')
-		self.layout.operator(Resize.bl_idname, icon='PLUGIN')
+		self.layout.operator(image_Resize.bl_idname, icon='PLUGIN')
 		self.layout.operator(Tiles.bl_idname, icon='PLUGIN')
 
 class FilterMenu(bpy.types.Menu):
@@ -986,7 +997,7 @@ classes = [
 	Rotate180Image,
 	Rotate270Image,
 	ExternalEditEX,
-	Resize,
+	image_Resize,
 	Duplicate,
 	NewUVChecker,
 	Tiles,

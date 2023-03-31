@@ -79,8 +79,9 @@ class DeleteHideMesh(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if not context.active_object.type == "MESH":
-			return False
+		if context.active_object:
+			if not context.active_object.type == "MESH":
+				return False
 		return True
 
 	def execute(self, context):

@@ -12,16 +12,17 @@ class MakeLinkClothSettings(bpy.types.Operator):
 	bl_label = "Copy Cloth Setting"
 	bl_description = "Copy active object's Cloth simulation settings to other selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
-	
+
 	@classmethod
 	def poll(cls, context):
-		for mod in context.object.modifiers:
-			if (mod.type == 'CLOTH'):
-				break
-		else:
-			return False
+		if context.object:
+			for mod in context.object.modifiers:
+				if (mod.type == 'CLOTH'):
+					break
+			else:
+				return False
 		return True
-	
+
 	def execute(self, context):
 		active_obj = context.active_object
 		active_cloth = None

@@ -410,9 +410,10 @@ class RenameBoneNameEndJapanese(bpy.types.Operator):
 	@classmethod
 	def poll(cls, context):
 		obj = bpy.context.active_object
-		if obj.type == 'ARMATURE' and obj.mode == 'POSE':
-			if context.selected_pose_bones:
-				return True
+		if obj:
+			if obj.type == 'ARMATURE' and obj.mode == 'POSE':
+				if context.selected_pose_bones:
+					return True
 		return False
 
 	def execute(self, context):
@@ -443,8 +444,9 @@ class TogglePosePosition(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if bpy.context.active_object.type == 'ARMATURE':
-			return True
+		if bpy.context.active_object:
+			if bpy.context.active_object.type == 'ARMATURE':
+				return True
 		return False
 
 	def execute(self, context):
@@ -727,7 +729,7 @@ class SetIKRotationLimitByPose(bpy.types.Operator):
 	def poll(cls, context):
 		if context.selected_pose_bones:
 			return True
-		return False 
+		return False
 	def draw(self, context):
 		self.layout.prop(self, 'mode')
 		box = self.layout.box()

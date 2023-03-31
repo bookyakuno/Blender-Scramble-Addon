@@ -56,11 +56,13 @@ class Reset2DCursorForPanel(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
+		area = None
 		for a in bpy.context.screen.areas:
 			if a.type == 'IMAGE_EDITOR':
 				area = a
-		if area.spaces[0].mode != 'UV':
-			return False
+		if area:
+			if area.spaces[0].mode != 'UV':
+				return False
 		return True
 	def invoke(self, context, event):
 		wm = context.window_manager

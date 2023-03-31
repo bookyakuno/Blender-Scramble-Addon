@@ -20,8 +20,9 @@ class MargeSelectedVertexGroup(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if context.active_object.vertex_groups.active_index == -1:
-			return False
+		if context.active_object:
+			if context.active_object.vertex_groups.active_index == -1:
+				return False
 		return True
 	def __init__(self):
 		idx = bpy.context.active_object.vertex_groups.active_index
@@ -64,8 +65,11 @@ class RemoveSelectedVertexGroup(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if context.active_object.vertex_groups.active_index == -1:
-			return False
+		obj = context.active_object
+		if obj:
+			if obj.type in {"MESH", "CURVE", "SURFACE", "META", "FONT"}:
+				if obj.vertex_groups.active_index == -1:
+					return False
 		return True
 	def __init__(self):
 		self.target = bpy.context.active_object.vertex_groups[0].name
@@ -97,8 +101,11 @@ class VertexGroupAverageAll(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if context.active_object.vertex_groups.active_index == -1:
-			return False
+		obj = context.active_object
+		if obj:
+			if obj.type in {"MESH", "CURVE", "SURFACE", "META", "FONT"}:
+				if obj.vertex_groups.active_index == -1:
+					return False
 		return True
 	def __init__(self):
 		idx = bpy.context.active_object.vertex_groups.active_index
@@ -249,9 +256,11 @@ class BlurWeight(bpy.types.Operator):
 
 	@classmethod
 	def poll(cls, context):
-		if context.active_object.vertex_groups.active_index == -1:
-			return False
+		if context.active_object:
+			if context.active_object.vertex_groups.active_index == -1:
+				return False
 		return True
+
 	def draw(self, context):
 		for p in ['all_group', 'blur_count']:
 			row = self.layout.row()
