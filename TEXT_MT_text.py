@@ -11,11 +11,11 @@ import os, subprocess
 
 class ExternalEdit(bpy.types.Operator):
 	bl_idname = "text.external_edit"
-	bl_label = "Edit with external editor"
-	bl_description = "Open text in an external editor you set on files page of custom"
+	bl_label = "Edit with External Editors"
+	bl_description = "Open current text in text editors referenced at User Preference"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	index : IntProperty(name="Number of Use", default=1, min=1, max=3, soft_min=1, soft_max=3)
+	index : IntProperty(name="Index", default=1, min=1, max=3, soft_min=1, soft_max=3)
 
 	@classmethod
 	def poll(cls, context):
@@ -67,19 +67,16 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		self.layout.separator()
-		if (context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_1):
-			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_1)
-			name, ext = os.path.splitext(path)
-			self.layout.operator(ExternalEdit.bl_idname, icon="PLUGIN", text=name+"  Open").index = 1
-		if (context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_2):
-			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_2)
-			name, ext = os.path.splitext(path)
-			self.layout.operator(ExternalEdit.bl_idname, icon="PLUGIN", text=name+"  Open").index = 2
-		if (context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_3):
-			path = os.path.basename(context.preferences.addons[__name__.partition('.')[0]].preferences.text_editor_path_3)
-			name, ext = os.path.splitext(path)
-			self.layout.operator(ExternalEdit.bl_idname, icon="PLUGIN", text=name+"  Open").index = 3
+		pref = context.preferences.addons[__name__.partition('.')[0]].preferences
+		paths = [pref.text_editor_path_1, pref.text_editor_path_2, pref.text_editor_path_3]
+		if sum([len(x) for x in paths]):
+			self.layout.separator()
+			self.layout.label(text="== Edit Text with Editors ==")
+			for idx, p in enumerate(paths):
+				if p:
+					path = os.path.basename(p)
+					name, ext = os.path.splitext(path)
+					self.layout.operator(ExternalEdit.bl_idname, icon="PLUGIN", text=f"= {name} =").index = idx
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

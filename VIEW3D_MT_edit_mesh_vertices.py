@@ -1,17 +1,18 @@
-# 「3Dビュー」エリア > 「メッシュ編集」モード > 「Ctrl + V」キー
-# "3D View" Area > "Mesh Editor" Mode > "Ctrl + V" Key
+# 「3Dビュー」エリア > メッシュの「編集」モード > 「頂点」メニュー
+# "3D View" Area > "Edit" Mode with Mesh > "Vertex" Menu
 
 import bpy
 from bpy.props import *
 
 ################
 # オペレーター #
+_STORE_ITEMS = [] #保存用グローバル変数：EnumPropertyの動的なitems作成におけるバグへの対処用
 ################
 
 class CellMenuSeparateEX(bpy.types.Operator):
 	bl_idname = "mesh.cell_menu_separate_ex"
-	bl_label = "Separate (Advance)"
-	bl_description = "Isolate to another object of call extended menu"
+	bl_label = "Separate (Extra)"
+	bl_description = "Separate menu with extra functions"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
@@ -20,14 +21,12 @@ class CellMenuSeparateEX(bpy.types.Operator):
 
 class SeparateSelectedEX(bpy.types.Operator):
 	bl_idname = "mesh.separate_selected_ex"
-	bl_label = "Selected (Activate Isolated-side)"
-	bl_description = "After \"in choice of separation\" enters edit mode for separation side"
+	bl_label = "Separate Selection => Edit Separated"
+	bl_description = "Separate selected part to another object, and switch to the object's Edit mode"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
-		objs = []
-		for obj in context.selectable_objects:
-			objs.append(obj.name)
+		objs = [obj.name for obj in context.selectable_objects]
 		bpy.ops.mesh.separate(type='SELECTED')
 		bpy.ops.object.mode_set(mode='OBJECT')
 		bpy.ops.object.select_all(action='DESELECT')
@@ -42,14 +41,12 @@ class SeparateSelectedEX(bpy.types.Operator):
 
 class DuplicateNewParts(bpy.types.Operator):
 	bl_idname = "mesh.duplicate_new_parts"
-	bl_label = "Duplicate Selected parts and to new object"
-	bl_description = "Enters edit mode, replication and selection to new object from"
+	bl_label = "Duplicate Selection => Edit Duplicated"
+	bl_description = "Duplicate selected part as another object, and switch to its Edit mode"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	def execute(self, context):
-		objs = []
-		for obj in context.selectable_objects:
-			objs.append(obj.name)
+		objs = [obj.name for obj in context.selectable_objects]
 		bpy.ops.mesh.duplicate()
 		bpy.ops.mesh.separate(type='SELECTED')
 		bpy.ops.object.mode_set(mode='OBJECT')
@@ -65,14 +62,15 @@ class DuplicateNewParts(bpy.types.Operator):
 
 class QuickShrinkwrap(bpy.types.Operator):
 	bl_idname = "mesh.quick_shrinkwrap"
-	bl_label = "Quick Shrinkwrap"
-	bl_description = "Another one you mesh selected vertices pettanko!, glue"
+	bl_label = "Apply Shrinkwrap to Selection"
+	bl_description = "Apply to selected vertices Shrinkwrap modifier for the other selected object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
-		('NEAREST_SURFACEPOINT', "Closest Surface Point", "", 1),
-		('PROJECT', "Projection", "", 2),
-		('NEAREST_VERTEX', "Nearest Vertex", "", 3),
+		('NEAREST_SURFACEPOINT', "Nearest Surface Point", "Shrink the mesh to the nearest target surface", 1),
+		('PROJECT', "Project", "Shrink the mesh to the nearest target surface along a given axis", 2),
+		('NEAREST_VERTEX', "Nearest Vertex", "Shrink the mesh to the nearest target vertex", 3),
+		('TARGET_PROJECT', "Target Normal Project", "Shrink the mesh to the nearest target surface along the interpolated vertex normals of the target", 4),
 		]
 	wrap_method : EnumProperty(items=items, name="Mode", default='PROJECT')
 	offset : FloatProperty(name="Offset", default=0.0, min=-10, max=10, soft_min=-10, soft_max=10, step=1, precision=5)
@@ -85,6 +83,7 @@ class QuickShrinkwrap(bpy.types.Operator):
 			if (obj.type != 'MESH'):
 				return False
 		return True
+
 	def execute(self, context):
 		active_obj = context.active_object
 		pre_mode = active_obj.mode
@@ -94,13 +93,10 @@ class QuickShrinkwrap(bpy.types.Operator):
 				target_obj = obj
 				break
 		new_vg = active_obj.vertex_groups.new(name="TempGroup")
-		selected_verts = []
-		for vert in active_obj.data.vertices:
-			if (vert.select):
-				selected_verts.append(vert.index)
+		selected_verts = [v.index for v in active_obj.data.vertices if v.select]
 		if (len(selected_verts) <= 0):
 			bpy.ops.object.mode_set(mode=pre_mode)
-			self.report(type={'ERROR'}, message="One run, select vertex more than")
+			self.report(type={'ERROR'}, message="Need to select at least one vertex")
 			return {'CANCELLED'}
 		new_vg.add(selected_verts, 1.0, 'REPLACE')
 		new_mod = active_obj.modifiers.new("temp", 'SHRINKWRAP')
@@ -117,22 +113,119 @@ class QuickShrinkwrap(bpy.types.Operator):
 		bpy.ops.object.mode_set(mode=pre_mode)
 		return {'FINISHED'}
 
+class SeparateMaterialEX(bpy.types.Operator):
+	bl_idname = "mesh.separate_material_ex"
+	bl_label = "By One Material"
+	bl_description = "Separate specific-material-assigned part to another object, and switch to the object's Edit mode"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	def item_callback(self, context):
+		mats = bpy.context.active_object.data.materials
+		if not self.is_stashed:
+			_STORE_ITEMS.clear()
+			for idx, mat in enumerate(mats):
+				_STORE_ITEMS.append((str(idx), mat.name, "", idx))
+				self.is_stashed = True
+		#print(_STORE_ITEMS[0])#作成したリストの要素がうまく認識されないバグ?への一応の対処
+		return _STORE_ITEMS
+
+	target_matidx : EnumProperty(items=item_callback, name="Material to Separate")
+	is_dupli : BoolProperty(name="Duplicate and Separate", default=False)
+	is_stashed : BoolProperty(name="Mats' list exists", default=False, options={'HIDDEN'})
+
+	def execute(self, context):
+		orig_obj = context.active_object
+		bpy.ops.mesh.select_all(action='DESELECT')
+		context.active_object.active_material_index = int(self.target_matidx)
+		bpy.ops.object.material_slot_select()
+		if self.is_dupli:
+			bpy.ops.mesh.duplicate()
+		bpy.ops.mesh.separate(type='SELECTED')
+		bpy.ops.object.mode_set(mode='OBJECT')
+		selected_set = set(context.selected_objects)
+		separated = list(selected_set - {orig_obj})[0]
+		orig_obj.select_set(False)
+		bpy.context.view_layer.objects.active = separated
+		bpy.ops.object.mode_set(mode='EDIT')
+		return {'FINISHED'}
+
+class SeparateLooseEX(bpy.types.Operator):
+	bl_idname = "mesh.separate_loose_ex"
+	bl_label = "By Loose Parts"
+	bl_description = "Separate each not-selected / selected isolated part to another object"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	sep_selected : BoolProperty(name="Selected", default=False)
+	is_dupli : BoolProperty(name="Duplicate and Separate", default=False)
+	end_method : EnumProperty(name="Mode", items=[
+		("EDIT","Edit: Original","",1),
+		("OBJECT_ORIG","Object: Original Selected","",2),
+		("OBJECT_SEPA","Object: Separated Selected","",3),
+		])
+
+	def draw(self, context):
+		for p in ['sep_selected', 'is_dupli']:
+			row = self.layout.row()
+			row.use_property_split = True
+			row.prop(self, p)
+		row = self.layout.split(factor=0.15)
+		row.label(text="Mode")
+		row.prop(self, 'end_method', text="")
+
+	def execute(self, context):
+		orig_obj = context.active_object
+		bpy.ops.mesh.select_linked()
+		if not self.sep_selected:
+			bpy.ops.mesh.select_all(action='INVERT')
+		if self.is_dupli:
+			bpy.ops.mesh.duplicate()
+		bpy.ops.mesh.separate(type='SELECTED')
+		bpy.ops.object.mode_set(mode='OBJECT')
+		selected_set = set(context.selected_objects)
+		separated = list(selected_set - {orig_obj})[0]
+		orig_obj.select_set(False)
+		bpy.context.view_layer.objects.active = separated
+		bpy.ops.object.mode_set(mode='EDIT')
+		bpy.ops.mesh.separate(type='LOOSE')
+		bpy.ops.object.mode_set(mode='OBJECT')
+		if not self.end_method == 'OBJECT_SEPA':
+			bpy.ops.object.select_all(action='DESELECT')
+			orig_obj.select_set(True)
+			bpy.context.view_layer.objects.active = orig_obj
+			if self.end_method == 'EDIT':
+				bpy.ops.object.mode_set(mode='EDIT')
+		return {'FINISHED'}
+
 ################
 # メニュー追加 #
 ################
 
-class SeparateEXMenu(bpy.types.Menu):
-	bl_idname = "VIEW3D_MT_edit_mesh_separate_ex"
-	bl_label = "Separate (Advance)"
-	bl_description = "Isolate to another object of extended menu"
+class SeparateMatEXMenu(bpy.types.Menu):
+	bl_idname = "VIEW3D_MT_edit_mesh_separate_mat_ex"
+	bl_label = "By One Material"
+	bl_description = "Separate specific-material-assigned part to another object, and switch to the object's Edit mode"
 
 	def draw(self, context):
-		self.layout.operator("mesh.separate", text="Selected").type = 'SELECTED'
+		mats = context.active_object.data.materials
+		for idx, mat in enumerate(mats):
+			self.layout.operator(SeparateMaterialEX.bl_idname, text=mat.name).target_matidx = str(idx)
+
+class SeparateEXMenu(bpy.types.Menu):
+	bl_idname = "VIEW3D_MT_edit_mesh_separate_ex"
+	bl_label = "Separate (Extra)"
+	bl_description = "Separate menu with extra functions"
+
+	def draw(self, context):
+		self.layout.operator("mesh.separate", text="Selection").type = 'SELECTED'
 		self.layout.operator(SeparateSelectedEX.bl_idname, icon="PLUGIN")
 		self.layout.operator(DuplicateNewParts.bl_idname, icon="PLUGIN")
 		self.layout.separator()
-		self.layout.operator("mesh.separate", text="To Material").type = 'MATERIAL'
-		self.layout.operator("mesh.separate", text="Isolated Parts").type = 'LOOSE'
+		self.layout.operator("mesh.separate", text="By Material").type = 'MATERIAL'
+		self.layout.menu(SeparateMatEXMenu.bl_idname, icon="PLUGIN")
+		self.layout.separator()
+		self.layout.operator("mesh.separate", text="By Loose Parts").type = 'LOOSE'
+		self.layout.operator(SeparateLooseEX.bl_idname, text="By Loose Parts (Non-Selected)", icon="PLUGIN").sep_selected = False
+		self.layout.operator(SeparateLooseEX.bl_idname, text="By Loose Parts (Selected)", icon="PLUGIN").sep_selected = True
 
 # メニューのオン/オフの判定
 def IsMenuEnable(self_id):
@@ -165,6 +258,9 @@ classes = [
 	SeparateSelectedEX,
 	DuplicateNewParts,
 	QuickShrinkwrap,
+	SeparateMaterialEX,
+	SeparateLooseEX,
+	SeparateMatEXMenu,
 	SeparateEXMenu
 ]
 

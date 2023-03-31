@@ -10,8 +10,8 @@ from bpy.props import *
 
 class ChangeContextTab(bpy.types.Operator):
 	bl_idname = "buttons.change_context_tab"
-	bl_label = "Switch Properties Tab"
-	bl_description = "Switch properties tab in turn"
+	bl_label = "Switch Property Tab"
+	bl_description = "Switch property tab in turn"
 	bl_options = {'REGISTER'}
 
 	is_left : BoolProperty(name="To Left", default=False)
@@ -27,9 +27,6 @@ class ChangeContextTab(bpy.types.Operator):
 				else:
 					continue
 				break
-		if (not space_data):
-			self.report(type={'ERROR'}, message="Cannot find properties area")
-			return {'CANCELLED'}
 		now_tab = space_data.context
 		tabs = [
 		'TOOL',
@@ -50,7 +47,7 @@ class ChangeContextTab(bpy.types.Operator):
 		'TEXTURE',
 		]
 		if (now_tab not in tabs):
-			self.report(type={'ERROR'}, message="Unexpected Tab Now")
+			self.report(type={'ERROR'}, message="Invalid Value")
 			return {'CANCELLED'}
 		if (self.is_left):
 			tabs.reverse()

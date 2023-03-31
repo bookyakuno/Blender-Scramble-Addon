@@ -8,7 +8,7 @@ from bpy.props import *
 # オペレーター #
 ################
 
-class copy_ik_settings(bpy.types.Operator):
+class CopyIkSettings(bpy.types.Operator):
 	bl_idname = "pose.copy_ik_settings"
 	bl_label = "Copy IK Setting"
 	bl_description = "Copy active bone's IK settings to other selected bones"
@@ -41,19 +41,18 @@ class copy_ik_settings(bpy.types.Operator):
 		return False
 
 	def draw(self, context):
+		self.layout.prop(self, 'ik_stretch')
 		for axis in ['x', 'y', 'z']:
-			self.layout.label(text=f"{axis.upper()}")
-			row = self.layout.row()
+			box = self.layout.box()
+			row = box.row()
+			row.label(text=f"{axis.upper()}")
 			row.prop(self, 'lock_ik_'+axis)
 			row.prop(self, 'ik_stiffness_'+axis)
 			row.prop(self, 'use_ik_limit_'+axis)
-			row = self.layout.box().row()
-			row.label(text="Angles for Limit")		
+			row = box.box().row()
+			row.label(text="Limit Rotation")		
 			row.prop(self, 'ik_min_'+axis)
 			row.prop(self, 'ik_max_'+axis)
-			self.layout.separator(factor=0.3)
-		self.layout.separator(factor=0.7)
-		self.layout.prop(self, 'ik_stretch')
 
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
@@ -77,15 +76,15 @@ class copy_ik_settings(bpy.types.Operator):
 					target.ik_stretch = source.ik_stretch
 		return {'FINISHED'}
 
-class reverse_ik_min_max(bpy.types.Operator):
+class ReverseIkMinMax(bpy.types.Operator):
 	bl_idname = "pose.reverse_ik_min_max"
 	bl_label = "Reverse Minimum and maximum Angles"
 	bl_description = "Choose axes and reverse their minimum and maximum angles for IK Limit"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	is_x : BoolProperty(name="Invert X axis", default=False)
-	is_y : BoolProperty(name="Invert Y axis", default=False)
-	is_z : BoolProperty(name="Invert Z axis", default=False)
+	is_x : BoolProperty(name="X axis", default=False)
+	is_y : BoolProperty(name="Y axis", default=False)
+	is_z : BoolProperty(name="Z axis", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -107,6 +106,11 @@ class reverse_ik_min_max(bpy.types.Operator):
 			else:
 				self.__setattr__('is_' + axis, False)
 		return context.window_manager.invoke_props_dialog(self)
+	def draw(self, context):
+		row = self.layout.row()
+		row.label(text="")
+		for p in ['is_x','is_y','is_y']:
+			row.prop(self, p)
 
 	def execute(self, context):
 		bone = context.active_pose_bone
@@ -129,7 +133,7 @@ class reverse_ik_min_max(bpy.types.Operator):
 			area.tag_redraw()
 		return {'FINISHED'}
 
-class copy_ik_axis_setting(bpy.types.Operator):
+class CopyIkAxisSetting(bpy.types.Operator):
 	bl_idname = "pose.copy_ik_axis_setting"
 	bl_label = "Copy IK Settings to other axes"
 	bl_description = "Choose an axis and copy its IK settings to other axes"
@@ -141,9 +145,9 @@ class copy_ik_axis_setting(bpy.types.Operator):
 		('z', "Z Axis", "", 3),
 		]
 	source_axis : EnumProperty(items=items, name="Original Axis")
-	target_x : BoolProperty(name="To X", default=True)
-	target_y : BoolProperty(name="To Y", default=True)
-	target_z : BoolProperty(name="To Z", default=True)
+	target_x : BoolProperty(name="X Axis", default=True)
+	target_y : BoolProperty(name="Y Axis", default=True)
+	target_z : BoolProperty(name="Z Axis", default=True)
 
 	lock_ik : BoolProperty(name="Lock", default=True)
 	ik_stiffness : BoolProperty(name="Stiffness", default=True)
@@ -169,18 +173,22 @@ class copy_ik_axis_setting(bpy.types.Operator):
 		return context.window_manager.invoke_props_dialog(self)
 
 	def draw(self, context):
-		self.layout.prop(self, 'source_axis')
-		row = self.layout.row()
-		row.prop(self, 'target_x')
-		row.prop(self, 'target_y')
-		row.prop(self, 'target_z')
-		self.layout.label(text="Settings to copy")
-		row = self.layout.row()
+		sp = self.layout.split(factor=0.35)
+		spitem = sp.split(factor=0.6)
+		spitem.prop(self, 'source_axis', text="")
+		spitem.label(text="to")
+		rowitem = sp.box().row(align=True)
+		rowitem.prop(self, 'target_x')
+		rowitem.prop(self, 'target_y')
+		rowitem.prop(self, 'target_z')
+		box = self.layout.box()
+		box.label(text="Settings to copy")
+		row = box.row()
 		row.prop(self, 'lock_ik')
 		row.prop(self, 'ik_stiffness')
 		row.prop(self, 'use_ik_limit')
-		row = self.layout.box().row()
-		row.label(text="Angles for Limit")		
+		row = box.box().row()
+		row.label(text="Limit Rotation")		
 		row.prop(self, 'ik_min')
 		row.prop(self, 'ik_max')
 
@@ -210,7 +218,7 @@ class copy_ik_axis_setting(bpy.types.Operator):
 			area.tag_redraw()
 		return {'FINISHED'}
 
-class reset_ik_settings(bpy.types.Operator):
+class ResetIkSettings(bpy.types.Operator):
 	bl_idname = "pose.reset_ik_settings"
 	bl_label = "Reset IK Settings"
 	bl_description = "Reset all of IK settings"
@@ -253,10 +261,10 @@ class reset_ik_settings(bpy.types.Operator):
 ################
 
 classes = [
-	copy_ik_settings,
-	reverse_ik_min_max,
-	copy_ik_axis_setting,
-	reset_ik_settings
+	CopyIkSettings,
+	ReverseIkMinMax,
+	CopyIkAxisSetting,
+	ResetIkSettings
 ]
 
 def register():
@@ -283,12 +291,12 @@ def IsMenuEnable(self_id):
 # メニューを登録する関数
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
-		spl = self.layout.split(factor=0.8)
+		spl = self.layout.split(factor=0.75)
 		row = spl.row(align=True)
-		row.operator(reverse_ik_min_max.bl_idname, icon='ARROW_LEFTRIGHT', text="Reverse min & max")
-		row.operator(copy_ik_axis_setting.bl_idname, icon='LINKED', text="Copy to other axes")
-		spl.operator(reset_ik_settings.bl_idname, icon='X', text="Reset")
+		row.operator(ReverseIkMinMax.bl_idname, icon='ARROW_LEFTRIGHT', text="Reverse min & max")
+		row.operator(CopyIkAxisSetting.bl_idname, icon='LINKED', text="Copy to other axes")
+		spl.operator(ResetIkSettings.bl_idname, icon='X', text="Initialize")
 		if 2 <= len(context.selected_pose_bones):
-			self.layout.operator(copy_ik_settings.bl_idname, icon='COPY_ID', text="Copy IK Setting to selected bones")
+			self.layout.operator(CopyIkSettings.bl_idname, icon='COPY_ID', text="Copy IK Setting to selected bones")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

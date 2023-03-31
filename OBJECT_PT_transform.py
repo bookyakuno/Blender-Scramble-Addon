@@ -24,6 +24,7 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		row = self.layout.row(align=True)
 		op = row.operator('object.make_link_transform', icon='CON_LOCLIKE', text="Copy Location")
+		#VIEW3D_MT_make_links.py で定義
 		op.copy_location, op.copy_rotation, op.copy_scale = True, False, False
 		op = row.operator('object.make_link_transform', icon='CON_ROTLIKE', text="Copy Rotation")
 		op.copy_location, op.copy_rotation, op.copy_scale = False, True, False

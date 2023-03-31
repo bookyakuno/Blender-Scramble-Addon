@@ -14,19 +14,18 @@ class RenameSpecificNameUV(bpy.types.Operator):
 	bl_description = "Rename the selected objects' UV Maps with specific name to the designated one"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	source_name : StringProperty(name="Rename UV Name", default="Past UV")
-	replace_name : StringProperty(name="New UV Name", default="New UV")
+	source_name : StringProperty(name="Target", default="")
+	replace_name : StringProperty(name="New Name", default="New UV")
 
 	@classmethod
 	def poll(cls, context):
-		if (len(context.selected_objects) <= 1):
+		if (len(context.selected_objects) == 0):
 			return False
 		return True
 
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type != 'MESH'):
-				self.report(type={'WARNING'}, message=obj.name+" is ignored because it is not mesh")
 				continue
 			me = obj.data
 			for uv in me.uv_layers[:]:
@@ -40,20 +39,19 @@ class RenameSpecificNameUV(bpy.types.Operator):
 class DeleteSpecificNameUV(bpy.types.Operator):
 	bl_idname = "object.delete_specific_name_uv"
 	bl_label = "Delete specific UVs together"
-	bl_description = "Removes the selected objects' UV Maps with specific name"
+	bl_description = "Remove the selected objects' UV Maps with specific name"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	name : StringProperty(name="Remove UV Name", default="UV")
+	name : StringProperty(name="Name", default="UV")
 
 	@classmethod
 	def poll(cls, context):
-		if (len(context.selected_objects) <= 1):
+		if (len(context.selected_objects) == 0):
 			return False
 		return True
 	def execute(self, context):
 		for obj in context.selected_objects:
 			if (obj.type != 'MESH'):
-				self.report(type={'WARNING'}, message=obj.name+" is ignored because it is not mesh")
 				continue
 			me = obj.data
 			for uv in me.uv_layers:
@@ -62,104 +60,11 @@ class DeleteSpecificNameUV(bpy.types.Operator):
 		return {'FINISHED'}
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
-"""
-class RenameUV(bpy.types.Operator):
-	bl_idname = "object.rename_uv"
-	bl_label = "Rename UV"
-	bl_description = "Renames active UV (UV texture also changes accordingly)"
-	bl_options = {'REGISTER', 'UNDO'}
 
-	name : StringProperty(name="New UV Name", default="UV")
-
-	@classmethod
-	def poll(cls, context):
-		obj = context.active_object
-		if (not obj):
-			return False
-		if (obj.type != 'MESH'):
-			return False
-		me = obj.data
-		if (not me.uv_layers.active):
-			return False
-		return True
-	def execute(self, context):
-		obj = context.active_object
-		if (obj.type == 'MESH'):
-			me = obj.data
-			uv = me.uv_layers.active
-			if (uv == None):
-				self.report(type={'ERROR'}, message="No UV")
-				return {'"CANCELLED'}
-			preName = uv.name
-			uv.name = self.name
-			for mat in me.materials:
-				if (mat):
-					for slot in mat.texture_slots:
-						if (slot != None):
-							if (slot.uv_layer == preName):
-									slot.uv_layer = uv.name
-									self.report(type={"INFO"}, message="Material 「"+mat.name+"] target UV fixed")
-					for me2 in bpy.data.meshes:
-						for mat2 in me2.materials:
-							if (mat2):
-								if (mat.name == mat2.name):
-									try:
-										me2.uv_layers[preName].name = uv.name
-										self.report(type={"INFO"}, message="Mesh 「"+me2.name+"] target UV fixed")
-									except KeyError: pass
-		else:
-			self.report(type={'ERROR'}, message="This is not mesh object")
-			return {'CANCELLED'}
-		return {'FINISHED'}
-	def invoke(self, context, event):
-		obj = context.active_object
-		if (obj.type == 'MESH'):
-			me = obj.data
-			uv = me.uv_layers.active
-			if (uv == None):
-				self.report(type={'ERROR'}, message="No UV")
-				return {'CANCELLED'}
-			self.name = uv.name
-		return context.window_manager.invoke_props_dialog(self)
-
-class DeleteEmptyUV(bpy.types.Operator):
-	bl_idname = "object.delete_empty_uv"
-	bl_label = "Remove Unused UV"
-	bl_description = "Active object material (UV is used in other parts disappear) delete unused UV coordinates to all"
-	bl_options = {'REGISTER', 'UNDO'}
-
-	isAllSelected : BoolProperty(name="All Selected Mesh", default=False)
-
-	def execute(self, context):
-		objs = [context.active_object]
-		if (self.isAllSelected):
-			objs = context.selected_objects
-		for obj in objs:
-			if (obj.type == "MESH"):
-				uvs = []
-				for mat in obj.material_slots:
-					if (mat):
-						for slot in mat.material.texture_slots:
-							if (slot):
-								if (not slot.uv_layer in uvs):
-									uvs.append(slot.uv_layer)
-				me = obj.data
-				preUV = me.uv_layers.active
-				u = me.uv_layers[:]
-				for uv in u:
-					if (not uv.name in uvs):
-						self.report(type={"INFO"}, message=uv.name+" Removed")
-						me.uv_layers.active = uv
-						bpy.ops.mesh.uv_texture_remove()
-				me.uv_layers.active = preUV
-			else:
-				self.report(type={"WARNING"}, message=obj.name+" is not mesh object")
-		return {'FINISHED'}
-"""
 class RemoveUnselectedUV(bpy.types.Operator):
 	bl_idname = "object.remove_unselected_uv"
 	bl_label = "Remove Unselected UV"
-	bl_description = "Remove Unselected UV Maps"
+	bl_description = "Remove Unselected UV Maps of the active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -188,7 +93,7 @@ class RemoveUnselectedUV(bpy.types.Operator):
 class MoveActiveUV(bpy.types.Operator):
 	bl_idname = "object.move_active_uv"
 	bl_label = "Move UV"
-	bl_description = "Sorts, by moving active object\'s UV"
+	bl_description = "Move the active UV up or down"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
@@ -270,8 +175,6 @@ class UVMenu(bpy.types.Menu):
 classes = [
 	RenameSpecificNameUV,
 	DeleteSpecificNameUV,
-	#RenameUV,
-	#DeleteEmptyUV,
 	RemoveUnselectedUV,
 	MoveActiveUV,
 	UVMenu
@@ -307,7 +210,6 @@ def menu(self, context):
 				sub = row.row(align=True)
 				sub.operator(MoveActiveUV.bl_idname, icon='TRIA_UP', text="").mode = 'UP'
 				sub.operator(MoveActiveUV.bl_idname, icon='TRIA_DOWN', text="").mode = 'DOWN'
-				#row.operator(RenameUV.bl_idname, icon="PLUGIN")
 				row.operator(RemoveUnselectedUV.bl_idname, icon="PLUGIN")
 				row.menu(UVMenu.bl_idname, icon="PLUGIN")
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):

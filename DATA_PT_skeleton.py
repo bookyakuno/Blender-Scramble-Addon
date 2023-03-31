@@ -11,13 +11,9 @@ import numpy as np
 
 class ShowAllBoneLayers(bpy.types.Operator):
 	bl_idname = "pose.show_all_bone_layers"
-	bl_label = "View all bone layer"
-	bl_description = "All bone layer and then displays the"
+	bl_label = "Show All Layers"
+	bl_description = "Show all the active armature's layers"
 	bl_options = {'REGISTER'}
-
-	layers = [False] * 32
-	layers[0] = True
-	pre_layers : BoolVectorProperty(name="Last Layer Information", size=32, default=layers[:])
 
 	@classmethod
 	def poll(cls, context):
@@ -27,14 +23,7 @@ class ShowAllBoneLayers(bpy.types.Operator):
 		return False
 
 	def execute(self, context):
-		if (all(context.object.data.layers)):
-			context.object.data.layers = self.pre_layers[:]
-			self.report(type={'INFO'}, message="Unshow All Layers")
-		else:
-			self.pre_layers = context.object.data.layers[:]
-			for i in range(len(context.object.data.layers)):
-				context.object.data.layers[i] = True
-			self.report(type={'WARNING'}, message="Show All Layers")
+		context.object.data.layers = [True] * 32
 		return {'FINISHED'}
 
 class ShowGroupLayers(bpy.types.Operator):
@@ -103,8 +92,6 @@ class ShowGroupLayers(bpy.types.Operator):
 		context.object.data.layers = LAYERS
 		bpy.ops.pose.select_all(action='DESELECT')
 		return {'FINISHED'}
-
-
 
 class ScrambleSkeltonPropGroup(bpy.types.PropertyGroup):
 	use_panel : bpy.props.BoolProperty(
@@ -177,7 +164,5 @@ def menu(self, context):
 						icon = 'KEYTYPE_MOVING_HOLD_VEC'
 					else: icon = 'BLANK1'
 					row.operator(ShowGroupLayers.bl_idname, text=f"{g.name}", icon=icon,translate=False).group_name = g.name
-
-
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

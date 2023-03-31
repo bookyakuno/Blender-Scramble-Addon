@@ -78,15 +78,18 @@ class ToggleApplyModifiersView(bpy.types.Operator):
 
 class SyncShowModifiers(bpy.types.Operator):
 	bl_idname = "object.sync_show_modifiers"
-	bl_label = "Match display states in viewport and rendering"
-	bl_description = "Match display states in viewport of all the selected objects' modifiers to the states during rendering, or vice verse"
+	bl_label = "Change Modifiers' Display in Viewport and Rendering"
+	bl_description = "Change display settings of all the selected objects' modifiers in viewport and during rendering"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [
-		("1", "Match to Rendering", "", 1),
-		("0", "Match to Viewport", "", 2),
-		]
-	mode : EnumProperty(items=items, name="Calculate", default="0")
+	change_view : BoolProperty(name="Viewport", default=True)
+	mode_view : EnumProperty(name="Viewport", items=[
+		("SHOW","Show All","",0),("HIDE","Hide All","",1),
+		("FROM_REND", "Show Only 'Used-during-Rendering'", "", 2)])
+	change_rend : BoolProperty(name="Rendering", default=True)
+	mode_rend : EnumProperty(name="Rendering", items=[
+		("SHOW","Show All","",0),("HIDE","Hide All","",1),
+		("FROM_VIEW", "Show Only 'Displayed-in-Viewport'", "", 2)])
 
 	@classmethod
 	def poll(cls, context):
@@ -94,19 +97,26 @@ class SyncShowModifiers(bpy.types.Operator):
 			for mod in obj.modifiers:
 				return True
 		return False
-
 	def invoke(self, context, event):
 		return context.window_manager.invoke_props_dialog(self)
 	def draw(self, context):
-		self.layout.prop(self, 'mode', expand=True)
+		self.layout.prop(self, 'change_view')
+		box = self.layout.box()
+		box.prop(self, 'mode_view', expand=True)
+		box.enabled = self.change_view and not (self.change_rend and self.mode_rend=='FROM_VIEW')
+		self.layout.prop(self, 'change_rend')
+		box = self.layout.box()
+		box.prop(self, 'mode_rend', expand=True)
+		box.enabled = self.change_rend and not (self.change_view and self.mode_view=='FROM_REND')
 
 	def execute(self, context):
+		mode_dic = {'SHOW':"True", 'HIDE':"False", 'FROM_VIEW': "mod.show_viewport", 'FROM_REND': "mod.show_render"}
 		for obj in context.selected_objects:
 			for mod in obj.modifiers:
-				if int(self.mode):
-					mod.show_viewport = mod.show_render
-				else:
-					mod.show_render = mod.show_viewport
+				if self.change_view and not (self.change_rend and self.mode_rend=='FROM_VIEW'):
+					mod.show_viewport = eval(mode_dic[self.mode_view])
+				if self.change_rend and not (self.change_view and self.mode_view=='FROM_REND'):
+					mod.show_render = eval(mode_dic[self.mode_rend])
 		return {'FINISHED'}
 
 class ToggleAllShowExpanded(bpy.types.Operator):
@@ -240,7 +250,7 @@ class AddBoolean(bpy.types.Operator):
 		('UNION', "Union", "", 2),
 		('DIFFERENCE', "Difference", "", 3),
 		]
-	mode : EnumProperty(items=items, name="Calculate")
+	mode : EnumProperty(items=items, name="Mode")
 
 	@classmethod
 	def poll(cls, context):
@@ -269,7 +279,7 @@ class ApplyBoolean(bpy.types.Operator):
 		('UNION', "Union", "", 2),
 		('DIFFERENCE', "Difference", "", 3),
 		]
-	mode : EnumProperty(items=items, name="Calculate")
+	mode : EnumProperty(items=items, name="Mode")
 
 	@classmethod
 	def poll(cls, context):
@@ -297,18 +307,15 @@ class ApplyBoolean(bpy.types.Operator):
 
 class SetRenderSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.set_render_subsurf_level"
-	bl_label = "Set number of subdivisions when rendering"
+	bl_label = "Set Number of Subdivisions When Rendering"
 	bl_description = "Set 'number of subdivisions when rendering' property of the selected objects' Subdivision Surface modifiers"
 	bl_property = "level_enum"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	level : IntProperty(name="Number of Divisions", default=6, min=0, max=10)
-	is_more: BoolProperty(name="more", default=False)
+	level : IntProperty(name="Number of Subdivisions", default=6, min=0, max=10)
+	is_more: BoolProperty(name="5 <", default=False)
 
-	items = [
-		("1", "1", "", 1), ("2", "2", "", 2), ("3", "3", "", 3),
-		("4", "4", "", 4), ("5", "5", "", 5)
-		]
+	items = [(str(i+1),str(i+1),"",i) for i in range(5)]
 	level_enum : EnumProperty(items=items, name="preset_level", default="2")
 
 	@classmethod
@@ -318,9 +325,8 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 				if mod.type == 'SUBSURF':
 					return True
 		return False
-
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self, width=350)
+		return context.window_manager.invoke_props_popup(self, event)
 	def draw(self, context):
 		sp = self.layout.split(factor=0.75)
 		row = sp.split(factor=0.8)
@@ -344,17 +350,62 @@ class SetRenderSubsurfLevel(bpy.types.Operator):
 						modi.show_expanded = True
 		return {'FINISHED'}
 
+class SetViewportSubsurfLevel(bpy.types.Operator):
+	bl_idname = "object.set_viewport_subsurf_level"
+	bl_label = "Set Number of Subdivisions in Viewport"
+	bl_description = "Set 'number of subdivisions' property of the selected objects' Subdivision Surface modifiers"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	level : IntProperty(name="Number of Subdivisions", default=6, min=0, max=10)
+	is_more: BoolProperty(name="5 <", default=False)
+
+	items = [(str(i+1),str(i+1),"",i) for i in range(5)]
+	level_enum : EnumProperty(items=items, name="preset_level", default="2")
+
+	@classmethod
+	def poll(cls, context):
+		for obj in context.selected_objects:
+			for mod in obj.modifiers:
+				if mod.type == 'SUBSURF':
+					return True
+		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_popup(self, event)
+
+	def draw(self, context):
+		sp = self.layout.split(factor=0.75)
+		row = sp.split(factor=0.8)
+		row.row().prop(self, 'level_enum', expand=True)
+		row.prop(self, 'is_more')
+		row = sp.row()
+		row.prop(self, 'level', text="")
+		row.enabled = self.is_more
+
+	def execute(self, context):
+		if self.is_more:
+			level = self.level
+		else:
+			level = int(self.level_enum)
+		for obj in context.selected_objects:
+			if obj.type in ['MESH', 'CURVE', 'SURFACE', 'FONT', 'LATTICE']:
+				for modi in obj.modifiers:
+					if modi.type == 'SUBSURF':
+						modi.levels = level
+						modi.show_expanded = False
+						modi.show_expanded = True
+		return {'FINISHED'}
+
 class EqualizeSubsurfLevel(bpy.types.Operator):
 	bl_idname = "object.equalize_subsurf_level"
-	bl_label = "Match number of subdivisions in viewport and rendering"
+	bl_label = "Match Number of Subdivisions in Viewport and Rendering"
 	bl_description = "Match number of subdivisions in viewport to that during rendering, or vice verse, in each selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
-		('ToRender', "Match to Rendering", "", 1),
-		('ToPreview', "Match to Preview", "", 2),
+		('ToRender', "during Rendering", "", 1),
+		('ToPreview', "in Viewport", "", 2),
 		]
-	mode : EnumProperty(items=items, name="How to set up")
+	mode : EnumProperty(items=items, name="Method")
 
 	@classmethod
 	def poll(cls, context):
@@ -365,9 +416,12 @@ class EqualizeSubsurfLevel(bpy.types.Operator):
 		return False
 
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_popup(self, event)
 	def draw(self, context):
-		self.layout.prop(self, 'mode', expand=True)
+		self.layout.label(text="Use Number")
+		row = self.layout.row()
+		row.separator_spacer()
+		row.prop(self, 'mode', expand=True)
 
 	def execute(self, context):
 		for obj in context.selected_objects:
@@ -388,8 +442,8 @@ class SetSubsurfOptimalDisplay(bpy.types.Operator):
 	bl_description = "Set 'Optimal Display' property of the selected objects' Subdivision Surface modifiers"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [('1', "Enable", "", 1),('0', "Disable", "", 2)]
-	is_use : EnumProperty(items=items, name="Optimized View")
+	items = [('1', "Enabled", "", 1),('0', "Disabled", "", 2)]
+	is_use : EnumProperty(items=items, name="Optimal Display")
 
 	@classmethod
 	def poll(cls, context):
@@ -400,9 +454,11 @@ class SetSubsurfOptimalDisplay(bpy.types.Operator):
 		return False
 
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_popup(self, event)
 	def draw(self, context):
-		self.layout.prop(self, 'is_use', expand=True)
+		row = self.layout.row()
+		row.label(text="Optimal Display")
+		row.prop(self, 'is_use', expand=True)
 
 	def execute(self, context):
 		for obj in context.selected_objects:
@@ -455,11 +511,16 @@ class AddSubsurf(bpy.types.Operator):
 	bl_description = "Add Subdivision Surface modifiers to the selected objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	subdivision_type : EnumProperty(items=[("CATMULL_CLARK", "Catmulclark", "", 1), ("SIMPLE", "Simple", "", 2)], name="Subdivision Method")
-	levels : IntProperty(name="Number of View", default=2, min=0, max=6)
-	render_levels : IntProperty(name="Number of Render", default=2, min=0, max=6)
-	uv_smooth : EnumProperty(items=[("NONE", "None", "", 1), ("PRESERVE_CORNERS", "Preseve corners", "", 2)], name="UV-smoothing Method", default="PRESERVE_CORNERS")
-	show_only_control_edges : BoolProperty(name="Optimized View")
+	ps = bpy.types.SubsurfModifier.bl_rna.properties
+	subdivision_type : EnumProperty(name="Method", items=[
+		(it.identifier, it.name, it.description, idx) for idx, it
+		in enumerate(ps["subdivision_type"].enum_items)])
+	levels : IntProperty(name="Viewport", default=2, min=0, max=6)
+	render_levels : IntProperty(name="Render", default=2, min=0, max=6)
+	uv_smooth : EnumProperty(name="UV Smooth", items=[
+		(it.identifier, it.name, it.description, idx) for idx, it
+		in enumerate(ps["uv_smooth"].enum_items)])
+	show_only_control_edges : BoolProperty(name="Optimal Display", default=False)
 
 	@classmethod
 	def poll(cls, context):
@@ -500,9 +561,11 @@ class SetArmatureDeformPreserveVolume(bpy.types.Operator):
 		return False
 
 	def invoke(self, context, event):
-		return context.window_manager.invoke_props_dialog(self)
+		return context.window_manager.invoke_props_popup(self, event)
 	def draw(self, context):
-		self.layout.prop(self, 'is_use', expand=True)
+		row = self.layout.row()
+		row.label(text="Preserve Volume")
+		row.prop(self, 'is_use', expand=True)
 
 	def execute(self, context):
 		for obj in context.selected_objects:
@@ -521,15 +584,10 @@ class QuickCurveDeform(bpy.types.Operator):
 	bl_description = "Add to the active object Curve modifier that refers to the selected curve object"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [
-		('POS_X', "+X", "", 1),
-		('POS_Y', "+Y", "", 2),
-		('POS_Z', "+Z", "", 3),
-		('NEG_X', "-X", "", 4),
-		('NEG_Y', "-Y", "", 5),
-		('NEG_Z', "-Z", "", 6),
-		]
-	deform_axis : EnumProperty(items=items, name="Axis Deformation")
+	ps = bpy.types.CurveModifier.bl_rna.properties
+	deform_axis : EnumProperty(name="Deform Axis", items=[
+		(it.identifier, it.name, it.description, idx) for idx, it
+		in enumerate(ps["deform_axis"].enum_items) ])
 	is_apply : BoolProperty(name="Apply Modifiers", default=False)
 
 	@classmethod
@@ -537,6 +595,8 @@ class QuickCurveDeform(bpy.types.Operator):
 		if len(context.selected_objects) == 2:
 			return True
 		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
 
 	def execute(self, context):
 		mesh_obj = context.active_object
@@ -556,7 +616,7 @@ class QuickCurveDeform(bpy.types.Operator):
 		pre_use_deform_bounds = curve.use_deform_bounds
 		curve.use_stretch = True
 		curve.use_deform_bounds = True
-		bpy.ops.object.transform_apply_all()
+		bpy.ops.object.transform_apply()
 		mod = mesh_obj.modifiers.new("temp", 'CURVE')
 		mod.object = curve_obj
 		mod.deform_axis = self.deform_axis
@@ -574,16 +634,13 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 	bl_description = "Add to the active object Array modifier and Curve modifier that refers to the selected curve object"
 	bl_options = {'REGISTER', 'UNDO'}
 
-	items = [
-		('POS_X', "+X", "", 1),
-		('POS_Y', "+Y", "", 2),
-		('POS_Z', "+Z", "", 3),
-		('NEG_X', "-X", "", 4),
-		('NEG_Y', "-Y", "", 5),
-		('NEG_Z', "-Z", "", 6),
-		]
-	deform_axis : EnumProperty(items=items, name="Axis Deformation")
-	use_merge_vertices : BoolProperty(name="Combine Vertices", default=True)
+	ps = bpy.types.CurveModifier.bl_rna.properties
+	deform_axis : EnumProperty(name="Deform Axis", items=[
+		(it.identifier, it.name, it.description, idx) for idx, it
+		in enumerate(ps["deform_axis"].enum_items) ])
+
+	ps2 = bpy.types.ArrayModifier.bl_rna.properties
+	use_merge_vertices : BoolProperty(name=ps2["use_merge_vertices"].name, description=ps2["use_merge_vertices"].description, default=True)
 	is_apply : BoolProperty(name="Apply Modifiers", default=False)
 
 	@classmethod
@@ -591,6 +648,8 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 		if len(context.selected_objects) == 2:
 			return True
 		return False
+	def invoke(self, context, event):
+		return context.window_manager.invoke_props_dialog(self)
 
 	def execute(self, context):
 		mesh_obj = context.active_object
@@ -610,7 +669,7 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 		pre_use_deform_bounds = curve.use_deform_bounds
 		curve.use_stretch = True
 		curve.use_deform_bounds = True
-		bpy.ops.object.transform_apply_all()
+		bpy.ops.object.transform_apply()
 
 		mod_array = mesh_obj.modifiers.new("Array", 'ARRAY')
 		mod_array.fit_type = 'FIT_CURVE'
@@ -648,28 +707,16 @@ class QuickArrayAndCurveDeform(bpy.types.Operator):
 # サブメニュー #
 ################
 
-class ModifierMenu(bpy.types.Menu):
-	bl_idname = "DATA_MT_modifiers_specials"
-	bl_label = "Modifier manipulation"
-	bl_description = "Manipulate Subsurf / Armature / Boolean / Curve Modifiers"
-
-	def draw(self, context):
-		self.layout.menu(SubsurfMenu.bl_idname, icon='PLUGIN')
-		self.layout.menu(ArmatureMenu.bl_idname, icon='PLUGIN')
-		self.layout.menu(BooleanMenu.bl_idname, icon='PLUGIN')
-		self.layout.menu(CurveMenu.bl_idname, icon='PLUGIN')
-		self.layout.separator()
-		self.layout.operator(ApplyModifiersAndJoin.bl_idname, icon='PLUGIN')
-
 class SubsurfMenu(bpy.types.Menu):
 	bl_idname = "DATA_MT_modifiers_subsurf"
 	bl_label = "Subsurf"
 	bl_description = "Manipulate Subdivision Surface modifier"
 
 	def draw(self, context):
-		self.layout.operator(AddSubsurf.bl_idname, icon='PLUGIN')
-		self.layout.operator(DeleteSubsurf.bl_idname, icon='PLUGIN')
+		self.layout.operator(AddSubsurf.bl_idname, icon='MODIFIER')
+		self.layout.operator(DeleteSubsurf.bl_idname, icon='CANCEL')
 		self.layout.separator()
+		self.layout.operator(SetViewportSubsurfLevel.bl_idname, icon='PLUGIN')
 		self.layout.operator(SetRenderSubsurfLevel.bl_idname, icon='PLUGIN')
 		self.layout.operator(EqualizeSubsurfLevel.bl_idname, icon='PLUGIN')
 		self.layout.operator(SetSubsurfOptimalDisplay.bl_idname, icon='PLUGIN')
@@ -720,6 +767,7 @@ classes = [
 	AddBoolean,
 	ApplyBoolean,
 	SetRenderSubsurfLevel,
+	SetViewportSubsurfLevel,
 	EqualizeSubsurfLevel,
 	SetSubsurfOptimalDisplay,
 	DeleteSubsurf,
@@ -727,7 +775,6 @@ classes = [
 	SetArmatureDeformPreserveVolume,
 	QuickCurveDeform,
 	QuickArrayAndCurveDeform,
-	ModifierMenu,
 	SubsurfMenu,
 	BooleanMenu,
 	ArmatureMenu,
@@ -768,7 +815,7 @@ def menu(self, context):
 				row = col.row(align=True)
 				row.operator(ToggleApplyModifiersView.bl_idname, icon='RESTRICT_VIEW_OFF', text="Show / Hide")
 				row.operator(ToggleAllShowExpanded.bl_idname, icon='FULLSCREEN_ENTER', text="Expand / Close")
-				row.operator(SyncShowModifiers.bl_idname, icon='LINKED', text="Match Display State")
+				row.operator(SyncShowModifiers.bl_idname, icon='LINKED', text="Display Setting")
 
 		sp = self.layout.split(factor=0.9)
 		row = sp.row(align=True)

@@ -10,8 +10,8 @@ import os, shutil
 
 class ResaveAllImage(bpy.types.Operator):
 	bl_idname = "image.resave_all_image"
-	bl_label = "Resave textures folder, all images"
-	bl_description = "All external files referenced by image data to resave textures folder"
+	bl_label = "Save All Image Files in 'textures' Folder"
+	bl_description = "Select the existed 'textures' folder or create it, and save all the referenced image files in it"
 	bl_options = {'REGISTER'}
 	
 	@classmethod
@@ -30,13 +30,13 @@ class ResaveAllImage(bpy.types.Operator):
 					img.unpack()
 				except RuntimeError:
 					pass
-		self.report(type={"INFO"}, message="fixed and stored in textures folder")
+		self.report(type={"INFO"}, message="Saved image files into 'textures' folder")
 		return {'FINISHED'}
 
 class IsolationTexturesUnusedFiles(bpy.types.Operator):
 	bl_idname = "image.isolation_textures_unused_files"
-	bl_label = "isolate unused files in textures folder"
-	bl_description = "Files in textures folder with Blend files, do not use isolates them in backup folder"
+	bl_label = "Isolate Unused Image Files in 'textures' Folder"
+	bl_description = "Crate 'backup' folder in the existed 'textures' folder, and move unused image files in the 'textures' folder into it"
 	bl_options = {'REGISTER'}
 	
 	@classmethod
@@ -72,8 +72,8 @@ class IsolationTexturesUnusedFiles(bpy.types.Operator):
 
 class OpenRecentFiles(bpy.types.Operator):
 	bl_idname = "wm.open_recent_files"
-	bl_label = "Open Text \"Recent Files\""
-	bl_description = "Open \"recent files\" in Blender text editor"
+	bl_label = "Display List of 'Open Recent' as Text"
+	bl_description = "Display the list of recently-opened files in Blender's text editor"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	def execute(self, context):
@@ -104,8 +104,8 @@ class OpenRecentFiles(bpy.types.Operator):
 
 class OpenBookmarkText(bpy.types.Operator):
 	bl_idname = "wm.open_bookmark_text"
-	bl_label = "Open Text \"Bookmarks\""
-	bl_description = "Blender text editor open file browser bookmarks"
+	bl_label = "Display List of 'Bookmarks' as Text"
+	bl_description = "Display the list of bookmarked files at file browser in Blender's text editor"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	def execute(self, context):
@@ -170,7 +170,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.operator('image.reload_all_image', icon="PLUGIN")
+		self.layout.operator('image.reload_all_image', icon="PLUGIN")#IMAGE_MT_image.py で定義
 		self.layout.separator()
 		self.layout.operator(ResaveAllImage.bl_idname, icon="PLUGIN")
 		self.layout.operator(IsolationTexturesUnusedFiles.bl_idname, icon="PLUGIN")

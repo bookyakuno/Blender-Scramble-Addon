@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「マテリアル」タブ > リスト右の▼
-# "Propaties" Area > "Material" Tab > List Right ▼
+# 「プロパティ」エリア > 「マテリアル」タブ > マテリアルリスト > V ボタン
+# "Propaties" Area > "Material" Tab > Material List > V Button
 
 import bpy
 
@@ -9,8 +9,8 @@ import bpy
 
 class RemoveNoAssignMaterial(bpy.types.Operator):
 	bl_idname = "material.remove_no_assign_material"
-	bl_label = "Delete Non-assignment Material"
-	bl_description = "Delete all one assigned to surface material"
+	bl_label = "Remove Unassigned Material"
+	bl_description = "For each selected objects, remove all materials that has not assigned to any faces of the objects"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -45,8 +45,8 @@ class RemoveNoAssignMaterial(bpy.types.Operator):
 
 class RemoveAllMaterialSlot(bpy.types.Operator):
 	bl_idname = "material.remove_all_material_slot"
-	bl_label = "Delete all material slots"
-	bl_description = "Delete all material slots for this object"
+	bl_label = "Remove All Material Slots"
+	bl_description = "Remove all material slots of the active object"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -70,8 +70,8 @@ class RemoveAllMaterialSlot(bpy.types.Operator):
 
 class RemoveEmptyMaterialSlot(bpy.types.Operator):
 	bl_idname = "material.remove_empty_material_slot"
-	bl_label = "Remove empty material slots"
-	bl_description = "Delete all material of this object has not been assigned material slots"
+	bl_label = "Remove Empty Material Slots"
+	bl_description = "Remove all material slots that any material has not been assigned to"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -96,8 +96,8 @@ class RemoveEmptyMaterialSlot(bpy.types.Operator):
 
 class SetTransparentBackSide(bpy.types.Operator):
 	bl_idname = "material.set_transparent_back_side"
-	bl_label = "Set transparent face back"
-	bl_description = "Enable backface-culling (EEVEE)/ Sets shader nodes transparently mesh back (Cycles)"
+	bl_label = "Hide Back Side of Faces"
+	bl_description = "Eevee: Enable 'backface culling' / Cycles: Add shader nodes to make the back side of mesh transparent"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -122,11 +122,10 @@ class SetTransparentBackSide(bpy.types.Operator):
 			#		if (node):
 			#			mat.node_tree.nodes.remove(node)
 			node_out = mat.node_tree.nodes['Material Output']
-			node_mat = node_out.inputs[0].links[0].from_node#mat.node_tree.nodes['Principled BSDF']
+			node_mat = node_out.inputs[0].links[0].from_node
 			node_trn = mat.node_tree.nodes.new('ShaderNodeBsdfTransparent')
 			node_geo = mat.node_tree.nodes.new('ShaderNodeNewGeometry')
 			node_mix = mat.node_tree.nodes.new('ShaderNodeMixShader')
-			#node_mat.material = mat
 			node_mat.location = [node_mat.location[0]-300, node_mat.location[1]]
 			node_out.location = [node_out.location[0], node_out.location[1]]
 			node_geo.location = [node_geo.location[0], node_geo.location[1]+600]
@@ -140,8 +139,8 @@ class SetTransparentBackSide(bpy.types.Operator):
 
 class MoveMaterialSlotTop(bpy.types.Operator):
 	bl_idname = "material.move_material_slot_top"
-	bl_label = "Slot to Top"
-	bl_description = "Active material slots on top moves"
+	bl_label = "Move to Top"
+	bl_description = "Move active material slot to the top of list"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -162,8 +161,8 @@ class MoveMaterialSlotTop(bpy.types.Operator):
 
 class MoveMaterialSlotBottom(bpy.types.Operator):
 	bl_idname = "material.move_material_slot_bottom"
-	bl_label = "Slot to Bottom"
-	bl_description = "Move active material slot at bottom"
+	bl_label = "Move to Bottom"
+	bl_description = "Move active material slot to the bottom of list"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	@classmethod
@@ -221,8 +220,8 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.operator(MoveMaterialSlotTop.bl_idname, icon='PLUGIN', text="To Top")
-		self.layout.operator(MoveMaterialSlotBottom.bl_idname, icon='PLUGIN', text="To Bottom")
+		self.layout.operator(MoveMaterialSlotTop.bl_idname, icon='TRIA_UP_BAR')
+		self.layout.operator(MoveMaterialSlotBottom.bl_idname, icon='TRIA_DOWN_BAR')
 		self.layout.separator()
 		self.layout.operator(RemoveAllMaterialSlot.bl_idname, icon='CANCEL')
 		self.layout.operator(RemoveEmptyMaterialSlot.bl_idname, icon='PLUGIN')

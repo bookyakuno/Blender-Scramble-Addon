@@ -7,7 +7,7 @@ import bpy
 # オペレーター #
 ################
 
-class quick_child_constraint(bpy.types.Operator):
+class QuickChildConstraint(bpy.types.Operator):
 	bl_idname = "constraint.quick_child_constraint"
 	bl_label = "Quick child"
 	bl_description = "Add child constraint to the active bone setting the selected bone as parent"
@@ -40,9 +40,9 @@ class quick_child_constraint(bpy.types.Operator):
 # 個別処理 IK #
 ###############
 
-class set_ik_chain_length(bpy.types.Operator):
+class SetIkChainLength(bpy.types.Operator):
 	bl_idname = "pose.set_ik_chain_length"
-	bl_label = "Set Chain Length of IK"
+	bl_label = "Set IK Chain to Selected Bone"
 	bl_description = "Set chain length of the active bone's IK so that the chain's end is the selected bone"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -73,7 +73,7 @@ class set_ik_chain_length(bpy.types.Operator):
 				i = 0
 				break
 		if (i == 0):
-			self.report(type={'ERROR'}, message="Could not get chain well")
+			self.report(type={'ERROR'}, message="Failed to get chain counts")
 			return {'CANCELLED'}
 		ik = None
 		for const in activeBone.constraints:
@@ -82,9 +82,9 @@ class set_ik_chain_length(bpy.types.Operator):
 		ik.chain_count = i
 		return {'FINISHED'}
 
-class set_ik_pole_target(bpy.types.Operator):
+class SetIkPoleTarget(bpy.types.Operator):
 	bl_idname = "pose.set_ik_pole_target"
-	bl_label = "Set Pole Target of IK"
+	bl_label = "Set Selected Bone as IK's Pole Target"
 	bl_description = "Set the selected bone as Pole Target of the active bone's IK"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -108,9 +108,9 @@ class set_ik_pole_target(bpy.types.Operator):
 				ik.pole_subtarget = bone.name
 		return {'FINISHED'}
 
-class set_ik_pole_angle(bpy.types.Operator):
+class SetIkPoleAngle(bpy.types.Operator):
 	bl_idname = "pose.set_ik_pole_angle"
-	bl_label = "Set Pole Angle of IK"
+	bl_label = "Set IK's Pole Angle Based on Selected"
 	bl_description = "Set pole angle of the selected bone so that its location is equal to the rest position's one"
 	bl_options = {'REGISTER', 'UNDO'}
 
@@ -161,32 +161,24 @@ class set_ik_pole_angle(bpy.types.Operator):
 # サブメニュー #
 ################
 
-class SubMenu(bpy.types.Menu):
-	bl_idname = "BONE_MT_constraints_sub"
-	bl_label = "Individual processing"
-
-	def draw(self, context):
-		self.layout.menu(IKMenu.bl_idname, icon='PLUGIN')
-
 class IKMenu(bpy.types.Menu):
 	bl_idname = "BONE_MT_constraints_ik"
-	bl_label = "IK"
+	bl_label = "Manipulate IK"
 
 	def draw(self, context):
-		self.layout.operator(set_ik_chain_length.bl_idname, icon='PLUGIN')
-		self.layout.operator(set_ik_pole_target.bl_idname, icon='PLUGIN')
-		self.layout.operator(set_ik_pole_angle.bl_idname, icon='PLUGIN')
+		self.layout.operator(SetIkChainLength.bl_idname, icon='PLUGIN')
+		self.layout.operator(SetIkPoleTarget.bl_idname, icon='PLUGIN')
+		self.layout.operator(SetIkPoleAngle.bl_idname, icon='PLUGIN')
 
 ################
 # クラスの登録 #
 ################
 
 classes = [
-	quick_child_constraint,
-	set_ik_chain_length,
-	set_ik_pole_target,
-	set_ik_pole_angle,
-	SubMenu,
+	QuickChildConstraint,
+	SetIkChainLength,
+	SetIkPoleTarget,
+	SetIkPoleAngle,
 	IKMenu
 ]
 
@@ -215,7 +207,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		row = self.layout.row()
-		row.operator(quick_child_constraint.bl_idname, icon='CONSTRAINT_BONE')
-		row.menu(SubMenu.bl_idname, icon='PLUGIN')
+		row.operator(QuickChildConstraint.bl_idname, icon='CONSTRAINT_BONE')
+		row.menu(IKMenu.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

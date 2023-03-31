@@ -10,37 +10,25 @@ from bpy.props import *
 
 class Reset2DCursor(bpy.types.Operator):
 	bl_idname = "image.reset_2d_cursor"
-	bl_label = "Reset Cursor Position"
-	bl_description = "Move 2D cursor in lower left"
+	bl_label = "Set 2DCursor Position"
+	bl_description = "Move 2D cursor to a designated position"
 	bl_options = {'REGISTER', 'UNDO'}
 
 	items = [
 		("C", "Center", "", 1),
-		("U", "Up", "", 2),
+		("U", "Top", "", 2),
 		("RU", "Top Right", "", 3),
 		("R", "Right", "", 4),
-		("RD", "Down Right", "", 5),
-		("D", "Down", "", 6),
-		("LD", "Down Left", "", 7),
+		("RD", "Bottom Right", "", 5),
+		("D", "Bottom", "", 6),
+		("LD", "Bottom Left", "", 7),
 		("L", "Left", "", 8),
 		("LU", "Top Left", "", 9),
 		]
 	mode : EnumProperty(items=items, name="Location", default="LD")
 
 	def execute(self, context):
-		if (bpy.context.edit_image):
-			x, y = (1.0, 1.0)
-		else:
-			x = 1.0
-			y = 1.0
-
-		area = None
-		for area in bpy.context.screen.areas:
-			if area.type == 'IMAGE_EDITOR':
-				area
-		if not area:
-			self.report({'INFO'}, "Not found Image Editor !!")
-			return{'FINISHED'}
+		x, y = (1.0, 1.0)
 		if (self.mode == "C"):
 			bpy.ops.uv.cursor_set(location=(x/2, y/2))
 		elif (self.mode == "U"):
@@ -61,10 +49,45 @@ class Reset2DCursor(bpy.types.Operator):
 			bpy.ops.uv.cursor_set(location=(0, y))
 		return {'FINISHED'}
 
+class Reset2DCursorForPanel(bpy.types.Operator):
+	bl_idname = "image.reset_2d_cursor_for_panel"
+	bl_label = "Set 2DCursor Position"
+	bl_description = "Move 2D cursor to a designated position"
+
+	@classmethod
+	def poll(cls, context):
+		for a in bpy.context.screen.areas:
+			if a.type == 'IMAGE_EDITOR':
+				area = a
+		if area.spaces[0].mode != 'UV':
+			return False
+		return True
+	def invoke(self, context, event):
+		wm = context.window_manager
+		return wm.invoke_popup(self)
+
+	def draw(self, context):
+		row = self.layout.split(factor=0.33)
+		col = row.column()
+		col.operator(Reset2DCursor.bl_idname, text="Top Left").mode = 'LU'
+		col.operator(Reset2DCursor.bl_idname, text="Left").mode = 'L'
+		col.operator(Reset2DCursor.bl_idname, text="Bottom Left").mode = 'LD'
+		col = row.column()
+		col.operator(Reset2DCursor.bl_idname, text="Top").mode = 'U'
+		col.operator(Reset2DCursor.bl_idname, text="Center").mode = 'C'
+		col.operator(Reset2DCursor.bl_idname, text="Bottom").mode = 'D'
+		col = row.column()
+		col.operator(Reset2DCursor.bl_idname, text="Top Right").mode = 'RU'
+		col.operator(Reset2DCursor.bl_idname, text="Right").mode = 'R'
+		col.operator(Reset2DCursor.bl_idname, text="Bottom Right").mode = 'RD'
+
+	def execute(self, context):
+		return {'FINISHED'}
+
 class TogglePanelsA(bpy.types.Operator):
 	bl_idname = "image.toggle_panels_a"
-	bl_label = "Toggle Panel (mode A)"
-	bl_description = "sidebar/toolbar \"both display\" / \"both hide\" toggle"
+	bl_label = "Toggle Panel : 'BOTH'"
+	bl_description = "Show BOTH of Sidebar and Toolbar <=> Hide BOTH of them"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -88,8 +111,8 @@ class TogglePanelsA(bpy.types.Operator):
 
 class TogglePanelsB(bpy.types.Operator):
 	bl_idname = "image.toggle_panels_b"
-	bl_label = "Toggle Panel (mode B)"
-	bl_description = "\"Panel both hide\" => show only toolbar => show only sidebar => \"Panel both display\" for toggle"
+	bl_label = "Toggle Panel : 'IN-TURN'"
+	bl_description = "Hide BOTH of sidebar and toolbar => Show ONLY toolbar => Show ONLY sidebar => Show BOTH"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -111,8 +134,8 @@ class TogglePanelsB(bpy.types.Operator):
 
 class TogglePanelsC(bpy.types.Operator):
 	bl_idname = "image.toggle_panels_c"
-	bl_label = "Toggle Panel (mode C)"
-	bl_description = "\"Panel both hide\" => \"show only tool shelf => show only properties. toggle"
+	bl_label = "Toggle Panel : 'ONE-SIDE'"
+	bl_description = "Hide BOTH of sidebar and toolbar => Show ONLY toolbar  => Show ONLY sidebar"
 	bl_options = {'REGISTER'}
 
 	def execute(self, context):
@@ -132,10 +155,10 @@ class TogglePanelsC(bpy.types.Operator):
 			context.space_data.show_region_ui = not context.space_data.show_region_ui
 		return {'FINISHED'}
 
-class panel_pie_operator(bpy.types.Operator):
+class PanelPieOperator(bpy.types.Operator):
 	bl_idname = "image.panel_pie_operator"
-	bl_label = "Switch panel pie menu"
-	bl_description = "Toggle panel pie menu"
+	bl_label = "Pie Menu : Sidebar/Toolbar"
+	bl_description = "Toggle sidebar and toolbar's display states"
 	bl_options = {'MACRO'}
 
 	def execute(self, context):
@@ -143,26 +166,25 @@ class panel_pie_operator(bpy.types.Operator):
 		return {'FINISHED'}
 class PanelPie(bpy.types.Menu): #
 	bl_idname = "IMAGE_MT_view_pie_panel"
-	bl_label = "Switch panel pie menu"
-	bl_description = "Toggle panel pie menu"
+	bl_label = "Pie menu : Sidebar/Toolbar"
 
 	def draw(self, context):
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Toolbar", icon='TRIA_LEFT')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Only Toolbar", icon='TRIA_LEFT')
 		op.properties, op.toolshelf = False, True
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Only Sidebar", icon='TRIA_RIGHT')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Only Sidebar", icon='TRIA_RIGHT')
 		op.properties, op.toolshelf = True, False
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Double Sided", icon='ARROW_LEFTRIGHT')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Both Show", icon='ARROW_LEFTRIGHT')
 		op.properties, op.toolshelf = True, True
-		op = self.layout.menu_pie().operator(run_panel_pie.bl_idname, text="Hide", icon='RESTRICT_VIEW_ON')
+		op = self.layout.menu_pie().operator(RunPanelPie.bl_idname, text="Both Hide", icon='RESTRICT_VIEW_ON')
 		op.properties, op.toolshelf = False, False
-class run_panel_pie(bpy.types.Operator): #
+class RunPanelPie(bpy.types.Operator): #
 	bl_idname = "image.run_panel_pie"
-	bl_label = "Switch panel pie menu"
-	bl_description = "Toggle panel pie menu"
+	bl_label = "Toggle Panels' Display"
+	bl_description = "Toggle sidebar and toolbar's display states"
 	bl_options = {'MACRO'}
 
-	properties : BoolProperty(name="Property")
-	toolshelf : BoolProperty(name="Tool Shelf")
+	properties : BoolProperty(name="Sidebar")
+	toolshelf : BoolProperty(name="Toolbar")
 
 	def execute(self, context):
 		properties = self.properties
@@ -188,33 +210,15 @@ class run_panel_pie(bpy.types.Operator): #
 
 class ShortcutsMenu(bpy.types.Menu):
 	bl_idname = "IMAGE_MT_view_shortcuts"
-	bl_label = "By Shortcuts"
-	bl_description = "Registering shortcut feature that might come in handy"
+	bl_label = "Toggle Display (For Shortcut)"
+	bl_description = "Functions to toggle display states or so that can be used easily by assigning shortcut"
 
 	def draw(self, context):
 		self.layout.operator(TogglePanelsA.bl_idname, icon='PLUGIN')
 		self.layout.operator(TogglePanelsB.bl_idname, icon='PLUGIN')
 		self.layout.operator(TogglePanelsC.bl_idname, icon='PLUGIN')
 		self.layout.separator()
-		self.layout.operator(panel_pie_operator.bl_idname, icon='PLUGIN')
-
-class Reset2DCursorMenu(bpy.types.Menu):
-	bl_idname = "IMAGE_MT_view_reset_2d_cursor"
-	bl_label = "Reset Cursor Position"
-	bl_description = "Reset Cursor Position"
-
-	def draw(self, context):
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Up").mode = 'U'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Right").mode = 'R'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Down").mode = 'D'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Left").mode = 'L'
-		self.layout.separator()
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Top Right").mode = 'RU'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Down Right").mode = 'RD'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Down Left").mode = 'LD'
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Top Left").mode = 'LU'
-		self.layout.separator()
-		self.layout.operator(Reset2DCursor.bl_idname, icon='PLUGIN', text="Center").mode = 'C'
+		self.layout.operator(PanelPieOperator.bl_idname, icon='PLUGIN')
 
 ################
 # クラスの登録 #
@@ -225,11 +229,11 @@ classes = [
 	TogglePanelsA,
 	TogglePanelsB,
 	TogglePanelsC,
-	panel_pie_operator,
+	PanelPieOperator,
 	PanelPie,
-	run_panel_pie,
+	RunPanelPie,
 	ShortcutsMenu,
-	Reset2DCursorMenu
+	Reset2DCursorForPanel
 ]
 
 def register():
@@ -257,7 +261,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.menu(Reset2DCursorMenu.bl_idname, icon='PLUGIN')
+		self.layout.operator(Reset2DCursorForPanel.bl_idname, icon='PLUGIN')
 		self.layout.separator()
 		self.layout.menu(ShortcutsMenu.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):

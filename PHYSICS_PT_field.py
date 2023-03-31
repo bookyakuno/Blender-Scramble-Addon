@@ -7,20 +7,11 @@ import bpy
 # オペレーター #
 ################
 
-class forcefield_copy(bpy.types.Operator):
+class ForcefieldCopy(bpy.types.Operator):
 	bl_idname = "object.forcefield_copy"
-	bl_label = "Copy ForceField Settings"
-	bl_description = "Copy selection of other force field for active object"
+	bl_label = "Copy Force Field Setting"
+	bl_description = "Copy active object's Force Field settings to  other selected objects"
 	bl_options = {'REGISTER'}
-	
-	@classmethod
-	def poll(cls, context):
-		active_ob = context.object
-		if active_ob:
-			if active_ob.field:
-				if 2 <= len(context.selected_objects):
-					return True
-		return False
 	
 	def execute(self, context):
 		active_ob = context.object
@@ -49,7 +40,7 @@ class forcefield_copy(bpy.types.Operator):
 ################
 
 classes = [
-	forcefield_copy
+	ForcefieldCopy
 ]
 
 def register():
@@ -77,6 +68,6 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		if 2 <= len(context.selected_objects):
-			self.layout.operator(forcefield_copy.bl_idname, icon='COPY_ID')
+			self.layout.operator(ForcefieldCopy.bl_idname, icon='COPY_ID')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

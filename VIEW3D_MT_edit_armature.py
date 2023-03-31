@@ -1,5 +1,5 @@
-# 「3Dビュー」エリア > 「アーマチュア編集」モード > 「アーマチュア」メニュー
-# "3D View" Area > "Armature Editor" Mode > "Armature" Menu
+# 「3Dビュー」エリア > アーマチュアの「編集」モード > 「アーマチュア」メニュー
+# "3D View" Area > "Edit" Mode with Armature > "Armature" Menu
 
 import bpy
 
@@ -13,8 +13,8 @@ import bpy
 
 class DeleteUnmassage(bpy.types.Operator):
 	bl_idname = "armature.delete_unmassage"
-	bl_label = "Delete bone without confirm"
-	bl_description = "Remove bones without confirm"
+	bl_label = "Delete Bone (without confirming)"
+	bl_description = "Remove all selected bones without displaying the confirmation message"
 	bl_options = {'REGISTER', 'UNDO'}
 	
 	def execute(self, context):
@@ -22,23 +22,11 @@ class DeleteUnmassage(bpy.types.Operator):
 		return {'FINISHED'}
 
 ################
-# サブメニュー #
-################
-
-class ShortcutMenu(bpy.types.Menu):
-	bl_idname = "VIEW3D_MT_edit_armature_shortcut"
-	bl_label = "By Shortcuts"
-	
-	def draw(self, context):
-		self.layout.operator(DeleteUnmassage.bl_idname, icon='PLUGIN')
-
-################
 # クラスの登録 #
 ################
 
 classes = [
-	DeleteUnmassage,
-	ShortcutMenu
+	DeleteUnmassage
 ]
 
 def register():
@@ -66,7 +54,7 @@ def IsMenuEnable(self_id):
 def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		self.layout.separator()
-		self.layout.menu(ShortcutMenu.bl_idname, icon='PLUGIN')
+		self.layout.operator(DeleteUnmassage.bl_idname, icon='PLUGIN')
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.separator()
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]

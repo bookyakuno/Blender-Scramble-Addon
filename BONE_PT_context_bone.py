@@ -12,27 +12,28 @@ from bpy.ops import *
 
 class CopyBoneName(bpy.types.Operator):
 	bl_idname = "object.copy_bone_name"
-	bl_label = "Copy Bone name to Clipboard"
+	bl_label = "Copy Bone Name to Clipboard"
 	bl_description = "Copy the active bone's name to Clipboard"
 	bl_options = {'REGISTER', 'UNDO'}
+
+	isObject : BoolProperty(name="Contain Object Name", default=False)
 
 	@classmethod
 	def poll(cls, context):
 		if (context.active_bone):
-			if (context.window_manager.clipboard != context.active_bone.name):
-				return True
-		if (context.active_pose_bone):
-			if (context.window_manager.clipboard != context.active_pose_bone.name):
-				return True
+			return True
+		elif (context.active_pose_bone):
+			return True
 		return False
 
 	def execute(self, context):
 		if (context.active_bone):
 			context.window_manager.clipboard = context.active_bone.name
-			self.report(type={'INFO'}, message=context.active_bone.name)
 		elif (context.active_pose_bone):
 			context.window_manager.clipboard = context.active_pose_bone.name
-			self.report(type={'INFO'}, message=context.active_pose_bone.name)
+		if (self.isObject):
+			context.window_manager.clipboard = f"{context.active_object.name}:{context.window_manager.clipboard}"
+		self.report(type={'INFO'}, message=context.window_manager.clipboard)
 		return {'FINISHED'}
 
 class RenameMirrorActiveBone(bpy.types.Operator):

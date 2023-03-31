@@ -1,5 +1,5 @@
-# 「プロパティ」エリア > 「ボーン」タブ > 「表示」パネル
-# "Propaties" Area > "Bone" Tab > "Display" Panel
+# 「プロパティ」エリア > 「ボーン」タブ > 「ビューポート表示」パネル
+# "Propaties" Area > "Bone" Tab > "Viewport Display" Panel
 
 import bpy
 
@@ -24,6 +24,6 @@ def menu(self, context):
 	if (IsMenuEnable(__name__.split('.')[-1])):
 		split = self.layout.split()
 		split.label(text="")
-		split.operator('pose.create_custom_shape', icon='PARTICLE_PATH')
+		split.operator('pose.create_custom_shape', icon='PARTICLE_PATH')# VIEW3D_MT_pose_context_menu.py で定義
 	if (context.preferences.addons[__name__.partition('.')[0]].preferences.use_disabled_menu):
 		self.layout.operator('wm.toggle_menu_enable', icon='CANCEL').id = __name__.split('.')[-1]
